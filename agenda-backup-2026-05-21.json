@@ -1,0 +1,739 @@
+{
+  "_updatedAt": "2026-05-21T18:50:02.073Z",
+  "tasks": {
+    "items": [],
+    "groups": [
+      {
+        "id": "default",
+        "name": "Geral",
+        "order": 0
+      }
+    ],
+    "viewMode": "list",
+    "sortBy": "created",
+    "filterStatus": "all",
+    "chatHistory": {}
+  },
+  "finance": {
+    "bills": {
+      "2025": {
+        "0": [
+          {
+            "id": 2501,
+            "nome": "Aluguel",
+            "venc": "10/1/25",
+            "valor": 1445.36,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2502,
+            "nome": "Condomínio",
+            "venc": "10/1/25",
+            "valor": 1276.36,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2503,
+            "nome": "Internet",
+            "venc": "2/1/25",
+            "valor": 81.8,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2504,
+            "nome": "Celular",
+            "venc": "20/1/25",
+            "valor": 288.94,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "1": [
+          {
+            "id": 2510,
+            "nome": "Aluguel",
+            "venc": "10/2/25",
+            "valor": 1445.36,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2511,
+            "nome": "Condomínio",
+            "venc": "10/2/25",
+            "valor": 1210.94,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2512,
+            "nome": "Internet",
+            "venc": "2/2/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2513,
+            "nome": "Celular",
+            "venc": "20/2/25",
+            "valor": 288.29,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "2": [
+          {
+            "id": 2520,
+            "nome": "Aluguel",
+            "venc": "10/3/25",
+            "valor": 1659.43,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2521,
+            "nome": "Condomínio",
+            "venc": "10/3/25",
+            "valor": 1224.58,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2522,
+            "nome": "Internet",
+            "venc": "2/3/25",
+            "valor": 84.05,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2523,
+            "nome": "Celular",
+            "venc": "20/3/25",
+            "valor": 281.28,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "3": [
+          {
+            "id": 2530,
+            "nome": "Aluguel",
+            "venc": "10/4/25",
+            "valor": 1659.43,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2531,
+            "nome": "Condomínio",
+            "venc": "10/4/25",
+            "valor": 1102.26,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2532,
+            "nome": "Internet",
+            "venc": "2/4/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2533,
+            "nome": "Celular",
+            "venc": "20/4/25",
+            "valor": 298.25,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "4": [
+          {
+            "id": 2540,
+            "nome": "Aluguel",
+            "venc": "10/5/25",
+            "valor": 1659.43,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2541,
+            "nome": "Condomínio",
+            "venc": "10/5/25",
+            "valor": 1040.3,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2542,
+            "nome": "Internet",
+            "venc": "2/5/25",
+            "valor": 84.07,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2543,
+            "nome": "Celular",
+            "venc": "20/5/25",
+            "valor": 298.25,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "5": [
+          {
+            "id": 2550,
+            "nome": "Aluguel",
+            "venc": "10/6/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2551,
+            "nome": "Condomínio",
+            "venc": "10/6/25",
+            "valor": 1244.81,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2552,
+            "nome": "Internet",
+            "venc": "2/6/25",
+            "valor": 81.33,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2553,
+            "nome": "Celular",
+            "venc": "20/6/25",
+            "valor": 328.25,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "6": [
+          {
+            "id": 2560,
+            "nome": "Aluguel",
+            "venc": "10/7/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2561,
+            "nome": "Condomínio",
+            "venc": "10/7/25",
+            "valor": 1110.12,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2562,
+            "nome": "Internet",
+            "venc": "2/7/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2563,
+            "nome": "Celular",
+            "venc": "20/7/25",
+            "valor": 329.12,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "7": [
+          {
+            "id": 2570,
+            "nome": "Aluguel",
+            "venc": "10/8/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2571,
+            "nome": "Condomínio",
+            "venc": "10/8/25",
+            "valor": 1082.08,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2572,
+            "nome": "Internet",
+            "venc": "2/8/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2573,
+            "nome": "Celular",
+            "venc": "20/8/25",
+            "valor": 295.06,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "8": [
+          {
+            "id": 2580,
+            "nome": "Aluguel",
+            "venc": "10/9/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2581,
+            "nome": "Condomínio",
+            "venc": "10/9/25",
+            "valor": 1255.98,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2582,
+            "nome": "Internet",
+            "venc": "2/9/25",
+            "valor": 80.89,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2583,
+            "nome": "Celular",
+            "venc": "20/9/25",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "9": [
+          {
+            "id": 2590,
+            "nome": "Aluguel",
+            "venc": "10/10/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2591,
+            "nome": "Condomínio",
+            "venc": "10/10/25",
+            "valor": 1327.16,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2592,
+            "nome": "Internet",
+            "venc": "2/10/25",
+            "valor": 81.9,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2593,
+            "nome": "Celular",
+            "venc": "20/10/25",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "10": [
+          {
+            "id": 2600,
+            "nome": "Aluguel",
+            "venc": "10/11/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2601,
+            "nome": "Condomínio",
+            "venc": "10/11/25",
+            "valor": 1391.38,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2602,
+            "nome": "Internet",
+            "venc": "2/11/25",
+            "valor": 81.96,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2603,
+            "nome": "Celular",
+            "venc": "20/11/25",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "11": [
+          {
+            "id": 2610,
+            "nome": "Aluguel",
+            "venc": "10/12/25",
+            "valor": 1787.07,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2611,
+            "nome": "Condomínio",
+            "venc": "10/12/25",
+            "valor": 1353.88,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2612,
+            "nome": "Internet",
+            "venc": "2/12/25",
+            "valor": 81.96,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2613,
+            "nome": "Celular",
+            "venc": "20/12/25",
+            "valor": 318.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ]
+      },
+      "2026": {
+        "0": [
+          {
+            "id": 1,
+            "nome": "Aluguel",
+            "venc": "10/1/26",
+            "valor": 1347.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2,
+            "nome": "Condomínio",
+            "venc": "10/1/26",
+            "valor": 1559.1,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 3,
+            "nome": "Compagás",
+            "venc": "10/1/26",
+            "valor": 0,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 4,
+            "nome": "Internet",
+            "venc": "2/1/26",
+            "valor": 83.66,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 5,
+            "nome": "Celular",
+            "venc": "20/1/26",
+            "valor": 318.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 6,
+            "nome": "Unimed",
+            "venc": "7/1/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "1": [
+          {
+            "id": 10,
+            "nome": "Aluguel",
+            "venc": "10/2/26",
+            "valor": 1347.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 11,
+            "nome": "Condomínio",
+            "venc": "10/2/26",
+            "valor": 1559.1,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 12,
+            "nome": "Compagás",
+            "venc": "10/2/26",
+            "valor": 0,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 13,
+            "nome": "Internet",
+            "venc": "2/2/26",
+            "valor": 83.66,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 14,
+            "nome": "Celular",
+            "venc": "20/2/26",
+            "valor": 318.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 15,
+            "nome": "Unimed",
+            "venc": "7/2/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "2": [
+          {
+            "id": 20,
+            "nome": "Aluguel",
+            "venc": "10/3/26",
+            "valor": 1598.07,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 21,
+            "nome": "Condomínio",
+            "venc": "10/3/26",
+            "valor": 1211.07,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 22,
+            "nome": "Compagás",
+            "venc": "10/3/26",
+            "valor": 27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 23,
+            "nome": "Internet",
+            "venc": "2/3/26",
+            "valor": 81.96,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 24,
+            "nome": "Celular",
+            "venc": "20/3/26",
+            "valor": 288.4,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 25,
+            "nome": "Unimed",
+            "venc": "7/3/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "3": [
+          {
+            "id": 30,
+            "nome": "Aluguel",
+            "venc": "10/4/26",
+            "valor": 1598.03,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 31,
+            "nome": "Condomínio",
+            "venc": "10/4/26",
+            "valor": 1435.8,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 32,
+            "nome": "Compagás",
+            "venc": "10/4/26",
+            "valor": 58.68,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 33,
+            "nome": "Internet",
+            "venc": "2/4/26",
+            "valor": 81.81,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 34,
+            "nome": "Celular",
+            "venc": "20/4/26",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 35,
+            "nome": "Unimed",
+            "venc": "7/4/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "4": [
+          {
+            "id": 40,
+            "nome": "Aluguel",
+            "venc": "10/5/26",
+            "valor": 1818.63,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 41,
+            "nome": "Condomínio",
+            "venc": "10/5/26",
+            "valor": 1531.17,
+            "status": "nao-pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 42,
+            "nome": "Compagás",
+            "venc": "11/5/26",
+            "valor": 46.13,
+            "status": "nao-pago",
+            "obs": ""
+          },
+          {
+            "id": 43,
+            "nome": "Internet",
+            "venc": "2/5/26",
+            "valor": 91.31,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 44,
+            "nome": "Celular",
+            "venc": "20/5/26",
+            "valor": 0,
+            "status": "debito",
+            "obs": ""
+          },
+          {
+            "id": 45,
+            "nome": "Unimed",
+            "venc": "7/5/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": []
+      }
+    },
+    "activeMonths": {
+      "2025": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "2026": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "openMonths": {
+      "4": true
+    },
+    "currentYear": 2026,
+    "chatHistory": {}
+  },
+  "card": {
+    "faturas": [],
+    "transactions": {},
+    "categorias": [
+      "Alimentação",
+      "Transporte",
+      "Saúde",
+      "Educação",
+      "Lazer",
+      "Casa",
+      "Vestuário",
+      "Serviços",
+      "Outros"
+    ],
+    "chatHistory": {}
+  },
+  "config": {
+    "apiKey": "",
+    "theme": "dark",
+    "activeTab": "finance"
+  }
+}

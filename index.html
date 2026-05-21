@@ -706,7 +706,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.02</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.03</span>
   </div>
   <div class="header-right" id="headerRight">
     <div class="auth-info" id="authInfo">
@@ -892,7 +892,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.0.02 — agenda-v002</p>
+    <p class="version-tag">Agenda v0.0.03 — agenda-v003</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1078,24 +1078,44 @@ const FINANCE_SEEDS = {
   '2026-0':[{id:1,nome:'Aluguel',venc:'10/1/26',valor:1347.27,status:'pago',obs:''},{id:2,nome:'Condomínio',venc:'10/1/26',valor:1559.10,status:'pago',obs:'00547212968'},{id:3,nome:'Compagás',venc:'10/1/26',valor:0,status:'pago',obs:''},{id:4,nome:'Internet',venc:'2/1/26',valor:83.66,status:'pago',obs:''},{id:5,nome:'Celular',venc:'20/1/26',valor:318.27,status:'pago',obs:''},{id:6,nome:'Unimed',venc:'7/1/26',valor:844.01,status:'pago',obs:''}],
   '2026-1':[{id:10,nome:'Aluguel',venc:'10/2/26',valor:1347.27,status:'pago',obs:''},{id:11,nome:'Condomínio',venc:'10/2/26',valor:1559.10,status:'pago',obs:'00547212968'},{id:12,nome:'Compagás',venc:'10/2/26',valor:0,status:'pago',obs:''},{id:13,nome:'Internet',venc:'2/2/26',valor:83.66,status:'pago',obs:''},{id:14,nome:'Celular',venc:'20/2/26',valor:318.27,status:'pago',obs:''},{id:15,nome:'Unimed',venc:'7/2/26',valor:844.01,status:'pago',obs:''}],
   '2026-2':[{id:20,nome:'Aluguel',venc:'10/3/26',valor:1598.07,status:'pago',obs:''},{id:21,nome:'Condomínio',venc:'10/3/26',valor:1211.07,status:'pago',obs:'00547212968'},{id:22,nome:'Compagás',venc:'10/3/26',valor:27,status:'pago',obs:''},{id:23,nome:'Internet',venc:'2/3/26',valor:81.96,status:'pago',obs:''},{id:24,nome:'Celular',venc:'20/3/26',valor:288.40,status:'pago',obs:''},{id:25,nome:'Unimed',venc:'7/3/26',valor:844.01,status:'pago',obs:''}],
-  '2026-3':[{id:30,nome:'Aluguel',venc:'10/4/26',valor:1598.03,status:'nao-pago',obs:''},{id:31,nome:'Condomínio',venc:'10/4/26',valor:1435.80,status:'nao-pago',obs:'00547212968'},{id:32,nome:'Compagás',venc:'10/4/26',valor:0,status:'aguardando',obs:''},{id:33,nome:'Internet',venc:'2/4/26',valor:81.81,status:'debito',obs:''},{id:34,nome:'Celular',venc:'20/4/26',valor:0,status:'aguardando',obs:''},{id:35,nome:'Unimed',venc:'7/4/26',valor:844.01,status:'pago',obs:''}],
+  '2026-3':[{id:30,nome:'Aluguel',venc:'10/4/26',valor:1598.03,status:'pago',obs:''},{id:31,nome:'Condomínio',venc:'10/4/26',valor:1435.80,status:'pago',obs:'00547212968'},{id:32,nome:'Compagás',venc:'10/4/26',valor:58.68,status:'pago',obs:''},{id:33,nome:'Internet',venc:'2/4/26',valor:81.81,status:'pago',obs:''},{id:34,nome:'Celular',venc:'20/4/26',valor:288.27,status:'pago',obs:''},{id:35,nome:'Unimed',venc:'7/4/26',valor:844.01,status:'pago',obs:''}],
+  '2026-4':[{id:40,nome:'Aluguel',venc:'10/5/26',valor:1818.63,status:'pago',obs:''},{id:41,nome:'Condomínio',venc:'10/5/26',valor:1531.17,status:'nao-pago',obs:'00547212968'},{id:42,nome:'Compagás',venc:'11/5/26',valor:46.13,status:'nao-pago',obs:''},{id:43,nome:'Internet',venc:'2/5/26',valor:91.31,status:'pago',obs:''},{id:44,nome:'Celular',venc:'20/5/26',valor:0,status:'debito',obs:''},{id:45,nome:'Unimed',venc:'7/5/26',valor:844.01,status:'pago',obs:''}],
 };
 const FINANCE_YEARS = [2025, 2026];
 
 function applySeeds() {
   FINANCE_YEARS.forEach(y => {
     if (!state.finance.bills[y]) state.finance.bills[y] = {};
+    const seeded = Object.keys(FINANCE_SEEDS).filter(k => k.startsWith(y+'-')).map(k => parseInt(k.split('-')[1]));
     if (!state.finance.activeMonths[y]) {
-      const seeded = Object.keys(FINANCE_SEEDS).filter(k => k.startsWith(y+'-')).map(k => parseInt(k.split('-')[1]));
-      state.finance.activeMonths[y] = seeded.length ? seeded : [new Date().getMonth()];
-      if (y === 2025) state.finance.activeMonths[y] = [0,1,2,3,4,5,6,7,8,9,10,11];
-      state.finance.activeMonths[y].sort((a,b)=>a-b);
+      state.finance.activeMonths[y] = y === 2025 ? [0,1,2,3,4,5,6,7,8,9,10,11] : seeded;
+    } else {
+      seeded.forEach(m => {
+        const jaEstaAtivo = state.finance.activeMonths[y].includes(m);
+        if (!jaEstaAtivo) state.finance.activeMonths[y].push(m);
+      });
     }
+    state.finance.activeMonths[y].sort((a,b)=>a-b);
     for (let m = 0; m < 12; m++) {
-      if (!state.finance.bills[y][m]) {
-        state.finance.bills[y][m] = FINANCE_SEEDS[y+'-'+m] || [];
+      const seedKey = y+'-'+m;
+      if (!FINANCE_SEEDS[seedKey]) continue;
+      const existing = state.finance.bills[y][m];
+      // Aplica seed se vazio, ou se os IDs batem com o seed (dados não foram editados pelo usuário)
+      if (!existing || existing.length === 0) {
+        state.finance.bills[y][m] = FINANCE_SEEDS[seedKey];
+      } else {
+        const seedIds = FINANCE_SEEDS[seedKey].map(r => r.id).sort().join(',');
+        const existingIds = existing.map(r => r.id).sort().join(',');
+        if (seedIds === existingIds) {
+          // Mesmos IDs — são dados do seed, atualiza com versão mais recente
+          state.finance.bills[y][m] = FINANCE_SEEDS[seedKey];
+        }
       }
     }
+    // Remove meses ativos que estão vazios e não têm seed
+    state.finance.activeMonths[y] = state.finance.activeMonths[y].filter(m => {
+      return (state.finance.bills[y][m] && state.finance.bills[y][m].length > 0);
+    });
   });
 }
 
@@ -1974,11 +1994,16 @@ function applyTheme() {
    EXPORT / IMPORT
 ═══════════════════════════════════════════════════════════ */
 function exportData() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  a.href = url;
   a.download = 'agenda-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
   showToast('Dados exportados');
 }
 
@@ -2067,22 +2092,29 @@ if ('serviceWorker' in navigator) {
    INIT
 ═══════════════════════════════════════════════════════════ */
 (async function init() {
-  // Sempre carrega dados do localStorage primeiro (modo offline / Claude.ai)
   try {
-    const local = localStorage.getItem('agenda_local');
-    if (local) mergeState(JSON.parse(local));
-  } catch(e) {}
-  applySeeds();
-  applyTheme();
-  showApp(false); // mostra o app imediatamente (sem bloquear no login)
-  renderAll();
+    // Carrega dados do localStorage primeiro (modo offline / Claude.ai)
+    try {
+      const local = localStorage.getItem('agenda_local');
+      if (local) mergeState(JSON.parse(local));
+    } catch(e) {}
 
-  // Tenta conectar ao Supabase em background
-  if (!_sb) {
-    updateAuthUI();
-    return;
+    applySeeds();
+    applyTheme();
+    showApp(false);
+    renderAll();
+
+    // Tenta conectar ao Supabase em background
+    if (!_sb) { updateAuthUI(); return; }
+    await initAuth();
+  } catch(e) {
+    console.error('Init error:', e);
+    // Garante que o app sempre apareça mesmo com erro
+    applySeeds();
+    applyTheme();
+    showApp(false);
+    renderAll();
   }
-  await initAuth();
 })();
 </script>
 </body>
