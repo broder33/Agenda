@@ -706,7 +706,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.01</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.02</span>
   </div>
   <div class="header-right" id="headerRight">
     <div class="auth-info" id="authInfo">
@@ -892,7 +892,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.0.01 — agenda-v001</p>
+    <p class="version-tag">Agenda v0.0.02 — agenda-v002</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -922,7 +922,7 @@ async function initAuth() {
     currentUser = session.user;
     await onLogin();
   } else {
-    showApp(false);
+    showApp(false); // showApp agora sempre mostra o app
   }
   _sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
@@ -943,7 +943,8 @@ async function loginGoogle() {
 async function logout() {
   if (_sb) await _sb.auth.signOut();
   currentUser = null;
-  showApp(false);
+  updateAuthUI();
+  showToast('Sessão encerrada — modo local ativo');
 }
 
 function handleAuthAction() {
@@ -983,9 +984,11 @@ function updateAuthUI() {
 }
 
 function showApp(loggedIn) {
-  document.getElementById('loginScreen').style.display = loggedIn ? 'none' : 'flex';
-  document.getElementById('appContent').style.display = loggedIn ? 'block' : 'none';
-  document.getElementById('tabsBar').style.display = loggedIn ? 'flex' : 'none';
+  // App sempre visível — tela de login não bloqueia mais o app
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appContent').style.display = 'block';
+  document.getElementById('tabsBar').style.display = 'flex';
+  // Botão de login aparece no menu quando não há sessão
   updateAuthUI();
 }
 
@@ -2064,27 +2067,21 @@ if ('serviceWorker' in navigator) {
    INIT
 ═══════════════════════════════════════════════════════════ */
 (async function init() {
-  // Apply saved theme from localStorage (before Supabase loads)
+  // Sempre carrega dados do localStorage primeiro (modo offline / Claude.ai)
   try {
     const local = localStorage.getItem('agenda_local');
-    if (local) { const s = JSON.parse(local); if (s.config?.theme) state.config.theme = s.config.theme; }
+    if (local) mergeState(JSON.parse(local));
   } catch(e) {}
+  applySeeds();
   applyTheme();
+  showApp(false); // mostra o app imediatamente (sem bloquear no login)
+  renderAll();
 
-  // If no Supabase configured, work in local mode
+  // Tenta conectar ao Supabase em background
   if (!_sb) {
-    try {
-      const local = localStorage.getItem('agenda_local');
-      if (local) mergeState(JSON.parse(local));
-    } catch(e) {}
-    applySeeds();
-    applyTheme();
-    showApp(true);
-    renderAll();
-    showToast('Modo local — configure o Supabase para sincronizar');
+    updateAuthUI();
     return;
   }
-
   await initAuth();
 })();
 </script>
