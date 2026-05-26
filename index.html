@@ -33,6 +33,14 @@
   --priority-alta: #ef4444;
   --priority-media: #f97316;
   --priority-baixa: #60a5fa;
+  --status-acao: #ef4444;
+  --status-acao-bg: rgba(239,68,68,.15);
+  --status-aguardando-task: #fbbf24;
+  --status-aguardando-task-bg: rgba(251,191,36,.12);
+  --status-pausado: #a78bfa;
+  --status-pausado-bg: rgba(167,139,250,.12);
+  --status-concluida: #22c55e;
+  --status-concluida-bg: rgba(34,197,94,.12);
   --status-pago: #22c55e;
   --status-pago-bg: #052e16;
   --status-naopago: #ef4444;
@@ -253,69 +261,173 @@ header {
 .filter-select:focus { border-color: var(--accent); color: var(--text); }
 
 /* ══════════════════════════════════════
-   TASK GROUPS & CARDS
+   TASK LIST — TABLE LAYOUT
 ══════════════════════════════════════ */
-.task-group { margin-bottom: 20px; }
-.task-group-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 0; margin-bottom: 6px; cursor: pointer;
+.task-list-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+
+/* Column header bar */
+.task-col-header {
+  display: flex; align-items: center;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 8px;
+  position: sticky; top: 0; z-index: 10;
   user-select: none;
 }
-.task-group-name {
-  font-family: 'DM Mono', monospace; font-size: 11px;
-  letter-spacing: 1px; color: var(--text2); text-transform: uppercase;
-}
-.task-group-count {
+.task-col-hd-name {
+  flex: 1; min-width: 0;
   font-family: 'DM Mono', monospace; font-size: 10px;
-  color: var(--muted); background: var(--surface2);
-  padding: 1px 7px; border-radius: 10px;
+  letter-spacing: .5px; color: var(--muted);
+  padding: 7px 8px 7px 36px;
 }
-.task-group-chevron { color: var(--muted); font-size: 9px; transition: transform .2s; }
-.task-group-chevron.open { transform: rotate(90deg); }
-.task-group-actions { margin-left: auto; display: flex; gap: 4px; }
+.task-col-hd-cell {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: .5px; color: var(--muted);
+  padding: 7px 10px; white-space: nowrap;
+  cursor: pointer; display: flex; align-items: center; gap: 4px;
+  overflow: hidden; flex-shrink: 0; user-select: none;
+}
+.task-col-hd-cell:hover { color: var(--text2); }
+.task-col-hd-cell .col-drag { opacity: .3; font-size: 9px; }
+.task-col-hd-cell:hover .col-drag { opacity: .7; }
+.task-col-hd-actions { width: 72px; flex-shrink: 0; }
+.task-col-add-btn {
+  background: none; border: 1px dashed var(--border);
+  color: var(--muted); font-family: 'DM Mono', monospace;
+  font-size: 10px; padding: 3px 8px; border-radius: 4px;
+  cursor: pointer; white-space: nowrap; margin-left: 4px;
+}
+.task-col-add-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-.task-card {
+/* Task row */
+.task-row {
+  display: flex; align-items: center;
+  border-bottom: 1px solid var(--border);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  display: flex; align-items: flex-start; gap: 10px;
-  transition: border-color .15s, background .15s;
-  cursor: pointer;
+  transition: background .1s;
+  min-height: 38px;
 }
-.task-card:hover { border-color: var(--border); background: var(--surface2); }
-.task-card.done { opacity: .5; }
+.task-row:last-child { border-bottom: none; }
+.task-row:hover { background: var(--surface2); }
+.task-row.done { opacity: .55; }
+
+/* Name cell */
+.task-row-name {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center;
+  padding: 6px 8px; gap: 0; overflow: hidden;
+}
+.task-indent { flex-shrink: 0; position: relative; display: flex; align-items: center; }
+.task-indent-line {
+  position: absolute; left: 9px; top: -50%; bottom: -50%;
+  width: 1px; background: var(--border);
+}
 .task-check {
-  width: 18px; height: 18px; border-radius: 50%;
+  width: 16px; height: 16px; border-radius: 50%;
   border: 2px solid var(--border); flex-shrink: 0;
-  margin-top: 1px; cursor: pointer; transition: all .15s;
+  cursor: pointer; transition: all .15s;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
+  font-size: 8px; margin: 0 6px;
 }
+.task-check.subtask { border-radius: 3px; width: 13px; height: 13px; }
 .task-check:hover { border-color: var(--accent); }
 .task-check.checked { background: var(--accent); border-color: var(--accent); color: #0f0f0f; }
-.task-body { flex: 1; min-width: 0; }
-.task-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
-.task-card.done .task-title { text-decoration: line-through; color: var(--muted); }
-.task-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; align-items: center; }
-.task-tag {
+.task-expand-btn {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 9px; padding: 0 3px;
+  line-height: 1; flex-shrink: 0; width: 14px;
+}
+.task-expand-btn:hover { color: var(--text); }
+.task-title-text {
+  font-size: 13px; font-weight: 500; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer; flex: 1; min-width: 0;
+}
+.task-row.done .task-title-text { text-decoration: line-through; color: var(--muted); }
+.task-child-count {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--muted); background: var(--surface2);
+  padding: 1px 5px; border-radius: 8px; margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* Column cells */
+.task-col-cell {
+  padding: 6px 10px; white-space: nowrap;
+  font-size: 12px; flex-shrink: 0;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+.task-col-cell.overdue { color: var(--danger); }
+
+/* Status badge inline */
+.status-badge {
   font-family: 'DM Mono', monospace; font-size: 10px;
   padding: 2px 8px; border-radius: 4px; letter-spacing: .3px;
-  background: var(--surface2); color: var(--text2);
+  cursor: pointer; transition: filter .15s;
 }
-.task-tag.alta { background: rgba(239,68,68,.15); color: var(--priority-alta); }
-.task-tag.media { background: rgba(249,115,22,.15); color: var(--priority-media); }
-.task-tag.baixa { background: rgba(96,165,250,.15); color: var(--priority-baixa); }
-.task-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-.task-date.overdue { color: var(--danger); }
-.task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.status-badge:hover { filter: brightness(1.15); }
+.status-badge.pendente { background: var(--surface2); color: var(--muted); }
+.status-badge.concluida { background: var(--status-concluida-bg); color: var(--status-concluida); }
+.status-badge.acao-necessaria { background: var(--status-acao-bg); color: var(--status-acao); }
+.status-badge.aguardando { background: var(--status-aguardando-task-bg); color: var(--status-aguardando-task); }
+.status-badge.pausado { background: var(--status-pausado-bg); color: var(--status-pausado); }
+
+/* Priority badge */
+.priority-badge {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  padding: 2px 8px; border-radius: 4px; letter-spacing: .3px;
+}
+.priority-badge.urgente { background: rgba(239,68,68,.2); color: var(--priority-alta); }
+.priority-badge.alta { background: rgba(239,68,68,.15); color: var(--priority-alta); }
+.priority-badge.media { background: rgba(249,115,22,.15); color: var(--priority-media); }
+.priority-badge.baixa { background: rgba(96,165,250,.15); color: var(--priority-baixa); }
+.priority-badge.normal { background: var(--surface2); color: var(--text2); }
+
+/* Row actions */
+.task-row-actions {
+  display: flex; gap: 2px; flex-shrink: 0;
+  padding: 0 6px; width: 72px; justify-content: flex-end;
+  opacity: 0; transition: opacity .15s;
+}
+.task-row:hover .task-row-actions { opacity: 1; }
 .task-icon-btn {
   background: none; border: none; color: var(--muted);
-  cursor: pointer; font-size: 14px; padding: 2px 4px;
+  cursor: pointer; font-size: 13px; padding: 3px 5px;
   border-radius: 4px; line-height: 1; transition: all .15s;
 }
 .task-icon-btn:hover { color: var(--text); background: var(--surface2); }
+
+/* Column manager modal */
+.col-manager { padding: 4px 0; }
+.col-manager-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  cursor: grab;
+}
+.col-manager-row:last-child { border-bottom: none; }
+.col-manager-drag { color: var(--muted); font-size: 12px; cursor: grab; }
+.col-manager-label { flex: 1; font-size: 13px; color: var(--text); }
+.col-manager-type { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.col-toggle { width: 32px; height: 18px; border-radius: 9px; background: var(--border); border: none; cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0; }
+.col-toggle.on { background: var(--accent); }
+.col-toggle::after { content:''; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .2s; }
+.col-toggle.on::after { left: 17px; }
+.col-del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 5px; }
+.col-del-btn:hover { color: var(--danger); }
+
+/* Quick add row */
+.task-add-row {
+  display: flex; align-items: center;
+  border-top: 1px dashed var(--border);
+  padding: 6px 8px; background: var(--surface);
+  gap: 6px;
+}
+.task-add-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
+}
+.task-add-input::placeholder { color: var(--muted); }
 
 .task-chat-wrap { margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; }
 
@@ -601,6 +713,75 @@ header {
 }
 
 /* ══════════════════════════════════════
+   STATUS DROPDOWN & MANAGER
+══════════════════════════════════════ */
+.status-dropdown-menu {
+  position: fixed; z-index: 9999;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  padding: 4px; min-width: 180px;
+}
+.status-dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 4px;
+  cursor: pointer; transition: background .1s;
+}
+.status-dropdown-item:hover { background: var(--surface2); }
+.status-dropdown-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.status-dropdown-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text); }
+.status-dropdown-check { margin-left: auto; color: var(--accent); font-size: 11px; }
+
+.status-manager-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.status-manager-row:last-child { border-bottom: none; }
+.status-color-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; flex-shrink: 0; position: relative; }
+.status-color-swatch input[type=color] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; padding: 0; }
+.status-manager-label-input { flex: 1; background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); border-bottom: 1px solid transparent; transition: border-color .15s; }
+.status-manager-label-input:focus { border-bottom-color: var(--accent); }
+.status-manager-builtin { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); padding: 1px 5px; border: 1px solid var(--border); border-radius: 3px; flex-shrink: 0; }
+.status-del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 5px; }
+.status-del-btn:hover { color: var(--danger); }
+
+/* ══════════════════════════════════════
+   PRIORITY DROPDOWN & DATE PICKER
+══════════════════════════════════════ */
+.priority-dropdown-menu {
+  position: fixed; z-index: 9999;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  padding: 4px; min-width: 160px;
+}
+.priority-dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 4px;
+  cursor: pointer; transition: background .1s;
+}
+.priority-dropdown-item:hover { background: var(--surface2); }
+.priority-dropdown-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.priority-dropdown-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text); }
+.priority-dropdown-check { margin-left: auto; color: var(--accent); font-size: 11px; }
+
+.date-picker-popup {
+  position: fixed; z-index: 9999;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  padding: 10px; display: flex; flex-direction: column; gap: 8px;
+}
+.date-picker-popup input[type=date] {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  padding: 6px 10px; outline: none; cursor: pointer;
+}
+.date-picker-popup input[type=date]:focus { border-color: var(--accent); }
+.date-picker-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.date-picker-clear { background: none; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 10px; cursor: pointer; }
+.date-picker-clear:hover { border-color: var(--danger); color: var(--danger); }
+.date-picker-ok { background: var(--accent); border: none; border-radius: 4px; color: #0f0f0f; font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 10px; cursor: pointer; }
+
+/* ══════════════════════════════════════
    THEME TOGGLE
 ══════════════════════════════════════ */
 .theme-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -641,6 +822,65 @@ header {
   .modal-box { padding: 18px; }
   .fin-table td, .fin-table thead th { padding: 7px 8px; }
 }
+
+/* ══════════════════════════════════════
+   SUBTASKS
+══════════════════════════════════════ */
+.subtasks-wrap {
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+}
+.subtask-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.subtask-item:last-child { border-bottom: none; }
+.subtask-check {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid var(--border); flex-shrink: 0;
+  margin-top: 1px; cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+}
+.subtask-check:hover { border-color: var(--accent); }
+.subtask-check.checked { background: var(--accent); border-color: var(--accent); color: #0f0f0f; }
+.subtask-body { flex: 1; min-width: 0; }
+.subtask-title { font-size: 12px; color: var(--text2); line-height: 1.3; }
+.subtask-title.done { text-decoration: line-through; color: var(--muted); }
+.subtask-meta { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+.subtask-actions { display: flex; gap: 2px; }
+.subtask-toggle {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--muted); cursor: pointer; display: flex;
+  align-items: center; gap: 4px; margin-top: 4px;
+  background: none; border: none; padding: 0;
+  transition: color .15s;
+}
+.subtask-toggle:hover { color: var(--text2); }
+.subtask-add-row {
+  display: flex; gap: 6px; margin-top: 6px; align-items: center;
+}
+.subtask-add-input {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 5px 8px;
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px;
+  outline: none;
+}
+.subtask-add-input:focus { border-color: var(--accent); }
+.subtask-add-btn {
+  padding: 5px 10px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text2); font-family: 'DM Mono', monospace;
+  font-size: 10px; cursor: pointer; white-space: nowrap;
+}
+.subtask-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+.subtask-count {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--muted); background: var(--surface2);
+  padding: 1px 6px; border-radius: 10px;
+}
 </style>
 </head>
 <body>
@@ -653,6 +893,45 @@ header {
     <div class="modal-actions">
       <button class="btn-confirm-cancel" onclick="closeConfirm()">Cancelar</button>
       <button class="btn-confirm-ok" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ═══════════════════ STATUS MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="statusManagerModal">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title">Gerenciar Status</div>
+    <div id="statusManagerList" class="col-manager" style="max-height:320px;overflow-y:auto"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+      <input class="modal-input" id="newStatusLabel" placeholder="Nome do novo status" style="flex:1">
+      <input type="color" id="newStatusColor" value="#6b7280" style="width:36px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;padding:2px">
+      <button class="btn-modal-save" onclick="addStatus()">+ Adicionar</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closeStatusManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ COLUMN MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="colManagerModal">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-title">Gerenciar Colunas</div>
+    <div class="col-manager" id="colManagerList"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <input class="modal-input" id="newColLabel" placeholder="Nome da nova coluna" style="flex:1">
+      <select class="modal-select" id="newColType" style="flex:0 0 auto;width:110px">
+        <option value="text">Texto</option>
+        <option value="date">Data</option>
+        <option value="status">Status</option>
+        <option value="priority">Prioridade</option>
+      </select>
+      <button class="btn-modal-save" onclick="addColumn()">+ Adicionar</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closeColManager()">Fechar</button>
     </div>
   </div>
 </div>
@@ -706,7 +985,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.04</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.21</span>
   </div>
   <div class="header-right" id="headerRight">
     <div class="auth-info" id="authInfo">
@@ -741,7 +1020,7 @@ header {
 <!-- ═══════════════════════════════════════
    LOGIN SCREEN (shown when not logged in)
 ════════════════════════════════════════ -->
-<div id="loginScreen">
+<div id="loginScreen" style="display:none">
   <div class="login-logo">AGENDA</div>
   <p class="login-sub">Hub pessoal de organização com IA. Suas tarefas, finanças e faturas em um só lugar.</p>
   <button class="btn-google" onclick="loginGoogle()">
@@ -753,7 +1032,7 @@ header {
 <!-- ═══════════════════════════════════════
    MAIN APP (hidden until logged in)
 ════════════════════════════════════════ -->
-<div id="appContent" style="display:none">
+<div id="appContent">
 
 <!-- ════════ TAB: TAREFAS ════════ -->
 <div class="tab-panel active" id="panel-tasks">
@@ -762,40 +1041,33 @@ header {
       <div class="section-title">Tarefas</div>
       <div class="section-sub" id="tasksSub">0 pendentes</div>
     </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn-sm" onclick="openAddGroup()">+ Grupo</button>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <select class="filter-select" id="filterStatus" onchange="setTaskFilterFromSelect(this.value)">
+        <option value="all">Todas</option>
+        <option value="pendente">Pendentes</option>
+        <option value="concluida">Concluídas</option>
+        <option value="acao-necessaria">Ação Necessária</option>
+        <option value="aguardando">Aguardando</option>
+        <option value="pausado">Pausado</option>
+      </select>
+      <select class="filter-select" id="filterPriority" onchange="renderTasks()">
+        <option value="">Prioridade</option>
+        <option value="urgente">Urgente</option>
+        <option value="alta">Alta</option>
+        <option value="media">Média</option>
+        <option value="baixa">Baixa</option>
+      </select>
+      <select class="filter-select" id="sortTasks" onchange="renderTasks()">
+        <option value="created">Criação</option>
+        <option value="date">Data</option>
+        <option value="priority">Prioridade</option>
+        <option value="title">Nome</option>
+      </select>
+      <button class="btn-sm" onclick="openColManager()" title="Gerenciar colunas">⚙ Colunas</button>
+      <button class="btn-sm" onclick="openStatusManager()" title="Gerenciar status">⚙ Status</button>
       <button class="btn-sm accent" onclick="openTaskModal()">+ Tarefa</button>
     </div>
   </div>
-
-  <!-- Quick add -->
-  <div class="quick-add-bar">
-    <input class="quick-add-input" id="quickAddInput" placeholder="Adicionar tarefa... (Enter para salvar)" onkeydown="quickAddKey(event)">
-    <button class="btn-fab" onclick="quickAddTask()">+ ADD</button>
-  </div>
-
-  <!-- Filters -->
-  <div class="filter-bar" id="tasksFilterBar">
-    <button class="filter-chip active" data-filter="all" onclick="setTaskFilter('all',this)">Todas</button>
-    <button class="filter-chip" data-filter="pendente" onclick="setTaskFilter('pendente',this)">Pendentes</button>
-    <button class="filter-chip" data-filter="concluida" onclick="setTaskFilter('concluida',this)">Concluídas</button>
-    <select class="filter-select" id="filterPriority" onchange="renderTasks()">
-      <option value="">Prioridade</option>
-      <option value="alta">🔴 Alta</option>
-      <option value="media">🟡 Média</option>
-      <option value="baixa">🔵 Baixa</option>
-    </select>
-    <select class="filter-select" id="filterGroup" onchange="renderTasks()">
-      <option value="">Grupo</option>
-    </select>
-    <select class="filter-select" id="sortTasks" onchange="renderTasks()">
-      <option value="created">Criação</option>
-      <option value="date">Data</option>
-      <option value="priority">Prioridade</option>
-      <option value="title">Nome</option>
-    </select>
-  </div>
-
   <div id="tasksList"></div>
 </div>
 
@@ -892,7 +1164,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.0.04 — agenda-v004</p>
+    <p class="version-tag">Agenda v0.0.21 — agenda-v021</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -961,6 +1233,7 @@ async function onLogin() {
   await loadFromSupabase();
   showApp(true);
   applySeeds();
+  applyTaskSeeds();
   renderAll();
   _supabaseLoadComplete = true;
 }
@@ -1000,6 +1273,20 @@ let state = {
   tasks: {
     items: [],
     groups: [{ id: 'default', name: 'Geral', order: 0 }],
+    statuses: [
+      { id: 'pendente',        label: 'Pendente',         color: '#6b7280', bg: 'rgba(107,114,128,.15)', builtin: true },
+      { id: 'acao-necessaria', label: 'Ação Necessária',  color: '#ef4444', bg: 'rgba(239,68,68,.15)',   builtin: true },
+      { id: 'aguardando',      label: 'Aguardando',       color: '#fbbf24', bg: 'rgba(251,191,36,.12)',  builtin: true },
+      { id: 'pausado',         label: 'Pausado',          color: '#a78bfa', bg: 'rgba(167,139,250,.12)', builtin: true },
+      { id: 'concluida',       label: 'Concluída',        color: '#22c55e', bg: 'rgba(34,197,94,.12)',   builtin: true },
+    ],
+    columns: [
+      { id: 'status', label: 'Status', type: 'status', visible: true, order: 0, width: 140 },
+      { id: 'priority', label: 'Prioridade', type: 'priority', visible: true, order: 1, width: 110 },
+      { id: 'dueDate', label: 'Data', type: 'date', visible: true, order: 2, width: 90 },
+    ],
+    sortColId: null,
+    sortDir: 'asc',
     viewMode: 'list',
     sortBy: 'created',
     filterStatus: 'all',
@@ -1036,12 +1323,18 @@ async function loadFromSupabase() {
 function mergeState(saved) {
   if (!saved) return;
   if (saved._updatedAt && state._updatedAt && saved._updatedAt <= state._updatedAt) return;
-  if (saved.tasks) state.tasks = { ...state.tasks, ...saved.tasks };
   if (saved.finance) state.finance = { ...state.finance, ...saved.finance };
   if (saved.card) state.card = { ...state.card, ...saved.card };
   if (saved.config) {
     state.config = { ...state.config, ...saved.config };
-    if (state.config.apiKey) document.getElementById('apiKeyInput').value = state.config.apiKey;
+    const apiInput = document.getElementById('apiKeyInput');
+    if (state.config.apiKey && apiInput) apiInput.value = state.config.apiKey;
+  }
+  // tasks.items intentionally NOT merged from saved state —
+  // applyTaskSeeds always rebuilds from seed + user items
+  if (saved.tasks) {
+    state.tasks = { ...state.tasks, ...saved.tasks };
+    state.tasks.items = []; // reset — applyTaskSeeds will repopulate
   }
   state._updatedAt = saved._updatedAt;
 }
@@ -1083,7 +1376,83 @@ const FINANCE_SEEDS = {
 };
 const FINANCE_YEARS = [2025, 2026];
 
+const FINANCE_SEED_VERSION = 'v2';
+
+/* ═══════════════════════════════════════════════════════════
+   TASK SEEDS (importado do ClickUp) — estrutura recursiva
+═══════════════════════════════════════════════════════════ */
+const TASK_SEED_VERSION = 'v3';
+
+function mkTask(id, title, status, priority, dueDate, children) {
+  return { id, title, status: status||'pendente', priority: priority||'', dueDate: dueDate||'',
+    description:'', children: children||[], createdAt:'2025-01-01T00:00:00Z',
+    updatedAt:'2025-01-01T00:00:00Z', linkedItems:[], notes:'', tags:[], expanded:false };
+}
+
+const TASK_SEEDS_ITEMS = [
+  mkTask('ts-01','Cancelar HBO Anuidade','pendente','','2027-01-04'),
+  mkTask('ts-02','Verificar fechamento da CNPJ Londrina','pendente','baixa','2026-09-01'),
+  mkTask('ts-03','Vencimento tag ViaFácil','aguardando','baixa','2026-09-08'),
+  mkTask('ts-04','Cancelar Apple TV','pendente','','2026-04-05'),
+  mkTask('ts-cs','Credit Suisse','acao-necessaria','alta','2026-03-31',[
+    mkTask('ts-cs1','Levantar recursos para retainer','acao-necessaria','urgente','2025-08-22'),
+    mkTask('ts-cs2','Fazer teste de modalidade SWIFT','concluida','alta','2025-08-08'),
+    mkTask('ts-cs3','Entrar em contato com advogado','aguardando','urgente','2025-08-19'),
+    mkTask('ts-cs4','Verificar possibilidade de transferir pelo UK','concluida','urgente','2025-08-15'),
+  ]),
+  mkTask('ts-sp','Suíça Passaporte','acao-necessaria','alta','2026-03-31',[
+    mkTask('ts-sp1','Decisão Judicial','concluida','','2025-02-20'),
+    mkTask('ts-sp2','Adquirir cópia autenticada do mandado de averbação - inteiro teor digitada e apostilada (<6 meses)','concluida','','2025-07-31'),
+    mkTask('ts-sp3','Adquirir cópia autenticada da decisão judicial - Realizar apostilamento','concluida','','2025-08-01'),
+    mkTask('ts-sp4','Comunicar com a Monica do Consulado','concluida','','2025-08-14'),
+    mkTask('ts-sp5','Adquirir segunda via da certidão de nascimento - inteiro teor, apostilada e <6 meses','concluida','','2025-07-31'),
+    mkTask('ts-sp6','Adquirir segunda via original da certidão de óbito da minha mãe - inteiro teor, apostilada e <6 meses','concluida','','2025-07-30'),
+    mkTask('ts-sp7','Adquirir duas cópias autenticadas do meu RG ou passaporte brasileiro - CID 29/07','concluida','','2025-07-29'),
+    mkTask('ts-sp8','Imprimir as 140 folhas do processo','concluida','','2025-07-29'),
+    mkTask('ts-sp9','Enviar documentos para Consulado','concluida','','2025-07-08'),
+    mkTask('ts-sp10','Aguardar a resposta do Cantão','concluida','','2025-08-17'),
+    mkTask('ts-sp11','Entrar em contato com o Consulado Suíço em Hong Kong','concluida','','2026-09-01'),
+    mkTask('ts-sp12','Entrar em contato com a Central de Imigração de HK','concluida','','2026-01-05',[
+      mkTask('ts-sp12a','Etapa 1: Reunir dados Kim','concluida','','2025-10-28'),
+      mkTask('ts-sp12b','Etapa 2: Elaborar e-mail','concluida','','2025-09-15'),
+      mkTask('ts-sp12c','Etapa 3: Retornar e-mail','concluida','',''),
+    ]),
+    mkTask('ts-sp13','Solicitar carta de requisição Suíça','concluida','','2026-01-05'),
+  ]),
+  mkTask('ts-22','Plano de Saude','pausado','alta','2026-03-31'),
+  mkTask('ts-23','Marcar consulta Moris','pausado','media','2026-03-31'),
+  mkTask('ts-24','Locar Vaga de Garagem Osório','pausado','media','2026-03-31'),
+  mkTask('ts-25','Anunciar memória DDR4','pendente','','2026-03-25'),
+];
+
+function applyTaskSeeds() {
+  const savedVersion = state._taskSeedVersion || null;
+  const seedChanged = savedVersion !== TASK_SEED_VERSION;
+  if (seedChanged) {
+    state._taskSeedVersion = TASK_SEED_VERSION;
+    // Reset groups to default only
+    state.tasks.groups = [{ id: 'default', name: 'Geral', order: 0 }];
+  }
+
+  function applySeedItem(seed) {
+    const existing = state.tasks.items.find(t => t.id === seed.id);
+    if (!existing) {
+      state.tasks.items.push({...seed, group: 'default'});
+    }
+  }
+
+  TASK_SEEDS_ITEMS.forEach(seed => applySeedItem(seed));
+  console.log('[SEEDS] tasks after seed:', state.tasks.items.length);
+}
+
+
+
 function applySeeds() {
+  // Se a versão do seed mudou, força reaplicação de todos os dados do seed
+  const savedSeedVersion = state._seedVersion || null;
+  const seedChanged = savedSeedVersion !== FINANCE_SEED_VERSION;
+  if (seedChanged) state._seedVersion = FINANCE_SEED_VERSION;
+
   FINANCE_YEARS.forEach(y => {
     if (!state.finance.bills[y]) state.finance.bills[y] = {};
     const seeded = Object.keys(FINANCE_SEEDS).filter(k => k.startsWith(y+'-')).map(k => parseInt(k.split('-')[1]));
@@ -1091,8 +1460,7 @@ function applySeeds() {
       state.finance.activeMonths[y] = y === 2025 ? [0,1,2,3,4,5,6,7,8,9,10,11] : seeded;
     } else {
       seeded.forEach(m => {
-        const jaEstaAtivo = state.finance.activeMonths[y].includes(m);
-        if (!jaEstaAtivo) state.finance.activeMonths[y].push(m);
+        if (!state.finance.activeMonths[y].includes(m)) state.finance.activeMonths[y].push(m);
       });
     }
     state.finance.activeMonths[y].sort((a,b)=>a-b);
@@ -1100,19 +1468,11 @@ function applySeeds() {
       const seedKey = y+'-'+m;
       if (!FINANCE_SEEDS[seedKey]) continue;
       const existing = state.finance.bills[y][m];
-      // Aplica seed se vazio, ou se os IDs batem com o seed (dados não foram editados pelo usuário)
-      if (!existing || existing.length === 0) {
+      if (!existing || existing.length === 0 || seedChanged) {
+        // Aplica seed se vazio OU se a versão do seed mudou
         state.finance.bills[y][m] = FINANCE_SEEDS[seedKey];
-      } else {
-        const seedIds = FINANCE_SEEDS[seedKey].map(r => r.id).sort().join(',');
-        const existingIds = existing.map(r => r.id).sort().join(',');
-        if (seedIds === existingIds) {
-          // Mesmos IDs — são dados do seed, atualiza com versão mais recente
-          state.finance.bills[y][m] = FINANCE_SEEDS[seedKey];
-        }
       }
     }
-    // Remove meses ativos que estão vazios e não têm seed
     state.finance.activeMonths[y] = state.finance.activeMonths[y].filter(m => {
       return (state.finance.bills[y][m] && state.finance.bills[y][m].length > 0);
     });
@@ -1142,6 +1502,7 @@ function renderAll() {
 ═══════════════════════════════════════════════════════════ */
 const MONTHS_NAMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 let _editingTaskId = null;
+let _editingSubId = null;
 let taskFilterStatus = 'all';
 
 function uuid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
@@ -1149,7 +1510,7 @@ function uuid() { return Date.now().toString(36) + Math.random().toString(36).sl
 function openTaskModal(taskId) {
   _editingTaskId = taskId || null;
   const modal = document.getElementById('taskModal');
-  const task = taskId ? state.tasks.items.find(t => t.id === taskId) : null;
+  const task = taskId ? findTaskById(state.tasks.items, taskId) : null;
   document.getElementById('taskModalTitle').textContent = task ? 'Editar Tarefa' : 'Nova Tarefa';
   document.getElementById('tm-title').value = task?.title || '';
   document.getElementById('tm-desc').value = task?.description || '';
@@ -1167,20 +1528,38 @@ function openTaskModal(taskId) {
 function closeTaskModal() {
   document.getElementById('taskModal').classList.remove('show');
   _editingTaskId = null;
+  _editingSubId = null;
+  document.getElementById('tm-group').style.display = '';
 }
 
 function saveTask() {
   const title = document.getElementById('tm-title').value.trim();
   if (!title) return;
-  if (_editingTaskId) {
+  // Editing a subtask
+  if (_editingTaskId && _editingSubId) {
     const t = state.tasks.items.find(t => t.id === _editingTaskId);
+    if (t && t.subtasks) {
+      const s = t.subtasks.find(s => s.id === _editingSubId);
+      if (s) {
+        s.title = title;
+        s.description = document.getElementById('tm-desc').value.trim();
+        s.dueDate = document.getElementById('tm-date').value;
+        s.priority = document.getElementById('tm-priority').value;
+      }
+    }
+    closeTaskModal();
+    saveState();
+    renderTasks();
+    return;
+  }
+  if (_editingTaskId) {
+    const t = findTaskById(state.tasks.items, _editingTaskId);
     if (t) {
       t.title = title;
       t.description = document.getElementById('tm-desc').value.trim();
       t.dueDate = document.getElementById('tm-date').value;
       t.priority = document.getElementById('tm-priority').value;
       t.class = document.getElementById('tm-class').value.trim();
-      t.group = document.getElementById('tm-group').value;
       t.updatedAt = new Date().toISOString();
     }
   } else {
@@ -1190,9 +1569,8 @@ function saveTask() {
       dueDate: document.getElementById('tm-date').value,
       priority: document.getElementById('tm-priority').value,
       class: document.getElementById('tm-class').value.trim(),
-      group: document.getElementById('tm-group').value || 'default',
       status: 'pendente',
-      linkedItems: [], notes: '', tags: [],
+      children: [], linkedItems: [], notes: '', tags: [], expanded: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
@@ -1204,8 +1582,16 @@ function saveTask() {
 
 function deleteTask() {
   if (!_editingTaskId) return;
-  confirmAction('Excluir tarefa', 'Tem certeza? A tarefa será removida permanentemente.', () => {
-    state.tasks.items = state.tasks.items.filter(t => t.id !== _editingTaskId);
+  confirmAction('Excluir tarefa', 'Tem certeza? A tarefa e todos os seus filhos serão removidos.', () => {
+    function removeFromTree(items, id) {
+      const idx = items.findIndex(t => t.id === id);
+      if (idx !== -1) { items.splice(idx, 1); return true; }
+      for (const t of items) {
+        if (t.children && removeFromTree(t.children, id)) return true;
+      }
+      return false;
+    }
+    removeFromTree(state.tasks.items, _editingTaskId);
     closeTaskModal();
     saveState();
     renderTasks();
@@ -1216,10 +1602,10 @@ function quickAddTask() {
   const input = document.getElementById('quickAddInput');
   const title = input.value.trim();
   if (!title) return;
-  state.tasks.items.unshift({
+  state.tasks.items.push({
     id: uuid(), title, description: '',
-    dueDate: '', priority: '', class: '', group: 'default',
-    status: 'pendente', linkedItems: [], notes: '', tags: [],
+    dueDate: '', priority: '', class: '',
+    status: 'pendente', children: [], linkedItems: [], notes: '', tags: [], expanded: false,
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
   });
   input.value = '';
@@ -1231,12 +1617,11 @@ function quickAddTask() {
 function quickAddKey(e) { if (e.key === 'Enter') quickAddTask(); }
 
 function toggleTaskStatus(id) {
-  const t = state.tasks.items.find(t => t.id === id);
+  var t = findTaskById(state.tasks.items, id);
   if (!t) return;
-  t.status = t.status === 'pendente' ? 'concluida' : 'pendente';
+  t.status = t.status === 'concluida' ? 'pendente' : 'concluida';
   t.updatedAt = new Date().toISOString();
-  saveState();
-  renderTasks();
+  saveState(); renderTasks();
 }
 
 function setTaskFilter(filter, btn) {
@@ -1251,13 +1636,11 @@ function getFilteredTasks() {
   if (taskFilterStatus !== 'all') items = items.filter(t => t.status === taskFilterStatus);
   const pf = document.getElementById('filterPriority')?.value;
   if (pf) items = items.filter(t => t.priority === pf);
-  const gf = document.getElementById('filterGroup')?.value;
-  if (gf) items = items.filter(t => t.group === gf);
   const sort = document.getElementById('sortTasks')?.value || 'created';
   if (sort === 'date') items.sort((a,b) => (a.dueDate||'9999') < (b.dueDate||'9999') ? -1 : 1);
   else if (sort === 'priority') {
-    const ord = {alta:0, media:1, baixa:2, '':3};
-    items.sort((a,b) => (ord[a.priority]||3) - (ord[b.priority]||3));
+    const ord = {urgente:0, alta:1, media:2, baixa:3, '':4};
+    items.sort((a,b) => (ord[a.priority]||4) - (ord[b.priority]||4));
   } else if (sort === 'title') items.sort((a,b) => a.title.localeCompare(b.title));
   else items.sort((a,b) => b.createdAt > a.createdAt ? 1 : -1);
   return items;
@@ -1265,8 +1648,11 @@ function getFilteredTasks() {
 
 function renderTasks() {
   const items = getFilteredTasks();
-  const pending = state.tasks.items.filter(t => t.status === 'pendente').length;
-  document.getElementById('tasksSub').textContent = pending + ' pendente' + (pending !== 1 ? 's' : '');
+  function countAll(items) { return items.reduce((s,t) => s + 1 + countAll(t.children||[]), 0); }
+  function countPending(items) { return items.reduce((s,t) => s + (t.status==='pendente'?1:0) + countPending(t.children||[]), 0); }
+  const pending = countPending(state.tasks.items);
+  const total = countAll(state.tasks.items);
+  document.getElementById('tasksSub').textContent = pending + ' pendente' + (pending !== 1 ? 's' : '') + ' · ' + total + ' total';
 
   // Update group filter select
   const gSel = document.getElementById('filterGroup');
@@ -1280,668 +1666,554 @@ function renderTasks() {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✓</div><p>Nenhuma tarefa encontrada</p></div>`;
     return;
   }
+  container.innerHTML = items.map(t => taskCardHTML(t, 0)).join('');
+}
 
-  // Group by group
-  const groups = {};
-  items.forEach(t => {
-    const gid = t.group || 'default';
-    if (!groups[gid]) groups[gid] = [];
-    groups[gid].push(t);
+function getVisibleCols() {
+  var cols = state.tasks.columns || [];
+  return cols.filter(function(c){return c.visible!==false;}).sort(function(a,b){return (a.order||0)-(b.order||0);});
+}
+
+function getDefaultWidth(type) {
+  if (type==='status') return 140;
+  if (type==='priority') return 110;
+  if (type==='date') return 90;
+  return 120;
+}
+
+function getSortedItems(items) {
+  var colId = state.tasks.sortColId;
+  var dir = state.tasks.sortDir || 'asc';
+  if (!colId) return items;
+  var sorted = items.slice();
+  sorted.sort(function(a,b) {
+    var va='', vb='';
+    if (colId==='dueDate') { va=a.dueDate||'9999'; vb=b.dueDate||'9999'; }
+    else if (colId==='status') { va=a.status||''; vb=b.status||''; }
+    else if (colId==='priority') {
+      var ord={urgente:0,alta:1,media:2,baixa:3,normal:4,'':5};
+      va=ord[a.priority]!==undefined?ord[a.priority]:5;
+      vb=ord[b.priority]!==undefined?ord[b.priority]:5;
+    } else { va=(a.customFields&&a.customFields[colId])||''; vb=(b.customFields&&b.customFields[colId])||''; }
+    if (va<vb) return dir==='asc'?-1:1;
+    if (va>vb) return dir==='asc'?1:-1;
+    return 0;
   });
+  return sorted;
+}
 
-  let html = '';
-  state.tasks.groups.forEach(g => {
-    const gItems = groups[g.id] || [];
-    if (!gItems.length && taskFilterStatus !== 'all') return;
-    html += `<div class="task-group">
-      <div class="task-group-header" onclick="toggleGroupCollapse('${g.id}')">
-        <span class="task-group-chevron open" id="gc-${g.id}">▶</span>
-        <span class="task-group-name">${g.name}</span>
-        <span class="task-group-count">${gItems.length}</span>
-        <div class="task-group-actions">
-          ${g.id !== 'default' ? `<button class="btn-sm" style="font-size:10px;padding:2px 8px" onclick="event.stopPropagation();renameGroup('${g.id}')">✎</button>
-          <button class="btn-sm" style="font-size:10px;padding:2px 8px" onclick="event.stopPropagation();deleteGroup('${g.id}')">✕</button>` : ''}
-        </div>
-      </div>
-      <div id="gc-body-${g.id}">
-        ${gItems.map(t => taskCardHTML(t)).join('')}
-        ${gItems.length === 0 ? '<div style="padding:8px 0;color:var(--muted);font-size:12px">Vazio</div>' : ''}
-      </div>
-    </div>`;
-  });
+function clickColHeader(colId) {
+  if (state.tasks.sortColId===colId) {
+    state.tasks.sortDir = state.tasks.sortDir==='asc'?'desc':'asc';
+  } else {
+    state.tasks.sortColId = colId;
+    state.tasks.sortDir = 'asc';
+  }
+  saveState(); renderTasks();
+}
 
-  // Ungrouped items
-  const ungrouped = (groups['undefined'] || []).concat(items.filter(t => !state.tasks.groups.find(g => g.id === t.group)));
-  if (ungrouped.length) html += ungrouped.map(t => taskCardHTML(t)).join('');
+function renderTasks() {
+  function countAll(items) { return items.reduce(function(s,t){return s+1+countAll(t.children||[]);},0); }
+  function countPending(items) { return items.reduce(function(s,t){return s+(t.status==='pendente'?1:0)+countPending(t.children||[]);},0); }
+  var allItems = state.tasks.items;
+  var pending = countPending(allItems);
+  var total = countAll(allItems);
+  var sub = document.getElementById('tasksSub');
+  if (sub) sub.textContent = pending + ' pendente' + (pending!==1?'s':'') + ' · ' + total + ' total';
 
+  var items = getFilteredTasks();
+  var cols = getVisibleCols();
+  var container = document.getElementById('tasksList');
+  if (!container) return;
+
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✓</div><p>Nenhuma tarefa encontrada</p></div>';
+    return;
+  }
+
+  // Build column header with fixed widths
+  var colHdCells = cols.map(function(c){
+    var w = c.width || getDefaultWidth(c.type);
+    var sortIcon = '';
+    if (state.tasks.sortColId===c.id) sortIcon = state.tasks.sortDir==='asc' ? ' ↑' : ' ↓';
+    return '<div class="task-col-hd-cell" style="width:'+w+'px;min-width:'+w+'px;max-width:'+w+'px" '
+      +'draggable="true" data-colid="'+c.id+'" '
+      +'ondragstart="colDragStart(event,this.dataset.colid)" ondragover="colDragOver(event)" ondrop="colDrop(event,this.dataset.colid)" '
+      +'onclick="clickColHeader(&#39;'+c.id+'&#39;)">'
+      +'<span class="col-drag">⠇</span>'+escHtml(c.label)+sortIcon+'</div>';
+  }).join('');
+
+  var html = '<div class="task-list-wrap">'
+    +'<div class="task-col-header">'
+    +'<div class="task-col-hd-name">Nome</div>'
+    + colHdCells
+    +'<div class="task-col-hd-actions"></div>'
+    +'</div>';
+
+  // Render rows recursively with sort applied to top level
+  var sortedItems = getSortedItems(items);
+  function renderRows(tasks, depth) {
+    var out = '';
+    tasks.forEach(function(t) {
+      out += taskRowHTML(t, depth, cols);
+      if (t.expanded && t.children && t.children.length) {
+        out += renderRows(t.children, depth+1);
+      }
+    });
+    return out;
+  }
+
+  html += renderRows(sortedItems, 0);
+
+  // Inline quick add row at bottom
+  html += '<div class="task-add-row">'
+    +'<span style="width:36px;display:inline-block"></span>'
+    +'<span style="color:var(--muted);font-size:16px;line-height:1;margin-right:6px">+</span>'
+    +'<input class="task-add-input" id="quickAddInput" placeholder="Nova tarefa..." onkeydown="quickAddKey(event)">'
+    +'</div>';
+
+  html += '</div>';
   container.innerHTML = html;
 }
 
-function taskCardHTML(t) {
-  const today = new Date().toISOString().slice(0,10);
-  const overdue = t.dueDate && t.dueDate < today && t.status !== 'concluida';
-  const dateStr = t.dueDate ? formatDate(t.dueDate) : '';
-  const priorityTag = t.priority ? `<span class="task-tag ${t.priority}">${{alta:'Alta',media:'Média',baixa:'Baixa'}[t.priority]}</span>` : '';
-  const classTag = t.class ? `<span class="task-tag">${t.class}</span>` : '';
-  return `<div class="task-card ${t.status==='concluida'?'done':''}" id="tc-${t.id}">
-    <div class="task-check ${t.status==='concluida'?'checked':''}" onclick="toggleTaskStatus('${t.id}')">${t.status==='concluida'?'✓':''}</div>
-    <div class="task-body">
-      <div class="task-title">${escHtml(t.title)}</div>
-      <div class="task-meta">
-        ${priorityTag}${classTag}
-        ${dateStr ? `<span class="task-date ${overdue?'overdue':''}">${overdue?'⚠ ':''}${dateStr}</span>` : ''}
-      </div>
-    </div>
-    <div class="task-actions">
-      <button class="task-icon-btn" onclick="openTaskModal('${t.id}')" title="Editar">✎</button>
-      <button class="task-icon-btn" onclick="openTaskChat('${t.id}')" title="Chat IA">⚡</button>
-    </div>
-  </div>`;
-}
+function taskRowHTML(t, depth, cols) {
+  var today = new Date().toISOString().slice(0,10);
+  var overdue = t.dueDate && t.dueDate < today && t.status!=='concluida';
+  var doneClass = t.status==='concluida' ? ' done' : '';
+  var isSubtask = depth > 0;
 
-function formatDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso + 'T12:00:00');
-  return d.getDate() + '/' + MONTHS_NAMES[d.getMonth()];
-}
-
-function toggleGroupCollapse(gid) {
-  const body = document.getElementById('gc-body-' + gid);
-  const chev = document.getElementById('gc-' + gid);
-  if (!body) return;
-  const isOpen = body.style.display !== 'none';
-  body.style.display = isOpen ? 'none' : 'block';
-  chev.classList.toggle('open', !isOpen);
-}
-
-function openAddGroup() {
-  const name = prompt('Nome do novo grupo:');
-  if (!name?.trim()) return;
-  state.tasks.groups.push({ id: uuid(), name: name.trim(), order: state.tasks.groups.length });
-  saveState();
-  renderTasks();
-}
-
-function renameGroup(gid) {
-  const g = state.tasks.groups.find(g => g.id === gid);
-  if (!g) return;
-  const name = prompt('Novo nome:', g.name);
-  if (!name?.trim()) return;
-  g.name = name.trim();
-  saveState();
-  renderTasks();
-}
-
-function deleteGroup(gid) {
-  confirmAction('Excluir grupo', 'As tarefas do grupo serão movidas para Geral.', () => {
-    state.tasks.items.forEach(t => { if (t.group === gid) t.group = 'default'; });
-    state.tasks.groups = state.tasks.groups.filter(g => g.id !== gid);
-    saveState();
-    renderTasks();
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════
-   FINANCE MODULE
-═══════════════════════════════════════════════════════════ */
-const MONTHS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const STATUS_LABELS = { pago:'Pago', 'nao-pago':'Não pago', debito:'Débito automático', aguardando:'Aguardando emissão' };
-const STATUS_LABELS_PL = { pago:'Pagos', 'nao-pago':'Não pagos', debito:'Débito automático', aguardando:'Aguardando emissão' };
-function sLabel(k,v) { return v===1 ? STATUS_LABELS[k] : STATUS_LABELS_PL[k]; }
-
-function fmtBRL(v) { return 'R$\u00a0' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
-
-function renderFinance() {
-  const y = state.finance.currentYear;
-  const container = document.getElementById('monthList');
-  if (!container) return;
-
-  // Year tabs
-  const ytRow = document.getElementById('yearTabsRow');
-  ytRow.innerHTML = FINANCE_YEARS.map(yr => `<button class="year-chip ${yr===y?'active':''}" onclick="setFinYear(${yr})">${yr}</button>`).join('');
-
-  // Month summary
-  const active = state.finance.activeMonths[y] || [];
-  let totalYear = 0;
-  (active).forEach(m => {
-    const rows = state.finance.bills[y]?.[m] || [];
-    totalYear += rows.reduce((s,r)=>s+(parseFloat(r.valor)||0),0);
-  });
-  document.getElementById('financeSub').textContent = active.length + ' meses · ' + fmtBRL(totalYear) + ' total';
-
-  container.innerHTML = '';
-  active.forEach(m => container.appendChild(buildMonthBlock(y, m)));
-
-  // Next month button
-  const lastM = active[active.length-1];
-  if (lastM < 11) {
-    const btn = document.createElement('button');
-    btn.className = 'btn-next-month';
-    btn.textContent = '+ Adicionar ' + MONTHS_FULL[lastM+1];
-    btn.onclick = () => addNextMonth(y);
-    container.appendChild(btn);
+  // Indent
+  var indentW = depth * 20;
+  var indentHTML = '';
+  for (var d=0; d<depth; d++) {
+    indentHTML += '<div style="width:20px;flex-shrink:0;position:relative">'
+      +'<div style="position:absolute;left:9px;top:0;bottom:0;width:1px;background:var(--border)"></div>'
+      +'</div>';
   }
+
+  var children = t.children || [];
+  var hasChildren = children.length > 0;
+  var expandBtn = hasChildren
+    ? '<button class="task-expand-btn" onclick="event.stopPropagation();toggleChildren(&#39;'+t.id+'&#39;)">'+(t.expanded?'▼':'▶')+'</button>'
+    : '<span style="display:inline-block;width:14px;flex-shrink:0"></span>';
+
+  var checkClass = 'task-check'+(t.status==='concluida'?' checked':'')+(isSubtask?' subtask':'');
+  var checkMark = t.status==='concluida'?'✓':'';
+
+  var childCount = hasChildren
+    ? '<span class="task-child-count">'+children.filter(function(c){return c.status==='concluida';}).length+'/'+children.length+'</span>'
+    : '';
+
+  // Make the whole name cell clickable to expand if has children
+  var titleClick = hasChildren
+    ? 'onclick="toggleChildren(&#39;'+t.id+'&#39;)"'
+    : 'onclick="openTaskModal(&#39;'+t.id+'&#39;)"';
+
+  var nameCell = '<div class="task-row-name">'
+    + indentHTML
+    + expandBtn
+    + '<div class="'+checkClass+'" onclick="event.stopPropagation();toggleTaskStatus(&#39;'+t.id+'&#39;)">'+checkMark+'</div>'
+    + '<div class="task-title-text" '+titleClick+'>'+escHtml(t.title)+'</div>'
+    + childCount
+    +'</div>';
+
+  // Column cells with fixed widths
+  var STATUS_LBL = {pendente:'Pendente',concluida:'Concluída','acao-necessaria':'Ação Necessária',aguardando:'Aguardando',pausado:'Pausado'};
+  var PRIO_LBL = {urgente:'Urgente',alta:'Alta',media:'Média',baixa:'Baixa',normal:'Normal'};
+
+  var colCells = cols.map(function(c){
+    var w = c.width || getDefaultWidth(c.type);
+    var style = 'style="width:'+w+'px;min-width:'+w+'px;max-width:'+w+'px"';
+    if (c.type==='status') {
+      return '<div class="task-col-cell" '+style+'>'+statusBadgeHTML(t.id, t.status)+'</div>';
+    }
+    if (c.type==='priority') {
+      return '<div class="task-col-cell" '+style+'>'+priorityBadgeHTML(t.id, t.priority)+'</div>';
+    }
+    if (c.type==='date') {
+      var dateStr = t.dueDate ? formatDate(t.dueDate) : '—';
+      var dateColor = overdue ? 'var(--danger)' : 'var(--text2)';
+      return '<div class="task-col-cell'+(overdue?' overdue':'')+'" '+style+'>'+dateStr+'</div>';
+    }
+    var val = (t.customFields && t.customFields[c.id]) || '—';
+    return '<div class="task-col-cell" '+style+' style="color:var(--text2)">'+escHtml(val)+'</div>';
+  }).join('');
+
+  // Actions (always 72px)
+  var actions = '<div class="task-row-actions">'
+    +'<button class="task-icon-btn" onclick="addChildTask(&#39;'+t.id+'&#39;)" title="Subtarefa">+</button>'
+    +'<button class="task-icon-btn" onclick="openTaskModal(&#39;'+t.id+'&#39;)" title="Editar">✎</button>'
+    +'<button class="task-icon-btn" onclick="deleteTaskById(&#39;'+t.id+'&#39;)" title="Excluir">✕</button>'
+    +'</div>';
+
+  return '<div class="task-row'+doneClass+'" id="tr-'+t.id+'">'
+    + nameCell + colCells + actions
+    +'</div>';
 }
 
-function setFinYear(y) {
-  state.finance.currentYear = y;
-  state.finance.openMonths = {};
-  renderFinance();
-}
-
-function buildMonthBlock(y, m) {
-  const rows = state.finance.bills[y]?.[m] || [];
-  const total = rows.reduce((s,r)=>s+(parseFloat(r.valor)||0),0);
-  const counts = {};
-  Object.keys(STATUS_LABELS).forEach(k => counts[k]=0);
-  rows.forEach(r => { if(counts[r.status]!==undefined) counts[r.status]++; });
-  const isOpen = !!state.finance.openMonths[m];
-  const active = state.finance.activeMonths[y] || [];
-  const isRemovable = active[active.length-1] === m;
-
-  const pillsHtml = Object.entries(counts).filter(([k,v])=>v>0).map(([k,v])=>`<span class="pill ${k}">${v} ${sLabel(k,v)}</span>`).join('');
-  const emptyPill = rows.length===0 ? `<span style="font-size:11px;color:var(--muted)">Vazio</span>` : '';
-
-  const block = document.createElement('div');
-  block.className = 'month-block';
-  block.id = 'fblock-' + y + '-' + m;
-  block.innerHTML = `
-    <div class="month-header" onclick="toggleFinMonth(${y},${m})">
-      <span class="month-chevron ${isOpen?'open':''}">▶</span>
-      <span class="month-name">${MONTHS_FULL[m]}</span>
-      <div class="month-pills">${pillsHtml||emptyPill}</div>
-      ${total>0 ? `<span class="month-total">${fmtBRL(total)}</span>` : ''}
-      ${isRemovable ? `<button class="btn-remove-month" onclick="event.stopPropagation();removeFinMonth(${y},${m})" title="Remover mês">✕</button>` : ''}
-    </div>
-    ${isOpen ? `<div class="month-body">${buildFinTable(y,m)}</div>` : ''}
-  `;
-  return block;
-}
-
-function buildFinTable(y, m) {
-  const rows = state.finance.bills[y]?.[m] || [];
-  let tbody = rows.length ? rows.map(r => finRowHTML(y,m,r)).join('') :
-    `<tr><td colspan="6" class="empty-cell">Nenhuma conta. Adicione abaixo.</td></tr>`;
-  return `<div style="overflow-x:auto">
-    <table class="fin-table">
-      <thead><tr><th>Nome</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Observações</th><th></th></tr></thead>
-      <tbody>${tbody}</tbody>
-    </table>
-    </div>
-    <div class="add-row">
-      <input type="text" id="fn-${y}-${m}-nome" placeholder="Nome da conta"/>
-      <input type="date" id="fn-${y}-${m}-venc"/>
-      <input type="text" id="fn-${y}-${m}-valor" placeholder="Valor"/>
-      <select id="fn-${y}-${m}-status">
-        <option value="nao-pago">Não pago</option>
-        <option value="pago">Pago</option>
-        <option value="debito">Débito automático</option>
-        <option value="aguardando">Aguardando emissão</option>
-      </select>
-      <input type="text" id="fn-${y}-${m}-obs" placeholder="Observações"/>
-      <button class="btn-add-fin" onclick="addFinBill(${y},${m})">+ ADD</button>
-    </div>`;
-}
-
-function finRowHTML(y, m, r) {
-  const val = (parseFloat(r.valor)||0) > 0 ? fmtBRL(parseFloat(r.valor)) : '–';
-  return `<tr id="frow-${y}-${m}-${r.id}">
-    <td class="editable-cell" onclick="editFinCell(this)" data-y="${y}" data-m="${m}" data-id="${r.id}" data-field="nome" style="font-weight:500">${escHtml(r.nome||'–')}</td>
-    <td class="editable-cell" onclick="editFinCell(this)" data-y="${y}" data-m="${m}" data-id="${r.id}" data-field="venc" style="color:var(--text2)">${r.venc||'–'}</td>
-    <td class="editable-cell" onclick="editFinCell(this)" data-y="${y}" data-m="${m}" data-id="${r.id}" data-field="valor">${val}</td>
-    <td><span class="inline-badge ${r.status}" onclick="openStatusDD(event,${y},${m},${r.id})">${STATUS_LABELS[r.status]||r.status}</span></td>
-    <td class="editable-cell" onclick="editFinCell(this)" data-y="${y}" data-m="${m}" data-id="${r.id}" data-field="obs" style="color:var(--text2)">${escHtml(r.obs||'')}</td>
-    <td><button class="btn-sm del" onclick="delFinBill(${y},${m},${r.id})">✕</button></td>
-  </tr>`;
-}
-
-function toggleFinMonth(y, m) {
-  if (state.finance.openMonths[m]) delete state.finance.openMonths[m];
-  else state.finance.openMonths[m] = true;
-  refreshFinBlock(y, m);
-}
-
-function refreshFinBlock(y, m) {
-  const old = document.getElementById('fblock-' + y + '-' + m);
-  if (old) old.replaceWith(buildMonthBlock(y, m));
-}
-
-function refreshFinHeader(y, m) {
-  const block = document.getElementById('fblock-' + y + '-' + m);
-  if (!block) return;
-  const rows = state.finance.bills[y]?.[m] || [];
-  const total = rows.reduce((s,r)=>s+(parseFloat(r.valor)||0),0);
-  const counts = {};
-  Object.keys(STATUS_LABELS).forEach(k=>counts[k]=0);
-  rows.forEach(r=>{if(counts[r.status]!==undefined)counts[r.status]++;});
-  const active = state.finance.activeMonths[y] || [];
-  const isRemovable = active[active.length-1] === m;
-  const isOpen = !!state.finance.openMonths[m];
-  const pillsHtml = Object.entries(counts).filter(([k,v])=>v>0).map(([k,v])=>`<span class="pill ${k}">${v} ${sLabel(k,v)}</span>`).join('');
-  const emptyPill = rows.length===0?`<span style="font-size:11px;color:var(--muted)">Vazio</span>`:'';
-  block.querySelector('.month-header').innerHTML = `
-    <span class="month-chevron ${isOpen?'open':''}">▶</span>
-    <span class="month-name">${MONTHS_FULL[m]}</span>
-    <div class="month-pills">${pillsHtml||emptyPill}</div>
-    ${total>0?`<span class="month-total">${fmtBRL(total)}</span>`:''}
-    ${isRemovable?`<button class="btn-remove-month" onclick="event.stopPropagation();removeFinMonth(${y},${m})">✕</button>`:''}
-  `;
-}
-
-function editFinCell(td) {
-  if (td.querySelector('input')) return;
-  const y = parseInt(td.dataset.y), m = parseInt(td.dataset.m), id = parseFloat(td.dataset.id), field = td.dataset.field;
-  const r = (state.finance.bills[y]?.[m] || []).find(x => x.id == id);
-  if (!r) return;
-  const input = document.createElement('input');
-  input.className = 'fin-edit-input';
-  if (field === 'venc') { input.type = 'date'; input.value = parseDateToISO(r.venc||''); }
-  else if (field === 'valor') { input.type = 'text'; input.value = parseFloat(r.valor)||''; }
-  else { input.type = 'text'; input.value = r[field]||''; }
-  td.textContent = ''; td.appendChild(input); input.focus();
-  if (field !== 'venc') input.select();
-  function commit() {
-    let val = input.value.trim();
-    if (field === 'valor') r.valor = parseFloat(val.replace(',','.'))||0;
-    else if (field === 'venc') r.venc = input.value ? parseDateFromISO(input.value) : r.venc;
-    else r[field] = val;
-    saveState();
-    const row = document.getElementById('frow-' + y + '-' + m + '-' + id);
-    if (row) row.outerHTML = finRowHTML(y, m, r);
-    refreshFinHeader(y, m);
+/* ═══ STATUS HELPERS ═══ */
+function getStatuses() {
+  if (!state.tasks.statuses || !state.tasks.statuses.length) {
+    state.tasks.statuses = [
+      { id: 'pendente',        label: 'Pendente',        color: '#6b7280', bg: 'rgba(107,114,128,.15)', builtin: true },
+      { id: 'acao-necessaria', label: 'Ação Necessária', color: '#ef4444', bg: 'rgba(239,68,68,.15)',   builtin: true },
+      { id: 'aguardando',      label: 'Aguardando',      color: '#fbbf24', bg: 'rgba(251,191,36,.12)',  builtin: true },
+      { id: 'pausado',         label: 'Pausado',         color: '#a78bfa', bg: 'rgba(167,139,250,.12)', builtin: true },
+      { id: 'concluida',       label: 'Concluída',       color: '#22c55e', bg: 'rgba(34,197,94,.12)',   builtin: true },
+    ];
   }
-  input.addEventListener('blur', commit);
-  input.addEventListener('keydown', e => { if(e.key==='Enter') input.blur(); if(e.key==='Escape') refreshFinBlock(y,m); });
+  return state.tasks.statuses;
 }
 
-function parseDateToISO(str) {
-  if (!str||str==='–') return '';
-  const p = str.split('/');
-  if (p.length < 2) return '';
-  const day = p[0].padStart(2,'0'), mon = p[1].padStart(2,'0');
-  const yr = p[2]?p[2].trim():'';
-  const year = yr.length===2?'20'+yr:yr;
-  return year+'-'+mon+'-'+day;
-}
-function parseDateFromISO(str) {
-  if (!str) return '';
-  const p = str.split('-');
-  if (p.length < 3) return str;
-  return parseInt(p[2])+'/'+parseInt(p[1])+'/'+(p[0].slice(-2));
+function getStatusObj(id) {
+  return getStatuses().find(function(s){return s.id===id;}) || { id: id, label: id, color: '#6b7280', bg: 'rgba(107,114,128,.15)' };
 }
 
-function openStatusDD(e, y, m, id) {
+function statusBadgeHTML(taskId, statusId) {
+  var s = getStatusObj(statusId);
+  return '<span class="status-badge" style="background:'+s.bg+';color:'+s.color+';cursor:pointer" '
+    +'onclick="openStatusDropdown(event,&#39;'+taskId+'&#39;)">'+escHtml(s.label)+'</span>';
+}
+
+var _statusDDTaskId = null;
+function openStatusDropdown(e, taskId) {
   e.stopPropagation();
-  closeStatusDD();
-  const badge = e.currentTarget;
-  const rect = badge.getBoundingClientRect();
-  const dd = document.createElement('div');
-  dd.className = 'status-dropdown'; dd.id = 'status-dd';
+  closeStatusDropdown();
+  _statusDDTaskId = taskId;
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.className = 'status-dropdown-menu'; dd.id = 'status-dd-menu';
   dd.style.top = (rect.bottom + 4) + 'px';
   dd.style.left = rect.left + 'px';
-  Object.entries(STATUS_LABELS).forEach(([k,v]) => {
-    const btn = document.createElement('button');
-    btn.className = 'status-opt ' + k; btn.textContent = v;
-    btn.onclick = ev => { ev.stopPropagation(); saveFinField(y,m,id,'status',k); closeStatusDD(); };
-    dd.appendChild(btn);
+  getStatuses().forEach(function(s) {
+    var item = document.createElement('div');
+    item.className = 'status-dropdown-item';
+    item.innerHTML = '<div class="status-dropdown-dot" style="background:'+s.color+'"></div>'
+      +'<span class="status-dropdown-label">'+escHtml(s.label)+'</span>'
+      +(t.status===s.id?'<span class="status-dropdown-check">✓</span>':'');
+    item.onclick = function(ev) { ev.stopPropagation(); setTaskStatus(taskId, s.id); closeStatusDropdown(); };
+    dd.appendChild(item);
   });
   document.body.appendChild(dd);
-  setTimeout(() => document.addEventListener('click', closeStatusDD, {once:true}), 0);
-}
-function closeStatusDD() { document.getElementById('status-dd')?.remove(); }
-
-function saveFinField(y, m, id, field, value) {
-  const r = (state.finance.bills[y]?.[m] || []).find(x => x.id == id);
-  if (!r) return;
-  r[field] = value;
-  saveState();
-  const row = document.getElementById('frow-' + y + '-' + m + '-' + id);
-  if (row) row.outerHTML = finRowHTML(y, m, r);
-  refreshFinHeader(y, m);
+  setTimeout(function(){ document.addEventListener('click', closeStatusDropdown, {once:true}); }, 0);
 }
 
-function addFinBill(y, m) {
-  const nome = document.getElementById('fn-'+y+'-'+m+'-nome').value.trim();
-  if (!nome) return;
-  if (!state.finance.bills[y]) state.finance.bills[y] = {};
-  if (!state.finance.bills[y][m]) state.finance.bills[y][m] = [];
-  const vencRaw = document.getElementById('fn-'+y+'-'+m+'-venc').value;
-  state.finance.bills[y][m].push({
-    id: Date.now(), nome,
-    venc: vencRaw ? parseDateFromISO(vencRaw) : '',
-    valor: parseFloat(document.getElementById('fn-'+y+'-'+m+'-valor').value.replace(',','.'))||0,
-    status: document.getElementById('fn-'+y+'-'+m+'-status').value,
-    obs: document.getElementById('fn-'+y+'-'+m+'-obs').value
-  });
-  saveState();
-  refreshFinBlock(y, m);
+function closeStatusDropdown() { var el=document.getElementById('status-dd-menu'); if(el)el.remove(); }
+
+function setTaskStatus(taskId, statusId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  t.status = statusId;
+  t.updatedAt = new Date().toISOString();
+  saveState(); renderTasks();
 }
 
-function delFinBill(y, m, id) {
-  state.finance.bills[y][m] = state.finance.bills[y][m].filter(x => x.id != id);
-  saveState();
-  refreshFinBlock(y, m);
+/* ═══ STATUS MANAGER ═══ */
+function openStatusManager() {
+  renderStatusManager();
+  document.getElementById('statusManagerModal').classList.add('show');
 }
+function closeStatusManager() { document.getElementById('statusManagerModal').classList.remove('show'); }
 
-function addNextMonth(y) {
-  const active = state.finance.activeMonths[y] || [];
-  const last = active[active.length-1];
-  if (last >= 11) return;
-  const next = last + 1;
-  const prevRows = state.finance.bills[y]?.[last] || [];
-  if (!state.finance.bills[y]) state.finance.bills[y] = {};
-  state.finance.bills[y][next] = prevRows.map(r => {
-    let newVenc = r.venc;
-    const parts = r.venc ? r.venc.split('/') : null;
-    if (parts && parts.length >= 2) {
-      const day = parts[0], yr = parts[2] || String(y).slice(-2);
-      newVenc = day + '/' + (next+1) + '/' + yr;
-    }
-    return { id: Date.now()+Math.random(), nome: r.nome, venc: newVenc, valor: 0, status: 'nao-pago', obs: r.obs||'' };
-  });
-  state.finance.activeMonths[y].push(next);
-  state.finance.openMonths[next] = true;
-  saveState();
-  renderFinance();
-}
-
-function removeFinMonth(y, m) {
-  confirmAction('Remover ' + MONTHS_FULL[m] + '?', 'Os dados deste mês serão removidos.', () => {
-    state.finance.bills[y][m] = [];
-    state.finance.activeMonths[y] = state.finance.activeMonths[y].filter(x => x !== m);
-    delete state.finance.openMonths[m];
-    saveState();
-    renderFinance();
-  });
-}
-
-function openFinanceChat() {
-  const wrap = document.getElementById('financeChatWrap');
-  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
-  if (wrap.style.display === 'block') {
-    const y = state.finance.currentYear;
-    const ctx = buildFinanceContext(y);
-    buildChatUI('financeChat', 'finance-main', `Chat IA — Finanças ${y}`, ctx);
-  }
-}
-
-function buildFinanceContext(y) {
-  const active = state.finance.activeMonths[y] || [];
-  let summary = `Resumo financeiro ${y}:\n`;
-  active.forEach(m => {
-    const rows = state.finance.bills[y]?.[m] || [];
-    const total = rows.reduce((s,r)=>s+(parseFloat(r.valor)||0),0);
-    const nao = rows.filter(r=>r.status==='nao-pago').length;
-    summary += `- ${MONTHS_FULL[m]}: ${fmtBRL(total)} total, ${nao} não pagos\n`;
-  });
-  return summary;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   CARD MODULE (Cartão de Crédito)
-═══════════════════════════════════════════════════════════ */
-function dzCardOver(e) { e.preventDefault(); document.getElementById('cardDropZone').classList.add('drag-over'); }
-function dzCardLeave() { document.getElementById('cardDropZone').classList.remove('drag-over'); }
-function dzCardDrop(e) { e.preventDefault(); dzCardLeave(); const f = e.dataTransfer.files[0]; if(f) processCardFile(f); }
-
-function handleCardUpload(e) { const f = e.target.files[0]; if(f) processCardFile(f); e.target.value=''; }
-
-async function processCardFile(file) {
-  const apiKey = state.config.apiKey;
-  if (!apiKey) { showToast('Configure sua chave API nas Configurações'); return; }
-
-  const faturaId = uuid();
-  const fatura = { id: faturaId, nome: file.name, date: new Date().toISOString(), status: 'processando' };
-  state.card.faturas.push(fatura);
-  renderCardFaturas();
-
-  try {
-    let content = '';
-    if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
-      content = await file.text();
-    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
-      content = '[Arquivo Excel — use a função de extração abaixo ou converta para CSV]';
-    } else if (file.type === 'application/pdf') {
-      content = '[Arquivo PDF anexado — ' + file.name + ' (' + Math.round(file.size/1024) + 'KB)]';
-    } else {
-      content = await file.text();
-    }
-
-    const prompt = `Você é um assistente financeiro. Analise o extrato do cartão de crédito abaixo e extraia TODAS as transações.
-Responda SOMENTE com um array JSON válido, sem markdown, sem explicação.
-Cada objeto deve ter: { "data": "DD/MM/AAAA", "descricao": "...", "valor": 0.00, "parcela": "1/1" }
-
-Extrato:
-${content.slice(0, 8000)}`;
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role:'user', content: prompt }] })
-    });
-    const data = await resp.json();
-    let text = data.content?.[0]?.text || '[]';
-    text = text.replace(/```json|```/g,'').trim();
-    let transactions = [];
-    try { transactions = JSON.parse(text); } catch(e) { transactions = []; }
-
-    state.card.transactions[faturaId] = transactions.map(t => ({ ...t, id: uuid(), categoria: '', status: 'pendente' }));
-    fatura.status = 'ok';
-    fatura.count = transactions.length;
-  } catch(e) {
-    fatura.status = 'erro';
-    console.error(e);
-  }
-  saveState();
-  renderCardFaturas();
-}
-
-function renderCardFaturas() {
-  const container = document.getElementById('cardFaturas');
-  if (!state.card.faturas.length) { container.innerHTML = ''; return; }
-
-  let html = state.card.faturas.map(f => {
-    const txs = state.card.transactions[f.id] || [];
-    const total = txs.reduce((s,t)=>s+(parseFloat(t.valor)||0),0);
-    return `<div class="month-block" style="margin-bottom:12px">
-      <div class="month-header" onclick="toggleCardFatura('${f.id}')">
-        <span class="month-chevron">▶</span>
-        <span class="month-name" style="min-width:auto;max-width:200px;overflow:hidden;text-overflow:ellipsis">${escHtml(f.nome)}</span>
-        <div class="month-pills">
-          ${f.status==='processando'?'<span class="pill debito">Processando...</span>':''}
-          ${f.status==='ok'?`<span class="pill pago">${txs.length} transações</span>`:''}
-          ${f.status==='erro'?'<span class="pill nao-pago">Erro ao processar</span>':''}
-        </div>
-        ${total>0?`<span class="month-total">${fmtBRL(total)}</span>`:''}
-        <button class="btn-remove-month" onclick="event.stopPropagation();removeCardFatura('${f.id}')">✕</button>
-      </div>
-      <div class="month-body" id="cfbody-${f.id}" style="display:none">
-        ${txs.length ? buildCardTable(f.id, txs) : '<div class="empty-cell">Nenhuma transação</div>'}
-      </div>
-    </div>`;
+function renderStatusManager() {
+  var list = document.getElementById('statusManagerList');
+  if (!list) return;
+  list.innerHTML = getStatuses().map(function(s) {
+    var delBtn = s.builtin
+      ? '<span class="status-manager-builtin">padrão</span>'
+      : '<button class="status-del-btn" onclick="deleteStatus(&#39;'+s.id+'&#39;)">✕</button>';
+    return '<div class="status-manager-row" id="smr-'+s.id+'">'
+      +'<div class="status-color-swatch" style="background:'+s.color+'">'
+      +'<input type="color" value="'+s.color+'" oninput="updateStatusColor(&#39;'+s.id+'&#39;,this.value)">'
+      +'</div>'
+      +'<input class="status-manager-label-input" value="'+escHtml(s.label)+'" '
+      +'onchange="updateStatusLabel(&#39;'+s.id+'&#39;,this.value)" '
+      +'onblur="updateStatusLabel(&#39;'+s.id+'&#39;,this.value)">'
+      +delBtn
+      +'</div>';
   }).join('');
-  container.innerHTML = html;
 }
 
-function buildCardTable(faturaId, txs) {
-  const cats = state.card.categorias;
-  const rows = txs.map(t => {
-    const catOpts = ['', ...cats].map(c => `<option value="${c}" ${t.categoria===c?'selected':''}>${c||'— Classificar'}</option>`).join('');
-    return `<tr>
-      <td style="color:var(--text2);font-size:12px">${t.data||''}</td>
-      <td>${escHtml(t.descricao||'')}</td>
-      <td style="font-family:'DM Mono',monospace;text-align:right">${fmtBRL(parseFloat(t.valor)||0)}</td>
-      <td style="color:var(--muted);font-size:11px">${t.parcela||''}</td>
-      <td><select class="cat-select" onchange="setCardCat('${faturaId}','${t.id}',this.value)">${catOpts}</select></td>
-    </tr>`;
+function updateStatusColor(statusId, color) {
+  var s = getStatuses().find(function(x){return x.id===statusId;});
+  if (!s) return;
+  s.color = color;
+  // Auto-generate bg from color
+  s.bg = color + '26'; // ~15% opacity hex
+  var swatch = document.querySelector('#smr-'+statusId+' .status-color-swatch');
+  if (swatch) swatch.style.background = color;
+  saveState(); renderTasks();
+}
+
+function updateStatusLabel(statusId, label) {
+  var s = getStatuses().find(function(x){return x.id===statusId;});
+  if (!s || s.label===label) return;
+  s.label = label.trim() || s.label;
+  saveState(); renderTasks();
+}
+
+function deleteStatus(statusId) {
+  var s = getStatuses().find(function(x){return x.id===statusId;});
+  if (!s || s.builtin) return;
+  confirmAction('Excluir status "'+s.label+'"', 'Tarefas com este status ficarão como "Pendente".', function(){
+    // Reassign tasks with this status to pendente
+    function reassign(items) {
+      items.forEach(function(t){
+        if(t.status===statusId) t.status='pendente';
+        if(t.children) reassign(t.children);
+      });
+    }
+    reassign(state.tasks.items);
+    state.tasks.statuses = state.tasks.statuses.filter(function(x){return x.id!==statusId;});
+    saveState(); renderStatusManager(); renderTasks();
+  });
+}
+
+function addStatus() {
+  var label = document.getElementById('newStatusLabel').value.trim();
+  var color = document.getElementById('newStatusColor').value;
+  if (!label) return;
+  var id = 'status-'+label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  if (getStatuses().find(function(s){return s.id===id;})) id += '-'+Date.now();
+  state.tasks.statuses.push({ id: id, label: label, color: color, bg: color+'26', builtin: false });
+  document.getElementById('newStatusLabel').value = '';
+  saveState(); renderStatusManager(); renderTasks();
+}
+
+/* ═══ PRIORITY DROPDOWN ═══ */
+var PRIORITIES = [
+  { id: '',        label: '— Sem prioridade', color: 'var(--muted)',          dot: '#6b7280' },
+  { id: 'urgente', label: 'Urgente',          color: 'var(--priority-alta)',  dot: '#ef4444' },
+  { id: 'alta',    label: 'Alta',             color: 'var(--priority-alta)',  dot: '#ef4444' },
+  { id: 'media',   label: 'Média',            color: 'var(--priority-media)', dot: '#f97316' },
+  { id: 'baixa',   label: 'Baixa',            color: 'var(--priority-baixa)', dot: '#60a5fa' },
+  { id: 'normal',  label: 'Normal',           color: 'var(--text2)',          dot: '#6b7280' },
+];
+
+function openPriorityDropdown(e, taskId) {
+  e.stopPropagation();
+  closePriorityDropdown();
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.className = 'priority-dropdown-menu'; dd.id = 'priority-dd-menu';
+  // Position — check if dropdown would go off-screen bottom
+  var top = rect.bottom + 4;
+  if (top + 200 > window.innerHeight) top = rect.top - 204;
+  dd.style.top = top + 'px';
+  dd.style.left = rect.left + 'px';
+  PRIORITIES.forEach(function(p) {
+    var item = document.createElement('div');
+    item.className = 'priority-dropdown-item';
+    item.innerHTML = '<div class="priority-dropdown-dot" style="background:'+p.dot+'"></div>'
+      +'<span class="priority-dropdown-label">'+p.label+'</span>'
+      +(t.priority===p.id?'<span class="priority-dropdown-check">✓</span>':'');
+    item.onclick = function(ev) { ev.stopPropagation(); setTaskPriority(taskId, p.id); closePriorityDropdown(); };
+    dd.appendChild(item);
+  });
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('click', closePriorityDropdown, {once:true}); }, 0);
+}
+
+function closePriorityDropdown() { var el=document.getElementById('priority-dd-menu'); if(el)el.remove(); }
+
+function setTaskPriority(taskId, priorityId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  t.priority = priorityId;
+  t.updatedAt = new Date().toISOString();
+  saveState(); renderTasks();
+}
+
+function priorityBadgeHTML(taskId, priority) {
+  var PRIO_LBL = {urgente:'Urgente',alta:'Alta',media:'Média',baixa:'Baixa',normal:'Normal'};
+  var label = priority ? (PRIO_LBL[priority]||priority) : '—';
+  var cls = priority ? 'priority-badge '+priority : '';
+  return '<span class="'+cls+'" style="cursor:pointer" onclick="openPriorityDropdown(event,&#39;'+taskId+'&#39;)">'+label+'</span>';
+}
+
+/* ═══ DATE PICKER ═══ */
+function openDatePicker(e, taskId) {
+  e.stopPropagation();
+  closeDatePicker();
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  var popup = document.createElement('div');
+  popup.className = 'date-picker-popup'; popup.id = 'date-picker-popup';
+  var top = rect.bottom + 4;
+  if (top + 100 > window.innerHeight) top = rect.top - 104;
+  popup.style.top = top + 'px';
+  popup.style.left = rect.left + 'px';
+  var inp = document.createElement('input');
+  inp.type = 'date';
+  inp.value = t.dueDate || '';
+  popup.innerHTML = '';
+  popup.appendChild(inp);
+  var actions = document.createElement('div');
+  actions.className = 'date-picker-actions';
+  var clearBtn = document.createElement('button');
+  clearBtn.className = 'date-picker-clear';
+  clearBtn.textContent = 'Limpar';
+  clearBtn.onclick = function(ev) { ev.stopPropagation(); setTaskDate(taskId, ''); closeDatePicker(); };
+  var okBtn = document.createElement('button');
+  okBtn.className = 'date-picker-ok';
+  okBtn.textContent = 'OK';
+  okBtn.onclick = function(ev) { ev.stopPropagation(); setTaskDate(taskId, inp.value); closeDatePicker(); };
+  actions.appendChild(clearBtn);
+  actions.appendChild(okBtn);
+  popup.appendChild(actions);
+  document.body.appendChild(popup);
+  inp.focus();
+  setTimeout(function(){ document.addEventListener('click', closeDatePicker, {once:true}); }, 0);
+}
+
+function closeDatePicker() { var el=document.getElementById('date-picker-popup'); if(el)el.remove(); }
+
+function setTaskDate(taskId, date) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  t.dueDate = date;
+  t.updatedAt = new Date().toISOString();
+  saveState(); renderTasks();
+}
+
+function cycleStatus(taskId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var statuses = getStatuses();
+  var idx = statuses.findIndex(function(s){return s.id===t.status;});
+  t.status = statuses[(idx+1) % statuses.length].id;
+  t.updatedAt = new Date().toISOString();
+  saveState(); renderTasks();
+}
+
+function deleteTaskById(taskId) {
+  confirmAction('Excluir tarefa', 'A tarefa e todos os seus filhos serão removidos.', function() {
+    function removeFromTree(items, id) {
+      var idx = items.findIndex(function(t){return t.id===id;});
+      if (idx!==-1){items.splice(idx,1);return true;}
+      for (var i=0;i<items.length;i++){if(items[i].children&&removeFromTree(items[i].children,id))return true;}
+      return false;
+    }
+    removeFromTree(state.tasks.items, taskId);
+    saveState(); renderTasks();
+  });
+}
+
+function toggleChildren(taskId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  t.expanded = !t.expanded;
+  saveState(); renderTasks();
+}
+
+function findTaskById(items, id) {
+  for (var i=0;i<items.length;i++) {
+    if (items[i].id===id) return items[i];
+    if (items[i].children&&items[i].children.length) {
+      var found=findTaskById(items[i].children,id);
+      if(found)return found;
+    }
+  }
+  return null;
+}
+
+function findTaskParent(items, id, parent) {
+  for (var i=0;i<items.length;i++) {
+    if(items[i].id===id)return parent;
+    if(items[i].children&&items[i].children.length){
+      var found=findTaskParent(items[i].children,id,items[i]);
+      if(found!==undefined)return found;
+    }
+  }
+  return undefined;
+}
+
+function addChildTask(parentId) {
+  var parent=findTaskById(state.tasks.items,parentId);if(!parent)return;
+  if(!parent.children)parent.children=[];
+  parent.children.push({id:uuid(),title:'Nova subtarefa',status:'pendente',priority:'',dueDate:'',description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false});
+  parent.expanded=true;
+  saveState();renderTasks();
+  // Open modal to edit the new subtask
+  var newId=parent.children[parent.children.length-1].id;
+  openTaskModal(newId);
+}
+
+/* Column drag-and-drop */
+var _dragColId = null;
+function colDragStart(e, colId) { 
+  _dragColId = colId || (e.currentTarget && e.currentTarget.dataset.colid);
+  e.dataTransfer.effectAllowed='move'; 
+}
+function colDragStartFromEl(e) { colDragStart(e, e.currentTarget.dataset.colid); }
+function colDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect='move'; }
+function colDrop(e, targetColId) {
+  e.preventDefault();
+  if (!_dragColId || _dragColId===targetColId) return;
+  var cols = state.tasks.columns;
+  var fromIdx = cols.findIndex(function(c){return c.id===_dragColId;});
+  var toIdx = cols.findIndex(function(c){return c.id===targetColId;});
+  if (fromIdx===-1||toIdx===-1) return;
+  var moved = cols.splice(fromIdx,1)[0];
+  cols.splice(toIdx,0,moved);
+  cols.forEach(function(c,i){c.order=i;});
+  _dragColId=null;
+  saveState(); renderTasks();
+}
+
+/* Column manager */
+function openColManager() {
+  renderColManager();
+  document.getElementById('colManagerModal').classList.add('show');
+}
+function closeColManager() {
+  document.getElementById('colManagerModal').classList.remove('show');
+}
+function renderColManager() {
+  var cols = state.tasks.columns || [];
+  var list = document.getElementById('colManagerList');
+  if (!list) return;
+  list.innerHTML = cols.map(function(c){
+    var isBuiltin = c.id==='status'||c.id==='priority'||c.id==='dueDate';
+    var onStr = c.visible!==false ? ' on' : '';
+    var delBtn = isBuiltin ? '<span style="width:24px"></span>' : '<button class="col-del-btn" onclick="deleteCol(&#39;'+c.id+'&#39;)">✕</button>';
+    return '<div class="col-manager-row" draggable="true" data-colid="'+c.id+'">'
+      +'<span class="col-manager-drag">⠿</span>'
+      +'<span class="col-manager-label">'+escHtml(c.label)+'</span>'
+      +'<span class="col-manager-type">'+c.type+'</span>'
+      +'<button class="col-toggle'+onStr+'" onclick="toggleColVisible(&#39;'+c.id+'&#39;)"></button>'
+      +delBtn
+      +'</div>';
   }).join('');
-  const total = txs.reduce((s,t)=>s+(parseFloat(t.valor)||0),0);
-  return `<div style="overflow-x:auto"><table class="transactions-table">
-    <thead><tr><th>Data</th><th>Descrição</th><th style="text-align:right">Valor</th><th>Parcela</th><th>Categoria</th></tr></thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr><td colspan="2" style="padding:8px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">TOTAL</td><td style="padding:8px 10px;font-family:'DM Mono',monospace;text-align:right;font-weight:500">${fmtBRL(total)}</td><td colspan="2"></td></tr></tfoot>
-  </table></div>`;
+}
+function toggleColVisible(colId) {
+  var c = state.tasks.columns.find(function(c){return c.id===colId;});
+  if(c) c.visible = c.visible===false ? true : false;
+  saveState(); renderColManager(); renderTasks();
+}
+function deleteCol(colId) {
+  state.tasks.columns = state.tasks.columns.filter(function(c){return c.id!==colId;});
+  saveState(); renderColManager(); renderTasks();
+}
+function addColumn() {
+  var label = document.getElementById('newColLabel').value.trim();
+  var type = document.getElementById('newColType').value;
+  if (!label) return;
+  var id = 'col-'+uuid();
+  state.tasks.columns.push({id:id,label:label,type:type,visible:true,order:state.tasks.columns.length});
+  document.getElementById('newColLabel').value='';
+  saveState(); renderColManager(); renderTasks();
 }
 
-function toggleCardFatura(id) {
-  const body = document.getElementById('cfbody-' + id);
-  if (!body) return;
-  const isOpen = body.style.display !== 'none';
-  body.style.display = isOpen ? 'none' : 'block';
-}
-
-function setCardCat(faturaId, txId, cat) {
-  const tx = (state.card.transactions[faturaId]||[]).find(t=>t.id===txId);
-  if (tx) { tx.categoria = cat; saveState(); }
-}
-
-function removeCardFatura(id) {
-  confirmAction('Remover fatura', 'Todas as transações desta fatura serão removidas.', () => {
-    state.card.faturas = state.card.faturas.filter(f=>f.id!==id);
-    delete state.card.transactions[id];
-    saveState();
-    renderCardFaturas();
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════
-   AI CHAT — CENTRAL
-═══════════════════════════════════════════════════════════ */
-let mainChatHistory = [];
-
-function buildSystemContext() {
-  const pending = state.tasks.items.filter(t=>t.status==='pendente').length;
-  const y = state.finance.currentYear;
-  const finCtx = buildFinanceContext(y);
-  return `Você é um assistente pessoal integrado a um app de agenda.
-Tarefas: ${state.tasks.items.length} total, ${pending} pendentes.
-${finCtx}
-Responda em português, de forma objetiva e útil. Você pode ajudar a organizar tarefas, analisar finanças, classificar despesas e sugerir ações.`;
-}
-
-async function sendMainChat() {
-  const input = document.getElementById('mainChatInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  const apiKey = state.config.apiKey;
-  if (!apiKey) { showToast('Configure sua chave API nas Configurações'); return; }
-
-  input.value = '';
-  mainChatHistory.push({ role:'user', content: msg });
-  appendChatMsg('mainChatMessages', 'user', msg);
-
-  const sendBtn = document.getElementById('mainChatSendBtn');
-  sendBtn.disabled = true;
-  appendChatMsg('mainChatMessages', 'ai', '...', 'typing-msg');
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: buildSystemContext(),
-        messages: mainChatHistory
-      })
-    });
-    const data = await resp.json();
-    const reply = data.content?.[0]?.text || 'Sem resposta.';
-    mainChatHistory.push({ role:'assistant', content: reply });
-    document.getElementById('typing-msg')?.remove();
-    appendChatMsg('mainChatMessages', 'ai', reply);
-  } catch(e) {
-    document.getElementById('typing-msg')?.remove();
-    appendChatMsg('mainChatMessages', 'ai', 'Erro ao contatar a IA. Verifique sua chave API.');
-  }
-  sendBtn.disabled = false;
-}
-
-function mainChatKey(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMainChat(); } }
-
-function clearMainChat() {
-  confirmAction('Limpar chat', 'O histórico do chat central será apagado.', () => {
-    mainChatHistory = [];
-    document.getElementById('mainChatMessages').innerHTML = '';
-  });
-}
-
-function appendChatMsg(containerId, role, text, id) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + role;
-  if (id) div.id = id;
-  div.innerHTML = `<div class="chat-bubble">${escHtml(text)}</div>`;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-/* Chat inline para contextos específicos */
-const inlineChatHistories = {};
-
-function buildChatUI(containerId, chatKey, title, contextMsg) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  if (!inlineChatHistories[chatKey]) inlineChatHistories[chatKey] = [];
-
-  container.innerHTML = `
-    <div class="chat-header">
-      <span class="chat-header-title">⚡ ${escHtml(title)}</span>
-      <button class="btn-sm" style="padding:2px 8px;font-size:10px" onclick="clearInlineChat('${chatKey}','${containerId}','${escHtml(title)}','${escHtml(contextMsg)}')">Limpar</button>
-    </div>
-    <div class="chat-messages" id="cm-${chatKey}"></div>
-    <div class="chat-input-row">
-      <textarea class="chat-input" id="ci-${chatKey}" placeholder="Pergunte sobre este contexto..." rows="2" onkeydown="inlineChatKey(event,'${chatKey}','${escHtml(contextMsg)}')"></textarea>
-      <button class="chat-send-btn" onclick="sendInlineChat('${chatKey}','${escHtml(contextMsg)}')">→</button>
-    </div>`;
-
-  inlineChatHistories[chatKey].forEach(msg => appendChatMsg('cm-' + chatKey, msg.role, msg.content));
-  if (!inlineChatHistories[chatKey].length && contextMsg) {
-    appendChatMsg('cm-' + chatKey, 'ai', 'Contexto carregado. Como posso ajudar?');
-  }
-}
-
-function inlineChatKey(e, chatKey, ctx) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendInlineChat(chatKey,ctx);} }
-
-async function sendInlineChat(chatKey, contextMsg) {
-  const input = document.getElementById('ci-' + chatKey);
-  if (!input) return;
-  const msg = input.value.trim();
-  if (!msg) return;
-  const apiKey = state.config.apiKey;
-  if (!apiKey) { showToast('Configure sua chave API'); return; }
-
-  input.value = '';
-  if (!inlineChatHistories[chatKey]) inlineChatHistories[chatKey] = [];
-  inlineChatHistories[chatKey].push({ role:'user', content: msg });
-  appendChatMsg('cm-' + chatKey, 'user', msg);
-  appendChatMsg('cm-' + chatKey, 'ai', '...', 'ic-typing-' + chatKey);
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
-        system: 'Você é um assistente pessoal. Contexto: ' + contextMsg + '\nResponda em português.',
-        messages: inlineChatHistories[chatKey]
-      })
-    });
-    const data = await resp.json();
-    const reply = data.content?.[0]?.text || 'Sem resposta.';
-    inlineChatHistories[chatKey].push({ role:'assistant', content: reply });
-    document.getElementById('ic-typing-' + chatKey)?.remove();
-    appendChatMsg('cm-' + chatKey, 'ai', reply);
-  } catch(e) {
-    document.getElementById('ic-typing-' + chatKey)?.remove();
-    appendChatMsg('cm-' + chatKey, 'ai', 'Erro ao contatar a IA.');
-  }
-}
-
-function clearInlineChat(chatKey, containerId, title, ctx) {
-  inlineChatHistories[chatKey] = [];
-  buildChatUI(containerId, chatKey, title, ctx);
+/* Filter helpers */
+function setTaskFilterFromSelect(val) {
+  taskFilterStatus = val;
+  renderTasks();
 }
 
 function openTaskChat(taskId) {
@@ -1971,6 +2243,271 @@ function saveApiKey() {
   saveState();
   showToast('Chave API salva');
 }
+
+/* ═══════════════════════════════════════════════════════════
+   FINANCE MODULE
+═══════════════════════════════════════════════════════════ */
+const MONTHS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const STATUS_LABELS = { pago:'Pago', 'nao-pago':'Não pago', debito:'Débito automático', aguardando:'Aguardando emissão' };
+const STATUS_LABELS_PL = { pago:'Pagos', 'nao-pago':'Não pagos', debito:'Débito automático', aguardando:'Aguardando emissão' };
+function sLabel(k,v) { return v===1 ? STATUS_LABELS[k] : STATUS_LABELS_PL[k]; }
+function fmtBRL(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+function renderFinance() {
+  const y = state.finance.currentYear;
+  const container = document.getElementById('monthList');
+  if (!container) return;
+  const ytRow = document.getElementById('yearTabsRow');
+  if (ytRow) ytRow.innerHTML = FINANCE_YEARS.map(function(yr){return '<button class="year-chip '+(yr===y?'active':'')+'" onclick="setFinYear('+yr+')">'+yr+'</button>';}).join('');
+  const active = state.finance.activeMonths[y] || [];
+  let totalYear = 0;
+  active.forEach(function(m){const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];totalYear+=rows.reduce(function(s,r){return s+(parseFloat(r.valor)||0);},0);});
+  const finSub = document.getElementById('financeSub');
+  if (finSub) finSub.textContent = active.length + ' meses · ' + fmtBRL(totalYear) + ' total';
+  container.innerHTML = '';
+  active.forEach(function(m){container.appendChild(buildMonthBlock(y,m));});
+  const lastM = active[active.length-1];
+  if (lastM !== undefined && lastM < 11) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-next-month';
+    btn.textContent = '+ Adicionar ' + MONTHS_FULL[lastM+1];
+    btn.onclick = function(){addNextMonth(y);};
+    container.appendChild(btn);
+  }
+}
+
+function setFinYear(y) { state.finance.currentYear=y; state.finance.openMonths={}; renderFinance(); }
+
+function buildMonthBlock(y, m) {
+  const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
+  const total=rows.reduce(function(s,r){return s+(parseFloat(r.valor)||0);},0);
+  const counts={};Object.keys(STATUS_LABELS).forEach(function(k){counts[k]=0;});
+  rows.forEach(function(r){if(counts[r.status]!==undefined)counts[r.status]++;});
+  const isOpen=!!state.finance.openMonths[m];
+  const active=state.finance.activeMonths[y]||[];
+  const isRemovable=active[active.length-1]===m;
+  const pillsHtml=Object.entries(counts).filter(function(e){return e[1]>0;}).map(function(e){return '<span class="pill '+e[0]+'">'+e[1]+' '+sLabel(e[0],e[1])+'</span>';}).join('');
+  const emptyPill=rows.length===0?'<span style="font-size:11px;color:var(--muted)">Vazio</span>':'';
+  const block=document.createElement('div');
+  block.className='month-block'; block.id='fblock-'+y+'-'+m;
+  block.innerHTML='<div class="month-header" onclick="toggleFinMonth('+y+','+m+')">'
+    +'<span class="month-chevron '+(isOpen?'open':'')+'">▶</span>'
+    +'<span class="month-name">'+MONTHS_FULL[m]+'</span>'
+    +'<div class="month-pills">'+(pillsHtml||emptyPill)+'</div>'
+    +(total>0?'<span class="month-total">'+fmtBRL(total)+'</span>':'')
+    +(isRemovable?'<button class="btn-remove-month" onclick="event.stopPropagation();removeFinMonth('+y+','+m+')" title="Remover mês">✕</button>':'')
+    +'</div>'+(isOpen?'<div class="month-body">'+buildFinTable(y,m)+'</div>':'');
+  return block;
+}
+
+function buildFinTable(y, m) {
+  const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
+  let tbody=rows.length?rows.map(function(r){return finRowHTML(y,m,r);}).join(''):'<tr><td colspan="6" class="empty-cell">Nenhuma conta. Adicione abaixo.</td></tr>';
+  return '<div style="overflow-x:auto"><table class="fin-table"><thead><tr><th>Nome</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Observações</th><th></th></tr></thead><tbody>'+tbody+'</tbody></table></div>'
+    +'<div class="add-row">'
+    +'<input type="text" id="fn-'+y+'-'+m+'-nome" placeholder="Nome da conta"/>'
+    +'<input type="date" id="fn-'+y+'-'+m+'-venc"/>'
+    +'<input type="text" id="fn-'+y+'-'+m+'-valor" placeholder="Valor"/>'
+    +'<select id="fn-'+y+'-'+m+'-status"><option value="nao-pago">Não pago</option><option value="pago">Pago</option><option value="debito">Débito automático</option><option value="aguardando">Aguardando emissão</option></select>'
+    +'<input type="text" id="fn-'+y+'-'+m+'-obs" placeholder="Observações"/>'
+    +'<button class="btn-add-fin" onclick="addFinBill('+y+','+m+')">+ ADD</button></div>';
+}
+
+function finRowHTML(y,m,r) {
+  const val=(parseFloat(r.valor)||0)>0?fmtBRL(parseFloat(r.valor)):'–';
+  return '<tr id="frow-'+y+'-'+m+'-'+r.id+'">'
+    +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="nome" style="font-weight:500">'+escHtml(r.nome||'–')+'</td>'
+    +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="venc" style="color:var(--text2)">'+(r.venc||'–')+'</td>'
+    +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="valor">'+val+'</td>'
+    +'<td><span class="inline-badge '+r.status+'" onclick="openStatusDD(event,'+y+','+m+','+r.id+')">'+(STATUS_LABELS[r.status]||r.status)+'</span></td>'
+    +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="obs" style="color:var(--text2)">'+escHtml(r.obs||'')+'</td>'
+    +'<td><button class="btn-sm del" onclick="delFinBill('+y+','+m+','+r.id+')">✕</button></td>'
+    +'</tr>';
+}
+
+function toggleFinMonth(y,m){if(state.finance.openMonths[m])delete state.finance.openMonths[m];else state.finance.openMonths[m]=true;refreshFinBlock(y,m);}
+function refreshFinBlock(y,m){const old=document.getElementById('fblock-'+y+'-'+m);if(old)old.replaceWith(buildMonthBlock(y,m));}
+
+function refreshFinHeader(y,m) {
+  const block=document.getElementById('fblock-'+y+'-'+m);if(!block)return;
+  const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
+  const total=rows.reduce(function(s,r){return s+(parseFloat(r.valor)||0);},0);
+  const counts={};Object.keys(STATUS_LABELS).forEach(function(k){counts[k]=0;});
+  rows.forEach(function(r){if(counts[r.status]!==undefined)counts[r.status]++;});
+  const active=state.finance.activeMonths[y]||[];
+  const isRemovable=active[active.length-1]===m;
+  const isOpen=!!state.finance.openMonths[m];
+  const pillsHtml=Object.entries(counts).filter(function(e){return e[1]>0;}).map(function(e){return '<span class="pill '+e[0]+'">'+e[1]+' '+sLabel(e[0],e[1])+'</span>';}).join('');
+  const emptyPill=rows.length===0?'<span style="font-size:11px;color:var(--muted)">Vazio</span>':'';
+  const hdr=block.querySelector('.month-header');
+  if(hdr)hdr.innerHTML='<span class="month-chevron '+(isOpen?'open':'')+'">▶</span>'
+    +'<span class="month-name">'+MONTHS_FULL[m]+'</span>'
+    +'<div class="month-pills">'+(pillsHtml||emptyPill)+'</div>'
+    +(total>0?'<span class="month-total">'+fmtBRL(total)+'</span>':'')
+    +(isRemovable?'<button class="btn-remove-month" onclick="event.stopPropagation();removeFinMonth('+y+','+m+')">✕</button>':'');
+}
+
+function editFinCell(td) {
+  if(td.querySelector('input'))return;
+  const y=parseInt(td.dataset.y),m=parseInt(td.dataset.m),id=parseFloat(td.dataset.id),field=td.dataset.field;
+  const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
+  const r=rows.find(function(x){return x.id==id;});if(!r)return;
+  const input=document.createElement('input');input.className='fin-edit-input';
+  if(field==='venc'){input.type='date';input.value=parseDateToISO(r.venc||'');}
+  else if(field==='valor'){input.type='text';input.value=parseFloat(r.valor)||'';}
+  else{input.type='text';input.value=r[field]||'';}
+  td.textContent='';td.appendChild(input);input.focus();if(field!=='venc')input.select();
+  function commit(){
+    var val=input.value.trim();
+    if(field==='valor')r.valor=parseFloat(val.replace(',','.'))||0;
+    else if(field==='venc')r.venc=input.value?parseDateFromISO(input.value):r.venc;
+    else r[field]=val;
+    saveState();
+    const row=document.getElementById('frow-'+y+'-'+m+'-'+id);
+    if(row)row.outerHTML=finRowHTML(y,m,r);
+    refreshFinHeader(y,m);
+  }
+  input.addEventListener('blur',commit);
+  input.addEventListener('keydown',function(e){if(e.key==='Enter')input.blur();if(e.key==='Escape')refreshFinBlock(y,m);});
+}
+
+function parseDateToISO(str){if(!str||str==='–')return '';const p=str.split('/');if(p.length<2)return '';const day=p[0].padStart(2,'0'),mon=p[1].padStart(2,'0');const yr=p[2]?p[2].trim():'';const year=yr.length===2?'20'+yr:yr;return year+'-'+mon+'-'+day;}
+function parseDateFromISO(str){if(!str)return '';const p=str.split('-');if(p.length<3)return str;return parseInt(p[2])+'/'+parseInt(p[1])+'/'+(p[0].slice(-2));}
+
+function openStatusDD(e,y,m,id) {
+  e.stopPropagation();closeStatusDD();
+  const badge=e.currentTarget;const rect=badge.getBoundingClientRect();
+  const dd=document.createElement('div');dd.className='status-dropdown';dd.id='status-dd';
+  dd.style.top=(rect.bottom+4)+'px';dd.style.left=rect.left+'px';
+  Object.entries(STATUS_LABELS).forEach(function(entry){
+    const k=entry[0],v=entry[1];const btn=document.createElement('button');
+    btn.className='status-opt '+k;btn.textContent=v;
+    btn.onclick=function(ev){ev.stopPropagation();saveFinField(y,m,id,'status',k);closeStatusDD();};
+    dd.appendChild(btn);
+  });
+  document.body.appendChild(dd);
+  setTimeout(function(){document.addEventListener('click',closeStatusDD,{once:true});},0);
+}
+function closeStatusDD(){const el=document.getElementById('status-dd');if(el)el.remove();}
+
+function saveFinField(y,m,id,field,value){
+  const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
+  const r=rows.find(function(x){return x.id==id;});if(!r)return;
+  r[field]=value;saveState();
+  const row=document.getElementById('frow-'+y+'-'+m+'-'+id);
+  if(row)row.outerHTML=finRowHTML(y,m,r);refreshFinHeader(y,m);
+}
+
+function addFinBill(y,m){
+  const nome=document.getElementById('fn-'+y+'-'+m+'-nome').value.trim();if(!nome)return;
+  if(!state.finance.bills[y])state.finance.bills[y]={};
+  if(!state.finance.bills[y][m])state.finance.bills[y][m]=[];
+  const vencRaw=document.getElementById('fn-'+y+'-'+m+'-venc').value;
+  state.finance.bills[y][m].push({id:Date.now(),nome,venc:vencRaw?parseDateFromISO(vencRaw):'',valor:parseFloat(document.getElementById('fn-'+y+'-'+m+'-valor').value.replace(',','.'))||0,status:document.getElementById('fn-'+y+'-'+m+'-status').value,obs:document.getElementById('fn-'+y+'-'+m+'-obs').value});
+  saveState();refreshFinBlock(y,m);
+}
+
+function delFinBill(y,m,id){state.finance.bills[y][m]=state.finance.bills[y][m].filter(function(x){return x.id!=id;});saveState();refreshFinBlock(y,m);}
+
+function addNextMonth(y){
+  const active=state.finance.activeMonths[y]||[];const last=active[active.length-1];if(last>=11)return;
+  const next=last+1;const prevRows=(state.finance.bills[y]&&state.finance.bills[y][last])?state.finance.bills[y][last]:[];
+  if(!state.finance.bills[y])state.finance.bills[y]={};
+  state.finance.bills[y][next]=prevRows.map(function(r){let newVenc=r.venc;const parts=r.venc?r.venc.split('/'):null;if(parts&&parts.length>=2){const day=parts[0],yr=parts[2]||String(y).slice(-2);newVenc=day+'/'+(next+1)+'/'+yr;}return{id:Date.now()+Math.random(),nome:r.nome,venc:newVenc,valor:0,status:'nao-pago',obs:r.obs||''};});
+  state.finance.activeMonths[y].push(next);state.finance.openMonths[next]=true;saveState();renderFinance();
+}
+
+function removeFinMonth(y,m){
+  confirmAction('Remover '+MONTHS_FULL[m]+'?','Os dados deste mês serão removidos.',function(){
+    state.finance.bills[y][m]=[];
+    state.finance.activeMonths[y]=state.finance.activeMonths[y].filter(function(x){return x!==m;});
+    delete state.finance.openMonths[m];saveState();renderFinance();
+  });
+}
+
+function openFinanceChat(){
+  const wrap=document.getElementById('financeChatWrap');
+  wrap.style.display=wrap.style.display==='none'?'block':'none';
+  if(wrap.style.display==='block'){const y=state.finance.currentYear;buildChatUI('financeChat','finance-main','Chat IA — Finanças '+y,buildFinanceContext(y));}
+}
+
+function buildFinanceContext(y){
+  const active=state.finance.activeMonths[y]||[];let summary='Resumo financeiro '+y+':\n';
+  active.forEach(function(m){const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];const total=rows.reduce(function(s,r){return s+(parseFloat(r.valor)||0);},0);const nao=rows.filter(function(r){return r.status==='nao-pago';}).length;summary+='- '+MONTHS_FULL[m]+': '+fmtBRL(total)+' total, '+nao+' não pagos\n';});
+  return summary;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CARD MODULE
+═══════════════════════════════════════════════════════════ */
+function dzCardOver(e){e.preventDefault();document.getElementById('cardDropZone').classList.add('drag-over');}
+function dzCardLeave(){document.getElementById('cardDropZone').classList.remove('drag-over');}
+function dzCardDrop(e){e.preventDefault();dzCardLeave();const f=e.dataTransfer.files[0];if(f)processCardFile(f);}
+function handleCardUpload(e){const f=e.target.files[0];if(f)processCardFile(f);e.target.value='';}
+
+async function processCardFile(file) {
+  const apiKey=state.config.apiKey;
+  if(!apiKey){showToast('Configure sua chave API nas Configurações');return;}
+  const faturaId=uuid();
+  const fatura={id:faturaId,nome:file.name,date:new Date().toISOString(),status:'processando'};
+  state.card.faturas.push(fatura);renderCardFaturas();
+  try {
+    let content='';
+    if(file.type==='text/csv'||file.name.endsWith('.csv')){content=await file.text();}
+    else if(file.name.endsWith('.xlsx')||file.name.endsWith('.xls')){content='[Arquivo Excel — '+file.name+']';}
+    else if(file.type==='application/pdf'){content='[Arquivo PDF — '+file.name+' ('+Math.round(file.size/1024)+'KB)]';}
+    else{content=await file.text();}
+    const prompt='Analise o extrato do cartão. Extraia TODAS as transações. Responda SOMENTE com array JSON, sem markdown. Cada objeto: {data,descricao,valor,parcela}. Extrato: '+content.slice(0,8000);
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    let text=data.content?.[0]?.text||'[]';text=text.replace(/```json|```/g,'').trim();
+    let transactions=[];try{transactions=JSON.parse(text);}catch(e){transactions=[];}
+    state.card.transactions[faturaId]=transactions.map(function(t){return Object.assign({},t,{id:uuid(),categoria:'',status:'pendente'});});
+    fatura.status='ok';fatura.count=transactions.length;
+  } catch(e){fatura.status='erro';console.error(e);}
+  saveState();renderCardFaturas();
+}
+
+function renderCardFaturas(){
+  const container=document.getElementById('cardFaturas');
+  if(!state.card.faturas.length){container.innerHTML='';return;}
+  container.innerHTML=state.card.faturas.map(function(f){
+    const txs=state.card.transactions[f.id]||[];
+    const total=txs.reduce(function(s,t){return s+(parseFloat(t.valor)||0);},0);
+    const fid=f.id;
+    return '<div class="month-block" style="margin-bottom:12px">'
+      +'<div class="month-header" onclick="toggleCardFatura(&#39;'+fid+'&#39;)">'
+      +'<span class="month-chevron">▶</span>'
+      +'<span class="month-name" style="min-width:auto;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+escHtml(f.nome)+'</span>'
+      +'<div class="month-pills">'+(f.status==='processando'?'<span class="pill debito">Processando...</span>':'')+(f.status==='ok'?'<span class="pill pago">'+txs.length+' transações</span>':'')+(f.status==='erro'?'<span class="pill nao-pago">Erro ao processar</span>':'')+'</div>'
+      +(total>0?'<span class="month-total">'+fmtBRL(total)+'</span>':'')
+      +'<button class="btn-remove-month" onclick="event.stopPropagation();removeCardFatura(&#39;'+fid+'&#39;)">✕</button>'
+      +'</div>'
+      +'<div class="month-body" id="cfbody-'+fid+'" style="display:none">'+(txs.length?buildCardTable(fid,txs):'<div class="empty-cell">Nenhuma transação</div>')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function buildCardTable(faturaId,txs){
+  const cats=state.card.categorias;
+  const rows=txs.map(function(t){
+    const catOpts=[''].concat(cats).map(function(c){return '<option value="'+escHtml(c)+'" '+(t.categoria===c?'selected':'')+'>'+(c||'— Classificar')+'</option>';}).join('');
+    return '<tr>'
+      +'<td style="color:var(--text2);font-size:12px">'+(t.data||'')+'</td>'
+      +'<td>'+escHtml(t.descricao||'')+'</td>'
+      +'<td style="text-align:right">'+fmtBRL(parseFloat(t.valor)||0)+'</td>'
+      +'<td style="font-size:11px">'+(t.parcela||'')+'</td>'
+      +'<td><select class="cat-select" onchange="setCardCat(&#39;'+faturaId+'&#39;,&#39;'+t.id+'&#39;,this.value)">'+catOpts+'</select></td>'
+      +'</tr>';
+  }).join('');
+  const total=txs.reduce(function(s,t){return s+(parseFloat(t.valor)||0);},0);
+  return '<div style="overflow-x:auto"><table class="transactions-table"><thead><tr><th>Data</th><th>Descrição</th><th style="text-align:right">Valor</th><th>Parcela</th><th>Categoria</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="2" style="padding:8px 10px;color:var(--muted)">TOTAL</td><td style="padding:8px 10px;text-align:right;font-weight:500">'+fmtBRL(total)+'</td><td colspan="2"></td></tr></tfoot></table></div>';
+}
+
+function toggleCardFatura(id){const body=document.getElementById('cfbody-'+id);if(!body)return;body.style.display=body.style.display!=='none'?'none':'block';}
+function setCardCat(faturaId,txId,cat){const tx=(state.card.transactions[faturaId]||[]).find(function(t){return t.id===txId;});if(tx){tx.categoria=cat;saveState();}}
+function removeCardFatura(id){confirmAction('Remover fatura','Todas as transações serão removidas.',function(){state.card.faturas=state.card.faturas.filter(function(f){return f.id!==id;});delete state.card.transactions[id];saveState();renderCardFaturas();});}
+
 
 /* ═══════════════════════════════════════════════════════════
    THEME
@@ -2036,6 +2573,12 @@ function importData() {
 function escHtml(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T12:00:00');
+  return d.getDate() + '/' + MONTHS_NAMES[d.getMonth()] + '/' + String(d.getFullYear()).slice(-2);
 }
 
 function showToast(msg) {
@@ -2109,6 +2652,7 @@ if ('serviceWorker' in navigator) {
     } catch(e) {}
 
     applySeeds();
+    applyTaskSeeds();
     applyTheme();
     showApp(false);
     renderAll();
@@ -2120,6 +2664,7 @@ if ('serviceWorker' in navigator) {
     console.error('Init error:', e);
     // Garante que o app sempre apareça mesmo com erro
     applySeeds();
+    applyTaskSeeds();
     applyTheme();
     showApp(false);
     renderAll();
