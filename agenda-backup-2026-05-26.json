@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-05-26T21:52:26.856Z",
+  "_updatedAt": "2026-05-26T22:21:19.993Z",
   "tasks": {
     "items": [
       {
@@ -45,23 +45,17 @@
         "description": "",
         "children": [],
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-05-26T21:49:25.004Z",
+        "updatedAt": "2026-05-26T21:57:48.916Z",
         "linkedItems": [],
         "notes": "",
         "tags": [],
         "expanded": false,
         "comments": [
           {
-            "id": "c-1779832156139",
+            "id": "c-1779832668916",
             "author": "Usuário",
             "text": "Vencimento original: 08/10/25\n\nContato realizado em 10/10/25 para realizar o cancelamento\n\nNova oferta realizada: mais 5 meses de isenção na mensalidade; até 09/03/26 - o contato para cancelamento/prorrogação deve ser realizado até o dia 13/03/26",
-            "createdAt": "2026-05-26T21:49:16.139Z"
-          },
-          {
-            "id": "c-1779832165004",
-            "author": "Usuário",
-            "text": "Nova oferta realizada: mais 5 meses de isenção na mensalidade; até 09/08/26.",
-            "createdAt": "2026-05-26T21:49:25.004Z"
+            "createdAt": "2026-05-26T21:57:48.916Z"
           }
         ],
         "group": "default"
@@ -116,19 +110,12 @@
             "description": "",
             "children": [],
             "createdAt": "2025-01-01T00:00:00Z",
-            "updatedAt": "2026-05-26T21:52:26.856Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
             "linkedItems": [],
             "notes": "",
             "tags": [],
             "expanded": false,
-            "comments": [
-              {
-                "id": "c-1779832346856",
-                "author": "Usuário",
-                "text": "Nova oferta realizada: mais 5 meses de isenção na mensalidade; até 09/08/26.",
-                "createdAt": "2026-05-26T21:52:26.856Z"
-              }
-            ]
+            "comments": []
           },
           {
             "id": "ts-cs3",
@@ -168,7 +155,7 @@
         "linkedItems": [],
         "notes": "",
         "tags": [],
-        "expanded": true,
+        "expanded": false,
         "comments": [],
         "group": "default"
       },

@@ -1133,7 +1133,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.39</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.40</span>
   </div>
   <div class="header-right" id="headerRight">
     <div class="auth-info" id="authInfo">
@@ -1305,7 +1305,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.0.39 — agenda-v039</p>
+    <p class="version-tag">Agenda v0.0.40 — agenda-v040</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -3411,8 +3411,13 @@ function importData() {
       try {
         const imported = JSON.parse(ev.target.result);
         confirmAction('Importar dados', 'Isso substituirá todos os seus dados atuais. Continuar?', () => {
+          // Force timestamp so mergeState doesn't skip due to guard
+          imported._updatedAt = new Date().toISOString();
+          state._updatedAt = null;
           mergeState(imported);
+          applyTaskSeeds();
           applyTheme();
+          saveState();
           renderAll();
           showToast('Dados importados com sucesso');
         });
