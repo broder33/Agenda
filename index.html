@@ -387,7 +387,7 @@ header {
 /* Row actions */
 .task-row-actions {
   display: flex; gap: 2px; flex-shrink: 0;
-  padding: 0 6px; width: 72px; justify-content: flex-end;
+  padding: 0 6px; width: 88px; justify-content: flex-end;
   opacity: 0; transition: opacity .15s;
 }
 .task-row:hover .task-row-actions { opacity: 1; }
@@ -397,6 +397,122 @@ header {
   border-radius: 4px; line-height: 1; transition: all .15s;
 }
 .task-icon-btn:hover { color: var(--text); background: var(--surface2); }
+.task-comment-btn {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 11px; padding: 3px 5px;
+  border-radius: 4px; line-height: 1; transition: all .15s;
+  display: flex; align-items: center; gap: 3px; flex-shrink: 0;
+}
+.task-comment-btn:hover { color: var(--accent); background: var(--surface2); }
+.task-comment-btn.has-comments { opacity: 1 !important; color: var(--accent); }
+.task-comment-count { font-family: 'DM Mono', monospace; font-size: 10px; }
+
+/* Select column badge */
+.select-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 8px; border-radius: 4px; font-size: 11px;
+  font-family: 'DM Mono', monospace; cursor: pointer;
+  white-space: nowrap; transition: opacity .15s;
+}
+.select-badge:hover { opacity: .8; }
+.select-badge-empty { color: var(--muted); cursor: pointer; font-size: 12px; }
+.select-badge-empty:hover { color: var(--text); }
+
+/* Select options manager modal */
+.select-opts-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+}
+.select-opts-row:last-child { border-bottom: none; }
+.col-manager-opts-btn {
+  background: none; border: 1px solid var(--border); border-radius: 4px;
+  color: var(--muted); font-size: 10px; padding: 2px 7px; cursor: pointer;
+  font-family: 'DM Mono', monospace; flex-shrink: 0;
+}
+.col-manager-opts-btn:hover { color: var(--accent); border-color: var(--accent); }
+.comment-dd {
+  position: fixed; z-index: 9999;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.45);
+  width: 360px; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.comment-dd-header {
+  padding: 12px 14px 10px; border-bottom: 1px solid var(--border);
+  font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.comment-dd-header strong { color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; }
+.comment-dd-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 2px; line-height: 1; }
+.comment-dd-close:hover { color: var(--text); }
+.comment-dd-list { max-height: 280px; overflow-y: auto; padding: 6px 0; }
+.comment-dd-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 13px; }
+.comment-item {
+  padding: 10px 14px; border-bottom: 1px solid var(--border); position: relative;
+}
+.comment-item:last-child { border-bottom: none; }
+.comment-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.comment-avatar {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent); color: #000; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+}
+.comment-author { font-size: 13px; font-weight: 600; color: var(--text); }
+.comment-date { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
+.comment-menu-btn {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 16px; padding: 0 4px; border-radius: 4px; line-height: 1;
+  opacity: 0; transition: opacity .15s, color .15s; flex-shrink: 0;
+}
+.comment-item:hover .comment-menu-btn { opacity: 1; }
+.comment-menu-btn:hover { color: var(--text); background: var(--surface2); }
+.comment-body { font-size: 13px; color: var(--text2); line-height: 1.5; white-space: pre-wrap; }
+.comment-edit-area {
+  width: 100%; background: var(--surface2); border: 1px solid var(--accent);
+  border-radius: 6px; padding: 6px 8px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  resize: none; line-height: 1.4; outline: none; box-sizing: border-box;
+}
+.comment-edit-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
+.comment-edit-save {
+  background: var(--accent); border: none; border-radius: 5px; color: #000;
+  font-size: 12px; padding: 3px 10px; cursor: pointer; font-weight: 600;
+}
+.comment-edit-cancel {
+  background: none; border: 1px solid var(--border); border-radius: 5px;
+  color: var(--muted); font-size: 12px; padding: 3px 10px; cursor: pointer;
+}
+/* Comment context menu */
+.comment-ctx-menu {
+  position: fixed; z-index: 10000; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4); padding: 4px 0; min-width: 130px;
+}
+.comment-ctx-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; font-size: 13px; color: var(--text2);
+  cursor: pointer; transition: background .1s;
+}
+.comment-ctx-item:hover { background: var(--surface2); color: var(--text); }
+.comment-ctx-item.danger:hover { background: rgba(239,68,68,.12); color: var(--danger); }
+.comment-dd-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-end; }
+.comment-input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  resize: none; min-height: 36px; max-height: 100px;
+  transition: border-color .15s; outline: none; line-height: 1.4;
+}
+.comment-input:focus { border-color: var(--accent); }
+.comment-send-btn {
+  background: var(--accent); border: none; border-radius: 8px;
+  color: #000; font-size: 16px; width: 36px; height: 36px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: opacity .15s;
+}
+.comment-send-btn:hover { opacity: .85; }
+.comment-send-btn:disabled { opacity: .35; cursor: default; }
 
 /* Column manager modal */
 .col-manager { padding: 4px 0; }
@@ -876,11 +992,15 @@ header {
   font-size: 10px; cursor: pointer; white-space: nowrap;
 }
 .subtask-add-btn:hover { border-color: var(--accent); color: var(--accent); }
-.subtask-count {
-  font-family: 'DM Mono', monospace; font-size: 10px;
-  color: var(--muted); background: var(--surface2);
-  padding: 1px 6px; border-radius: 10px;
+.task-add-sub-btn {
+  background: none; border: 1px solid var(--border); border-radius: 3px;
+  color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px;
+  padding: 1px 6px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  opacity: 0; transition: opacity .15s, color .15s, border-color .15s;
+  margin-left: 6px; letter-spacing: .3px;
 }
+.task-row:hover .task-add-sub-btn { opacity: 1; }
+.task-add-sub-btn:hover { color: var(--accent); border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -915,6 +1035,22 @@ header {
   </div>
 </div>
 
+<!-- ═══════════════════ PRIORITY MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="priorityManagerModal">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title">Gerenciar Prioridades</div>
+    <div id="priorityManagerList" class="col-manager" style="max-height:320px;overflow-y:auto"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+      <input class="modal-input" id="newPriorityLabel" placeholder="Nome da nova prioridade" style="flex:1">
+      <input type="color" id="newPriorityColor" value="#6b7280" style="width:36px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;padding:2px">
+      <button class="btn-modal-save" onclick="addPriority()">+ Adicionar</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closePriorityManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ COLUMN MANAGER MODAL ═══════════════════ -->
 <div class="modal-overlay" id="colManagerModal">
   <div class="modal-box" style="max-width:400px">
@@ -924,14 +1060,29 @@ header {
       <input class="modal-input" id="newColLabel" placeholder="Nome da nova coluna" style="flex:1">
       <select class="modal-select" id="newColType" style="flex:0 0 auto;width:110px">
         <option value="text">Texto</option>
+        <option value="select">Select</option>
         <option value="date">Data</option>
-        <option value="status">Status</option>
-        <option value="priority">Prioridade</option>
       </select>
       <button class="btn-modal-save" onclick="addColumn()">+ Adicionar</button>
     </div>
     <div class="modal-actions" style="margin-top:12px">
       <button class="btn-modal-cancel" onclick="closeColManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SELECT OPTIONS MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="selectOptsModal">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-title" id="selectOptsTitle">Opções da coluna</div>
+    <div id="selectOptsList" class="col-manager" style="max-height:300px;overflow-y:auto"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+      <input class="modal-input" id="newOptLabel" placeholder="Nome da opção" style="flex:1">
+      <input type="color" id="newOptColor" value="#6b7280" style="width:36px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;padding:2px">
+      <button class="btn-modal-save" onclick="addSelectOpt()">+ Adicionar</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closeSelectOptsModal()">Fechar</button>
     </div>
   </div>
 </div>
@@ -957,9 +1108,6 @@ header {
         <label class="modal-label">Prioridade</label>
         <select class="modal-select" id="tm-priority">
           <option value="">— Sem prioridade</option>
-          <option value="alta">🔴 Alta</option>
-          <option value="media">🟡 Média</option>
-          <option value="baixa">🔵 Baixa</option>
         </select>
       </div>
     </div>
@@ -985,7 +1133,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.21</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.0.39</span>
   </div>
   <div class="header-right" id="headerRight">
     <div class="auth-info" id="authInfo">
@@ -1044,18 +1192,9 @@ header {
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
       <select class="filter-select" id="filterStatus" onchange="setTaskFilterFromSelect(this.value)">
         <option value="all">Todas</option>
-        <option value="pendente">Pendentes</option>
-        <option value="concluida">Concluídas</option>
-        <option value="acao-necessaria">Ação Necessária</option>
-        <option value="aguardando">Aguardando</option>
-        <option value="pausado">Pausado</option>
       </select>
       <select class="filter-select" id="filterPriority" onchange="renderTasks()">
         <option value="">Prioridade</option>
-        <option value="urgente">Urgente</option>
-        <option value="alta">Alta</option>
-        <option value="media">Média</option>
-        <option value="baixa">Baixa</option>
       </select>
       <select class="filter-select" id="sortTasks" onchange="renderTasks()">
         <option value="created">Criação</option>
@@ -1064,7 +1203,9 @@ header {
         <option value="title">Nome</option>
       </select>
       <button class="btn-sm" onclick="openColManager()" title="Gerenciar colunas">⚙ Colunas</button>
+      <button class="btn-sm" id="nodateSortBtn" onclick="toggleNodateSort()" title="Posição dos itens sem data">Sem data: atrás</button>
       <button class="btn-sm" onclick="openStatusManager()" title="Gerenciar status">⚙ Status</button>
+      <button class="btn-sm" onclick="openPriorityManager()" title="Gerenciar prioridades">⚙ Prioridade</button>
       <button class="btn-sm accent" onclick="openTaskModal()">+ Tarefa</button>
     </div>
   </div>
@@ -1164,7 +1305,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.0.21 — agenda-v021</p>
+    <p class="version-tag">Agenda v0.0.39 — agenda-v039</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1274,11 +1415,11 @@ let state = {
     items: [],
     groups: [{ id: 'default', name: 'Geral', order: 0 }],
     statuses: [
-      { id: 'pendente',        label: 'Pendente',         color: '#6b7280', bg: 'rgba(107,114,128,.15)', builtin: true },
+      { id: 'pendente',        label: 'Pendente',         color: '#6b7280', bg: 'rgba(107,114,128,.15)', builtin: true, role: 'default' },
       { id: 'acao-necessaria', label: 'Ação Necessária',  color: '#ef4444', bg: 'rgba(239,68,68,.15)',   builtin: true },
       { id: 'aguardando',      label: 'Aguardando',       color: '#fbbf24', bg: 'rgba(251,191,36,.12)',  builtin: true },
       { id: 'pausado',         label: 'Pausado',          color: '#a78bfa', bg: 'rgba(167,139,250,.12)', builtin: true },
-      { id: 'concluida',       label: 'Concluída',        color: '#22c55e', bg: 'rgba(34,197,94,.12)',   builtin: true },
+      { id: 'concluida',       label: 'Concluída',        color: '#22c55e', bg: 'rgba(34,197,94,.12)',   builtin: true, role: 'done' },
     ],
     columns: [
       { id: 'status', label: 'Status', type: 'status', visible: true, order: 0, width: 140 },
@@ -1334,7 +1475,22 @@ function mergeState(saved) {
   // applyTaskSeeds always rebuilds from seed + user items
   if (saved.tasks) {
     state.tasks = { ...state.tasks, ...saved.tasks };
+    // Preserve saved items for applyTaskSeeds to merge user data (comments, edits, etc)
+    state.tasks._savedItems = saved.tasks.items || [];
     state.tasks.items = []; // reset — applyTaskSeeds will repopulate
+    // Re-apply roles to builtin statuses (may be missing in older saved data)
+    var BUILTIN_ROLES = { 'pendente': 'default', 'concluida': 'done' };
+    if (state.tasks.statuses) {
+      state.tasks.statuses.forEach(function(s) {
+        if (s.builtin && BUILTIN_ROLES[s.id]) s.role = BUILTIN_ROLES[s.id];
+      });
+    }
+    // Re-apply roles to builtin priorities (may be missing in older saved data)
+    if (state.tasks.priorities) {
+      state.tasks.priorities.forEach(function(p) {
+        if (p.builtin && p.id === '') p.role = 'none';
+      });
+    }
   }
   state._updatedAt = saved._updatedAt;
 }
@@ -1381,26 +1537,26 @@ const FINANCE_SEED_VERSION = 'v2';
 /* ═══════════════════════════════════════════════════════════
    TASK SEEDS (importado do ClickUp) — estrutura recursiva
 ═══════════════════════════════════════════════════════════ */
-const TASK_SEED_VERSION = 'v3';
+const TASK_SEED_VERSION = 'v4';
 
 function mkTask(id, title, status, priority, dueDate, children) {
   return { id, title, status: status||'pendente', priority: priority||'', dueDate: dueDate||'',
     description:'', children: children||[], createdAt:'2025-01-01T00:00:00Z',
-    updatedAt:'2025-01-01T00:00:00Z', linkedItems:[], notes:'', tags:[], expanded:false };
+    updatedAt:'2025-01-01T00:00:00Z', linkedItems:[], notes:'', tags:[], expanded:false, comments:[] };
 }
 
 const TASK_SEEDS_ITEMS = [
-  mkTask('ts-01','Cancelar HBO Anuidade','pendente','','2027-01-04'),
-  mkTask('ts-02','Verificar fechamento da CNPJ Londrina','pendente','baixa','2026-09-01'),
+  mkTask('ts-01','Cancelar HBO Anuidade','aguardando','baixa','2027-01-04'),
+  mkTask('ts-02','Verificar fechamento da CNPJ Londrina','pausado','baixa',''),
   mkTask('ts-03','Vencimento tag ViaFácil','aguardando','baixa','2026-09-08'),
-  mkTask('ts-04','Cancelar Apple TV','pendente','','2026-04-05'),
-  mkTask('ts-cs','Credit Suisse','acao-necessaria','alta','2026-03-31',[
+  mkTask('ts-04','Cancelar Apple TV','acao-necessaria','media','2026-04-05'),
+  mkTask('ts-cs','Credit Suisse','acao-necessaria','alta','',[
     mkTask('ts-cs1','Levantar recursos para retainer','acao-necessaria','urgente','2025-08-22'),
     mkTask('ts-cs2','Fazer teste de modalidade SWIFT','concluida','alta','2025-08-08'),
     mkTask('ts-cs3','Entrar em contato com advogado','aguardando','urgente','2025-08-19'),
     mkTask('ts-cs4','Verificar possibilidade de transferir pelo UK','concluida','urgente','2025-08-15'),
   ]),
-  mkTask('ts-sp','Suíça Passaporte','acao-necessaria','alta','2026-03-31',[
+  mkTask('ts-sp','Suíça Passaporte','acao-necessaria','alta','',[
     mkTask('ts-sp1','Decisão Judicial','concluida','','2025-02-20'),
     mkTask('ts-sp2','Adquirir cópia autenticada do mandado de averbação - inteiro teor digitada e apostilada (<6 meses)','concluida','','2025-07-31'),
     mkTask('ts-sp3','Adquirir cópia autenticada da decisão judicial - Realizar apostilamento','concluida','','2025-08-01'),
@@ -1419,10 +1575,10 @@ const TASK_SEEDS_ITEMS = [
     ]),
     mkTask('ts-sp13','Solicitar carta de requisição Suíça','concluida','','2026-01-05'),
   ]),
-  mkTask('ts-22','Plano de Saude','pausado','alta','2026-03-31'),
-  mkTask('ts-23','Marcar consulta Moris','pausado','media','2026-03-31'),
-  mkTask('ts-24','Locar Vaga de Garagem Osório','pausado','media','2026-03-31'),
-  mkTask('ts-25','Anunciar memória DDR4','pendente','','2026-03-25'),
+  mkTask('ts-22','Plano de Saude','pausado','alta',''),
+  mkTask('ts-23','Marcar consulta Moris','pausado','media',''),
+  mkTask('ts-24','Locar Vaga de Garagem Osório','pausado','media',''),
+  mkTask('ts-25','Anunciar memória DDR4','pausado','media',''),
 ];
 
 function applyTaskSeeds() {
@@ -1430,19 +1586,58 @@ function applyTaskSeeds() {
   const seedChanged = savedVersion !== TASK_SEED_VERSION;
   if (seedChanged) {
     state._taskSeedVersion = TASK_SEED_VERSION;
-    // Reset groups to default only
     state.tasks.groups = [{ id: 'default', name: 'Geral', order: 0 }];
   }
 
+  // Flat map of saved items by id for quick lookup (including children)
+  var savedMap = {};
+  function indexSaved(items) {
+    (items || []).forEach(function(t) {
+      savedMap[t.id] = t;
+      indexSaved(t.children);
+    });
+  }
+  indexSaved(state.tasks._savedItems || []);
+
+  // User fields to preserve from saved state over seed defaults
+  var USER_FIELDS = ['status','priority','dueDate','description','notes','tags','expanded','comments','updatedAt'];
+
+  function mergeWithSaved(seedItem) {
+    var saved = savedMap[seedItem.id];
+    var item = Object.assign({}, seedItem);
+    if (saved) {
+      USER_FIELDS.forEach(function(f) {
+        if (saved[f] !== undefined) item[f] = saved[f];
+      });
+    }
+    // Recurse into children
+    if (item.children && item.children.length) {
+      item.children = item.children.map(mergeWithSaved);
+    }
+    return item;
+  }
+
   function applySeedItem(seed) {
-    const existing = state.tasks.items.find(t => t.id === seed.id);
+    var existing = state.tasks.items.find(function(t){ return t.id === seed.id; });
     if (!existing) {
-      state.tasks.items.push({...seed, group: 'default'});
+      state.tasks.items.push(Object.assign(mergeWithSaved(seed), { group: 'default' }));
     }
   }
 
-  TASK_SEEDS_ITEMS.forEach(seed => applySeedItem(seed));
-  console.log('[SEEDS] tasks after seed:', state.tasks.items.length);
+  TASK_SEEDS_ITEMS.forEach(function(seed){ applySeedItem(seed); });
+
+  // Re-add any user-created items (not in seed) from savedItems
+  var seedIds = {};
+  function indexSeedIds(items) { items.forEach(function(t){ seedIds[t.id]=true; if(t.children) indexSeedIds(t.children); }); }
+  indexSeedIds(TASK_SEEDS_ITEMS);
+
+  (state.tasks._savedItems || []).forEach(function(t) {
+    if (!seedIds[t.id] && !state.tasks.items.find(function(x){ return x.id===t.id; })) {
+      state.tasks.items.push(t);
+    }
+  });
+
+  delete state.tasks._savedItems;
 }
 
 
@@ -1504,6 +1699,7 @@ const MONTHS_NAMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out
 let _editingTaskId = null;
 let _editingSubId = null;
 let taskFilterStatus = 'all';
+let nodateLast = true; // true = sem data vai para o final
 
 function uuid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
@@ -1515,7 +1711,11 @@ function openTaskModal(taskId) {
   document.getElementById('tm-title').value = task?.title || '';
   document.getElementById('tm-desc').value = task?.description || '';
   document.getElementById('tm-date').value = task?.dueDate || '';
-  document.getElementById('tm-priority').value = task?.priority || '';
+  // Populate priority select dynamically
+  var prioSel = document.getElementById('tm-priority');
+  prioSel.innerHTML = getPriorities().filter(function(p){ return p.role !== 'none'; }).map(function(p){
+    return '<option value="'+p.id+'"'+(task?.priority===p.id?' selected':'')+'>'+escHtml(p.label)+'</option>';
+  }).join('');
   document.getElementById('tm-class').value = task?.class || '';
   document.getElementById('tm-delete-btn').style.display = task ? 'block' : 'none';
   // populate group select
@@ -1619,7 +1819,7 @@ function quickAddKey(e) { if (e.key === 'Enter') quickAddTask(); }
 function toggleTaskStatus(id) {
   var t = findTaskById(state.tasks.items, id);
   if (!t) return;
-  t.status = t.status === 'concluida' ? 'pendente' : 'concluida';
+  t.status = isDoneStatus(t.status) ? getDefaultStatusId() : getDoneStatusId();
   t.updatedAt = new Date().toISOString();
   saveState(); renderTasks();
 }
@@ -1631,42 +1831,28 @@ function setTaskFilter(filter, btn) {
   renderTasks();
 }
 
+function toggleNodateSort() {
+  nodateLast = !nodateLast;
+  var btn = document.getElementById('nodateSortBtn');
+  if (btn) btn.textContent = 'Sem data: ' + (nodateLast ? 'atrás' : 'frente');
+  renderTasks();
+}
+
+function nodatePlaceholder() { return nodateLast ? '9999-12-31' : '0000-01-01'; }
+
 function getFilteredTasks() {
   let items = [...state.tasks.items];
   if (taskFilterStatus !== 'all') items = items.filter(t => t.status === taskFilterStatus);
   const pf = document.getElementById('filterPriority')?.value;
   if (pf) items = items.filter(t => t.priority === pf);
   const sort = document.getElementById('sortTasks')?.value || 'created';
-  if (sort === 'date') items.sort((a,b) => (a.dueDate||'9999') < (b.dueDate||'9999') ? -1 : 1);
+  if (sort === 'date') items.sort((a,b) => (a.dueDate||nodatePlaceholder()) < (b.dueDate||nodatePlaceholder()) ? -1 : 1);
   else if (sort === 'priority') {
-    const ord = {urgente:0, alta:1, media:2, baixa:3, '':4};
-    items.sort((a,b) => (ord[a.priority]||4) - (ord[b.priority]||4));
+    const ord = getPrioritySortOrder();
+    items.sort((a,b) => (ord[a.priority]!==undefined?ord[a.priority]:999) - (ord[b.priority]!==undefined?ord[b.priority]:999));
   } else if (sort === 'title') items.sort((a,b) => a.title.localeCompare(b.title));
   else items.sort((a,b) => b.createdAt > a.createdAt ? 1 : -1);
   return items;
-}
-
-function renderTasks() {
-  const items = getFilteredTasks();
-  function countAll(items) { return items.reduce((s,t) => s + 1 + countAll(t.children||[]), 0); }
-  function countPending(items) { return items.reduce((s,t) => s + (t.status==='pendente'?1:0) + countPending(t.children||[]), 0); }
-  const pending = countPending(state.tasks.items);
-  const total = countAll(state.tasks.items);
-  document.getElementById('tasksSub').textContent = pending + ' pendente' + (pending !== 1 ? 's' : '') + ' · ' + total + ' total';
-
-  // Update group filter select
-  const gSel = document.getElementById('filterGroup');
-  if (gSel) {
-    const cur = gSel.value;
-    gSel.innerHTML = '<option value="">Grupo</option>' + state.tasks.groups.map(g => `<option value="${g.id}" ${cur===g.id?'selected':''}>${g.name}</option>`).join('');
-  }
-
-  const container = document.getElementById('tasksList');
-  if (!items.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✓</div><p>Nenhuma tarefa encontrada</p></div>`;
-    return;
-  }
-  container.innerHTML = items.map(t => taskCardHTML(t, 0)).join('');
 }
 
 function getVisibleCols() {
@@ -1688,12 +1874,12 @@ function getSortedItems(items) {
   var sorted = items.slice();
   sorted.sort(function(a,b) {
     var va='', vb='';
-    if (colId==='dueDate') { va=a.dueDate||'9999'; vb=b.dueDate||'9999'; }
+    if (colId==='dueDate') { va=a.dueDate||nodatePlaceholder(); vb=b.dueDate||nodatePlaceholder(); }
     else if (colId==='status') { va=a.status||''; vb=b.status||''; }
     else if (colId==='priority') {
-      var ord={urgente:0,alta:1,media:2,baixa:3,normal:4,'':5};
-      va=ord[a.priority]!==undefined?ord[a.priority]:5;
-      vb=ord[b.priority]!==undefined?ord[b.priority]:5;
+      var ord = getPrioritySortOrder();
+      va = ord[a.priority]!==undefined ? ord[a.priority] : 999;
+      vb = ord[b.priority]!==undefined ? ord[b.priority] : 999;
     } else { va=(a.customFields&&a.customFields[colId])||''; vb=(b.customFields&&b.customFields[colId])||''; }
     if (va<vb) return dir==='asc'?-1:1;
     if (va>vb) return dir==='asc'?1:-1;
@@ -1714,12 +1900,30 @@ function clickColHeader(colId) {
 
 function renderTasks() {
   function countAll(items) { return items.reduce(function(s,t){return s+1+countAll(t.children||[]);},0); }
-  function countPending(items) { return items.reduce(function(s,t){return s+(t.status==='pendente'?1:0)+countPending(t.children||[]);},0); }
+  function countPending(items) { return items.reduce(function(s,t){return s+(!isDoneStatus(t.status)?1:0)+countPending(t.children||[]);},0); }
   var allItems = state.tasks.items;
   var pending = countPending(allItems);
   var total = countAll(allItems);
   var sub = document.getElementById('tasksSub');
   if (sub) sub.textContent = pending + ' pendente' + (pending!==1?'s':'') + ' · ' + total + ' total';
+
+  // Populate filter selects dynamically
+  var filterSel = document.getElementById('filterStatus');
+  if (filterSel) {
+    var cur = filterSel.value;
+    filterSel.innerHTML = '<option value="all">Todas</option>'
+      + getStatuses().map(function(s){
+          return '<option value="'+s.id+'"'+(cur===s.id?' selected':'')+'>'+escHtml(s.label)+'</option>';
+        }).join('');
+  }
+  var prioSel = document.getElementById('filterPriority');
+  if (prioSel) {
+    var curP = prioSel.value;
+    prioSel.innerHTML = '<option value="">Prioridade</option>'
+      + getPriorities().filter(function(p){ return p.id !== ''; }).map(function(p){
+          return '<option value="'+p.id+'"'+(curP===p.id?' selected':'')+'>'+escHtml(p.label)+'</option>';
+        }).join('');
+  }
 
   var items = getFilteredTasks();
   var cols = getVisibleCols();
@@ -1778,8 +1982,8 @@ function renderTasks() {
 
 function taskRowHTML(t, depth, cols) {
   var today = new Date().toISOString().slice(0,10);
-  var overdue = t.dueDate && t.dueDate < today && t.status!=='concluida';
-  var doneClass = t.status==='concluida' ? ' done' : '';
+  var overdue = t.dueDate && t.dueDate < today && !isDoneStatus(t.status);
+  var doneClass = isDoneStatus(t.status) ? ' done' : '';
   var isSubtask = depth > 0;
 
   // Indent
@@ -1797,11 +2001,11 @@ function taskRowHTML(t, depth, cols) {
     ? '<button class="task-expand-btn" onclick="event.stopPropagation();toggleChildren(&#39;'+t.id+'&#39;)">'+(t.expanded?'▼':'▶')+'</button>'
     : '<span style="display:inline-block;width:14px;flex-shrink:0"></span>';
 
-  var checkClass = 'task-check'+(t.status==='concluida'?' checked':'')+(isSubtask?' subtask':'');
-  var checkMark = t.status==='concluida'?'✓':'';
+  var checkClass = 'task-check'+(isDoneStatus(t.status)?' checked':'')+(isSubtask?' subtask':'');
+  var checkMark = isDoneStatus(t.status)?'✓':'';
 
   var childCount = hasChildren
-    ? '<span class="task-child-count">'+children.filter(function(c){return c.status==='concluida';}).length+'/'+children.length+'</span>'
+    ? '<span class="task-child-count">'+children.filter(function(c){return isDoneStatus(c.status);}).length+'/'+children.length+'</span>'
     : '';
 
   // Make the whole name cell clickable to expand if has children
@@ -1809,16 +2013,19 @@ function taskRowHTML(t, depth, cols) {
     ? 'onclick="toggleChildren(&#39;'+t.id+'&#39;)"'
     : 'onclick="openTaskModal(&#39;'+t.id+'&#39;)"';
 
+  var addSubBtn = '<button class="task-add-sub-btn" onclick="event.stopPropagation();addChildTask(&#39;'+t.id+'&#39;)" title="Adicionar subtarefa">+ sub</button>';
+
   var nameCell = '<div class="task-row-name">'
     + indentHTML
     + expandBtn
     + '<div class="'+checkClass+'" onclick="event.stopPropagation();toggleTaskStatus(&#39;'+t.id+'&#39;)">'+checkMark+'</div>'
     + '<div class="task-title-text" '+titleClick+'>'+escHtml(t.title)+'</div>'
     + childCount
+    + addSubBtn
     +'</div>';
 
   // Column cells with fixed widths
-  var STATUS_LBL = {pendente:'Pendente',concluida:'Concluída','acao-necessaria':'Ação Necessária',aguardando:'Aguardando',pausado:'Pausado'};
+  var STATUS_LBL = {}; getStatuses().forEach(function(s){STATUS_LBL[s.id]=s.label;});
   var PRIO_LBL = {urgente:'Urgente',alta:'Alta',media:'Média',baixa:'Baixa',normal:'Normal'};
 
   var colCells = cols.map(function(c){
@@ -1830,18 +2037,31 @@ function taskRowHTML(t, depth, cols) {
     if (c.type==='priority') {
       return '<div class="task-col-cell" '+style+'>'+priorityBadgeHTML(t.id, t.priority)+'</div>';
     }
+    if (c.type==='select') {
+      return '<div class="task-col-cell" '+style+'>'+selectBadgeHTML(t.id, c.id)+'</div>';
+    }
     if (c.type==='date') {
       var dateStr = t.dueDate ? formatDate(t.dueDate) : '—';
-      var dateColor = overdue ? 'var(--danger)' : 'var(--text2)';
-      return '<div class="task-col-cell'+(overdue?' overdue':'')+'" '+style+'>'+dateStr+'</div>';
+      var overdueStyle = overdue ? 'color:var(--danger);font-weight:600;' : 'color:var(--text2);';
+      var overdueIcon = overdue ? '<span style="margin-left:4px;font-size:10px">⚠</span>' : '';
+      var w = c.width || getDefaultWidth(c.type);
+      var dateStyle = 'width:'+w+'px;min-width:'+w+'px;max-width:'+w+'px;'+overdueStyle+'cursor:pointer';
+      return '<div class="task-col-cell'+(overdue?' overdue':'')+'" style="'+dateStyle+'" data-taskid="'+t.id+'" onclick="inlineDateEdit(this)">'+dateStr+overdueIcon+'</div>';
     }
     var val = (t.customFields && t.customFields[c.id]) || '—';
     return '<div class="task-col-cell" '+style+' style="color:var(--text2)">'+escHtml(val)+'</div>';
   }).join('');
 
   // Actions (always 72px)
+  var comments = t.comments || [];
+  var commentCount = comments.length;
+  var commentBtn = '<button class="task-comment-btn'+(commentCount?' has-comments':'')+'" '
+    +'onclick="event.stopPropagation();openCommentDropdown(this,&#39;'+t.id+'&#39;)" title="Comentários">'
+    +'💬'+(commentCount?'<span class="task-comment-count">'+commentCount+'</span>':'')
+    +'</button>';
+
   var actions = '<div class="task-row-actions">'
-    +'<button class="task-icon-btn" onclick="addChildTask(&#39;'+t.id+'&#39;)" title="Subtarefa">+</button>'
+    +commentBtn
     +'<button class="task-icon-btn" onclick="openTaskModal(&#39;'+t.id+'&#39;)" title="Editar">✎</button>'
     +'<button class="task-icon-btn" onclick="deleteTaskById(&#39;'+t.id+'&#39;)" title="Excluir">✕</button>'
     +'</div>';
@@ -1855,14 +2075,29 @@ function taskRowHTML(t, depth, cols) {
 function getStatuses() {
   if (!state.tasks.statuses || !state.tasks.statuses.length) {
     state.tasks.statuses = [
-      { id: 'pendente',        label: 'Pendente',        color: '#6b7280', bg: 'rgba(107,114,128,.15)', builtin: true },
+      { id: 'pendente',        label: 'Pendente',        color: '#6b7280', bg: 'rgba(107,114,128,.15)', builtin: true, role: 'default' },
       { id: 'acao-necessaria', label: 'Ação Necessária', color: '#ef4444', bg: 'rgba(239,68,68,.15)',   builtin: true },
       { id: 'aguardando',      label: 'Aguardando',      color: '#fbbf24', bg: 'rgba(251,191,36,.12)',  builtin: true },
       { id: 'pausado',         label: 'Pausado',         color: '#a78bfa', bg: 'rgba(167,139,250,.12)', builtin: true },
-      { id: 'concluida',       label: 'Concluída',       color: '#22c55e', bg: 'rgba(34,197,94,.12)',   builtin: true },
+      { id: 'concluida',       label: 'Concluída',       color: '#22c55e', bg: 'rgba(34,197,94,.12)',   builtin: true, role: 'done' },
     ];
   }
   return state.tasks.statuses;
+}
+
+function isDoneStatus(statusId) {
+  var s = getStatuses().find(function(x){return x.id===statusId;});
+  return !!(s && s.role === 'done');
+}
+
+function getDefaultStatusId() {
+  var s = getStatuses().find(function(x){return x.role === 'default';});
+  return s ? s.id : (getStatuses()[0] ? getStatuses()[0].id : 'pendente');
+}
+
+function getDoneStatusId() {
+  var s = getStatuses().find(function(x){return x.role === 'done';});
+  return s ? s.id : 'concluida';
 }
 
 function getStatusObj(id) {
@@ -1921,8 +2156,11 @@ function renderStatusManager() {
   var list = document.getElementById('statusManagerList');
   if (!list) return;
   list.innerHTML = getStatuses().map(function(s) {
-    var delBtn = s.builtin
-      ? '<span class="status-manager-builtin">padrão</span>'
+    var roleBadge = '';
+    if (s.role === 'done')    roleBadge = '<span class="status-manager-builtin" title="Status de conclusão — determina o comportamento de fechamento de tarefas">✓ conclusão</span>';
+    else if (s.role === 'default') roleBadge = '<span class="status-manager-builtin" title="Status padrão para novas tarefas">⬤ padrão</span>';
+    var delBtn = s.role
+      ? roleBadge
       : '<button class="status-del-btn" onclick="deleteStatus(&#39;'+s.id+'&#39;)">✕</button>';
     return '<div class="status-manager-row" id="smr-'+s.id+'">'
       +'<div class="status-color-swatch" style="background:'+s.color+'">'
@@ -1956,12 +2194,12 @@ function updateStatusLabel(statusId, label) {
 
 function deleteStatus(statusId) {
   var s = getStatuses().find(function(x){return x.id===statusId;});
-  if (!s || s.builtin) return;
-  confirmAction('Excluir status "'+s.label+'"', 'Tarefas com este status ficarão como "Pendente".', function(){
-    // Reassign tasks with this status to pendente
+  if (!s || s.role) return;
+  var defaultId = getDefaultStatusId();
+  confirmAction('Excluir status "'+s.label+'"', 'Tarefas com este status ficarão com o status padrão.', function(){
     function reassign(items) {
       items.forEach(function(t){
-        if(t.status===statusId) t.status='pendente';
+        if(t.status===statusId) t.status=defaultId;
         if(t.children) reassign(t.children);
       });
     }
@@ -1982,15 +2220,106 @@ function addStatus() {
   saveState(); renderStatusManager(); renderTasks();
 }
 
+/* ═══ PRIORITY MANAGER ═══ */
+function openPriorityManager() {
+  if (!state.tasks.priorities || !state.tasks.priorities.length) getPriorities();
+  renderPriorityManager();
+  document.getElementById('priorityManagerModal').classList.add('show');
+}
+function closePriorityManager() { document.getElementById('priorityManagerModal').classList.remove('show'); }
+
+function renderPriorityManager() {
+  var list = document.getElementById('priorityManagerList');
+  if (!list) return;
+  list.innerHTML = getPriorities().map(function(p) {
+    var roleTag = '';
+    if (p.role === 'none') roleTag = '<span class="status-manager-builtin" title="Sem prioridade definida">— vazio</span>';
+    var delBtn = p.role === 'none'
+      ? roleTag
+      : '<button class="status-del-btn" onclick="deletePriority(&#39;'+p.id+'&#39;)">✕</button>';
+    return '<div class="status-manager-row" id="pmr-'+p.id+'">'
+      +'<div class="status-color-swatch" style="background:'+p.dot+'">'
+      +(p.role !== 'none' ? '<input type="color" value="'+p.dot+'" oninput="updatePriorityColor(&#39;'+p.id+'&#39;,this.value)">' : '')
+      +'</div>'
+      +'<input class="status-manager-label-input" value="'+escHtml(p.label)+'" '
+      +(p.role === 'none' ? 'readonly style="opacity:.5;cursor:default" ' : '')
+      +'onchange="updatePriorityLabel(&#39;'+p.id+'&#39;,this.value)" '
+      +'onblur="updatePriorityLabel(&#39;'+p.id+'&#39;,this.value)">'
+      +delBtn
+      +'</div>';
+  }).join('');
+}
+
+function updatePriorityLabel(id, label) {
+  var p = getPriorities().find(function(x){return x.id===id;});
+  if (!p || p.role==='none' || p.label===label) return;
+  p.label = label.trim() || p.label;
+  saveState(); renderTasks();
+}
+
+function updatePriorityColor(id, color) {
+  var p = getPriorities().find(function(x){return x.id===id;});
+  if (!p) return;
+  p.dot = color;
+  var swatch = document.querySelector('#pmr-'+id+' .status-color-swatch');
+  if (swatch) swatch.style.background = color;
+  saveState(); renderTasks();
+}
+
+function deletePriority(id) {
+  var p = getPriorities().find(function(x){return x.id===id;});
+  if (!p || p.role === 'none') return;
+  confirmAction('Excluir prioridade "'+p.label+'"', 'Tarefas com esta prioridade ficarão sem prioridade.', function(){
+    function reassign(items) {
+      items.forEach(function(t){
+        if(t.priority===id) t.priority='';
+        if(t.children) reassign(t.children);
+      });
+    }
+    reassign(state.tasks.items);
+    state.tasks.priorities = state.tasks.priorities.filter(function(x){return x.id!==id;});
+    saveState(); renderPriorityManager(); renderTasks();
+  });
+}
+
+function addPriority() {
+  var label = document.getElementById('newPriorityLabel').value.trim();
+  var color = document.getElementById('newPriorityColor').value;
+  if (!label) return;
+  var id = 'prio-'+label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  if (getPriorities().find(function(p){return p.id===id;})) id += '-'+Date.now();
+  state.tasks.priorities.push({ id: id, label: label, dot: color, builtin: false });
+  document.getElementById('newPriorityLabel').value = '';
+  saveState(); renderPriorityManager(); renderTasks();
+}
+
 /* ═══ PRIORITY DROPDOWN ═══ */
-var PRIORITIES = [
-  { id: '',        label: '— Sem prioridade', color: 'var(--muted)',          dot: '#6b7280' },
-  { id: 'urgente', label: 'Urgente',          color: 'var(--priority-alta)',  dot: '#ef4444' },
-  { id: 'alta',    label: 'Alta',             color: 'var(--priority-alta)',  dot: '#ef4444' },
-  { id: 'media',   label: 'Média',            color: 'var(--priority-media)', dot: '#f97316' },
-  { id: 'baixa',   label: 'Baixa',            color: 'var(--priority-baixa)', dot: '#60a5fa' },
-  { id: 'normal',  label: 'Normal',           color: 'var(--text2)',          dot: '#6b7280' },
+var DEFAULT_PRIORITIES = [
+  { id: '',        label: '— Sem prioridade', dot: '#6b7280', builtin: true, role: 'none' },
+  { id: 'urgente', label: 'Urgente',          dot: '#ef4444', builtin: true },
+  { id: 'alta',    label: 'Alta',             dot: '#ef4444', builtin: true },
+  { id: 'media',   label: 'Média',            dot: '#f97316', builtin: true },
+  { id: 'baixa',   label: 'Baixa',            dot: '#60a5fa', builtin: true },
+  { id: 'normal',  label: 'Normal',           dot: '#6b7280', builtin: true },
 ];
+
+function getPriorities() {
+  if (!state.tasks.priorities || !state.tasks.priorities.length) {
+    state.tasks.priorities = DEFAULT_PRIORITIES.map(function(p){ return Object.assign({}, p); });
+  }
+  return state.tasks.priorities;
+}
+
+function getPriorityObj(id) {
+  return getPriorities().find(function(p){ return p.id === id; })
+    || { id: id, label: id||'—', dot: '#6b7280' };
+}
+
+function getPrioritySortOrder() {
+  var order = {};
+  getPriorities().forEach(function(p, i){ order[p.id] = i; });
+  return order;
+}
 
 function openPriorityDropdown(e, taskId) {
   e.stopPropagation();
@@ -2005,7 +2334,7 @@ function openPriorityDropdown(e, taskId) {
   if (top + 200 > window.innerHeight) top = rect.top - 204;
   dd.style.top = top + 'px';
   dd.style.left = rect.left + 'px';
-  PRIORITIES.forEach(function(p) {
+  getPriorities().forEach(function(p) {
     var item = document.createElement('div');
     item.className = 'priority-dropdown-item';
     item.innerHTML = '<div class="priority-dropdown-dot" style="background:'+p.dot+'"></div>'
@@ -2029,49 +2358,114 @@ function setTaskPriority(taskId, priorityId) {
 }
 
 function priorityBadgeHTML(taskId, priority) {
-  var PRIO_LBL = {urgente:'Urgente',alta:'Alta',media:'Média',baixa:'Baixa',normal:'Normal'};
-  var label = priority ? (PRIO_LBL[priority]||priority) : '—';
-  var cls = priority ? 'priority-badge '+priority : '';
-  return '<span class="'+cls+'" style="cursor:pointer" onclick="openPriorityDropdown(event,&#39;'+taskId+'&#39;)">'+label+'</span>';
+  var p = getPriorityObj(priority);
+  var label = p.label || '—';
+  var dot = p.dot || '#6b7280';
+  if (!priority) {
+    return '<span class="priority-badge-empty" style="cursor:pointer;color:var(--muted)" onclick="openPriorityDropdown(event,&#39;'+taskId+'&#39;)">—</span>';
+  }
+  return '<span class="priority-badge" style="cursor:pointer" onclick="openPriorityDropdown(event,&#39;'+taskId+'&#39;)">'
+    +'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dot+';margin-right:4px;vertical-align:middle"></span>'
+    +escHtml(label)+'</span>';
 }
 
 /* ═══ DATE PICKER ═══ */
-function openDatePicker(e, taskId) {
-  e.stopPropagation();
-  closeDatePicker();
+function inlineDateEdit(cell) {
+  if (!cell) return;
+  var taskId = cell.dataset.taskid;
+  openDateDropdown(cell, taskId);
+}
+
+function openDateDropdown(anchorEl, taskId) {
+  closeDateDropdown();
   var t = findTaskById(state.tasks.items, taskId);
   if (!t) return;
-  var rect = e.currentTarget.getBoundingClientRect();
-  var popup = document.createElement('div');
-  popup.className = 'date-picker-popup'; popup.id = 'date-picker-popup';
+  var rect = anchorEl.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'date-dd';
+  dd.style.position = 'fixed';
+  dd.style.zIndex = '9999';
+  dd.style.background = 'var(--surface)';
+  dd.style.border = '1px solid var(--border)';
+  dd.style.borderRadius = '6px';
+  dd.style.boxShadow = '0 4px 20px rgba(0,0,0,.4)';
+  dd.style.padding = '10px';
+  dd.style.display = 'flex';
+  dd.style.flexDirection = 'column';
+  dd.style.gap = '8px';
   var top = rect.bottom + 4;
-  if (top + 100 > window.innerHeight) top = rect.top - 104;
-  popup.style.top = top + 'px';
-  popup.style.left = rect.left + 'px';
+  if (top + 90 > window.innerHeight) top = rect.top - 94;
+  // Ensure never off-screen
+  if (top < 0) top = 4;
+  var left = rect.left;
+  if (left + 200 > window.innerWidth) left = window.innerWidth - 204;
+  dd.style.top = top + 'px';
+  dd.style.left = left + 'px';
+  dd.addEventListener('click', function(ev){ ev.stopPropagation(); });
+
   var inp = document.createElement('input');
   inp.type = 'date';
   inp.value = t.dueDate || '';
-  popup.innerHTML = '';
-  popup.appendChild(inp);
-  var actions = document.createElement('div');
-  actions.className = 'date-picker-actions';
+  inp.style.background = 'var(--bg)';
+  inp.style.border = '1px solid var(--border)';
+  inp.style.borderRadius = '4px';
+  inp.style.color = 'var(--text)';
+  inp.style.fontFamily = 'monospace';
+  inp.style.fontSize = '12px';
+  inp.style.padding = '6px 8px';
+  inp.style.outline = 'none';
+  inp.style.cursor = 'pointer';
+  inp.addEventListener('keydown', function(ev){
+    if (ev.key==='Enter') { setTaskDate(taskId, inp.value); closeDateDropdown(); renderTasks(); }
+    if (ev.key==='Escape') { closeDateDropdown(); }
+  });
+
+  var row = document.createElement('div');
+  row.style.display = 'flex';
+  row.style.gap = '6px';
+  row.style.justifyContent = 'flex-end';
+
   var clearBtn = document.createElement('button');
-  clearBtn.className = 'date-picker-clear';
   clearBtn.textContent = 'Limpar';
-  clearBtn.onclick = function(ev) { ev.stopPropagation(); setTaskDate(taskId, ''); closeDatePicker(); };
+  clearBtn.style.background = 'none';
+  clearBtn.style.border = '1px solid var(--border)';
+  clearBtn.style.borderRadius = '4px';
+  clearBtn.style.color = 'var(--muted)';
+  clearBtn.style.fontFamily = 'monospace';
+  clearBtn.style.fontSize = '10px';
+  clearBtn.style.padding = '4px 10px';
+  clearBtn.style.cursor = 'pointer';
+  clearBtn.onclick = function(){ setTaskDate(taskId, ''); closeDateDropdown(); renderTasks(); };
+
   var okBtn = document.createElement('button');
-  okBtn.className = 'date-picker-ok';
   okBtn.textContent = 'OK';
-  okBtn.onclick = function(ev) { ev.stopPropagation(); setTaskDate(taskId, inp.value); closeDatePicker(); };
-  actions.appendChild(clearBtn);
-  actions.appendChild(okBtn);
-  popup.appendChild(actions);
-  document.body.appendChild(popup);
+  okBtn.style.background = 'var(--accent)';
+  okBtn.style.border = 'none';
+  okBtn.style.borderRadius = '4px';
+  okBtn.style.color = '#0f0f0f';
+  okBtn.style.fontFamily = 'monospace';
+  okBtn.style.fontSize = '10px';
+  okBtn.style.padding = '4px 10px';
+  okBtn.style.cursor = 'pointer';
+  okBtn.onclick = function(){ setTaskDate(taskId, inp.value); closeDateDropdown(); renderTasks(); };
+
+  row.appendChild(clearBtn);
+  row.appendChild(okBtn);
+  dd.appendChild(inp);
+  dd.appendChild(row);
+  document.body.appendChild(dd);
   inp.focus();
-  setTimeout(function(){ document.addEventListener('click', closeDatePicker, {once:true}); }, 0);
+  // Use mousedown so we can check if click is inside the dropdown
+  function outsideClick(ev) {
+    var dd = document.getElementById('date-dd');
+    if (dd && dd.contains(ev.target)) return; // click inside — ignore
+    closeDateDropdown();
+    document.removeEventListener('mousedown', outsideClick);
+  }
+  setTimeout(function(){ document.addEventListener('mousedown', outsideClick); }, 150);
 }
 
-function closeDatePicker() { var el=document.getElementById('date-picker-popup'); if(el)el.remove(); }
+function closeDateDropdown() { var el=document.getElementById('date-dd'); if(el)el.remove(); }
 
 function setTaskDate(taskId, date) {
   var t = findTaskById(state.tasks.items, taskId);
@@ -2079,6 +2473,290 @@ function setTaskDate(taskId, date) {
   t.dueDate = date;
   t.updatedAt = new Date().toISOString();
   saveState(); renderTasks();
+}
+
+/* ═══ COMMENT SYSTEM ═══ */
+function getCurrentUserName() {
+  if (currentUser) {
+    return currentUser.user_metadata?.full_name
+      || currentUser.user_metadata?.name
+      || currentUser.email?.split('@')[0]
+      || 'Usuário';
+  }
+  return 'Usuário';
+}
+
+function getUserInitials(name) {
+  var parts = name.trim().split(' ');
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  return name.slice(0,2).toUpperCase();
+}
+
+function formatCommentDate(iso) {
+  var d = new Date(iso);
+  var now = new Date();
+  var months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var sameYear = d.getFullYear() === now.getFullYear();
+  var pad = function(n){ return n < 10 ? '0'+n : ''+n; };
+  var time = pad(d.getHours())+':'+pad(d.getMinutes());
+  if (sameYear) return d.getDate()+' '+months[d.getMonth()]+' às '+time;
+  return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+' às '+time;
+}
+
+function openCommentDropdown(anchorEl, taskId) {
+  closeCommentDropdown();
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+
+  var rect = anchorEl.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'comment-dd';
+  dd.className = 'comment-dd';
+
+  // Position: prefer below, flip above if not enough space
+  var ddHeight = 420;
+  var top = rect.bottom + 6;
+  if (top + ddHeight > window.innerHeight) top = rect.top - ddHeight - 6;
+  var left = Math.min(rect.left, window.innerWidth - 372);
+  dd.style.top = top + 'px';
+  dd.style.left = left + 'px';
+
+  // Header
+  var title = t.title.length > 35 ? t.title.slice(0,35)+'…' : t.title;
+  var header = document.createElement('div');
+  header.className = 'comment-dd-header';
+  header.innerHTML = '<strong>'+escHtml(title)+'</strong>'
+    +'<button class="comment-dd-close" onclick="closeCommentDropdown()">✕</button>';
+  dd.appendChild(header);
+
+  // Comment list
+  var listEl = document.createElement('div');
+  listEl.className = 'comment-dd-list';
+  listEl.id = 'comment-dd-list-'+taskId;
+  dd.appendChild(listEl);
+
+  // Footer: input + send
+  var footer = document.createElement('div');
+  footer.className = 'comment-dd-footer';
+  var textarea = document.createElement('textarea');
+  textarea.className = 'comment-input';
+  textarea.placeholder = 'Adicionar comentário…';
+  textarea.rows = 1;
+  textarea.id = 'comment-input-'+taskId;
+  textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+  textarea.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Enter' && !ev.shiftKey) {
+      ev.preventDefault();
+      submitComment(taskId);
+    }
+  });
+  var sendBtn = document.createElement('button');
+  sendBtn.className = 'comment-send-btn';
+  sendBtn.innerHTML = '➤';
+  sendBtn.title = 'Enviar (Enter)';
+  sendBtn.onclick = function() { submitComment(taskId); };
+  footer.appendChild(textarea);
+  footer.appendChild(sendBtn);
+  dd.appendChild(footer);
+
+  document.body.appendChild(dd);
+  renderCommentList(taskId);
+
+  // Close on outside mousedown
+  function outsideClick(ev) {
+    var el = document.getElementById('comment-dd');
+    if (el && el.contains(ev.target)) return;
+    closeCommentDropdown();
+    document.removeEventListener('mousedown', outsideClick);
+  }
+  setTimeout(function(){ document.addEventListener('mousedown', outsideClick); }, 150);
+  setTimeout(function(){ textarea.focus(); }, 50);
+}
+
+function closeCommentDropdown() {
+  var el = document.getElementById('comment-dd');
+  if (el) el.remove();
+}
+
+function renderCommentList(taskId) {
+  var listEl = document.getElementById('comment-dd-list-'+taskId);
+  if (!listEl) return;
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var comments = t.comments || [];
+  if (!comments.length) {
+    listEl.innerHTML = '<div class="comment-dd-empty">Nenhum comentário ainda.<br>Seja o primeiro a comentar.</div>';
+    return;
+  }
+  listEl.innerHTML = comments.map(function(c) {
+    var initials = getUserInitials(c.author);
+    return '<div class="comment-item" id="ci-'+c.id+'">'
+      +'<div class="comment-item-header">'
+      +'<div class="comment-avatar">'+escHtml(initials)+'</div>'
+      +'<span class="comment-author">'+escHtml(c.author)+'</span>'
+      +'<span class="comment-date">'+formatCommentDate(c.createdAt)+(c.editedAt?' · editado':'')+'</span>'
+      +'<button class="comment-menu-btn" onclick="openCommentCtxMenu(event,&#39;'+taskId+'&#39;,&#39;'+c.id+'&#39;)" title="Opções">⋮</button>'
+      +'</div>'
+      +'<div class="comment-body" id="cb-'+c.id+'">'+escHtml(c.text)+'</div>'
+      +'</div>';
+  }).join('');
+  listEl.scrollTop = listEl.scrollHeight;
+}
+
+function openCommentCtxMenu(ev, taskId, commentId) {
+  ev.stopPropagation();
+  closeCommentCtxMenu();
+  var btn = ev.currentTarget;
+  var rect = btn.getBoundingClientRect();
+  var menu = document.createElement('div');
+  menu.id = 'comment-ctx-menu';
+  menu.className = 'comment-ctx-menu';
+  menu.style.top = rect.bottom + 4 + 'px';
+  menu.style.left = Math.min(rect.left, window.innerWidth - 150) + 'px';
+
+  var editItem = document.createElement('div');
+  editItem.className = 'comment-ctx-item';
+  editItem.innerHTML = '✎ Editar';
+  editItem.onclick = function() { closeCommentCtxMenu(); startEditComment(taskId, commentId); };
+
+  var delItem = document.createElement('div');
+  delItem.className = 'comment-ctx-item danger';
+  delItem.innerHTML = '✕ Excluir';
+  delItem.onclick = function() { closeCommentCtxMenu(); deleteComment(taskId, commentId); };
+
+  menu.appendChild(editItem);
+  menu.appendChild(delItem);
+  document.body.appendChild(menu);
+
+  function outsideClick(ev) {
+    var m = document.getElementById('comment-ctx-menu');
+    if (m && m.contains(ev.target)) return;
+    closeCommentCtxMenu();
+    document.removeEventListener('mousedown', outsideClick);
+  }
+  setTimeout(function(){ document.addEventListener('mousedown', outsideClick); }, 100);
+}
+
+function closeCommentCtxMenu() {
+  var m = document.getElementById('comment-ctx-menu');
+  if (m) m.remove();
+}
+
+function startEditComment(taskId, commentId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var c = (t.comments||[]).find(function(x){ return x.id === commentId; });
+  if (!c) return;
+
+  var bodyEl = document.getElementById('cb-'+commentId);
+  if (!bodyEl) return;
+
+  // Replace body with textarea
+  var original = c.text;
+  bodyEl.style.display = 'none';
+
+  var wrap = document.createElement('div');
+  wrap.id = 'cedit-'+commentId;
+
+  var ta = document.createElement('textarea');
+  ta.className = 'comment-edit-area';
+  ta.value = original;
+  ta.rows = Math.max(2, original.split('\n').length);
+  ta.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+  ta.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); saveEditComment(taskId, commentId); }
+    if (ev.key === 'Escape') { cancelEditComment(commentId, original); }
+  });
+
+  var actions = document.createElement('div');
+  actions.className = 'comment-edit-actions';
+
+  var saveBtn = document.createElement('button');
+  saveBtn.className = 'comment-edit-save';
+  saveBtn.textContent = 'Salvar';
+  saveBtn.onclick = function() { saveEditComment(taskId, commentId); };
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'comment-edit-cancel';
+  cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = function() { cancelEditComment(commentId, original); };
+
+  actions.appendChild(cancelBtn);
+  actions.appendChild(saveBtn);
+  wrap.appendChild(ta);
+  wrap.appendChild(actions);
+  bodyEl.parentNode.insertBefore(wrap, bodyEl.nextSibling);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+}
+
+function saveEditComment(taskId, commentId) {
+  var ta = document.querySelector('#cedit-'+commentId+' textarea');
+  if (!ta) return;
+  var newText = ta.value.trim();
+  if (!newText) return;
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var c = (t.comments||[]).find(function(x){ return x.id === commentId; });
+  if (!c) return;
+  c.text = newText;
+  c.editedAt = new Date().toISOString();
+  t.updatedAt = new Date().toISOString();
+  saveState();
+  renderCommentList(taskId);
+  renderTasks();
+}
+
+function cancelEditComment(commentId, original) {
+  var wrap = document.getElementById('cedit-'+commentId);
+  if (wrap) wrap.remove();
+  var bodyEl = document.getElementById('cb-'+commentId);
+  if (bodyEl) bodyEl.style.display = '';
+}
+
+function deleteComment(taskId, commentId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t || !t.comments) return;
+  confirmAction('Excluir comentário', 'Esta ação não pode ser desfeita.', function() {
+    t.comments = t.comments.filter(function(c){ return c.id !== commentId; });
+    t.updatedAt = new Date().toISOString();
+    saveState();
+    renderCommentList(taskId);
+    renderTasks();
+  });
+}
+
+function submitComment(taskId) {
+  var textarea = document.getElementById('comment-input-'+taskId);
+  if (!textarea) return;
+  var text = textarea.value.trim();
+  if (!text) return;
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  if (!t.comments) t.comments = [];
+  t.comments.push({
+    id: 'c-'+Date.now(),
+    author: getCurrentUserName(),
+    text: text,
+    createdAt: new Date().toISOString()
+  });
+  t.updatedAt = new Date().toISOString();
+  textarea.value = '';
+  textarea.style.height = 'auto';
+  saveState();
+  renderCommentList(taskId);
+  renderTasks();
+  // Reopen dropdown stays open — reattach list ref
+  setTimeout(function(){
+    var listEl = document.getElementById('comment-dd-list-'+taskId);
+    if (listEl) listEl.scrollTop = listEl.scrollHeight;
+  }, 50);
 }
 
 function cycleStatus(taskId) {
@@ -2136,7 +2814,7 @@ function findTaskParent(items, id, parent) {
 function addChildTask(parentId) {
   var parent=findTaskById(state.tasks.items,parentId);if(!parent)return;
   if(!parent.children)parent.children=[];
-  parent.children.push({id:uuid(),title:'Nova subtarefa',status:'pendente',priority:'',dueDate:'',description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false});
+  parent.children.push({id:uuid(),title:'Nova subtarefa',status:'pendente',priority:'',dueDate:'',description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false,comments:[]});
   parent.expanded=true;
   saveState();renderTasks();
   // Open modal to edit the new subtask
@@ -2182,10 +2860,14 @@ function renderColManager() {
     var isBuiltin = c.id==='status'||c.id==='priority'||c.id==='dueDate';
     var onStr = c.visible!==false ? ' on' : '';
     var delBtn = isBuiltin ? '<span style="width:24px"></span>' : '<button class="col-del-btn" onclick="deleteCol(&#39;'+c.id+'&#39;)">✕</button>';
+    var optsBtn = c.type==='select'
+      ? '<button class="col-manager-opts-btn" onclick="openSelectOptsModal(&#39;'+c.id+'&#39;)">⚙ opções</button>'
+      : '<span style="width:60px"></span>';
     return '<div class="col-manager-row" draggable="true" data-colid="'+c.id+'">'
       +'<span class="col-manager-drag">⠿</span>'
       +'<span class="col-manager-label">'+escHtml(c.label)+'</span>'
       +'<span class="col-manager-type">'+c.type+'</span>'
+      +optsBtn
       +'<button class="col-toggle'+onStr+'" onclick="toggleColVisible(&#39;'+c.id+'&#39;)"></button>'
       +delBtn
       +'</div>';
@@ -2200,6 +2882,180 @@ function deleteCol(colId) {
   state.tasks.columns = state.tasks.columns.filter(function(c){return c.id!==colId;});
   saveState(); renderColManager(); renderTasks();
 }
+/* ═══ SELECT COLUMN ═══ */
+function getColOpts(colId) {
+  var c = (state.tasks.columns||[]).find(function(x){return x.id===colId;});
+  return (c && c.options) ? c.options : [];
+}
+
+function getSelectValue(taskId, colId) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return '';
+  return (t.customFields && t.customFields[colId]) || '';
+}
+
+function selectBadgeHTML(taskId, colId) {
+  var val = getSelectValue(taskId, colId);
+  var opts = getColOpts(colId);
+  var opt = opts.find(function(o){ return o.id === val; });
+  if (!opt) {
+    return '<span class="select-badge-empty" onclick="openSelectDropdown(event,&#39;'+taskId+'&#39;,&#39;'+colId+'&#39;)">—</span>';
+  }
+  var bg = opt.color+'26';
+  return '<span class="select-badge" style="background:'+bg+';color:'+opt.color+'" '
+    +'onclick="openSelectDropdown(event,&#39;'+taskId+'&#39;,&#39;'+colId+'&#39;)">'+escHtml(opt.label)+'</span>';
+}
+
+function openSelectDropdown(ev, taskId, colId) {
+  ev.stopPropagation();
+  closeSelectDropdown();
+  var opts = getColOpts(colId);
+  var curVal = getSelectValue(taskId, colId);
+  var rect = ev.currentTarget.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'select-col-dd';
+  dd.style.cssText = 'position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);'
+    +'border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.4);padding:4px 0;min-width:160px;';
+  var top = rect.bottom + 4;
+  if (top + 220 > window.innerHeight) top = rect.top - 224;
+  dd.style.top = top+'px';
+  dd.style.left = Math.min(rect.left, window.innerWidth-180)+'px';
+
+  // Clear option
+  var clearItem = document.createElement('div');
+  clearItem.style.cssText = 'padding:8px 12px;cursor:pointer;font-size:13px;color:var(--muted);';
+  clearItem.textContent = '— Nenhum';
+  clearItem.onmouseenter = function(){ this.style.background='var(--surface2)'; };
+  clearItem.onmouseleave = function(){ this.style.background=''; };
+  clearItem.onclick = function(e){ e.stopPropagation(); setSelectValue(taskId, colId, ''); closeSelectDropdown(); };
+  dd.appendChild(clearItem);
+
+  if (!opts.length) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'padding:8px 12px;font-size:12px;color:var(--muted);';
+    empty.textContent = 'Nenhuma opção. Configure em ⚙ Colunas.';
+    dd.appendChild(empty);
+  }
+
+  opts.forEach(function(o) {
+    var item = document.createElement('div');
+    item.style.cssText = 'padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;';
+    item.onmouseenter = function(){ this.style.background='var(--surface2)'; };
+    item.onmouseleave = function(){ this.style.background=''; };
+    var dot = document.createElement('span');
+    dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:'+o.color+';flex-shrink:0;';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:13px;color:var(--text);flex:1;';
+    lbl.textContent = o.label;
+    var check = document.createElement('span');
+    check.style.cssText = 'font-size:12px;color:var(--accent);';
+    check.textContent = curVal === o.id ? '✓' : '';
+    item.appendChild(dot); item.appendChild(lbl); item.appendChild(check);
+    item.onclick = function(e){ e.stopPropagation(); setSelectValue(taskId, colId, o.id); closeSelectDropdown(); };
+    dd.appendChild(item);
+  });
+
+  document.body.appendChild(dd);
+  function outsideClick(ev) {
+    var el = document.getElementById('select-col-dd');
+    if (el && el.contains(ev.target)) return;
+    closeSelectDropdown();
+    document.removeEventListener('mousedown', outsideClick);
+  }
+  setTimeout(function(){ document.addEventListener('mousedown', outsideClick); }, 150);
+}
+
+function closeSelectDropdown() {
+  var el = document.getElementById('select-col-dd');
+  if (el) el.remove();
+}
+
+function setSelectValue(taskId, colId, val) {
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  if (!t.customFields) t.customFields = {};
+  t.customFields[colId] = val;
+  t.updatedAt = new Date().toISOString();
+  saveState(); renderTasks();
+}
+
+/* Select options manager */
+var _editingSelectColId = null;
+
+function openSelectOptsModal(colId) {
+  _editingSelectColId = colId;
+  var c = (state.tasks.columns||[]).find(function(x){return x.id===colId;});
+  document.getElementById('selectOptsTitle').textContent = 'Opções — ' + (c ? c.label : colId);
+  renderSelectOptsList();
+  document.getElementById('selectOptsModal').classList.add('show');
+}
+
+function closeSelectOptsModal() {
+  document.getElementById('selectOptsModal').classList.remove('show');
+  _editingSelectColId = null;
+}
+
+function renderSelectOptsList() {
+  var list = document.getElementById('selectOptsList');
+  if (!list) return;
+  var opts = getColOpts(_editingSelectColId);
+  if (!opts.length) {
+    list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Nenhuma opção ainda.</div>';
+    return;
+  }
+  list.innerHTML = opts.map(function(o) {
+    return '<div class="select-opts-row">'
+      +'<div class="status-color-swatch" style="background:'+o.color+'">'
+      +'<input type="color" value="'+o.color+'" oninput="updateSelectOptColor(&#39;'+o.id+'&#39;,this.value)">'
+      +'</div>'
+      +'<input class="status-manager-label-input" value="'+escHtml(o.label)+'" style="flex:1" '
+      +'onchange="updateSelectOptLabel(&#39;'+o.id+'&#39;,this.value)" '
+      +'onblur="updateSelectOptLabel(&#39;'+o.id+'&#39;,this.value)">'
+      +'<button class="status-del-btn" onclick="deleteSelectOpt(&#39;'+o.id+'&#39;)">✕</button>'
+      +'</div>';
+  }).join('');
+}
+
+function addSelectOpt() {
+  var label = document.getElementById('newOptLabel').value.trim();
+  var color = document.getElementById('newOptColor').value;
+  if (!label || !_editingSelectColId) return;
+  var c = (state.tasks.columns||[]).find(function(x){return x.id===_editingSelectColId;});
+  if (!c) return;
+  if (!c.options) c.options = [];
+  var id = 'opt-'+Date.now();
+  c.options.push({ id: id, label: label, color: color });
+  document.getElementById('newOptLabel').value = '';
+  saveState(); renderSelectOptsList(); renderTasks();
+}
+
+function updateSelectOptLabel(optId, label) {
+  var c = (state.tasks.columns||[]).find(function(x){return x.id===_editingSelectColId;});
+  if (!c || !c.options) return;
+  var o = c.options.find(function(x){return x.id===optId;});
+  if (!o || o.label===label) return;
+  o.label = label.trim() || o.label;
+  saveState(); renderTasks();
+}
+
+function updateSelectOptColor(optId, color) {
+  var c = (state.tasks.columns||[]).find(function(x){return x.id===_editingSelectColId;});
+  if (!c || !c.options) return;
+  var o = c.options.find(function(x){return x.id===optId;});
+  if (!o) return;
+  o.color = color;
+  var swatch = document.querySelector('[oninput*="'+optId+'"]')?.closest('.select-opts-row')?.querySelector('.status-color-swatch');
+  if (swatch) swatch.style.background = color;
+  saveState(); renderTasks();
+}
+
+function deleteSelectOpt(optId) {
+  var c = (state.tasks.columns||[]).find(function(x){return x.id===_editingSelectColId;});
+  if (!c || !c.options) return;
+  c.options = c.options.filter(function(o){return o.id!==optId;});
+  saveState(); renderSelectOptsList(); renderTasks();
+}
+
 function addColumn() {
   var label = document.getElementById('newColLabel').value.trim();
   var type = document.getElementById('newColType').value;

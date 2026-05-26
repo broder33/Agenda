@@ -1,0 +1,1350 @@
+{
+  "_updatedAt": "2026-05-26T21:52:26.856Z",
+  "tasks": {
+    "items": [
+      {
+        "id": "ts-01",
+        "title": "Cancelar HBO Anuidade",
+        "status": "aguardando",
+        "priority": "baixa",
+        "dueDate": "2027-01-04",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-02",
+        "title": "Verificar fechamento da CNPJ Londrina",
+        "status": "pausado",
+        "priority": "baixa",
+        "dueDate": "",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-03",
+        "title": "Vencimento tag ViaFácil",
+        "status": "aguardando",
+        "priority": "baixa",
+        "dueDate": "2026-09-08",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2026-05-26T21:49:25.004Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [
+          {
+            "id": "c-1779832156139",
+            "author": "Usuário",
+            "text": "Vencimento original: 08/10/25\n\nContato realizado em 10/10/25 para realizar o cancelamento\n\nNova oferta realizada: mais 5 meses de isenção na mensalidade; até 09/03/26 - o contato para cancelamento/prorrogação deve ser realizado até o dia 13/03/26",
+            "createdAt": "2026-05-26T21:49:16.139Z"
+          },
+          {
+            "id": "c-1779832165004",
+            "author": "Usuário",
+            "text": "Nova oferta realizada: mais 5 meses de isenção na mensalidade; até 09/08/26.",
+            "createdAt": "2026-05-26T21:49:25.004Z"
+          }
+        ],
+        "group": "default"
+      },
+      {
+        "id": "ts-04",
+        "title": "Cancelar Apple TV",
+        "status": "acao-necessaria",
+        "priority": "media",
+        "dueDate": "2026-04-05",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-cs",
+        "title": "Credit Suisse",
+        "status": "acao-necessaria",
+        "priority": "alta",
+        "dueDate": "",
+        "description": "",
+        "children": [
+          {
+            "id": "ts-cs1",
+            "title": "Levantar recursos para retainer",
+            "status": "acao-necessaria",
+            "priority": "urgente",
+            "dueDate": "2025-08-22",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-cs2",
+            "title": "Fazer teste de modalidade SWIFT",
+            "status": "concluida",
+            "priority": "alta",
+            "dueDate": "2025-08-08",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2026-05-26T21:52:26.856Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": [
+              {
+                "id": "c-1779832346856",
+                "author": "Usuário",
+                "text": "Nova oferta realizada: mais 5 meses de isenção na mensalidade; até 09/08/26.",
+                "createdAt": "2026-05-26T21:52:26.856Z"
+              }
+            ]
+          },
+          {
+            "id": "ts-cs3",
+            "title": "Entrar em contato com advogado",
+            "status": "aguardando",
+            "priority": "urgente",
+            "dueDate": "2025-08-19",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-cs4",
+            "title": "Verificar possibilidade de transferir pelo UK",
+            "status": "concluida",
+            "priority": "urgente",
+            "dueDate": "2025-08-15",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          }
+        ],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": true,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-sp",
+        "title": "Suíça Passaporte",
+        "status": "acao-necessaria",
+        "priority": "alta",
+        "dueDate": "",
+        "description": "",
+        "children": [
+          {
+            "id": "ts-sp1",
+            "title": "Decisão Judicial",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-02-20",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp2",
+            "title": "Adquirir cópia autenticada do mandado de averbação - inteiro teor digitada e apostilada (<6 meses)",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-07-31",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp3",
+            "title": "Adquirir cópia autenticada da decisão judicial - Realizar apostilamento",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-08-01",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp4",
+            "title": "Comunicar com a Monica do Consulado",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-08-14",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp5",
+            "title": "Adquirir segunda via da certidão de nascimento - inteiro teor, apostilada e <6 meses",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-07-31",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp6",
+            "title": "Adquirir segunda via original da certidão de óbito da minha mãe - inteiro teor, apostilada e <6 meses",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-07-30",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp7",
+            "title": "Adquirir duas cópias autenticadas do meu RG ou passaporte brasileiro - CID 29/07",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-07-29",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp8",
+            "title": "Imprimir as 140 folhas do processo",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-07-29",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp9",
+            "title": "Enviar documentos para Consulado",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-07-08",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp10",
+            "title": "Aguardar a resposta do Cantão",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2025-08-17",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp11",
+            "title": "Entrar em contato com o Consulado Suíço em Hong Kong",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2026-09-01",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp12",
+            "title": "Entrar em contato com a Central de Imigração de HK",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2026-01-05",
+            "description": "",
+            "children": [
+              {
+                "id": "ts-sp12a",
+                "title": "Etapa 1: Reunir dados Kim",
+                "status": "concluida",
+                "priority": "",
+                "dueDate": "2025-10-28",
+                "description": "",
+                "children": [],
+                "createdAt": "2025-01-01T00:00:00Z",
+                "updatedAt": "2025-01-01T00:00:00Z",
+                "linkedItems": [],
+                "notes": "",
+                "tags": [],
+                "expanded": false,
+                "comments": []
+              },
+              {
+                "id": "ts-sp12b",
+                "title": "Etapa 2: Elaborar e-mail",
+                "status": "concluida",
+                "priority": "",
+                "dueDate": "2025-09-15",
+                "description": "",
+                "children": [],
+                "createdAt": "2025-01-01T00:00:00Z",
+                "updatedAt": "2025-01-01T00:00:00Z",
+                "linkedItems": [],
+                "notes": "",
+                "tags": [],
+                "expanded": false,
+                "comments": []
+              },
+              {
+                "id": "ts-sp12c",
+                "title": "Etapa 3: Retornar e-mail",
+                "status": "concluida",
+                "priority": "",
+                "dueDate": "",
+                "description": "",
+                "children": [],
+                "createdAt": "2025-01-01T00:00:00Z",
+                "updatedAt": "2025-01-01T00:00:00Z",
+                "linkedItems": [],
+                "notes": "",
+                "tags": [],
+                "expanded": false,
+                "comments": []
+              }
+            ],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          },
+          {
+            "id": "ts-sp13",
+            "title": "Solicitar carta de requisição Suíça",
+            "status": "concluida",
+            "priority": "",
+            "dueDate": "2026-01-05",
+            "description": "",
+            "children": [],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "linkedItems": [],
+            "notes": "",
+            "tags": [],
+            "expanded": false,
+            "comments": []
+          }
+        ],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-22",
+        "title": "Plano de Saude",
+        "status": "pausado",
+        "priority": "alta",
+        "dueDate": "",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-23",
+        "title": "Marcar consulta Moris",
+        "status": "pausado",
+        "priority": "media",
+        "dueDate": "",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-24",
+        "title": "Locar Vaga de Garagem Osório",
+        "status": "pausado",
+        "priority": "media",
+        "dueDate": "",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      },
+      {
+        "id": "ts-25",
+        "title": "Anunciar memória DDR4",
+        "status": "pausado",
+        "priority": "media",
+        "dueDate": "",
+        "description": "",
+        "children": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "group": "default"
+      }
+    ],
+    "groups": [
+      {
+        "id": "default",
+        "name": "Geral",
+        "order": 0
+      }
+    ],
+    "statuses": [
+      {
+        "id": "pendente",
+        "label": "Não Iniciado",
+        "color": "#6b7280",
+        "bg": "rgba(107,114,128,.15)",
+        "builtin": true,
+        "role": "default"
+      },
+      {
+        "id": "acao-necessaria",
+        "label": "Ação Necessária",
+        "color": "#ef4444",
+        "bg": "rgba(239,68,68,.15)",
+        "builtin": true
+      },
+      {
+        "id": "aguardando",
+        "label": "Aguardando",
+        "color": "#fbbf24",
+        "bg": "rgba(251,191,36,.12)",
+        "builtin": true
+      },
+      {
+        "id": "pausado",
+        "label": "Pausado",
+        "color": "#a78bfa",
+        "bg": "rgba(167,139,250,.12)",
+        "builtin": true
+      },
+      {
+        "id": "concluida",
+        "label": "Concluída",
+        "color": "#22c55e",
+        "bg": "rgba(34,197,94,.12)",
+        "builtin": true,
+        "role": "done"
+      }
+    ],
+    "columns": [
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "status",
+        "visible": true,
+        "order": 0
+      },
+      {
+        "id": "priority",
+        "label": "Prioridade",
+        "type": "priority",
+        "visible": true,
+        "order": 1
+      },
+      {
+        "id": "dueDate",
+        "label": "Data",
+        "type": "date",
+        "visible": true,
+        "order": 2
+      }
+    ],
+    "sortColId": "dueDate",
+    "sortDir": "desc",
+    "viewMode": "list",
+    "sortBy": "created",
+    "filterStatus": "all",
+    "chatHistory": {},
+    "priorities": [
+      {
+        "id": "",
+        "label": "— Sem prioridade",
+        "dot": "#6b7280",
+        "builtin": true,
+        "role": "none"
+      },
+      {
+        "id": "urgente",
+        "label": "Urgente",
+        "dot": "#ff0000",
+        "builtin": true
+      },
+      {
+        "id": "alta",
+        "label": "Alta",
+        "dot": "#ef4444",
+        "builtin": true
+      },
+      {
+        "id": "media",
+        "label": "Média",
+        "dot": "#f97316",
+        "builtin": true
+      },
+      {
+        "id": "baixa",
+        "label": "Baixa",
+        "dot": "#60a5fa",
+        "builtin": true
+      }
+    ]
+  },
+  "finance": {
+    "bills": {
+      "2025": {
+        "0": [
+          {
+            "id": 2501,
+            "nome": "Aluguel",
+            "venc": "10/1/25",
+            "valor": 1445.36,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2502,
+            "nome": "Condomínio",
+            "venc": "10/1/25",
+            "valor": 1276.36,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2503,
+            "nome": "Internet",
+            "venc": "2/1/25",
+            "valor": 81.8,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2504,
+            "nome": "Celular",
+            "venc": "20/1/25",
+            "valor": 288.94,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "1": [
+          {
+            "id": 2510,
+            "nome": "Aluguel",
+            "venc": "10/2/25",
+            "valor": 1445.36,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2511,
+            "nome": "Condomínio",
+            "venc": "10/2/25",
+            "valor": 1210.94,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2512,
+            "nome": "Internet",
+            "venc": "2/2/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2513,
+            "nome": "Celular",
+            "venc": "20/2/25",
+            "valor": 288.29,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "2": [
+          {
+            "id": 2520,
+            "nome": "Aluguel",
+            "venc": "10/3/25",
+            "valor": 1659.43,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2521,
+            "nome": "Condomínio",
+            "venc": "10/3/25",
+            "valor": 1224.58,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2522,
+            "nome": "Internet",
+            "venc": "2/3/25",
+            "valor": 84.05,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2523,
+            "nome": "Celular",
+            "venc": "20/3/25",
+            "valor": 281.28,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "3": [
+          {
+            "id": 2530,
+            "nome": "Aluguel",
+            "venc": "10/4/25",
+            "valor": 1659.43,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2531,
+            "nome": "Condomínio",
+            "venc": "10/4/25",
+            "valor": 1102.26,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2532,
+            "nome": "Internet",
+            "venc": "2/4/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2533,
+            "nome": "Celular",
+            "venc": "20/4/25",
+            "valor": 298.25,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "4": [
+          {
+            "id": 2540,
+            "nome": "Aluguel",
+            "venc": "10/5/25",
+            "valor": 1659.43,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2541,
+            "nome": "Condomínio",
+            "venc": "10/5/25",
+            "valor": 1040.3,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2542,
+            "nome": "Internet",
+            "venc": "2/5/25",
+            "valor": 84.07,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2543,
+            "nome": "Celular",
+            "venc": "20/5/25",
+            "valor": 298.25,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "5": [
+          {
+            "id": 2550,
+            "nome": "Aluguel",
+            "venc": "10/6/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2551,
+            "nome": "Condomínio",
+            "venc": "10/6/25",
+            "valor": 1244.81,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2552,
+            "nome": "Internet",
+            "venc": "2/6/25",
+            "valor": 81.33,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2553,
+            "nome": "Celular",
+            "venc": "20/6/25",
+            "valor": 328.25,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "6": [
+          {
+            "id": 2560,
+            "nome": "Aluguel",
+            "venc": "10/7/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2561,
+            "nome": "Condomínio",
+            "venc": "10/7/25",
+            "valor": 1110.12,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2562,
+            "nome": "Internet",
+            "venc": "2/7/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2563,
+            "nome": "Celular",
+            "venc": "20/7/25",
+            "valor": 329.12,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "7": [
+          {
+            "id": 2570,
+            "nome": "Aluguel",
+            "venc": "10/8/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2571,
+            "nome": "Condomínio",
+            "venc": "10/8/25",
+            "valor": 1082.08,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2572,
+            "nome": "Internet",
+            "venc": "2/8/25",
+            "valor": 80.11,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2573,
+            "nome": "Celular",
+            "venc": "20/8/25",
+            "valor": 295.06,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "8": [
+          {
+            "id": 2580,
+            "nome": "Aluguel",
+            "venc": "10/9/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2581,
+            "nome": "Condomínio",
+            "venc": "10/9/25",
+            "valor": 1255.98,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2582,
+            "nome": "Internet",
+            "venc": "2/9/25",
+            "valor": 80.89,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2583,
+            "nome": "Celular",
+            "venc": "20/9/25",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "9": [
+          {
+            "id": 2590,
+            "nome": "Aluguel",
+            "venc": "10/10/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2591,
+            "nome": "Condomínio",
+            "venc": "10/10/25",
+            "valor": 1327.16,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2592,
+            "nome": "Internet",
+            "venc": "2/10/25",
+            "valor": 81.9,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2593,
+            "nome": "Celular",
+            "venc": "20/10/25",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "10": [
+          {
+            "id": 2600,
+            "nome": "Aluguel",
+            "venc": "10/11/25",
+            "valor": 1781.94,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2601,
+            "nome": "Condomínio",
+            "venc": "10/11/25",
+            "valor": 1391.38,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2602,
+            "nome": "Internet",
+            "venc": "2/11/25",
+            "valor": 81.96,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2603,
+            "nome": "Celular",
+            "venc": "20/11/25",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "11": [
+          {
+            "id": 2610,
+            "nome": "Aluguel",
+            "venc": "10/12/25",
+            "valor": 1787.07,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2611,
+            "nome": "Condomínio",
+            "venc": "10/12/25",
+            "valor": 1353.88,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 2612,
+            "nome": "Internet",
+            "venc": "2/12/25",
+            "valor": 81.96,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2613,
+            "nome": "Celular",
+            "venc": "20/12/25",
+            "valor": 318.27,
+            "status": "pago",
+            "obs": ""
+          }
+        ]
+      },
+      "2026": {
+        "0": [
+          {
+            "id": 1,
+            "nome": "Aluguel",
+            "venc": "10/1/26",
+            "valor": 1347.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 2,
+            "nome": "Condomínio",
+            "venc": "10/1/26",
+            "valor": 1559.1,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 3,
+            "nome": "Compagás",
+            "venc": "10/1/26",
+            "valor": 0,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 4,
+            "nome": "Internet",
+            "venc": "2/1/26",
+            "valor": 83.66,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 5,
+            "nome": "Celular",
+            "venc": "20/1/26",
+            "valor": 318.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 6,
+            "nome": "Unimed",
+            "venc": "7/1/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "1": [
+          {
+            "id": 10,
+            "nome": "Aluguel",
+            "venc": "10/2/26",
+            "valor": 1347.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 11,
+            "nome": "Condomínio",
+            "venc": "10/2/26",
+            "valor": 1559.1,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 12,
+            "nome": "Compagás",
+            "venc": "10/2/26",
+            "valor": 0,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 13,
+            "nome": "Internet",
+            "venc": "2/2/26",
+            "valor": 83.66,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 14,
+            "nome": "Celular",
+            "venc": "20/2/26",
+            "valor": 318.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 15,
+            "nome": "Unimed",
+            "venc": "7/2/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "2": [
+          {
+            "id": 20,
+            "nome": "Aluguel",
+            "venc": "10/3/26",
+            "valor": 1598.07,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 21,
+            "nome": "Condomínio",
+            "venc": "10/3/26",
+            "valor": 1211.07,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 22,
+            "nome": "Compagás",
+            "venc": "10/3/26",
+            "valor": 27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 23,
+            "nome": "Internet",
+            "venc": "2/3/26",
+            "valor": 81.96,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 24,
+            "nome": "Celular",
+            "venc": "20/3/26",
+            "valor": 288.4,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 25,
+            "nome": "Unimed",
+            "venc": "7/3/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "3": [
+          {
+            "id": 30,
+            "nome": "Aluguel",
+            "venc": "10/4/26",
+            "valor": 1598.03,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 31,
+            "nome": "Condomínio",
+            "venc": "10/4/26",
+            "valor": 1435.8,
+            "status": "pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 32,
+            "nome": "Compagás",
+            "venc": "10/4/26",
+            "valor": 58.68,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 33,
+            "nome": "Internet",
+            "venc": "2/4/26",
+            "valor": 81.81,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 34,
+            "nome": "Celular",
+            "venc": "20/4/26",
+            "valor": 288.27,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 35,
+            "nome": "Unimed",
+            "venc": "7/4/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "4": [
+          {
+            "id": 40,
+            "nome": "Aluguel",
+            "venc": "10/5/26",
+            "valor": 1818.63,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 41,
+            "nome": "Condomínio",
+            "venc": "10/5/26",
+            "valor": 1531.17,
+            "status": "nao-pago",
+            "obs": "00547212968"
+          },
+          {
+            "id": 42,
+            "nome": "Compagás",
+            "venc": "11/5/26",
+            "valor": 46.13,
+            "status": "nao-pago",
+            "obs": ""
+          },
+          {
+            "id": 43,
+            "nome": "Internet",
+            "venc": "2/5/26",
+            "valor": 91.31,
+            "status": "pago",
+            "obs": ""
+          },
+          {
+            "id": 44,
+            "nome": "Celular",
+            "venc": "20/5/26",
+            "valor": 0,
+            "status": "debito",
+            "obs": ""
+          },
+          {
+            "id": 45,
+            "nome": "Unimed",
+            "venc": "7/5/26",
+            "valor": 844.01,
+            "status": "pago",
+            "obs": ""
+          }
+        ],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": []
+      }
+    },
+    "activeMonths": {
+      "2025": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "2026": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "openMonths": {},
+    "currentYear": 2026,
+    "chatHistory": {}
+  },
+  "card": {
+    "faturas": [],
+    "transactions": {},
+    "categorias": [
+      "Alimentação",
+      "Transporte",
+      "Saúde",
+      "Educação",
+      "Lazer",
+      "Casa",
+      "Vestuário",
+      "Serviços",
+      "Outros"
+    ],
+    "chatHistory": {}
+  },
+  "config": {
+    "apiKey": "",
+    "theme": "dark",
+    "activeTab": "tasks"
+  },
+  "_seedVersion": "v2",
+  "_taskSeedVersion": "v4"
+}
