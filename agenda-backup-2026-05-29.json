@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-05-27T22:14:12.373Z",
+  "_updatedAt": "2026-05-29T19:59:53.745Z",
   "tasks": {
     "items": [
       {
@@ -234,7 +234,7 @@
             "description": "",
             "children": [],
             "createdAt": "2025-01-01T00:00:00Z",
-            "updatedAt": "2026-05-27T17:07:11.044Z",
+            "updatedAt": "2026-05-29T19:59:13.546Z",
             "linkedItems": [],
             "notes": "",
             "tags": [],
@@ -243,14 +243,16 @@
               {
                 "id": "c-1779834473315",
                 "author": "Usuário",
-                "text": "Feb 7 03:28 PM\n\nDocumento em mãos. Encaminhar para o consulado junto com as certidões de óbito.",
-                "createdAt": "2026-05-26T22:27:53.315Z"
+                "text": "Feb 7 2025 03:28 PM\n\nDocumento em mãos. Encaminhar para o consulado junto com as certidões de óbito.",
+                "createdAt": "2026-05-26T22:27:53.315Z",
+                "editedAt": "2026-05-29T19:59:08.659Z"
               },
               {
                 "id": "c-1779834479067",
                 "author": "Usuário",
-                "text": "Feb 08 05:22 PM\n\nArquivo Salvo: \n\nTermo de Audiência: Folhas 112 e 113 (Folha 114 possui carimbos de Certidão).\n\nMandado (Troca de Nome): Folha 115",
-                "createdAt": "2026-05-26T22:27:59.067Z"
+                "text": "Feb 08 2025 05:22 PM\n\nArquivo Salvo: \n\nTermo de Audiência: Folhas 112 e 113 (Folha 114 possui carimbos de Certidão).\n\nMandado (Troca de Nome): Folha 115",
+                "createdAt": "2026-05-26T22:27:59.067Z",
+                "editedAt": "2026-05-29T19:59:13.546Z"
               }
             ],
             "customFields": {
@@ -269,7 +271,7 @@
             "description": "",
             "children": [],
             "createdAt": "2025-01-01T00:00:00Z",
-            "updatedAt": "2026-05-27T17:07:11.044Z",
+            "updatedAt": "2026-05-29T19:59:26.609Z",
             "linkedItems": [],
             "notes": "",
             "tags": [],
@@ -278,8 +280,9 @@
               {
                 "id": "c-1779834512367",
                 "author": "Usuário",
-                "text": "21/07 12:25 PM\n\nDe acordo com o contato telefônico feito com o Tebelião Dinamarco, o mandado de averbação para a troca de nome está incluso no processo da 9a Vara da Família e Sucessões. De fato, o mandado encontra-se na folha 115. Dessa forma, essa etapa do processo já está inserida no requerimento da cópia da decisão judicial.",
-                "createdAt": "2026-05-26T22:28:32.367Z"
+                "text": "21/07/25 12:25 PM\n\nDe acordo com o contato telefônico feito com o Tebelião Dinamarco, o mandado de averbação para a troca de nome está incluso no processo da 9a Vara da Família e Sucessões. De fato, o mandado encontra-se na folha 115. Dessa forma, essa etapa do processo já está inserida no requerimento da cópia da decisão judicial.",
+                "createdAt": "2026-05-26T22:28:32.367Z",
+                "editedAt": "2026-05-29T19:59:26.609Z"
               }
             ],
             "customFields": {
@@ -298,7 +301,7 @@
             "description": "",
             "children": [],
             "createdAt": "2025-01-01T00:00:00Z",
-            "updatedAt": "2026-05-27T22:14:12.372Z",
+            "updatedAt": "2026-05-29T19:59:53.745Z",
             "linkedItems": [],
             "notes": "",
             "tags": [],
@@ -307,9 +310,29 @@
               {
                 "id": "c-1779834548952",
                 "author": "Usuário",
-                "text": "Jul 18 04:42 PM\nPara solicitar a cópia reprográfica simples com autenticação, siga os passos abaixo:\n1. Acesse o link:👉https://www.tjsp.jus.br/IndicesTaxasJudiciarias/DespesasProcessuais/ReproducaoPecasProcesso\n2. Em seguida, gere **dois boletos**:\n  • **Boleto com o código 201-0**: calculado com base no valor por página, multiplicado pela quantidade de páginas que se deseja reproduzir.\n  • **Boleto com o código 221-6**: também calculado conforme o valor por página multiplicado pela quantidade desejada.\nApós gerar, salve e realize o pagamento dos boletos.\nEncaminhe os seguintes documentos para o e-mail 👉 sp9fam@tjsp.jus.br:\nCópias dos boletos;\nComprovantes de pagamento;\nCópia de um documento de identificação;\nNúmero do processo: 0005544-34.1998;\nSolicitação com especificação das folhas que devem ser reproduzidas.",
+                "text": "Jul 18 04:42 PM\nPara solicitar a cópia reprográfica simples com autenticação, siga os passos abaixo:\n1. Acesse o link:👉https://www.tjsp.jus.br/IndicesTaxasJudiciarias/DespesasProcessuais/ReproducaoPecasProcesso\n2. Em seguida, gere **dois boletos**:\n  • **Boleto com o código 201-0**: calculado com base no valor por página, multiplicado pela quantidade de páginas que se deseja reproduzir.\n  • **Boleto com o c****ódigo 221-6**: também calculado conforme o valor por página multiplicado pela quantidade desejada.\n3. Após gerar, salve e realize o pagamento dos boletos.\n4. Encaminhe os seguintes documentos para o e-mail 👉 sp9fam@tjsp.jus.br:\n  • Cópias dos boletos;\n  • Comprovantes de pagamento;\n  • Cópia de um documento de identificação;\n  • Número do processo: **0005544-34.1998**;\n  • Solicitação com especificação das folhas que devem ser reproduzidas.",
                 "createdAt": "2026-05-26T22:29:08.952Z",
-                "editedAt": "2026-05-27T22:14:12.372Z"
+                "editedAt": "2026-05-29T19:55:01.442Z"
+              },
+              {
+                "id": "c-1780084658816",
+                "author": "Usuário",
+                "text": "Jul 21 2025 09:58 AM\nLink para compartilhar o arquivo no OneDrive (vencimento 01/09/25): https://1drv.ms/b/c/4ef436b3487a4e8e/EdsrXeHVtp1IoCNzwGEgTiMBoxS4FZLA_Ww3QDCjqwDjVg?e=e2XET2",
+                "createdAt": "2026-05-29T19:57:38.816Z",
+                "editedAt": "2026-05-29T19:58:45.437Z"
+              },
+              {
+                "id": "c-1780084681641",
+                "author": "Usuário",
+                "text": "Jul 22 2025 04:50 PM\nEntrar em contato com a VF para esclarecer dúvidas:\n1. Qual é a diferença entre a emissão de cópia reprográfica simples e imprimir o documento com minha própria impressora?\n2. É possível solicitar, apenas, a autenticação das folhas desejadas?",
+                "createdAt": "2026-05-29T19:58:01.641Z",
+                "editedAt": "2026-05-29T19:58:54.898Z"
+              },
+              {
+                "id": "c-1780084793745",
+                "author": "Usuário",
+                "text": "Jul 23 2025 12:17 PM\nA VF me respondeu, alegando que a diferença entre a cópia reprográfica simples e a impressão realizada por mim é indiferente. Nesse caso, não justifica realizar a impressão com eles. Somente as folhas 112-115 serão solicitadas. A guia já foi emitida. Irei realizar o pagamento e encaminhar o pedido no e-mail deles - o prazo aproximado é de uma semana.\nO documento deve ser retirado em mãos.\nEles não realizam o apostilamento - terei que realizar isso em outro lugar - possivelmente, no mesmo tabelião que tem a minha certidão de nascimento.",
+                "createdAt": "2026-05-29T19:59:53.745Z"
               }
             ],
             "customFields": {

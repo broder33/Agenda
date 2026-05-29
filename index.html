@@ -640,7 +640,7 @@ header {
   transition: all .15s; font-family: 'DM Mono', monospace;
 }
 .comment-fmt-btn:hover { color: var(--text); background: var(--surface2); }
-.comment-input-row { display: flex; gap: 8px; align-items: flex-end; }
+.comment-input-row { display: flex; gap: 8px; align-items: flex-end; padding-right: 28px; }
 .comment-input {
   flex: 1; background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; padding: 8px 10px; color: var(--text);
@@ -1289,7 +1289,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.43</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.61</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1454,7 +1454,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.1.43 — agenda-v0143</p>
+    <p class="version-tag">Agenda v0.1.61 — agenda-v0161</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -3365,7 +3365,7 @@ function openCommentDropdown(anchorEl, taskId) {
   document.body.appendChild(dd);
   renderCommentList(taskId);
   makeDraggable(dd, header);
-  setTimeout(function(){ textarea.focus(); }, 50);
+  setTimeout(function(){ editor.focus(); }, 50);
 }
 
 function closeCommentDropdown() {
@@ -3397,7 +3397,9 @@ function parseCommentText(text) {
     }
     // Numbered list
     if (/^\d+\. /.test(line)) {
-      out += '<ol>';
+      var firstNum = parseInt(line.match(/^(\d+)\. /)[1]);
+      var startAttr = firstNum > 1 ? ' start="' + firstNum + '"' : '';
+      out += '<ol' + startAttr + '>';
       while (i < lines.length && /^\d+\. /.test(lines[i])) {
         out += '<li>' + inlineMarkdown(lines[i].replace(/^\d+\. /, '')) + '</li>';
         i++;
@@ -3428,6 +3430,10 @@ function inlineMarkdown(text) {
   // Links https:// or http://
   text = text.replace(/(https?:\/\/[^\s<>"']+)/g, function(url) {
     return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + url + '</a>';
+  });
+  // Email addresses
+  text = text.replace(/([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g, function(email) {
+    return '<a href="mailto:' + email + '">' + email + '</a>';
   });
   return text;
 }
@@ -3557,11 +3563,15 @@ function editorToText(editor) {
         if (child.tagName === 'LI') {
           // Get direct text content only (not nested lists)
           var liText = '';
+          var hasText = false;
           Array.from(child.childNodes).forEach(function(c) {
             if (c.nodeType === 1 && (c.tagName === 'UL' || c.tagName === 'OL')) {
-              out += indent + n + '. ' + liText.trim() + '\n';
-              n++;
-              liText = '';
+              if (liText.trim()) {
+                out += indent + n + '. ' + liText.trim() + '\n';
+                n++;
+                hasText = true;
+                liText = '';
+              }
               out += processNode(c, indent + '  ');
             } else {
               liText += getInlineText(c);
@@ -3570,6 +3580,8 @@ function editorToText(editor) {
           if (liText.trim()) {
             out += indent + n + '. ' + liText.trim() + '\n';
             n++;
+          } else if (!hasText && child.childNodes.length === 0) {
+            // empty LI — skip counter
           }
         } else if (child.tagName === 'UL') {
           // UL directly inside OL (browser quirk — no LI wrapper)
@@ -3605,31 +3617,78 @@ function editorToText(editor) {
     return Array.from(node.childNodes).map(function(c){ return processNode(c, indent); }).join('');
   }
 
-  var children = Array.from(editor.childNodes);
+  // Flatten top-level: unwrap single P if browser wrapped everything in it
+  var topChildren = Array.from(editor.childNodes);
+  if (topChildren.length === 1 && topChildren[0].nodeType === 1 && topChildren[0].tagName === 'P') {
+    topChildren = Array.from(topChildren[0].childNodes);
+  }
+
+  // Count sequential OL items across sibling OLs separated only by ULs.
+  // Strategy: walk topChildren, group contiguous OL+UL runs, number OL items in order.
   var text = '';
   var prevWasOL = false;
-  children.forEach(function(n) {
-    var tag = n.tagName;
+  var seqNum = 0; // sequential counter for OL items in current contiguous group
+
+  topChildren.forEach(function(n) {
+    var tag = n.nodeType === 1 ? n.tagName : null;
     var isOL = tag === 'OL';
     var isUL = tag === 'UL';
-    // If UL comes right after OL, it's a nested bullet list
-    var indent = (isUL && prevWasOL) ? '  ' : '';
-    text += processNode(n, indent);
-    if (isOL) prevWasOL = true;
-    else if (isUL) {} // keep prevWasOL so nested UL inside UL also gets indent
-    else prevWasOL = false;
+
+    if (!isOL && !isUL) {
+      seqNum = 0; // reset counter on non-list content
+      prevWasOL = false;
+      text += processNode(n, '');
+      return;
+    }
+
+    if (isUL) {
+      // Indent UL if it follows an OL (nested bullets)
+      var indent = prevWasOL ? '  ' : '';
+      text += processNode(n, indent);
+      // keep prevWasOL — don't reset seqNum, more OL items may follow
+      return;
+    }
+
+    // isOL: serialize items continuing from seqNum
+    Array.from(n.childNodes).forEach(function(child) {
+      if (child.nodeType !== 1) return;
+      if (child.tagName === 'LI') {
+        seqNum++;
+        var liText = '';
+        Array.from(child.childNodes).forEach(function(c) {
+          if (c.nodeType === 1 && (c.tagName === 'UL' || c.tagName === 'OL')) {
+            if (liText.trim()) { text += seqNum + '. ' + liText.trim() + '\n'; seqNum++; liText = ''; }
+            text += processNode(c, '  ');
+          } else {
+            liText += getInlineText(c);
+          }
+        });
+        if (liText.trim()) { text += seqNum + '. ' + liText.trim() + '\n'; }
+        else { seqNum--; } // empty LI, don't count
+      } else if (child.tagName === 'UL') {
+        text += processNode(child, '  ');
+      }
+    });
+    prevWasOL = true;
   });
-  // Decode HTML entities
+
+      // Decode HTML entities
   text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
   return text.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 function mergeConsecutiveOLs(editor) {
   // Find all top-level OLs, merge any that are separated only by ULs (nested bullets)
+  // If editor has a single P wrapping everything, work inside it
+  var container = editor;
+  var kids = Array.from(editor.childNodes);
+  if (kids.length === 1 && kids[0].nodeType === 1 && kids[0].tagName === 'P') {
+    container = kids[0];
+  }
   var changed = true;
   while (changed) {
     changed = false;
-    var children = Array.from(editor.childNodes);
+    var children = Array.from(container.childNodes);
     for (var i = 0; i < children.length; i++) {
       if (children[i].nodeType !== 1 || children[i].tagName !== 'OL') continue;
       // Look for next OL, skipping over ULs
@@ -3668,6 +3727,64 @@ function createEditor(initialText) {
   editor.setAttribute('data-placeholder', 'Escreva um comentário...');
   // Set initial content as rendered HTML
   editor.innerHTML = initialText ? parseCommentText(initialText) : '<p><br></p>';
+
+  // Custom undo/redo stack (up to 50 snapshots)
+  var _editorUndoStack = [editor.innerHTML];
+  var _editorUndoPtr = 0;
+  var _editorSnapshotTimer = null;
+
+  function editorSnapshot() {
+    var html = editor.innerHTML;
+    if (html === _editorUndoStack[_editorUndoPtr]) return; // no change
+    // Trim forward history if we're in the middle
+    _editorUndoStack = _editorUndoStack.slice(0, _editorUndoPtr + 1);
+    _editorUndoStack.push(html);
+    if (_editorUndoStack.length > 50) _editorUndoStack.shift();
+    _editorUndoPtr = _editorUndoStack.length - 1;
+  }
+
+  editor.addEventListener('input', function() {
+    clearTimeout(_editorSnapshotTimer);
+    _editorSnapshotTimer = setTimeout(editorSnapshot, 400);
+  });
+
+  editor.addEventListener('keydown', function(ev) {
+    if ((ev.ctrlKey || ev.metaKey) && ev.key === 'z' && !ev.shiftKey) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      clearTimeout(_editorSnapshotTimer);
+      editorSnapshot(); // commit pending
+      if (_editorUndoPtr > 0) {
+        _editorUndoPtr--;
+        editor.innerHTML = _editorUndoStack[_editorUndoPtr];
+        // Move cursor to end
+        var range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(range);
+      }
+    } else if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'y' || (ev.key === 'z' && ev.shiftKey))) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      clearTimeout(_editorSnapshotTimer);
+      if (_editorUndoPtr < _editorUndoStack.length - 1) {
+        _editorUndoPtr++;
+        editor.innerHTML = _editorUndoStack[_editorUndoPtr];
+        var range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(range);
+      }
+    }
+  });
+
+  // Snapshot on format toolbar actions (called externally)
+  editor._snapshot = editorSnapshot;
+
   return editor;
 }
 
@@ -3707,28 +3824,113 @@ function buildFormatToolbar(editor) {
         if (inOL) document.execCommand('indent', false, null);
       } else if (f.cmd === 'insertOrderedList') {
         var sel2 = window.getSelection();
-        var node2 = sel2 && sel2.anchorNode;
-        var inNestedUL = false;
-        while (node2 && node2 !== editor) {
-          if (node2.tagName === 'UL') {
-            var par = node2.parentNode;
-            while (par && par !== editor) {
-              if (par.tagName === 'OL') { inNestedUL = true; break; }
-              par = par.parentNode;
-            }
-            break;
+        // Walk up to find current LI, OL, UL ancestors
+        var liNode = null, ulNode = null, olNode = null;
+        var walker = sel2 && sel2.anchorNode;
+        while (walker && walker !== editor) {
+          if (walker.nodeType === 1 && walker.tagName === 'LI' && !liNode) liNode = walker;
+          if (walker.nodeType === 1 && walker.tagName === 'UL' && !ulNode) ulNode = walker;
+          if (walker.nodeType === 1 && walker.tagName === 'OL' && !olNode) olNode = walker;
+          walker = walker.parentNode;
+        }
+
+        if (liNode && ulNode && !olNode) {
+          // CASE 1: cursor is in a UL bullet → move LI out into a new OL after the UL
+          var newLI = document.createElement('li');
+          Array.from(liNode.childNodes).forEach(function(c) { newLI.appendChild(c.cloneNode(true)); });
+          var newOL = document.createElement('ol');
+          // Count preceding OL items in contiguous group
+          var count = 0;
+          var cur = ulNode.previousSibling;
+          while (cur) {
+            if (cur.nodeType === 1 && cur.tagName === 'OL') {
+              var liCount = Array.from(cur.childNodes).filter(function(c){ return c.nodeType===1 && c.tagName==='LI'; }).length;
+              var olStart = parseInt(cur.getAttribute('start')) || 1;
+              count += liCount;
+              // If this OL starts at 1, it's the beginning of the group — stop here
+              if (olStart === 1) break;
+            } else if (cur.nodeType === 1 && cur.tagName === 'UL') {
+              // skip
+            } else if (cur.nodeType === 3 && !cur.textContent.trim()) {
+              // skip whitespace
+            } else { break; }
+            cur = cur.previousSibling;
           }
-          node2 = node2.parentNode;
-        }
-        if (inNestedUL) {
-          document.execCommand('outdent', false, null);
+          if (count > 0) newOL.setAttribute('start', count + 1);
+          newOL.appendChild(newLI);
+          ulNode.after(newOL);
+          liNode.remove();
+          if (!ulNode.querySelector('li')) ulNode.remove();
+          var range = document.createRange();
+          range.selectNodeContents(newLI);
+          range.collapse(false);
+          var s = window.getSelection(); s.removeAllRanges(); s.addRange(range);
+          setTimeout(function() { if (editor._snapshot) editor._snapshot(); }, 0);
+
+        } else if (liNode && olNode) {
+          // CASE 2: cursor is already in an OL → cycle: continue → reset to 1 → remove
+          // Determine current state
+          var startVal = parseInt(olNode.getAttribute('start')) || 1;
+          // Count position of this LI within the visual sequence
+          var liIndex = Array.from(olNode.childNodes).filter(function(c){ return c.nodeType===1&&c.tagName==='LI'; }).indexOf(liNode);
+          var currentNum = startVal + liIndex;
+          if (currentNum > 1) {
+            // Cycle 2: reset — remove start attr, set start=1, break from previous group
+            olNode.removeAttribute('start');
+          } else {
+            // Cycle 3: remove list entirely
+            document.execCommand('insertOrderedList', false, null);
+          }
+          setTimeout(function() { if (editor._snapshot) editor._snapshot(); }, 0);
+
         } else {
+          // CASE 3: cursor is in plain text → create new OL continuing from preceding OL group
+          // Count preceding OL items in contiguous group
+          var anchorNode = sel2 && sel2.anchorNode;
+          var refNode = anchorNode;
+          while (refNode && refNode.parentNode !== editor) refNode = refNode.parentNode;
+          var count2 = 0;
+          if (refNode) {
+            var cur2 = refNode.previousSibling;
+            while (cur2) {
+              if (cur2.nodeType === 1 && cur2.tagName === 'OL') {
+                var liCount2 = Array.from(cur2.childNodes).filter(function(c){ return c.nodeType===1 && c.tagName==='LI'; }).length;
+                var olStart2 = parseInt(cur2.getAttribute('start')) || 1;
+                count2 += liCount2;
+                // If this OL starts at 1 with no prior context, it's the beginning of the group — stop here
+                if (olStart2 === 1) break;
+              } else if (cur2.nodeType === 1 && cur2.tagName === 'UL') {
+                // skip
+              } else if (cur2.nodeType === 3 && !cur2.textContent.trim()) {
+                // skip
+              } else { break; }
+              cur2 = cur2.previousSibling;
+            }
+          }
           document.execCommand('insertOrderedList', false, null);
+          // Set start on newly created OL if continuing a group
+          if (count2 > 0) {
+            setTimeout(function() {
+              var newOLs = editor.querySelectorAll('ol:not([start])');
+              // find the one containing the cursor
+              var sel3 = window.getSelection();
+              var n = sel3 && sel3.anchorNode;
+              while (n && n !== editor) {
+                if (n.nodeType === 1 && n.tagName === 'OL') {
+                  n.setAttribute('start', count2 + 1);
+                  break;
+                }
+                n = n.parentNode;
+              }
+              if (editor._snapshot) editor._snapshot();
+            }, 0);
+          } else {
+            setTimeout(function() { if (editor._snapshot) editor._snapshot(); }, 0);
+          }
         }
-        // Merge consecutive top-level OLs to maintain numbering
-        setTimeout(function() { mergeConsecutiveOLs(editor); }, 0);
       } else {
         document.execCommand(f.cmd, false, null);
+        setTimeout(function() { if (editor._snapshot) editor._snapshot(); }, 0);
       }
     });
     toolbar.appendChild(btn);
@@ -4711,7 +4913,7 @@ if ('serviceWorker' in navigator) {
         });
       });
     }).catch(function(err) {
-      console.warn('Service Worker falhou:', err);
+      // sw not available in preview environments
     });
     navigator.serviceWorker.addEventListener('controllerchange', function() {
       window.location.reload();
