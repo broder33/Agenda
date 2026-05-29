@@ -1289,7 +1289,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.61</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.62</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1454,7 +1454,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.1.61 — agenda-v0161</p>
+    <p class="version-tag">Agenda v0.1.62 — agenda-v0162</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -3283,6 +3283,8 @@ function makeDraggable(el, handleEl) {
   }, { passive: false });
 }
 
+var _commentSortDesc = true; // true = mais novo primeiro
+
 function openCommentDropdown(anchorEl, taskId) {
   closeCommentDropdown();
   var t = findTaskById(state.tasks.items, taskId);
@@ -3311,7 +3313,12 @@ function openCommentDropdown(anchorEl, taskId) {
   var header = document.createElement('div');
   header.className = 'comment-dd-header';
   header.innerHTML = '<strong>'+escHtml(title)+'</strong>'
-    +'<button class="comment-dd-close" onclick="closeCommentDropdown()">✕</button>';
+    +'<div style="display:flex;align-items:center;gap:6px">'
+    +'<button id="comment-sort-btn" onclick="toggleCommentSort(\'' + taskId + '\')" '
+    +'style="background:none;border:none;color:var(--muted);cursor:pointer;font-family:\'DM Mono\',monospace;font-size:10px;padding:2px 6px;border-radius:4px" '
+    +'title="Ordenar comentários">'+(_commentSortDesc?'↓ Novo':'↑ Antigo')+'</button>'
+    +'<button class="comment-dd-close" onclick="closeCommentDropdown()">✕</button>'
+    +'</div>';
   dd.appendChild(header);
 
   // Comment list
@@ -3438,12 +3445,20 @@ function inlineMarkdown(text) {
   return text;
 }
 
+function toggleCommentSort(taskId) {
+  _commentSortDesc = !_commentSortDesc;
+  var btn = document.getElementById('comment-sort-btn');
+  if (btn) btn.textContent = _commentSortDesc ? '↓ Novo' : '↑ Antigo';
+  renderCommentList(taskId);
+}
+
 function renderCommentList(taskId) {
   var listEl = document.getElementById('comment-dd-list-'+taskId);
   if (!listEl) return;
   var t = findTaskById(state.tasks.items, taskId);
   if (!t) return;
-  var comments = t.comments || [];
+  var comments = (t.comments || []).slice();
+  if (_commentSortDesc) comments.reverse();
   if (!comments.length) {
     listEl.innerHTML = '<div class="comment-dd-empty">Nenhum comentário ainda.<br>Seja o primeiro a comentar.</div>';
     return;
@@ -3953,6 +3968,14 @@ function startEditComment(taskId, commentId) {
   if (!body) return;
   body.style.display = 'none';
 
+  // Hide all other comment items so the editor can use the full list height
+  var list = item.parentNode;
+  if (list) {
+    Array.from(list.children).forEach(function(el) {
+      if (el !== item) el.style.display = 'none';
+    });
+  }
+
   item.style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0;padding:10px 14px;border-bottom:1px solid var(--border);position:relative;';
 
   var editWrap = document.createElement('div');
@@ -4019,6 +4042,14 @@ function cancelEditComment(commentId) {
     if (body) body.style.display = '';
     var wrap = document.getElementById('cedit-wrap-'+commentId);
     if (wrap) wrap.remove();
+    // Restore hidden sibling comment items
+    var item = document.getElementById('ci-'+commentId);
+    if (item && item.parentNode) {
+      Array.from(item.parentNode.children).forEach(function(el) {
+        el.style.display = '';
+      });
+    }
+    item && (item.style.cssText = '');
   } else {
     // Cancel any open edit
     document.querySelectorAll('[id^="cedit-wrap-"]').forEach(function(w){
@@ -4026,6 +4057,15 @@ function cancelEditComment(commentId) {
       var body = document.getElementById('cb-'+cid);
       if (body) body.style.display = '';
       w.remove();
+      var item = document.getElementById('ci-'+cid);
+      if (item) {
+        item.style.cssText = '';
+        if (item.parentNode) {
+          Array.from(item.parentNode.children).forEach(function(el) {
+            el.style.display = '';
+          });
+        }
+      }
     });
   }
   closeEditCommentFloat();
