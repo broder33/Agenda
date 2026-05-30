@@ -1276,6 +1276,16 @@ header {
         </select>
       </div>
     </div>
+    <div class="modal-row" id="tm-time-row">
+      <div class="modal-field">
+        <label class="modal-label">Horário início</label>
+        <input class="modal-input" type="time" id="tm-time-start" style="cursor:pointer">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Horário fim <span style="color:var(--muted);font-size:9px">(opcional)</span></label>
+        <input class="modal-input" type="time" id="tm-time-end" style="cursor:pointer">
+      </div>
+    </div>
     <div id="tm-dynamic-fields"></div>
     <div class="modal-actions">
       <button class="btn-modal-danger" id="tm-delete-btn" onclick="deleteTask()" style="display:none;margin-right:auto">Excluir</button>
@@ -1289,7 +1299,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.62</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.66</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1352,6 +1362,7 @@ header {
       </select>
       <button class="btn-sm btn-mgmt-mobile-hide" onclick="openColManager()" title="Gerenciar colunas">⚙ Colunas</button>
       <button class="btn-sm btn-mgmt-mobile-hide" id="nodateSortBtn" onclick="toggleNodateSort()" title="Posição dos itens sem data">Sem data: atrás</button>
+      <button class="btn-sm btn-mgmt-mobile-hide" id="showTimeBtn" onclick="toggleShowTime()">Horário: off</button>
       <button class="btn-sm accent" onclick="openTaskModal()">+ Tarefa</button>
     </div>
   </div>
@@ -1454,7 +1465,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.1.62 — agenda-v0162</p>
+    <p class="version-tag">Agenda v0.1.66 — agenda-v0166</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1579,6 +1590,7 @@ let state = {
     sortColId: null,
     sortDir: 'asc',
     sortLevels: [],
+    showTime: false,
     _closedSectionOpen: false,
     viewMode: 'list',
     sortBy: 'created',
@@ -1993,6 +2005,47 @@ let nodateLast = true; // true = sem data vai para o final
 
 function uuid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
+function inlineTitleEdit(ev, taskId) {
+  ev.stopPropagation();
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var titleEl = ev.currentTarget;
+  if (titleEl.querySelector('input')) return; // already editing
+
+  var originalTitle = t.title;
+  var input = document.createElement('input');
+  input.value = originalTitle;
+  input.style.cssText = 'width:100%;background:transparent;border:none;border-bottom:1px solid var(--accent);'
+    + 'outline:none;color:var(--text);font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;padding:0;';
+
+  titleEl.textContent = '';
+  titleEl.appendChild(input);
+  input.focus();
+  input.select();
+
+  function save() {
+    var newTitle = input.value.trim();
+    if (newTitle && newTitle !== originalTitle) {
+      pushUndo();
+      t.title = newTitle;
+      t.updatedAt = new Date().toISOString();
+      saveState();
+    }
+    renderTasks();
+  }
+
+  function cancel() {
+    renderTasks();
+  }
+
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.removeEventListener('blur', save); cancel(); }
+  });
+  input.addEventListener('click', function(e) { e.stopPropagation(); });
+}
+
 function openTaskModal(taskId) {
   _editingTaskId = taskId || null;
   const modal = document.getElementById('taskModal');
@@ -2012,6 +2065,9 @@ function openTaskModal(taskId) {
     return '<option value="'+p.id+'"'+(task?.priority===p.id?' selected':'')+'>'+escHtml(p.label)+'</option>';
   }).join('');
   
+  // Time fields
+  document.getElementById('tm-time-start').value = task?.timeStart || '';
+  document.getElementById('tm-time-end').value = task?.timeEnd || '';
   document.getElementById('tm-delete-btn').style.display = task ? 'block' : 'none';
   // populate group select + dynamic select columns
   var selectCols = (state.tasks.columns||[]).filter(function(c){ return c.type==='select'; });
@@ -2095,7 +2151,8 @@ function saveTask() {
       t.description = document.getElementById('tm-desc').value.trim();
       t.dueDate = document.getElementById('tm-date').value;
       t.priority = document.getElementById('tm-priority').value;
-      
+      t.timeStart = document.getElementById('tm-time-start').value || '';
+      t.timeEnd = document.getElementById('tm-time-end').value || '';
       t.updatedAt = new Date().toISOString();
       readDynFields(t);
     }
@@ -2105,7 +2162,8 @@ function saveTask() {
       description: document.getElementById('tm-desc').value.trim(),
       dueDate: document.getElementById('tm-date').value,
       priority: document.getElementById('tm-priority').value,
-      
+      timeStart: document.getElementById('tm-time-start').value || '',
+      timeEnd: document.getElementById('tm-time-end').value || '',
       status: 'pendente',
       children: [], linkedItems: [], notes: '', tags: [], expanded: false,
       comments: [], customFields: {},
@@ -2139,20 +2197,25 @@ function deleteTask() {
 }
 
 function quickAddTask() {
-  const input = document.getElementById('quickAddInput');
-  const title = input.value.trim();
+  var input = document.getElementById('quickAddInput');
+  if (!input) return;
+  var title = input.value.trim();
   if (!title) return;
   pushUndo();
-  state.tasks.items.push({
+  state.tasks.items.unshift({
     id: uuid(), title, description: '',
-    dueDate: '', priority: '', class: '',
+    dueDate: '', priority: '',
     status: 'pendente', children: [], linkedItems: [], notes: '', tags: [], expanded: false,
+    comments: [], customFields: {},
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
   });
-  input.value = '';
+  var savedTitle = title;
   saveState();
   renderTasks();
-  showToast('Tarefa adicionada');
+  showToast('✓ Tarefa adicionada: ' + savedTitle.slice(0, 30));
+  // Re-focus input after renderTasks recreates it
+  var newInput = document.getElementById('quickAddInput');
+  if (newInput) newInput.focus();
 }
 
 function quickAddKey(e) { if (e.key === 'Enter') quickAddTask(); }
@@ -2178,6 +2241,19 @@ function toggleNodateSort() {
   var btn = document.getElementById('nodateSortBtn');
   if (btn) btn.textContent = 'Sem data: ' + (nodateLast ? 'atrás' : 'frente');
   renderTasks();
+}
+
+function toggleShowTime() {
+  state.tasks.showTime = !state.tasks.showTime;
+  var btn = document.getElementById('showTimeBtn');
+  if (btn) btn.textContent = 'Horário: ' + (state.tasks.showTime ? 'on' : 'off');
+  saveState();
+  renderTasks();
+}
+
+function updateShowTimeBtn() {
+  var btn = document.getElementById('showTimeBtn');
+  if (btn) btn.textContent = 'Horário: ' + (state.tasks.showTime ? 'on' : 'off');
 }
 
 function nodatePlaceholder() { return nodateLast ? '9999-12-31' : '0000-01-01'; }
@@ -2428,6 +2504,7 @@ function renderTasks() {
 
   // Update filter button active state
   updateFilterBtn();
+  updateShowTimeBtn();
   // Populate sort select dynamically — fixed options + custom select columns
   var sortSel = document.getElementById('sortTasks');
   if (sortSel) {
@@ -2505,7 +2582,8 @@ function renderTasks() {
   html += '<div class="task-add-row" onclick="document.getElementById(\'quickAddInput\').focus()">'
     +'<span style="width:36px;display:inline-block"></span>'
     +'<span style="color:var(--muted);font-size:16px;line-height:1;margin-right:6px">+</span>'
-    +'<input class="task-add-input" id="quickAddInput" placeholder="Nova tarefa..." onkeydown="quickAddKey(event)" onclick="event.stopPropagation()">'
+    +'<input class="task-add-input" id="quickAddInput" placeholder="Nova tarefa... (Enter para adicionar)" onkeydown="quickAddKey(event)" onclick="event.stopPropagation()">'
+    +'<button onclick="event.stopPropagation();quickAddTask()" style="background:var(--accent);border:none;border-radius:4px;color:#000;font-family:\'DM Mono\',monospace;font-size:10px;padding:3px 10px;cursor:pointer;flex-shrink:0;margin-left:6px">+ Add</button>'
     +'</div>';
 
   html += '</div>';
@@ -2573,9 +2651,7 @@ function taskRowHTML(t, depth, cols) {
     : '';
 
   // Make the whole name cell clickable to expand if has children
-  var titleClick = hasChildren
-    ? 'onclick="toggleChildren(&#39;'+t.id+'&#39;)"'
-    : 'onclick="openTaskModal(&#39;'+t.id+'&#39;)"';
+  var titleClick = 'onclick="inlineTitleEdit(event,&#39;'+t.id+'&#39;)"';
 
   var addSubBtn = '<button class="task-add-sub-btn" onclick="event.stopPropagation();addChildTask(&#39;'+t.id+'&#39;)" title="Adicionar subtarefa">+ sub</button>';
 
@@ -2616,6 +2692,11 @@ function taskRowHTML(t, depth, cols) {
     }
     if (c.type==='date') {
       var dateStr = t.dueDate ? formatDate(t.dueDate) : '—';
+      if (state.tasks.showTime && t.timeStart) {
+        dateStr += ' <span style="font-size:10px;color:var(--muted);font-family:\'DM Mono\',monospace">' + t.timeStart;
+        if (t.timeEnd) dateStr += '–' + t.timeEnd;
+        dateStr += '</span>';
+      }
       var overdueStyle = overdue ? 'color:var(--danger);font-weight:600;' : 'color:var(--text2);';
       var overdueIcon = overdue ? '<span style="margin-left:4px;font-size:10px">⚠</span>' : '';
       var w = c.width || getDefaultWidth(c.type);
@@ -4165,7 +4246,9 @@ function addChildTask(parentId) {
   pushUndo();
   var parent=findTaskById(state.tasks.items,parentId);if(!parent)return;
   if(!parent.children)parent.children=[];
-  parent.children.push({id:uuid(),title:'Nova subtarefa',status:'pendente',priority:'',dueDate:'',description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false,comments:[]});
+  // Inherit customFields (categories) from parent, unlocked so child can be edited freely
+  var inheritedFields = parent.customFields ? JSON.parse(JSON.stringify(parent.customFields)) : {};
+  parent.children.push({id:uuid(),title:'Nova subtarefa',status:parent.status||'pendente',priority:'',dueDate:'',description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false,comments:[],customFields:inheritedFields});
   parent.expanded=true;
   saveState();renderTasks();
   // Open modal to edit the new subtask
