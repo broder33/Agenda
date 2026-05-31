@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-05-30T04:58:00.544Z",
+  "_updatedAt": "2026-05-30T05:04:52.771Z",
   "tasks": {
     "items": [
       {
@@ -2135,7 +2135,7 @@
             "id": 1780116641836.969,
             "nome": "Aluguel",
             "venc": "10/6/26",
-            "valor": 0,
+            "valor": 1878.53,
             "status": "nao-pago",
             "obs": ""
           },
@@ -2143,15 +2143,15 @@
             "id": 1780116641836.6943,
             "nome": "Condomínio",
             "venc": "10/6/26",
-            "valor": 0,
+            "valor": 1531.17,
             "status": "nao-pago",
             "obs": "00547212968"
           },
           {
             "id": 1780116641836.4788,
             "nome": "Compagás",
-            "venc": "11/6/26",
-            "valor": 0,
+            "venc": "10/06/26",
+            "valor": 44.79,
             "status": "nao-pago",
             "obs": ""
           },
@@ -2168,7 +2168,7 @@
             "nome": "Celular",
             "venc": "20/6/26",
             "valor": 0,
-            "status": "nao-pago",
+            "status": "debito",
             "obs": ""
           },
           {

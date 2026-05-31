@@ -724,6 +724,22 @@ header {
   box-shadow: 0 8px 40px rgba(0,0,0,.5);
   max-height: 90vh; overflow-y: auto;
 }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.modal-header span {
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text);
+}
+.modal-close {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 18px; line-height: 1; padding: 2px 6px; border-radius: 4px;
+  transition: color .15s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-footer {
+  display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap;
+}
 .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--text); margin-bottom: 16px; }
 .modal-field { margin-bottom: 12px; }
 .modal-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; display: block; }
@@ -1299,7 +1315,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">v0.1.66</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.1.87</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1393,24 +1409,7 @@ header {
 
 <!-- ════════ TAB: CARTÃO ════════ -->
 <div class="tab-panel" id="panel-card">
-  <div class="section-hd">
-    <div>
-      <div class="section-title">Cartão de Crédito</div>
-      <div class="section-sub">Importe e classifique suas faturas</div>
-    </div>
-    <button class="btn-sm accent" onclick="document.getElementById('cardUploadInput').click()">+ Importar fatura</button>
-    <input type="file" id="cardUploadInput" accept=".pdf,.xlsx,.xls,.csv" style="display:none" onchange="handleCardUpload(event)">
-  </div>
-
-  <div class="upload-zone" id="cardDropZone"
-    onclick="document.getElementById('cardUploadInput').click()"
-    ondragover="dzCardOver(event)" ondragleave="dzCardLeave()" ondrop="dzCardDrop(event)">
-    <div class="upload-zone-icon">📄</div>
-    <div class="upload-zone-title">Arraste ou clique para importar fatura</div>
-    <div class="upload-zone-sub">PDF, Excel (.xlsx) ou CSV — a IA extrai as transações automaticamente</div>
-  </div>
-
-  <div id="cardFaturas"></div>
+  <div id="card-panel-content"></div>
 </div>
 
 <!-- ════════ TAB: IA ════════ -->
@@ -1449,7 +1448,7 @@ header {
     <div class="settings-section-title">Conta</div>
     <div class="settings-row">
       <div class="settings-label">Usuário</div>
-      <span id="settingsUser" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">—</span>
+      <span id="settingsUser" style="font-family:DM Mono,monospace;font-size:12px;color:var(--text2)">—</span>
     </div>
     <button class="btn-sm danger" style="margin-top:8px" onclick="handleAuthAction()">Sair da conta</button>
   </div>
@@ -1465,7 +1464,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.1.66 — agenda-v0166</p>
+    <p class="version-tag">Agenda v0.1.87 — agenda-v0187</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1473,6 +1472,11 @@ header {
 </div><!-- /#appContent -->
 
 <script>
+function showModal(el) {
+  el.classList.add('show');
+  document.body.appendChild(el);
+}
+
 /* ═══════════════════════════════════════════════════════════
    SUPABASE & AUTH
 ═══════════════════════════════════════════════════════════ */
@@ -1605,10 +1609,15 @@ let state = {
     chatHistory: {}
   },
   card: {
-    faturas: [],
-    transactions: {},
-    categorias: ['Alimentação','Transporte','Saúde','Educação','Lazer','Casa','Vestuário','Serviços','Outros'],
-    chatHistory: {}
+    cards: [
+      { id: 'card-itau',   nome: 'Itaú',         cor: '#EC7000', fechamento: 30, vencimento: 8  },
+      { id: 'card-mp',     nome: 'Mercado Pago',  cor: '#00BCFF', fechamento: 26, vencimento: 5  },
+      { id: 'card-nubank', nome: 'Nubank',        cor: '#820AD1', fechamento: 3,  vencimento: 13 }
+    ],
+    bills: {},
+    billStatus: {},
+    categorias: ['Alimentação','Mercado','Transporte','Saúde','Lazer','Compras','Tech','Ciclismo','Viagens','Outros'],
+    memory: []
   },
   config: {
     apiKey: '',
@@ -1630,7 +1639,27 @@ function mergeState(saved) {
   if (!saved) return;
   if (saved._updatedAt && state._updatedAt && saved._updatedAt <= state._updatedAt) return;
   if (saved.finance) state.finance = { ...state.finance, ...saved.finance };
-  if (saved.card) state.card = { ...state.card, ...saved.card };
+  if (saved.card) {
+    state.card = { ...state.card, ...saved.card };
+    // Migrate old structure
+    if (state.card.faturas && !state.card.bills) {
+      state.card.bills = {};
+      state.card.faturas = undefined;
+      state.card.transactions = undefined;
+    }
+    if (!state.card.cards || !state.card.cards.length) {
+      state.card.cards = [
+        { id: 'card-itau',   nome: 'Itaú',         cor: '#EC7000', fechamento: 30, vencimento: 8  },
+        { id: 'card-mp',     nome: 'Mercado Pago',  cor: '#00BCFF', fechamento: 26, vencimento: 5  },
+        { id: 'card-nubank', nome: 'Nubank',        cor: '#820AD1', fechamento: 3,  vencimento: 13 }
+      ];
+    }
+    if (!state.card.bills) state.card.bills = {};
+    if (!state.card.memory) state.card.memory = [];
+    if (!state.card.billStatus) state.card.billStatus = {};
+    if (!state.card.categorias || !state.card.categorias.length)
+      state.card.categorias = ['Alimentação','Mercado','Transporte','Saúde','Lazer','Compras','Tech','Ciclismo','Viagens','Outros'];
+  }
   if (saved.config) {
     state.config = { ...state.config, ...saved.config };
     if (!state.config.tabLabels) state.config.tabLabels = Object.assign({}, TAB_DEFAULTS);
@@ -1683,7 +1712,7 @@ var _skipUndo = false;
 
 function pushUndo() {
   if (_skipUndo) return;
-  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance }));
+  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card }));
   _redoSnapshot = null; // clear redo when new action is taken
   updateUndoRedoBtns();
 }
@@ -1691,11 +1720,12 @@ function pushUndo() {
 function undo() {
   if (!_undoSnapshot) return;
   // Save current for redo
-  _redoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance }));
+  _redoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card }));
   var snap = _undoSnapshot;
   _undoSnapshot = null;
   state.tasks = snap.tasks;
   state.finance = snap.finance;
+  if (snap.card) state.card = snap.card;
   updateUndoRedoBtns();
   _skipUndo = true;
   saveState();
@@ -1707,11 +1737,12 @@ function undo() {
 function redo() {
   if (!_redoSnapshot) return;
   // Save current for undo
-  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance }));
+  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card }));
   var snap = _redoSnapshot;
   _redoSnapshot = null;
   state.tasks = snap.tasks;
   state.finance = snap.finance;
+  if (snap.card) state.card = snap.card;
   updateUndoRedoBtns();
   _skipUndo = true;
   saveState();
@@ -1989,7 +2020,7 @@ function renderAll() {
   renderTabs();
   renderTasks();
   renderFinance();
-  renderCardFaturas();
+  renderCard();
   const activeTab = state.config.activeTab || 'tasks';
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + activeTab));
 }
@@ -2623,7 +2654,7 @@ function toggleClosedSection() {
 }
 
 function taskRowHTML(t, depth, cols) {
-  var today = new Date().toISOString().slice(0,10);
+  var _n = new Date(); var today = _n.getFullYear() + '-' + String(_n.getMonth()+1).padStart(2,'0') + '-' + String(_n.getDate()).padStart(2,'0');
   var overdue = t.dueDate && t.dueDate < today && !isDoneStatus(t.status);
   var doneClass = isDoneStatus(t.status) ? ' done' : '';
   var isSubtask = depth > 0;
@@ -3186,7 +3217,7 @@ function openDateDropdown(anchorEl, taskId) {
     var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     var DAYS_PT = ['D','S','T','Q','Q','S','S'];
     var selectedVal = t.dueDate || '';
-    var today = new Date().toISOString().slice(0,10);
+    var _n = new Date(); var today = _n.getFullYear() + '-' + String(_n.getMonth()+1).padStart(2,'0') + '-' + String(_n.getDate()).padStart(2,'0');
 
     var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
       +'<button id="cal-prev" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;line-height:1">‹</button>'
@@ -4633,11 +4664,97 @@ function buildFinTable(y, m) {
     +'<button class="btn-add-fin" onclick="addFinBill('+y+','+m+')">+ ADD</button></div>';
 }
 
+function openFinDateDropdown(ev, y, m, id) {
+  ev.stopPropagation();
+  var anchorEl = ev.currentTarget;
+  // Close any existing date dropdown
+  closeDateDropdown();
+  var rows = (state.finance.bills[y] && state.finance.bills[y][m]) ? state.finance.bills[y][m] : [];
+  var r = rows.find(function(x){ return x.id == id; });
+  if (!r) return;
+
+  // Parse existing venc DD/MM/YY or DD/MM/YYYY
+  var viewYear, viewMonth, selectedISO = '';
+  var now = new Date();
+  if (r.venc) {
+    var parts = r.venc.split('/');
+    if (parts.length >= 2) {
+      var day = parseInt(parts[0]);
+      var mon = parseInt(parts[1]) - 1;
+      var yr = parts[2] ? (parts[2].length === 2 ? 2000 + parseInt(parts[2]) : parseInt(parts[2])) : now.getFullYear();
+      viewYear = yr; viewMonth = mon;
+      selectedISO = yr + '-' + String(mon+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    }
+  }
+  if (!viewYear) { viewYear = now.getFullYear(); viewMonth = now.getMonth(); }
+
+  var rect = anchorEl.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'date-dd';
+  dd.style.cssText = 'position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);'
+    +'border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);padding:12px;width:260px;user-select:none;';
+  var top = rect.bottom + 4;
+  if (top + 290 > window.innerHeight) top = rect.top - 294;
+  var left = Math.min(rect.left, window.innerWidth - 272);
+  if (left < 4) left = 4;
+  dd.style.top = top + 'px';
+  dd.style.left = left + 'px';
+  dd.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+  dd.addEventListener('click', function(e){ e.stopPropagation(); });
+
+  function renderCal() {
+    var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var DAYS_PT = ['D','S','T','Q','Q','S','S'];
+    var _n = new Date(); var today = _n.getFullYear() + '-' + String(_n.getMonth()+1).padStart(2,'0') + '-' + String(_n.getDate()).padStart(2,'0');
+    var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      +'<button id="cal-prev" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;line-height:1">‹</button>'
+      +'<span style="font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:600;color:var(--text)">'+MONTHS_PT[viewMonth]+' '+viewYear+'</span>'
+      +'<button id="cal-next" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;line-height:1">›</button>'
+      +'</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">';
+    DAYS_PT.forEach(function(d){ html += '<div style="text-align:center;font-size:10px;color:var(--muted);padding:2px;font-family:\'DM Mono\',monospace">'+d+'</div>'; });
+    html += '</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">';
+    var first = new Date(viewYear, viewMonth, 1).getDay();
+    var days = new Date(viewYear, viewMonth+1, 0).getDate();
+    for (var i=0;i<first;i++) html += '<div></div>';
+    for (var d=1;d<=days;d++) {
+      var iso = viewYear+'-'+String(viewMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      var isSel = iso === selectedISO;
+      var isToday = iso === today;
+      var bg = isSel ? 'var(--accent)' : isToday ? 'var(--surface2)' : 'transparent';
+      var col = isSel ? '#000' : isToday ? 'var(--accent)' : 'var(--text)';
+      html += '<div data-iso="'+iso+'" style="text-align:center;padding:4px 2px;border-radius:6px;cursor:pointer;font-size:12px;background:'+bg+';color:'+col+';font-family:\'DM Mono\',monospace">'+d+'</div>';
+    }
+    html += '</div>';
+    // Clear button
+    html += '<div style="margin-top:8px;display:flex;justify-content:center">'
+      +'<button id="cal-clear" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:11px;padding:3px 12px">Limpar</button>'
+      +'</div>';
+    dd.innerHTML = html;
+    dd.querySelectorAll('[data-iso]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var iso = el.getAttribute('data-iso');
+        var p = iso.split('-');
+        var vencStr = p[2]+'/'+p[1]+'/'+p[0].slice(2); // DD/MM/YY
+        saveFinField(y, m, id, 'venc', vencStr);
+        closeDateDropdown();
+      });
+    });
+    dd.querySelector('#cal-prev').addEventListener('click', function(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCal(); });
+    dd.querySelector('#cal-next').addEventListener('click', function(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderCal(); });
+    dd.querySelector('#cal-clear').addEventListener('click', function(){ saveFinField(y, m, id, 'venc', ''); closeDateDropdown(); });
+  }
+
+  renderCal();
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('mousedown', closeDateDropdown, {once:true}); }, 0);
+}
+
 function finRowHTML(y,m,r) {
   const val=(parseFloat(r.valor)||0)>0?fmtBRL(parseFloat(r.valor)):'–';
   return '<tr id="frow-'+y+'-'+m+'-'+r.id+'">'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="nome" style="font-weight:500">'+escHtml(r.nome||'–')+'</td>'
-    +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="venc" style="color:var(--text2)">'+(r.venc||'–')+'</td>'
+    +'<td class="editable-cell" onclick="openFinDateDropdown(event,'+y+','+m+','+r.id+')" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="venc" style="color:var(--text2);cursor:pointer">'+(r.venc||'–')+'</td>'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="valor">'+val+'</td>'
     +'<td><span class="inline-badge '+r.status+'" onclick="openStatusDD(event,'+y+','+m+','+r.id+')">'+(STATUS_LABELS[r.status]||r.status)+'</span></td>'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="obs" style="color:var(--text2)">'+escHtml(r.obs||'')+'</td>'
@@ -4770,7 +4887,7 @@ async function processCardFile(file) {
   if(!apiKey){showToast('Configure sua chave API nas Configurações');return;}
   const faturaId=uuid();
   const fatura={id:faturaId,nome:file.name,date:new Date().toISOString(),status:'processando'};
-  state.card.faturas.push(fatura);renderCardFaturas();
+  renderCard(); // legacy upload
   try {
     let content='';
     if(file.type==='text/csv'||file.name.endsWith('.csv')){content=await file.text();}
@@ -4785,48 +4902,914 @@ async function processCardFile(file) {
     state.card.transactions[faturaId]=transactions.map(function(t){return Object.assign({},t,{id:uuid(),categoria:'',status:'pendente'});});
     fatura.status='ok';fatura.count=transactions.length;
   } catch(e){fatura.status='erro';console.error(e);}
-  saveState();renderCardFaturas();
+  saveState();renderCard();
 }
 
-function renderCardFaturas(){
-  const container=document.getElementById('cardFaturas');
-  if(!state.card.faturas.length){container.innerHTML='';return;}
-  container.innerHTML=state.card.faturas.map(function(f){
-    const txs=state.card.transactions[f.id]||[];
-    const total=txs.reduce(function(s,t){return s+(parseFloat(t.valor)||0);},0);
-    const fid=f.id;
-    return '<div class="month-block" style="margin-bottom:12px">'
-      +'<div class="month-header" onclick="toggleCardFatura(&#39;'+fid+'&#39;)">'
-      +'<span class="month-chevron">▶</span>'
-      +'<span class="month-name" style="min-width:auto;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+escHtml(f.nome)+'</span>'
-      +'<div class="month-pills">'+(f.status==='processando'?'<span class="pill debito">Processando...</span>':'')+(f.status==='ok'?'<span class="pill pago">'+txs.length+' transações</span>':'')+(f.status==='erro'?'<span class="pill nao-pago">Erro ao processar</span>':'')+'</div>'
-      +(total>0?'<span class="month-total">'+fmtBRL(total)+'</span>':'')
-      +'<button class="btn-remove-month" onclick="event.stopPropagation();removeCardFatura(&#39;'+fid+'&#39;)">✕</button>'
-      +'</div>'
-      +'<div class="month-body" id="cfbody-'+fid+'" style="display:none">'+(txs.length?buildCardTable(fid,txs):'<div class="empty-cell">Nenhuma transação</div>')+'</div>'
-      +'</div>';
+
+function openAddBillModal(cardId) {
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now = new Date();
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'add-bill-modal';
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) overlay.remove(); });
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.maxWidth = '320px';
+  var monthOpts = MONTHS_PT.map(function(m, i){
+    return '<option value="' + i + '"' + (i === now.getMonth() ? ' selected' : '') + '>' + m + '</option>';
   }).join('');
-}
-
-function buildCardTable(faturaId,txs){
-  const cats=state.card.categorias;
-  const rows=txs.map(function(t){
-    const catOpts=[''].concat(cats).map(function(c){return '<option value="'+escHtml(c)+'" '+(t.categoria===c?'selected':'')+'>'+(c||'— Classificar')+'</option>';}).join('');
-    return '<tr>'
-      +'<td style="color:var(--text2);font-size:12px">'+(t.data||'')+'</td>'
-      +'<td>'+escHtml(t.descricao||'')+'</td>'
-      +'<td style="text-align:right">'+fmtBRL(parseFloat(t.valor)||0)+'</td>'
-      +'<td style="font-size:11px">'+(t.parcela||'')+'</td>'
-      +'<td><select class="cat-select" onchange="setCardCat(&#39;'+faturaId+'&#39;,&#39;'+t.id+'&#39;,this.value)">'+catOpts+'</select></td>'
-      +'</tr>';
+  var yearOpts = [now.getFullYear()-1, now.getFullYear(), now.getFullYear()+1].map(function(y){
+    return '<option value="' + y + '"' + (y === now.getFullYear() ? ' selected' : '') + '>' + y + '</option>';
   }).join('');
-  const total=txs.reduce(function(s,t){return s+(parseFloat(t.valor)||0);},0);
-  return '<div style="overflow-x:auto"><table class="transactions-table"><thead><tr><th>Data</th><th>Descrição</th><th style="text-align:right">Valor</th><th>Parcela</th><th>Categoria</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="2" style="padding:8px 10px;color:var(--muted)">TOTAL</td><td style="padding:8px 10px;text-align:right;font-weight:500">'+fmtBRL(total)+'</td><td colspan="2"></td></tr></tfoot></table></div>';
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'modal-close'; closeBtn.textContent = '✕';
+  closeBtn.onclick = function(){ overlay.remove(); };
+  var hdr = document.createElement('div'); hdr.className = 'modal-header';
+  hdr.innerHTML = '<span>Nova Fatura</span>'; hdr.appendChild(closeBtn);
+  box.appendChild(hdr);
+  var bod = document.createElement('div');
+  bod.className = 'modal-body'; bod.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:16px';
+  bod.innerHTML = '<div style="display:flex;gap:12px">'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Mês</label><select class="modal-input" id="ab-month">' + monthOpts + '</select></div>'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Ano</label><select class="modal-input" id="ab-year">' + yearOpts + '</select></div>'
+    + '</div>';
+  box.appendChild(bod);
+  var dummy = '<div style="display:none">'
+  var footer = document.createElement('div'); footer.className = 'modal-footer';
+  box.appendChild(footer);
+  var dummy2 = '<div style="display:none">'
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-sm'; cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-sm accent'; saveBtn.textContent = 'Criar';
+  saveBtn.onclick = function(){
+    var m = parseInt(document.getElementById('ab-month').value);
+    var y = parseInt(document.getElementById('ab-year').value);
+    if (!state.card.bills[cardId]) state.card.bills[cardId] = {};
+    if (!state.card.bills[cardId][y]) state.card.bills[cardId][y] = {};
+    if (!state.card.bills[cardId][y][m]) state.card.bills[cardId][y][m] = [];
+    saveState(); overlay.remove(); renderCard();
+  };
+  footer.appendChild(cancelBtn);
+  footer.appendChild(saveBtn);
+  overlay.appendChild(box);
+  showModal(overlay);
+}
+function renderCard() {
+  var el = document.getElementById('card-panel-content');
+  if (!el) return;
+  var view = el.dataset.view || 'cards';
+  var activeCardId = el.dataset.cardId || '';
+
+  if (view === 'cards') {
+    renderCardList(el);
+  } else if (view === 'bills') {
+    renderCardBills(el, activeCardId);
+  }
 }
 
-function toggleCardFatura(id){const body=document.getElementById('cfbody-'+id);if(!body)return;body.style.display=body.style.display!=='none'?'none':'block';}
-function setCardCat(faturaId,txId,cat){const tx=(state.card.transactions[faturaId]||[]).find(function(t){return t.id===txId;});if(tx){tx.categoria=cat;saveState();}}
-function removeCardFatura(id){confirmAction('Remover fatura','Todas as transações serão removidas.',function(){state.card.faturas=state.card.faturas.filter(function(f){return f.id!==id;});delete state.card.transactions[id];saveState();renderCardFaturas();});}
+function renderCardList(el) {
+  el.innerHTML = '';
+  var cards = state.card.cards || [];
+
+  // Header
+  var hd = document.createElement('div');
+  hd.className = 'section-hd';
+  var hdLeft = document.createElement('div');
+  hdLeft.innerHTML = '<div class="section-title">Cartão de Crédito</div><div class="section-sub">Selecione um cartão para ver as faturas</div>';
+  var addBtn = document.createElement('button');
+  addBtn.className = 'btn-sm accent';
+  addBtn.textContent = '+ Cartão';
+  addBtn.onclick = openAddCardModal;
+  hd.appendChild(hdLeft);
+  hd.appendChild(addBtn);
+  el.appendChild(hd);
+
+  // Cards grid
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;margin-top:8px';
+
+  if (!cards.length) {
+    grid.innerHTML = '<div style="color:var(--muted);padding:20px">Nenhum cartão cadastrado.</div>';
+  } else {
+    cards.forEach(function(c) {
+      var card = document.createElement('div');
+      card.style.cssText = 'cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;min-width:180px;flex:1;max-width:240px;position:relative;border-top:4px solid ' + c.cor;
+      card.onclick = function() { openCardBills(c.id); };
+
+      var nome = document.createElement('div');
+      nome.style.cssText = 'font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px';
+      nome.textContent = c.nome;
+
+      var info = document.createElement('div');
+      info.style.cssText = 'font-size:11px;color:var(--muted)';
+      info.textContent = 'Fecha dia ' + c.fechamento + ' · Vence dia ' + c.vencimento;
+
+      var editBtn = document.createElement('button');
+      editBtn.style.cssText = 'position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px';
+      editBtn.textContent = '✎';
+      editBtn.onclick = function(e) { e.stopPropagation(); openEditCardModal(c.id); };
+
+      card.appendChild(nome);
+      card.appendChild(info);
+      card.appendChild(editBtn);
+      grid.appendChild(card);
+    });
+  }
+  el.appendChild(grid);
+}
+
+function openCardBills(cardId) {
+  var el = document.getElementById('card-panel-content');
+  if (!el) return;
+  el.dataset.view = 'bills';
+  el.dataset.cardId = cardId;
+  renderCard();
+}
+
+function getBillStatus(cardId, y, m, card) {
+  var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
+  if (!txs.length) return 'empty'; // no transactions — neutral status
+  var status = (state.card.billStatus[cardId] && state.card.billStatus[cardId][y] && state.card.billStatus[cardId][y][m]) || {};
+  if (status.paid) return 'paid';
+  var now = new Date();
+  var nowAbs = now.getFullYear() * 12 + now.getMonth();
+  var billAbs = y * 12 + m;
+  if (billAbs > nowAbs) return 'open'; // future
+  // Calculate due date for this bill
+  var vencDia = card ? card.vencimento : 10;
+  var fechDia = card ? card.fechamento : 1;
+  var dueY = y, dueM = m;
+  if (vencDia > fechDia) { dueM = m + 1; if (dueM > 11) { dueM = 0; dueY = y + 1; } }
+  var daysInDueMonth = new Date(dueY, dueM + 1, 0).getDate();
+  var dueDia = Math.min(vencDia, daysInDueMonth);
+  var dueDate = new Date(dueY, dueM, dueDia);
+  if (now > dueDate) return 'overdue';
+  return 'open';
+}
+
+function toggleBillPaid(cardId, y, m) {
+  if (!state.card.billStatus[cardId]) state.card.billStatus[cardId] = {};
+  if (!state.card.billStatus[cardId][y]) state.card.billStatus[cardId][y] = {};
+  var cur = state.card.billStatus[cardId][y][m] || {};
+  if (cur.paid) {
+    state.card.billStatus[cardId][y][m] = {};
+  } else {
+    state.card.billStatus[cardId][y][m] = { paid: true, paidAt: new Date().toISOString() };
+  }
+  pushUndo();
+  saveState();
+  renderCard();
+}
+
+function toggleInstallmentPanel(hdr) {
+  var body = hdr.nextElementSibling;
+  if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function buildInstallmentSummary(cardId) {
+  // Collect all future installments for this card
+  var now = new Date();
+  var nowAbs = now.getFullYear() * 12 + now.getMonth();
+  var bills = (state.card.bills && state.card.bills[cardId]) || {};
+  var groups = {}; // groupId -> { desc, parcValor, total, current, remaining, futureTotal }
+
+  Object.keys(bills).forEach(function(y) {
+    Object.keys(bills[y]).forEach(function(m) {
+      var absM = parseInt(y) * 12 + parseInt(m);
+      var txs = bills[y][m] || [];
+      txs.forEach(function(tx) {
+        if (!tx.installmentGroupId) return;
+        var gid = tx.installmentGroupId;
+        if (!groups[gid]) {
+          groups[gid] = {
+            desc: tx.descricao,
+            parcValor: tx.valor,
+            total: tx.installmentTotal,
+            categoria: tx.categoria || '',
+            futureParcels: [],
+            pastParcels: []
+          };
+        }
+        if (absM >= nowAbs) {
+          groups[gid].futureParcels.push({ absM: absM, pNum: tx.installmentCurrent, valor: tx.valor });
+        } else {
+          groups[gid].pastParcels.push({ absM: absM, pNum: tx.installmentCurrent });
+        }
+      });
+    });
+  });
+
+  // Filter groups that have future parcels
+  var activeGroups = Object.values(groups).filter(function(g){ return g.futureParcels.length > 0; });
+  activeGroups.sort(function(a,b){ return a.desc.localeCompare(b.desc); });
+
+  if (!activeGroups.length) return '';
+
+  var totalFutureAll = activeGroups.reduce(function(s, g){
+    return s + g.futureParcels.reduce(function(s2, p){ return s2 + p.valor; }, 0);
+  }, 0);
+
+  var MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  var html = '<div style="margin-top:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden">'
+    + '<div onclick="toggleInstallmentPanel(this)" '
+    + 'style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:var(--surface2)">'
+    + '<span style="font-weight:600;font-size:13px;color:var(--text)">📋 Parcelas em aberto</span>'
+    + '<span style="font-family:DM Mono,monospace;font-size:12px;color:var(--accent)">' + fmtBRL(totalFutureAll) + ' restantes</span>'
+    + '</div>'
+    + '<div style="display:none;padding:12px">';
+
+  // Per item
+  html += '<div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;font-family:DM Mono,monospace">POR ITEM</div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px">'
+    + '<thead><tr>'
+    + '<th style="text-align:left;padding:4px 8px;color:var(--muted);font-weight:400">Descrição</th>'
+    + '<th style="text-align:center;padding:4px 8px;color:var(--muted);font-weight:400">Parcelas restantes</th>'
+    + '<th style="text-align:right;padding:4px 8px;color:var(--muted);font-weight:400">Valor/parcela</th>'
+    + '<th style="text-align:right;padding:4px 8px;color:var(--muted);font-weight:400">Total restante</th>'
+    + '</tr></thead><tbody>';
+
+  activeGroups.forEach(function(g) {
+    g.futureParcels.sort(function(a,b){ return a.absM - b.absM; });
+    var remaining = g.futureParcels.length;
+    var futureTotal = g.futureParcels.reduce(function(s,p){ return s+p.valor; }, 0);
+    var minP = g.futureParcels[0].pNum;
+    var maxP = g.futureParcels[g.futureParcels.length-1].pNum;
+    var parcelLabel = minP === maxP ? minP + '/' + g.total : minP + '–' + maxP + '/' + g.total;
+    html += '<tr style="border-top:1px solid var(--border)">'
+      + '<td style="padding:6px 8px;color:var(--text)">' + escHtml(g.desc)
+      + (g.categoria ? ' <span style="font-size:10px;color:var(--muted)">(' + escHtml(g.categoria) + ')</span>' : '')
+      + '</td>'
+      + '<td style="padding:6px 8px;text-align:center;font-family:DM Mono,monospace;color:var(--muted)">' + parcelLabel + '</td>'
+      + '<td style="padding:6px 8px;text-align:right;font-family:DM Mono,monospace">' + fmtBRL(g.parcValor) + '</td>'
+      + '<td style="padding:6px 8px;text-align:right;font-family:DM Mono,monospace;font-weight:600;color:var(--accent)">' + fmtBRL(futureTotal) + '</td>'
+      + '</tr>';
+  });
+
+  html += '</tbody></table>';
+
+  // Total for this card
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid var(--border)">'
+    + '<span style="font-size:12px;color:var(--muted)">Total em parcelas — ' + (state.card.cards.find(function(c){return c.id===cardId;})||{}).nome + '</span>'
+    + '<span style="font-family:DM Mono,monospace;font-weight:700;font-size:14px;color:var(--text)">' + fmtBRL(totalFutureAll) + '</span>'
+    + '</div>';
+
+  // Total all cards
+  var allCardsTotal = 0;
+  (state.card.cards || []).forEach(function(c) {
+    var cb = (state.card.bills && state.card.bills[c.id]) || {};
+    Object.keys(cb).forEach(function(y) {
+      Object.keys(cb[y]).forEach(function(m) {
+        var absM = parseInt(y)*12+parseInt(m);
+        if (absM < nowAbs) return;
+        (cb[y][m]||[]).forEach(function(tx) {
+          if (tx.installmentGroupId) allCardsTotal += tx.valor;
+        });
+      });
+    });
+  });
+
+  if ((state.card.cards||[]).length > 1) {
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">'
+      + '<span style="font-size:11px;color:var(--muted)">Total em parcelas — todos os cartões</span>'
+      + '<span style="font-family:DM Mono,monospace;font-size:12px;color:var(--muted)">' + fmtBRL(allCardsTotal) + '</span>'
+      + '</div>';
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
+function renderCardBills(el, cardId) {
+  var card = (state.card.cards || []).find(function(c){ return c.id === cardId; });
+  if (!card) { el.dataset.view = 'cards'; renderCard(); return; }
+
+  var bills = (state.card.bills && state.card.bills[cardId]) || {};
+  // Sort years desc
+  var years = Object.keys(bills).map(Number).sort(function(a,b){return b-a;});
+  var currentYear = new Date().getFullYear();
+  if (!years.includes(currentYear)) years.unshift(currentYear);
+
+  // Find most recent open/overdue bill for auto-highlight
+  var highlightAbs = -1;
+  var nowAbsH = new Date().getFullYear() * 12 + new Date().getMonth();
+  Object.keys(bills).forEach(function(y2) {
+    Object.keys(bills[y2]).forEach(function(m2) {
+      var abs2 = parseInt(y2) * 12 + parseInt(m2);
+      var st = getBillStatus(cardId, parseInt(y2), parseInt(m2), card);
+      if ((st === 'open' || st === 'overdue') && st !== 'empty' && abs2 <= nowAbsH && abs2 > highlightAbs) {
+        highlightAbs = abs2;
+      }
+    });
+  });
+  if (highlightAbs === -1) highlightAbs = nowAbsH;
+
+  var html = '<div class="section-hd">'
+    + '<button onclick="backToCards()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;margin-right:8px">← Cartões</button>'
+    + '<div><div class="section-title" style="color:' + card.cor + '">' + escHtml(card.nome) + '</div>'
+    + '<div class="section-sub">Fecha dia ' + card.fechamento + ' &nbsp;·&nbsp; Vence dia ' + card.vencimento + '</div></div>'
+    + '<button class="btn-sm" onclick="openEditCardModal(this.dataset.cid)" data-cid="' + card.id + '">⚙ Editar</button>'
+    + '<button class="btn-sm accent" onclick="openAddBillModal(this.dataset.cid)" data-cid="' + card.id + '">+ Fatura</button>'
+    + '</div>';
+
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  years.forEach(function(y) {
+    var yearBills = (bills[y]) || {};
+    var months = Object.keys(yearBills).map(Number).sort(function(a,b){return b-a;});
+    if (!months.length && y !== currentYear) return;
+
+    html += '<div style="margin-top:16px">'
+      + '<div style="font-family:DM Mono,monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">' + y + '</div>';
+
+    months.forEach(function(m) {
+      var txs = yearBills[m] || [];
+      var total = txs.reduce(function(s,t){ return s + (parseFloat(t.valor)||0); }, 0);
+      var bid = 'cb-' + cardId + '-' + y + '-' + m;
+      var status = getBillStatus(cardId, y, m, card);
+      var isHighlight = (y * 12 + m === highlightAbs);
+      var isOpen = isHighlight;
+
+      // Status badge
+      var statusBadge, headerExtra = '';
+      if (status === 'empty') {
+        statusBadge = '<span style="font-size:10px;background:var(--surface2);color:var(--muted);border-radius:4px;padding:2px 7px">Sem lançamentos</span>';
+      } else if (status === 'paid') {
+        statusBadge = '<span style="font-size:10px;background:#1a3a1a;color:#4caf50;border-radius:4px;padding:2px 7px">✓ Paga</span>';
+      } else if (status === 'overdue') {
+        statusBadge = '<span style="font-size:10px;background:#3a1a1a;color:var(--danger);border-radius:4px;padding:2px 7px">⚠ Em atraso</span>';
+        if (isHighlight) headerExtra = 'border-left:3px solid var(--danger);';
+      } else {
+        statusBadge = '<span style="font-size:10px;background:#2a2a1a;color:#f0a500;border-radius:4px;padding:2px 7px">● Em aberto</span>';
+        if (isHighlight) headerExtra = 'border-left:3px solid var(--accent);';
+      }
+
+      var payBtn = status === 'empty' ? '' :
+        '<button onclick="event.stopPropagation();cardBillAction(this,\'togglePaid\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" style="font-size:10px;background:' + (status==='paid'?'#1a3a1a':'none') + ';color:' + (status==='paid'?'#4caf50':'var(--muted)') + ';border:1px solid ' + (status==='paid'?'#4caf5066':'var(--border)') + ';border-radius:4px;padding:2px 8px;cursor:pointer;white-space:nowrap">' + (status==='paid'?'✓ Paga':'Marcar paga') + '</button>';
+
+      html += '<div class="month-block" style="margin-bottom:8px' + (isHighlight ? ';box-shadow:0 0 0 1px var(--accent)44;border-radius:8px' : '') + '">'
+        + '<div class="month-header" onclick="toggleCardBill(this.dataset.bid)" data-bid="' + bid + '" style="' + headerExtra + '">'
+        + '<span class="month-chevron' + (isOpen ? ' open' : '') + '">▶</span>'
+        + '<span class="month-name">' + MONTHS_PT[m] + '</span>'
+        + '<div class="month-pills">' + statusBadge + '</div>'
+        + (total ? '<span class="month-total">' + fmtBRL(total) + '</span>' : '')
+        + payBtn
+        + '<button class="btn-remove-month" onclick="event.stopPropagation();cardBillAction(this,\'remove\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">✕</button>'
+        + '</div>'
+        + '<div class="month-body" id="' + bid + '"' + (isOpen ? '' : ' style="display:none"') + '>'
+        + buildCardTxTable(cardId, y, m, txs)
+        + '</div></div>';
+    });
+        // Button to add month
+    html += '<button class="btn-sm" onclick="cardBillAction(this,\'addMonth\')" data-cid="' + cardId + '" data-y="' + y + '" style="margin-top:4px;margin-bottom:8px">+ Mês</button>';
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
+  // Append installment summary
+  var summaryHtml = buildInstallmentSummary(cardId);
+  if (summaryHtml) el.insertAdjacentHTML('beforeend', summaryHtml);
+}
+
+function buildCardTxTable(cardId, y, m, txs) {
+  var cats = state.card.categorias || [];
+  if (!txs.length) return '<div class="empty-cell">Nenhuma transação. <button class="btn-sm" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Adicionar</button></div>';
+  var rows = txs.map(function(tx) {
+    var opts = ['<option value="">— Classificar</option>'].concat(cats.map(function(c){
+      return '<option value="' + escHtml(c) + '"' + (tx.categoria===c?' selected':'') + '>' + escHtml(c) + '</option>';
+    })).join('');
+    return '<tr id="ctx-' + tx.id + '">'
+      + '<td style="color:var(--text2);font-size:12px;font-family:DM Mono,monospace">' + (tx.data||'') + '</td>'
+      + '<td>' + escHtml(tx.descricao||'') + '</td>'
+      + '<td style="text-align:right;font-family:DM Mono,monospace">' + fmtBRL(parseFloat(tx.valor)||0) + '</td>'
+      + '<td style="font-size:11px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</td>'
+      + '<td><select class="cat-select" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" onchange="cardTxCatChange(this)">' + opts + '</select></td>'
+      + '<td><button class="btn-sm del" onclick="cardBillAction(this,\'removeTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '">✕</button></td>'
+      + '</tr>';
+  }).join('');
+  var total = txs.reduce(function(s,t){ return s+(parseFloat(t.valor)||0); },0);
+  return '<div style="overflow-x:auto">'
+    + '<div style="padding:8px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)">'
+    + '<button class="btn-sm accent" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Transação</button>'
+    + '</div>'
+    + '<table class="transactions-table"><thead><tr><th>Data</th><th>Descrição</th><th style="text-align:right">Valor</th><th>Parcela</th><th>Categoria</th><th></th></tr></thead>'
+    + '<tbody>' + rows + '</tbody>'
+    + '<tfoot><tr><td colspan="2" style="padding:8px 10px;color:var(--muted)">TOTAL</td><td style="padding:8px 10px;text-align:right;font-weight:600;font-family:DM Mono,monospace">' + fmtBRL(total) + '</td><td colspan="3"></td></tr></tfoot>'
+    + '</table></div>';
+}
+
+
+function saveNewTxFromBtn(btn) { saveNewTx(btn.dataset.cid, parseInt(btn.dataset.y), parseInt(btn.dataset.m)); }
+
+function cardBillAction(btn, action) {
+  var cid = btn.dataset.cid;
+  var y = parseInt(btn.dataset.y);
+  var m = parseInt(btn.dataset.m);
+  var txid = btn.dataset.txid;
+  if (action === 'addTx') openAddTxModal(cid, y, m);
+  else if (action === 'saveTx') saveNewTx(cid, y, m);
+  else if (action === 'togglePaid') toggleBillPaid(cid, y, m);
+  else if (action === 'removeTx') removeCardTx(cid, y, m, txid);
+  else if (action === 'remove') removeCardBill(cid, y, m);
+  else if (action === 'addMonth') addCardMonth(cid, y);
+  else if (action === 'deleteCard') deleteCard(cid);
+}
+
+function cardTxCatChange(sel) {
+  var cid = sel.dataset.cid;
+  var y = parseInt(sel.dataset.y);
+  var m = parseInt(sel.dataset.m);
+  var txid = sel.dataset.txid;
+  setCardTxCat(cid, y, m, txid, sel.value);
+}
+
+function backToCards() {
+  var el = document.getElementById('card-panel-content');
+  if (el) { el.dataset.view = 'cards'; el.dataset.cardId = ''; renderCard(); }
+}
+
+function toggleCardBill(id) {
+  var body = document.getElementById(id);
+  if (!body) return;
+  var chevron = body.previousElementSibling && body.previousElementSibling.querySelector('.month-chevron');
+  if (body.style.display === 'none' || !body.style.display) {
+    body.style.display = 'block';
+    if (chevron) chevron.classList.add('open');
+  } else {
+    body.style.display = 'none';
+    if (chevron) chevron.classList.remove('open');
+  }
+}
+
+function setCardTxCat(cardId, y, m, txId, cat) {
+  var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
+  var tx = txs.find(function(t){ return t.id === txId; });
+  if (tx) {
+    tx.categoria = cat;
+    // Update memory
+    if (cat) {
+      var mem = state.card.memory || [];
+      var existing = mem.find(function(m){ return m.pattern === tx.descricao; });
+      if (existing) existing.categoria = cat;
+      else mem.push({ pattern: tx.descricao, categoria: cat });
+      state.card.memory = mem;
+    }
+    saveState();
+  }
+}
+
+function removeCardTx(cardId, y, m, txId) {
+  if (!state.card.bills[cardId] || !state.card.bills[cardId][y] || !state.card.bills[cardId][y][m]) return;
+  var tx = state.card.bills[cardId][y][m].find(function(t){ return t.id === txId; });
+  var desc = tx ? tx.descricao : 'transação';
+  confirmAction('Remover transação', '"' + desc + '" será removida.', function() {
+    pushUndo();
+    state.card.bills[cardId][y][m] = state.card.bills[cardId][y][m].filter(function(t){ return t.id !== txId; });
+    saveState();
+    renderCard();
+  });
+}
+
+function removeCardBill(cardId, y, m) {
+  confirmAction('Remover fatura', 'Todas as transações serão removidas.', function() {
+    if (state.card.bills[cardId] && state.card.bills[cardId][y]) {
+      delete state.card.bills[cardId][y][m];
+    }
+    saveState(); renderCard();
+  });
+}
+
+function addCardMonth(cardId, y) {
+  if (!state.card.bills[cardId]) state.card.bills[cardId] = {};
+  if (!state.card.bills[cardId][y]) state.card.bills[cardId][y] = {};
+  // Find next available month
+  var existing = Object.keys(state.card.bills[cardId][y]).map(Number);
+  var now = new Date();
+  var m = existing.length ? Math.max.apply(null, existing) + 1 : now.getMonth();
+  if (m > 11) { y = y + 1; m = 0; if (!state.card.bills[cardId][y]) state.card.bills[cardId][y] = {}; }
+  if (!state.card.bills[cardId][y][m]) state.card.bills[cardId][y][m] = [];
+  saveState(); renderCard();
+}
+
+function openAddCardModal() {
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'add-card-modal';
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeAddCardModal(); });
+  overlay.innerHTML = '<div class="modal-box" style="max-width:360px">'
+    + '<div class="modal-header"><span>Novo Cartão</span><button class="modal-close" onclick="closeAddCardModal()">✕</button></div>'
+    + '<div class="modal-body" style="display:flex;flex-direction:column;gap:12px;padding:16px">'
+    + '<div class="modal-field"><label class="modal-label">Nome</label><input class="modal-input" id="nc-nome" placeholder="Ex: Nubank"></div>'
+    + '<div class="modal-field"><label class="modal-label">Cor</label><input type="color" id="nc-cor" value="#820AD1" style="width:60px;height:36px;border:none;background:none;cursor:pointer;padding:0"></div>'
+    + '<div style="display:flex;gap:12px">'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Fechamento (dia)</label><input class="modal-input" id="nc-fech" type="number" min="1" max="31" value="1"></div>'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Vencimento (dia)</label><input class="modal-input" id="nc-venc" type="number" min="1" max="31" value="10"></div>'
+    + '</div></div>'
+    + '<div class="modal-footer"><button class="btn-sm" onclick="closeAddCardModal()">Cancelar</button>'
+    + '<button class="btn-sm accent" onclick="saveNewCard()">Salvar</button></div>'
+    + '</div>';
+  showModal(overlay);
+}
+
+function closeAddCardModal() { var m = document.getElementById('add-card-modal'); if (m) m.remove(); }
+
+function saveNewCard() {
+  var nome = document.getElementById('nc-nome').value.trim();
+  if (!nome) { showToast('Nome obrigatório'); return; }
+  var card = {
+    id: 'card-' + Date.now(),
+    nome: nome,
+    cor: document.getElementById('nc-cor').value,
+    fechamento: parseInt(document.getElementById('nc-fech').value) || 1,
+    vencimento: parseInt(document.getElementById('nc-venc').value) || 10
+  };
+  state.card.cards.push(card);
+  saveState(); closeAddCardModal(); renderCard();
+}
+
+function openEditCardModal(cardId) {
+  var card = (state.card.cards||[]).find(function(c){ return c.id === cardId; });
+  if (!card) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'edit-card-modal';
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeEditCardModal(); });
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.maxWidth = '360px';
+  box.innerHTML = '<div class="modal-header"><span>Editar Cartão</span><button class="modal-close" onclick="closeEditCardModal()">✕</button></div>'
+    + '<div class="modal-body" style="display:flex;flex-direction:column;gap:12px;padding:16px">'
+    + '<div class="modal-field"><label class="modal-label">Nome</label><input class="modal-input" id="ec-nome" value="' + escHtml(card.nome) + '"></div>'
+    + '<div class="modal-field"><label class="modal-label">Cor</label><input type="color" id="ec-cor" value="' + card.cor + '" style="width:60px;height:36px;border:none;background:none;cursor:pointer;padding:0"></div>'
+    + '<div style="display:flex;gap:12px">'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Fechamento (dia)</label><input class="modal-input" id="ec-fech" type="number" min="1" max="31" value="' + card.fechamento + '"></div>'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Vencimento (dia)</label><input class="modal-input" id="ec-venc" type="number" min="1" max="31" value="' + card.vencimento + '"></div>'
+    + '</div></div>'
+    + '<div class="modal-footer"></div>';
+  // Add footer buttons via JS to avoid onclick quoting issues
+  var footer = box.querySelector('.modal-footer');
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn-sm del';
+  delBtn.textContent = 'Excluir cartão';
+  delBtn.onclick = function(){ deleteCard(cardId); };
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-sm';
+  cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = closeEditCardModal;
+  var saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-sm accent';
+  saveBtn.textContent = 'Salvar';
+  saveBtn.onclick = function(){ saveEditCard(cardId); };
+  footer.appendChild(delBtn);
+  footer.appendChild(cancelBtn);
+  footer.appendChild(saveBtn);
+  overlay.appendChild(box);
+  showModal(overlay);
+}
+
+function closeEditCardModal() { var m = document.getElementById('edit-card-modal'); if (m) m.remove(); }
+
+function saveEditCard(cardId) {
+  var card = (state.card.cards||[]).find(function(c){ return c.id === cardId; });
+  if (!card) return;
+  card.nome = document.getElementById('ec-nome').value.trim() || card.nome;
+  card.cor = document.getElementById('ec-cor').value;
+  card.fechamento = parseInt(document.getElementById('ec-fech').value) || card.fechamento;
+  card.vencimento = parseInt(document.getElementById('ec-venc').value) || card.vencimento;
+  saveState(); closeEditCardModal(); renderCard();
+}
+
+function deleteCard(cardId) {
+  confirmAction('Excluir cartão', 'Todas as faturas serão removidas.', function() {
+    state.card.cards = state.card.cards.filter(function(c){ return c.id !== cardId; });
+    delete state.card.bills[cardId];
+    saveState(); closeEditCardModal(); backToCards();
+  });
+}
+
+function openTxDatePicker(inputEl) {
+  closeDateDropdown();
+  var now = new Date();
+  var viewYear = now.getFullYear(), viewMonth = now.getMonth();
+  var selectedISO = '';
+
+  // Parse existing value DD/MM/AA
+  if (inputEl.value) {
+    var p = inputEl.value.split('/');
+    if (p.length === 3) {
+      var yr = p[2].length === 2 ? 2000 + parseInt(p[2]) : parseInt(p[2]);
+      viewYear = yr; viewMonth = parseInt(p[1]) - 1;
+      selectedISO = yr + '-' + String(parseInt(p[1])).padStart(2,'0') + '-' + String(parseInt(p[0])).padStart(2,'0');
+    }
+  }
+
+  var rect = inputEl.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'date-dd';
+  dd.style.cssText = 'position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);padding:12px;width:260px;user-select:none;';
+  var top = rect.bottom + 4;
+  if (top + 290 > window.innerHeight) top = rect.top - 294;
+  var left = Math.min(rect.left, window.innerWidth - 272);
+  if (left < 4) left = 4;
+  dd.style.top = top + 'px';
+  dd.style.left = left + 'px';
+  dd.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+
+  function renderCal() {
+    var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var DAYS_PT = ['D','S','T','Q','Q','S','S'];
+    var _n = new Date(); var today = _n.getFullYear() + '-' + String(_n.getMonth()+1).padStart(2,'0') + '-' + String(_n.getDate()).padStart(2,'0');
+    var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      + '<button id="cal-prev" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px">‹</button>'
+      + '<span style="font-size:13px;font-weight:600;color:var(--text)">' + MONTHS_PT[viewMonth] + ' ' + viewYear + '</span>'
+      + '<button id="cal-next" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px">›</button>'
+      + '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">';
+    DAYS_PT.forEach(function(d){ html += '<div style="text-align:center;font-size:10px;color:var(--muted);padding:2px">' + d + '</div>'; });
+    html += '</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">';
+    var first = new Date(viewYear, viewMonth, 1).getDay();
+    var days = new Date(viewYear, viewMonth+1, 0).getDate();
+    for (var i=0;i<first;i++) html += '<div></div>';
+    for (var d=1;d<=days;d++) {
+      var iso = viewYear+'-'+String(viewMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      var isSel = iso === selectedISO, isToday = iso === today;
+      var bg = isSel ? 'var(--accent)' : isToday ? 'var(--surface2)' : 'transparent';
+      var col = isSel ? '#000' : isToday ? 'var(--accent)' : 'var(--text)';
+      html += '<div data-iso="' + iso + '" style="text-align:center;padding:4px 2px;border-radius:6px;cursor:pointer;font-size:12px;background:' + bg + ';color:' + col + '">' + d + '</div>';
+    }
+    html += '</div>';
+    html += '<div style="margin-top:8px;display:flex;justify-content:center;gap:8px">'
+      + '<button id="cal-today" style="background:none;border:1px solid var(--accent);border-radius:6px;color:var(--accent);cursor:pointer;font-size:11px;padding:3px 12px">Hoje</button>'
+      + '<button id="cal-clear" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:11px;padding:3px 12px">Limpar</button>'
+      + '</div>';
+    dd.innerHTML = html;
+    dd.querySelectorAll('[data-iso]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var p = el.getAttribute('data-iso').split('-');
+        inputEl.value = p[2] + '/' + p[1] + '/' + p[0].slice(2);
+        closeDateDropdown();
+      });
+    });
+    dd.querySelector('#cal-prev').addEventListener('click', function(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCal(); });
+    dd.querySelector('#cal-next').addEventListener('click', function(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderCal(); });
+    dd.querySelector('#cal-clear').addEventListener('click', function(){ inputEl.value = ''; closeDateDropdown(); });
+    dd.querySelector('#cal-today').addEventListener('click', function(){
+      var t = new Date();
+      var dd2 = String(t.getDate()).padStart(2,'0');
+      var mm = String(t.getMonth()+1).padStart(2,'0');
+      var yy = String(t.getFullYear()).slice(2);
+      inputEl.value = dd2 + '/' + mm + '/' + yy;
+      closeDateDropdown();
+    });
+  }
+
+  renderCal();
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('mousedown', closeDateDropdown, {once:true}); }, 0);
+}
+
+function openAddTxModal(cardId, y, m) {
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'add-tx-modal';
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeAddTxModal(); });
+
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.maxWidth = '440px';
+
+  var catOpts = '<option value="">— Classificar</option>'
+    + (state.card.categorias||[]).map(function(c){ return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+
+  box.innerHTML = '<div class="modal-header"><span>Nova Transação</span><button class="modal-close" onclick="closeAddTxModal()">✕</button></div>'
+    + '<div style="display:flex;flex-direction:column;gap:12px;padding:16px">'
+    + '<div class="modal-field"><label class="modal-label">Descrição</label><input class="modal-input" id="tx-desc" placeholder="Nome do estabelecimento"></div>'
+    + '<div style="display:flex;gap:12px">'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Data</label><input class="modal-input" id="tx-data" placeholder="DD/MM/AA" readonly style="cursor:pointer" onclick="openTxDatePicker(this)"></div>'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Categoria</label><select class="modal-input" id="tx-cat">' + catOpts + '</select></div>'
+    + '</div>'
+    // Payment mode toggle
+    + '<div id="tx-mode-toggle" style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden"></div>'
+    // 1x fields
+    + '<div id="tx-fields-1x">'
+    + '<div class="modal-field"><label class="modal-label">Valor (R$)</label><input class="modal-input" id="tx-valor" type="number" step="0.01" min="0" placeholder="0,00"></div>'
+    + '</div>'
+    // Installment fields (hidden by default)
+    + '<div id="tx-fields-parc" style="display:none;flex-direction:column;gap:10px">'
+    + '<div style="display:flex;gap:10px">'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Parcela atual</label><input class="modal-input" id="tx-parc-atual" type="number" min="1" value="1" placeholder="1"></div>'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Total de parcelas</label><input class="modal-input" id="tx-parc-total" type="number" min="2" value="2" placeholder="Ex: 12"></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:10px">'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Valor da parcela (R$)</label><input class="modal-input" id="tx-parc-valor" type="number" step="0.01" min="0" placeholder="0,00" oninput="syncInstallmentValues(this.dataset.src)" data-src="parcela"></div>'
+    + '<div class="modal-field" style="flex:1"><label class="modal-label">Valor total (R$)</label><input class="modal-input" id="tx-parc-total-val" type="number" step="0.01" min="0" placeholder="0,00" oninput="syncInstallmentValues(this.dataset.src)" data-src="total"></div>'
+    + '</div>'
+    + '</div>'
+    + '</div>'
+    + '<div class="modal-footer"></div>';
+
+  var footer = box.querySelector('.modal-footer');
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-sm'; cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = closeAddTxModal;
+  var saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-sm accent'; saveBtn.textContent = 'Salvar';
+  saveBtn.onclick = function(){ saveNewTx(cardId, y, m); };
+  footer.appendChild(cancelBtn);
+  footer.appendChild(saveBtn);
+
+  overlay.appendChild(box);
+  showModal(overlay);
+  // Add mode toggle buttons via JS to avoid quote issues
+  var toggle = document.getElementById('tx-mode-toggle');
+  var btn1x = document.createElement('button');
+  btn1x.id = 'tx-mode-1x';
+  btn1x.textContent = '1x';
+  btn1x.style.cssText = 'flex:1;padding:7px;border:none;background:var(--accent);color:#000;font-size:12px;cursor:pointer;font-family:DM Mono,monospace';
+  btn1x.onclick = function(){ setTxMode('1x'); };
+  var btnParc = document.createElement('button');
+  btnParc.id = 'tx-mode-parc';
+  btnParc.textContent = 'Parcelado';
+  btnParc.style.cssText = 'flex:1;padding:7px;border:none;background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;font-family:DM Mono,monospace';
+  btnParc.onclick = function(){ setTxMode('parc'); };
+  toggle.appendChild(btn1x);
+  toggle.appendChild(btnParc);
+  document.getElementById('tx-parc-total').addEventListener('input', function(){ syncInstallmentValues('parcela'); });
+}
+
+function setTxMode(mode) {
+  var is1x = mode === '1x';
+  document.getElementById('tx-mode-1x').style.background = is1x ? 'var(--accent)' : 'var(--surface2)';
+  document.getElementById('tx-mode-1x').style.color = is1x ? '#000' : 'var(--muted)';
+  document.getElementById('tx-mode-parc').style.background = !is1x ? 'var(--accent)' : 'var(--surface2)';
+  document.getElementById('tx-mode-parc').style.color = !is1x ? '#000' : 'var(--muted)';
+  document.getElementById('tx-fields-1x').style.display = is1x ? 'block' : 'none';
+  document.getElementById('tx-fields-parc').style.display = is1x ? 'none' : 'flex';
+}
+
+function syncInstallmentValues(changed) {
+  var nEl = document.getElementById('tx-parc-total');
+  var parcEl = document.getElementById('tx-parc-valor');
+  var totalEl = document.getElementById('tx-parc-total-val');
+  var n = parseInt(nEl.value) || 0;
+  if (!n) return;
+  if (changed === 'parcela' && parcEl.value) {
+    totalEl.value = (parseFloat(parcEl.value) * n).toFixed(2);
+  } else if (changed === 'total' && totalEl.value) {
+    parcEl.value = (parseFloat(totalEl.value) / n).toFixed(2);
+  }
+}
+
+function closeAddTxModal() { var m = document.getElementById('add-tx-modal'); if (m) m.remove(); }
+
+function ensureCardMonth(cardId, y, m) {
+  if (!state.card.bills[cardId]) state.card.bills[cardId] = {};
+  if (!state.card.bills[cardId][y]) state.card.bills[cardId][y] = {};
+  if (!state.card.bills[cardId][y][m]) state.card.bills[cardId][y][m] = [];
+}
+
+function saveNewTx(cardId, y, m) {
+  var desc = document.getElementById('tx-desc').value.trim();
+  if (!desc) { showToast('Descrição obrigatória'); return; }
+  var dataStr = document.getElementById('tx-data').value || '';
+  var cat = document.getElementById('tx-cat').value;
+  var isParc = document.getElementById('tx-fields-parc').style.display !== 'none';
+
+  if (!isParc) {
+    // Simple 1x transaction
+    var valor = parseFloat(document.getElementById('tx-valor').value) || 0;
+    var tx = { id: uuid(), descricao: desc, data: dataStr, valor: valor, parcela: '', categoria: cat };
+    ensureCardMonth(cardId, y, m);
+    state.card.bills[cardId][y][m].push(tx);
+    if (cat) updateCardMemory(desc, cat);
+    pushUndo(); saveState(); closeAddTxModal(); renderCard();
+    return;
+  }
+
+  // Installment transaction
+  var parcAtual = parseInt(document.getElementById('tx-parc-atual').value) || 1;
+  var parcTotal = parseInt(document.getElementById('tx-parc-total').value) || 2;
+  var parcValor = parseFloat(document.getElementById('tx-parc-valor').value) || 0;
+  if (!parcValor) { showToast('Informe o valor da parcela'); return; }
+  if (parcTotal < 2) { showToast('Total de parcelas deve ser ≥ 2'); return; }
+
+  var grpId = 'grp-' + Date.now();
+
+  // Calculate start month (month of parcel 1)
+  var startAbsMonth = (y * 12 + m) - (parcAtual - 1);
+  var startY = Math.floor(startAbsMonth / 12);
+  var startM = startAbsMonth % 12;
+
+  // Build all installments
+  var allParcels = [];
+  for (var i = 0; i < parcTotal; i++) {
+    var absM = startY * 12 + startM + i;
+    var py = Math.floor(absM / 12);
+    var pm = absM % 12;
+    var pNum = i + 1;
+    allParcels.push({ py: py, pm: pm, pNum: pNum });
+  }
+
+  // Future parcels (from current month onwards) — always create
+  var futureParcels = allParcels.filter(function(p){ return p.py * 12 + p.pm >= y * 12 + m; });
+  // Past parcels (before current month)
+  var pastParcels = allParcels.filter(function(p){ return p.py * 12 + p.pm < y * 12 + m; });
+
+  function createParcelTx(py, pm, pNum) {
+    return {
+      id: uuid(),
+      descricao: desc,
+      data: dataStr,
+      valor: parcValor,
+      parcela: pNum + '/' + parcTotal,
+      categoria: cat,
+      installmentGroupId: grpId,
+      installmentTotal: parcTotal,
+      installmentCurrent: pNum,
+      installmentStartY: startY,
+      installmentStartM: startM
+    };
+  }
+
+  pushUndo();
+
+  // Create future parcels
+  futureParcels.forEach(function(p) {
+    ensureCardMonth(cardId, p.py, p.pm);
+    state.card.bills[cardId][p.py][p.pm].push(createParcelTx(p.py, p.pm, p.pNum));
+  });
+
+  if (cat) updateCardMemory(desc, cat);
+
+  // Ask about past parcels if any
+  if (pastParcels.length > 0) {
+    saveState();
+    closeAddTxModal();
+    var pastDesc = pastParcels.map(function(p){
+      var MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      return MONTHS_PT[p.pm] + '/' + String(p.py).slice(2) + ' (' + p.pNum + '/' + parcTotal + ')';
+    }).join(', ');
+    confirmAction(
+      'Parcelas anteriores',
+      'Lançar retroativamente: ' + pastDesc + '?',
+      function() {
+        pushUndo();
+        pastParcels.forEach(function(p) {
+          ensureCardMonth(cardId, p.py, p.pm);
+          state.card.bills[cardId][p.py][p.pm].push(createParcelTx(p.py, p.pm, p.pNum));
+        });
+        saveState(); renderCard();
+        showToast('Parcelas lançadas retroativamente');
+      }
+    );
+    renderCard();
+    return;
+  }
+
+  saveState(); closeAddTxModal(); renderCard();
+  showToast('Parcelamento criado: ' + parcTotal + 'x de ' + fmtBRL(parcValor));
+}
+
+function updateCardMemory(desc, cat) {
+  var mem = state.card.memory || [];
+  var ex = mem.find(function(x){ return x.pattern === desc; });
+  if (ex) ex.categoria = cat;
+  else mem.push({ pattern: desc, categoria: cat });
+  state.card.memory = mem;
+}
+
+function saveNewTx_LEGACY(cardId, y, m) {
+  var desc = document.getElementById('tx-desc').value.trim();
+  if (!desc) { showToast('Descrição obrigatória'); return; }
+  var dataStr = document.getElementById('tx-data').value || '';
+  var tx = {
+    id: uuid(),
+    descricao: desc,
+    data: dataStr,
+    valor: parseFloat(document.getElementById('tx-valor').value) || 0,
+    parcela: document.getElementById('tx-parcela') ? document.getElementById('tx-parcela').value.trim() : '',
+    categoria: document.getElementById('tx-cat').value
+  };
+  if (!state.card.bills[cardId]) state.card.bills[cardId] = {};
+  if (!state.card.bills[cardId][y]) state.card.bills[cardId][y] = {};
+  if (!state.card.bills[cardId][y][m]) state.card.bills[cardId][y][m] = [];
+  state.card.bills[cardId][y][m].push(tx);
+  // Update memory if category set
+  if (tx.categoria) {
+    var mem = state.card.memory || [];
+    var ex = mem.find(function(x){ return x.pattern === tx.descricao; });
+    if (ex) ex.categoria = tx.categoria;
+    else mem.push({ pattern: tx.descricao, categoria: tx.categoria });
+    state.card.memory = mem;
+  }
+  saveState(); closeAddTxModal(); renderCard();
+}
+
+function renderCardFaturas(){renderCard();}
+function removeCardFatura(id){confirmAction('Remover fatura','Todas as transações serão removidas.',function(){saveState();renderCard();});}
 
 
 /* ═══════════════════════════════════════════════════════════
@@ -4940,7 +5923,7 @@ function openModalDatePicker(ev, anchorEl) {
     html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">';
     var first = new Date(viewYear, viewMonth, 1).getDay();
     var days = new Date(viewYear, viewMonth+1, 0).getDate();
-    var today = new Date().toISOString().slice(0,10);
+    var _n = new Date(); var today = _n.getFullYear() + '-' + String(_n.getMonth()+1).padStart(2,'0') + '-' + String(_n.getDate()).padStart(2,'0');
     for (var i=0; i<first; i++) html += '<div></div>';
     for (var d=1; d<=days; d++) {
       var iso = viewYear+'-'+String(viewMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
@@ -5004,7 +5987,7 @@ function closeConfirm() { document.getElementById('confirmModal').classList.remo
 function confirmClearAll() {
   confirmAction('Limpar tudo', 'Todos os seus dados serão apagados. Esta ação não pode ser desfeita.', () => {
     state.tasks.items = []; state.tasks.groups = [{ id:'default', name:'Geral', order:0 }];
-    state.finance.bills = {}; state.card.faturas = []; state.card.transactions = {};
+    state.finance.bills = {}; state.card.bills = {};
     saveState(); renderAll(); showToast('Dados apagados');
   });
 }
