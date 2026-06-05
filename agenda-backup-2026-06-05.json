@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-05-30T04:58:00.544Z",
+  "_updatedAt": "2026-06-05T03:01:54.070Z",
   "tasks": {
     "items": [
       {
@@ -78,18 +78,25 @@
       {
         "id": "ts-04",
         "title": "Cancelar Apple TV",
-        "status": "acao-necessaria",
-        "priority": "media",
+        "status": "encerrada",
+        "priority": "baixa",
         "dueDate": "2026-05-29",
         "description": "",
         "children": [],
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-05-27T03:15:04.290Z",
+        "updatedAt": "2026-06-03T16:03:14.559Z",
         "linkedItems": [],
         "notes": "",
         "tags": [],
         "expanded": false,
-        "comments": [],
+        "comments": [
+          {
+            "id": "c-1780502456036",
+            "author": "Broder",
+            "text": "Assinatura cancelada com sucesso em 03/06/2026.",
+            "createdAt": "2026-06-03T16:00:56.036Z"
+          }
+        ],
         "customFields": {
           "col-mpncx3x8esctq8roca": "opt-1779843767343"
         },
@@ -150,8 +157,8 @@
                 "id": "c-1779834401245",
                 "text": "Ago 08 2025 14:34\nTransferência realizada. Aguardando confirmação.",
                 "author": "Usuário",
-                "createdAt": "2026-05-26T22:26:41.245Z",
-                "editedAt": "2026-05-29T21:20:48.398Z"
+                "editedAt": "2026-05-29T21:20:48.398Z",
+                "createdAt": "2026-05-26T22:26:41.245Z"
               }
             ],
             "customFields": {
@@ -200,24 +207,24 @@
             "comments": [
               {
                 "id": "c-1780089727650",
-                "author": "Broder",
                 "text": "Ago 08 2025 14:33\nEntrar em contato com o UK para verificar a viabilidade. Entrar em contato com o escritório, a depender da resposta.",
-                "createdAt": "2026-05-29T21:22:07.650Z",
-                "editedAt": "2026-05-29T21:22:29.555Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:22:29.555Z",
+                "createdAt": "2026-05-29T21:22:07.650Z"
               },
               {
                 "id": "c-1780089730991",
-                "author": "Broder",
                 "text": "Ago 12 2025 12:23\nAguardando retorno para diálogo.",
-                "createdAt": "2026-05-29T21:22:10.991Z",
-                "editedAt": "2026-05-29T21:22:39.892Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:22:39.892Z",
+                "createdAt": "2026-05-29T21:22:10.991Z"
               },
               {
                 "id": "c-1780089735000",
-                "author": "Broder",
                 "text": "Ago 15 2025 16:21\nDiálogo feito. Aguardando novas definições sobre assunto.",
-                "createdAt": "2026-05-29T21:22:15.000Z",
-                "editedAt": "2026-05-29T21:22:50.154Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:22:50.154Z",
+                "createdAt": "2026-05-29T21:22:15.000Z"
               }
             ],
             "customFields": {
@@ -346,8 +353,8 @@
               },
               {
                 "id": "c-1780084650000",
-                "author": "Richard Broder",
                 "text": "Jul 21 12:00 PM\nObservação 1: Entrei em contato solicitando a senha para acesso ao documento atualizado - com assinatura digital. Aguardando resposta.\nObservação 2: Entrei em contato com a Monica para perguntar se é possível autenticar somente as folhas relevantes ao processo. Aguardando resposta.",
+                "author": "Richard Broder",
                 "createdAt": "2026-05-29T19:57:50.000Z"
               },
               {
@@ -404,8 +411,8 @@
               },
               {
                 "id": "c-1780088268155",
-                "author": "Broder",
                 "text": "Ago 01 2025 16:58\n\nDocumento materializado e apostilado.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T20:57:48.155Z"
               }
             ],
@@ -433,32 +440,32 @@
             "comments": [
               {
                 "id": "c-1780088809981",
-                "author": "Broder",
                 "text": "Jul 18 04:22 PM\nA emissão de cópia reprográfica com autenticação tem um custo de R$5,25 por página (R$1,07 da cópia simples e mais R$4,18 da autenticação). Como o processo conta com 140 páginas, isso totalizaria R$735. Verificar, com a Monica:\n1 - Se é possível realizar somente a emissão autenticada das folhas relevantes, acrescido de cópia impressa da versão digitalizada em sua totalidade.\n2 - Quais as folhas que devem ser emitidas (em princípio: 112 e 113).",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:06:49.981Z"
               },
               {
                 "id": "c-1780088817265",
-                "author": "Broder",
                 "text": "Jul 21 11:41 AM\nE-mail enviado. Aguardando resposta.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:06:57.265Z"
               },
               {
                 "id": "c-1780088822399",
-                "author": "Broder",
                 "text": "Jul 23 01:50 PM\nNão obtive resposta. É possível que o e-mail não tenha passado em função do link que estava nele. Tentar novo contato telefônico ou novo envio de e-mail.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:02.399Z"
               },
               {
                 "id": "c-1780088826679",
-                "author": "Broder",
                 "text": "Documentos enviados, e-mail enviado para a Monica dia 08/08/2025. Aguardar retorno até 14/08.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:06.679Z"
               },
               {
                 "id": "c-1780088832856",
-                "author": "Broder",
                 "text": "Documentos recebidos. Possivelmente, irão exigir documentos do meu pai para atualização do processo na Suíça. Terei que aguardar o retorno do cantão. A resposta, possivelmente, só será enviada em Setembro (ou depois).",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:12.856Z"
               }
             ],
@@ -486,32 +493,32 @@
             "comments": [
               {
                 "id": "c-1780088859511",
-                "author": "Broder",
                 "text": "Jul 21 12:23 PM\nA certidão encontra-se com o Tabelião Dinamarco. Telefone para contato (11) 4506-3030. E-mail certidao@tabeliaodinamarco.com.br\nEntrei em contato telefônico para solicitar uma nova via: fui orientado a enviar um e-mail (ou apresentar-me fisicamente) solicitando a nova via da certidão. Realizei a solicitação de uma nova via física, de inteiro teor, digitada e perguntei sobre o apostilamento.\nEstou aguardando a resposta.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:39.511Z"
               },
               {
                 "id": "c-1780088867228",
-                "author": "Broder",
                 "text": "Jul 21 06:08 PM\nE-mail respondido. Preencher o requerimento e realizar a solicitação da cópia.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:47.228Z"
               },
               {
                 "id": "c-1780088872108",
-                "author": "Broder",
                 "text": "Jul 22 04:48 PM\nFormulário de requerimento preenchido e assinado digitalmente. Aguardando o envio do valor do frete para poder realizar o pagamento.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:52.108Z"
               },
               {
                 "id": "c-1780088877690",
-                "author": "Broder",
                 "text": "Jul 22 05:32 PM\nRealizar o TED amanhã, antes das 17 horas.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:07:57.690Z"
               },
               {
                 "id": "c-1780088883042",
-                "author": "Broder",
                 "text": "Jul 23 02:03 PM\nDescobri que é possível realizar PIX para os dados da conta bancária. De toda forma, realizei o pagamento apenas da certidão, pois terei que retirar a cópia do processo de SP em mãos - possivelmente, irei aproveitar para retirar a certidão em mãos e solicitar o apostilamento do processo.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:08:03.042Z"
               }
             ],
@@ -539,32 +546,32 @@
             "comments": [
               {
                 "id": "c-1780088908501",
-                "author": "Broder",
                 "text": "Jul 21 12:47 PM\nContato realizado por whatsapp solicitando uma via física, apostilada. Aguardando resposta.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:08:28.501Z"
               },
               {
                 "id": "c-1780088914628",
-                "author": "Broder",
                 "text": "Jul 22 04:49 PM\nSem retorno. Entrar em contato por telefone.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:08:34.628Z"
               },
               {
                 "id": "c-1780088920017",
-                "author": "Broder",
                 "text": "Jul 23 02:23 PM\nContato telefônico feito - sem retorno tanto pelo número de celular/whatsapp quanto pelo telefone físico. Nova mensagem de whatsapp enviada, e e-mail enviado. Aguardando retorno.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:08:40.017Z"
               },
               {
                 "id": "c-1780088924640",
-                "author": "Broder",
                 "text": "Jul 24 06:18 PM\nSolicitar link para pagamento.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:08:44.640Z"
               },
               {
                 "id": "c-1780088929999",
-                "author": "Broder",
                 "text": "10:10 AM: Pagamento realizado. Opção: Retirada em mãos. Aguardando emissão.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:08:49.999Z"
               }
             ],
@@ -592,14 +599,14 @@
             "comments": [
               {
                 "id": "c-1780088950272",
-                "author": "Broder",
                 "text": "Jul 21 01:04 PM\nRealizado o agendamento da emissão da nova carteira de identidade, no Shopping Mueller, dia 29/07, 12:15.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:09:10.272Z"
               },
               {
                 "id": "c-1780088954409",
-                "author": "Broder",
                 "text": "Jul 21 01:05 PM\nObs: Caso a identidade demore muito para ser emitida, enviar cópia do passaporte brasileiro.",
+                "author": "Broder",
                 "createdAt": "2026-05-29T21:09:14.409Z"
               }
             ],
@@ -627,24 +634,24 @@
             "comments": [
               {
                 "id": "c-1780088970416",
-                "author": "Broder",
                 "text": "Jul 27 2025 17:28\nAlém das folhas 112-115, as demais terão que ser impressas para serem reunidas. Não esquecer de imprimir para poder realizar o apostilamento!",
-                "createdAt": "2026-05-29T21:09:30.416Z",
-                "editedAt": "2026-05-29T21:11:01.855Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:11:01.855Z",
+                "createdAt": "2026-05-29T21:09:30.416Z"
               },
               {
                 "id": "c-1780088974268",
-                "author": "Broder",
                 "text": "Jul 28 2025 15:27\nNão tem papel. Comprar papel A4.",
-                "createdAt": "2026-05-29T21:09:34.268Z",
-                "editedAt": "2026-05-29T21:11:13.815Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:11:13.815Z",
+                "createdAt": "2026-05-29T21:09:34.268Z"
               },
               {
                 "id": "c-1780088978706",
-                "author": "Broder",
                 "text": "Jul 28 2025 22:47\n200 folhas adquiridas. Testar impressora antes de imprimir o processo inteiro.",
-                "createdAt": "2026-05-29T21:09:38.706Z",
-                "editedAt": "2026-05-29T21:11:29.433Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:11:29.433Z",
+                "createdAt": "2026-05-29T21:09:38.706Z"
               }
             ],
             "customFields": {
@@ -671,10 +678,10 @@
             "comments": [
               {
                 "id": "c-1780088992215",
-                "author": "Broder",
                 "text": "Ago 8 2025 12:27\nDocumentos enviados em 07/08/2025. Código de rastreio: OY555574078BR",
-                "createdAt": "2026-05-29T21:09:52.215Z",
-                "editedAt": "2026-05-29T21:11:52.047Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:11:52.047Z",
+                "createdAt": "2026-05-29T21:09:52.215Z"
               }
             ],
             "customFields": {
@@ -701,17 +708,17 @@
             "comments": [
               {
                 "id": "c-1780089002575",
-                "author": "Broder",
                 "text": "Ago 14 2025 11:50\n\nO Cantão responsável pelo meu registro Suíço provavelmente irá exigir documentos como a certidão de nascimento do meu pai. Aguardar a resposta do cantão, que deve ocorrer em Setembro. Se não houver resposta, retornar contato com o consulado entre metade e o final de Setembro.",
-                "createdAt": "2026-05-29T21:10:02.575Z",
-                "editedAt": "2026-05-29T21:12:11.830Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:12:11.830Z",
+                "createdAt": "2026-05-29T21:10:02.575Z"
               },
               {
                 "id": "c-1780089006354",
-                "author": "Broder",
                 "text": "Set 4 2025 10:29\n\nEssa semana, obtive a resposta do cantão, já traduzida pelo consulado suíço no Brasil. Terei que obter os documentos do meu pai - ou produzir uma justificativa explicando por que isso não foi possível.",
-                "createdAt": "2026-05-29T21:10:06.354Z",
-                "editedAt": "2026-05-29T21:12:28.926Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:12:28.926Z",
+                "createdAt": "2026-05-29T21:10:06.354Z"
               }
             ],
             "customFields": {
@@ -738,31 +745,31 @@
             "comments": [
               {
                 "id": "c-1780089165089",
-                "author": "Broder",
                 "text": "Set 4 2025 11:07\n\nE-mail enviado para o consulado suíço em Hong Kong. Aguardando resposta.",
-                "createdAt": "2026-05-29T21:12:45.089Z",
-                "editedAt": "2026-05-29T21:13:19.988Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:13:19.988Z",
+                "createdAt": "2026-05-29T21:12:45.089Z"
               },
               {
                 "id": "c-1780089172193",
-                "author": "Broder",
                 "text": "Set 11 2025 17:39\n\nResposta recebida com orientações. Entrar em contato com a central de imigração, que é responsável pela emissão das certidões de nascimento em HK, usar o contato que foi enviado pelo consulado.",
-                "createdAt": "2026-05-29T21:12:52.193Z",
-                "editedAt": "2026-05-29T21:13:33.391Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:13:33.391Z",
+                "createdAt": "2026-05-29T21:12:52.193Z"
               },
               {
                 "id": "c-1780089176041",
-                "author": "Broder",
                 "text": "Jan 5 2025 15:15\n\nEntrar em contato com o Consulado novamente para verificar se houveram atualizações relevantes.",
-                "createdAt": "2026-05-29T21:12:56.041Z",
-                "editedAt": "2026-05-29T21:13:56.965Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:13:56.965Z",
+                "createdAt": "2026-05-29T21:12:56.041Z"
               },
               {
                 "id": "c-1780089180863",
-                "author": "Broder",
                 "text": "Jan 9 2026 11:22\n\nO Consulado retornou o contato da Central de Imigração de HK, informando que somente meu pai pode realizar a emissão da Certidão de Nascimento.",
-                "createdAt": "2026-05-29T21:13:00.863Z",
-                "editedAt": "2026-05-29T21:14:14.299Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:14:14.299Z",
+                "createdAt": "2026-05-29T21:13:00.863Z"
               }
             ],
             "customFields": {
@@ -797,17 +804,17 @@
                 "comments": [
                   {
                     "id": "c-1780089333949",
-                    "author": "Broder",
                     "text": "Set 15 2025 10:43\n• Nome completo: Kim Chu Cheng Wang\n• Nome dos pais: Wei Hsing Wang e Wen Ching Wang\n• Data de nascimento:\n• Número de documentos:",
-                    "createdAt": "2026-05-29T21:15:33.949Z",
-                    "editedAt": "2026-05-29T21:16:07.440Z"
+                    "author": "Broder",
+                    "editedAt": "2026-05-29T21:16:07.440Z",
+                    "createdAt": "2026-05-29T21:15:33.949Z"
                   },
                   {
                     "id": "c-1780089342197",
-                    "author": "Broder",
                     "text": "Out 28 2025 11:27\nDocumentos entregues pelo Ming.",
-                    "createdAt": "2026-05-29T21:15:42.197Z",
-                    "editedAt": "2026-05-29T21:16:22.480Z"
+                    "author": "Broder",
+                    "editedAt": "2026-05-29T21:16:22.480Z",
+                    "createdAt": "2026-05-29T21:15:42.197Z"
                   }
                 ],
                 "customFields": {
@@ -834,10 +841,10 @@
                 "comments": [
                   {
                     "id": "c-1780089400295",
-                    "author": "Broder",
                     "text": "Set 15 2025 16:35\ne-mail enviado. Aguardando retorno.",
-                    "createdAt": "2026-05-29T21:16:40.295Z",
-                    "editedAt": "2026-05-29T21:16:52.734Z"
+                    "author": "Broder",
+                    "editedAt": "2026-05-29T21:16:52.734Z",
+                    "createdAt": "2026-05-29T21:16:40.295Z"
                   }
                 ],
                 "customFields": {
@@ -864,17 +871,17 @@
                 "comments": [
                   {
                     "id": "c-1780089425155",
-                    "author": "Broder",
                     "text": "Set 24 2025 09:54\nA central de imigração respondeu o e-mail com informações. É necessário tirar alguns esclarecimentos sobre as informações necessárias.",
-                    "createdAt": "2026-05-29T21:17:05.155Z",
-                    "editedAt": "2026-05-29T21:17:26.786Z"
+                    "author": "Broder",
+                    "editedAt": "2026-05-29T21:17:26.786Z",
+                    "createdAt": "2026-05-29T21:17:05.155Z"
                   },
                   {
                     "id": "c-1780089428550",
-                    "author": "Broder",
                     "text": "Set 24 2025 12:04\nE-mail enviado para o departamento de imigração com novas perguntas sobre documentos, traduções, formas de envio e pagamento. Aguardando pela retorno.",
-                    "createdAt": "2026-05-29T21:17:08.550Z",
-                    "editedAt": "2026-05-29T21:17:41.108Z"
+                    "author": "Broder",
+                    "editedAt": "2026-05-29T21:17:41.108Z",
+                    "createdAt": "2026-05-29T21:17:08.550Z"
                   }
                 ],
                 "customFields": {
@@ -894,17 +901,17 @@
             "comments": [
               {
                 "id": "c-1780089281764",
-                "author": "Broder",
                 "text": "Set 15 2025 16:36\nAguardando retorno do e-mail.",
-                "createdAt": "2026-05-29T21:14:41.764Z",
-                "editedAt": "2026-05-29T21:15:17.853Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:15:17.853Z",
+                "createdAt": "2026-05-29T21:14:41.764Z"
               },
               {
                 "id": "c-1780089285746",
-                "author": "Broder",
                 "text": "Out 28 2025 11:26\nAguardando o retorno do Consulado Suíço em Hong Kong.",
-                "createdAt": "2026-05-29T21:14:45.746Z",
-                "editedAt": "2026-05-29T21:15:14.111Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:15:14.111Z",
+                "createdAt": "2026-05-29T21:14:45.746Z"
               }
             ],
             "customFields": {
@@ -931,38 +938,38 @@
             "comments": [
               {
                 "id": "c-1780089478580",
-                "author": "Broder",
                 "text": "Set 24 2025 11:20\nA central de imigração de Hong Kong solicitou uma carta oficial emitida pelas autoridades suíças confirmando que a certidão de nascimento do meu pai é necessário para o meu processo de cidadania.\nEntrei em contato com a Monica, do Consulado Suíço no Brasil, pedindo auxílio para a emissão desta carta. Estou aguardando sua resposta.",
-                "createdAt": "2026-05-29T21:17:58.580Z",
-                "editedAt": "2026-05-29T21:18:38.392Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:18:38.392Z",
+                "createdAt": "2026-05-29T21:17:58.580Z"
               },
               {
                 "id": "c-1780089484719",
-                "author": "Broder",
                 "text": "Out 10 2025 11:48\nO Cantão responsável me respondeu, diretamente através do e-mail do Consulado, afirmando que já iria encaminhar o pedido de requisição para o Consulado Suíço em Hong Kong.\nAgora, resta determinar como irei encaminhar os documentos solicitados para Hong Kong. Verificar se\n1 - Os documentos que enviei para o Consulado servem e podem ser encaminhados para Hong Kong.\n2 - Os documentos podem ser enviados através do Consulado Suíço no Brasil, ou se eu preciso tratar o envio dos documentos diretamente com o Consulado Suíço em Hong Kong.",
-                "createdAt": "2026-05-29T21:18:04.719Z",
-                "editedAt": "2026-05-29T21:18:53.765Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:18:53.765Z",
+                "createdAt": "2026-05-29T21:18:04.719Z"
               },
               {
                 "id": "c-1780089490337",
-                "author": "Broder",
                 "text": "Out 28 2025 11:25\nO Consulado Brasileiro/Suíço já encaminhou os documentos para o Consulado em Hong Kong. Acabei de encaminhar a cópia do passaporte do Kim, bem como a cópia do meu passaporte Suíço e a cópia da troca de e-mails com a Central de Imigração de Hong Kong para que o Consulado Suíço em Hong Kong possa emitir a carta de requisição para a Central de Imigração de Hong Kong. Aguardando o retorno deles.",
-                "createdAt": "2026-05-29T21:18:10.337Z",
-                "editedAt": "2026-05-29T21:19:13.293Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:19:13.293Z",
+                "createdAt": "2026-05-29T21:18:10.337Z"
               },
               {
                 "id": "c-1780089498682",
-                "author": "Broder",
                 "text": "Dez 5 2025 00:45\nO valor para a carta de requisição foi pago para o Consulado Suíço no Brasil. É necessário entrar em contato com o Consulado Suíço de Hong Kong para dar sequencia ao procedimento.",
-                "createdAt": "2026-05-29T21:18:18.682Z",
-                "editedAt": "2026-05-29T21:19:32.276Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:19:32.276Z",
+                "createdAt": "2026-05-29T21:18:18.682Z"
               },
               {
                 "id": "c-1780089503611",
-                "author": "Broder",
                 "text": "Dez 8 2025 09:04\nE-mail enviado para o Consulado Suíço em Hong Kong solicitando auxílio para a continuidade do procedimento.",
-                "createdAt": "2026-05-29T21:18:23.611Z",
-                "editedAt": "2026-05-29T21:19:48.545Z"
+                "author": "Broder",
+                "editedAt": "2026-05-29T21:19:48.545Z",
+                "createdAt": "2026-05-29T21:18:23.611Z"
               }
             ],
             "customFields": {
@@ -1002,38 +1009,38 @@
         "comments": [
           {
             "id": "c-1780089811456",
-            "author": "Broder",
             "text": "Jan 05 2026 15:10\nVerificar plano de Saúde:\n• Richard\n• Gustavo\n• Crianças",
-            "createdAt": "2026-05-29T21:23:31.456Z",
-            "editedAt": "2026-05-29T21:24:12.728Z"
+            "author": "Broder",
+            "editedAt": "2026-05-29T21:24:12.728Z",
+            "createdAt": "2026-05-29T21:23:31.456Z"
           },
           {
             "id": "c-1780089815966",
-            "author": "Broder",
             "text": "Fev 06 2026 15:36\nPagamento do plano Unimed na segunda-feira",
-            "createdAt": "2026-05-29T21:23:35.966Z",
-            "editedAt": "2026-05-29T21:24:30.906Z"
+            "author": "Broder",
+            "editedAt": "2026-05-29T21:24:30.906Z",
+            "createdAt": "2026-05-29T21:23:35.966Z"
           },
           {
             "id": "c-1780089821572",
-            "author": "Broder",
             "text": "Fev 06 2026 16:38\nPlanos para Gustavo e crianças → Aproximadamente o dobro do valor de um plano adulto individual",
-            "createdAt": "2026-05-29T21:23:41.572Z",
-            "editedAt": "2026-05-29T21:24:45.435Z"
+            "author": "Broder",
+            "editedAt": "2026-05-29T21:24:45.435Z",
+            "createdAt": "2026-05-29T21:23:41.572Z"
           },
           {
             "id": "c-1780089828510",
-            "author": "Broder",
             "text": "Fev 19 2026 16:36\nPlanos apresentados. Atualizar proposta atualizada para Gustavo.",
-            "createdAt": "2026-05-29T21:23:48.510Z",
-            "editedAt": "2026-05-29T21:24:58.771Z"
+            "author": "Broder",
+            "editedAt": "2026-05-29T21:24:58.771Z",
+            "createdAt": "2026-05-29T21:23:48.510Z"
           },
           {
             "id": "c-1780089833412",
-            "author": "Broder",
             "text": "Mar 09 2026 11:29\nAguardando capitalização",
-            "createdAt": "2026-05-29T21:23:53.412Z",
-            "editedAt": "2026-05-29T21:25:11.056Z"
+            "author": "Broder",
+            "editedAt": "2026-05-29T21:25:11.056Z",
+            "createdAt": "2026-05-29T21:23:53.412Z"
           }
         ],
         "customFields": {
@@ -1078,10 +1085,10 @@
         "comments": [
           {
             "id": "c-1780089938875",
-            "author": "Broder",
             "text": "Fev 24 2026 11:58\nDiscutir proposta - locação de vaga para cobrir plano de saúde",
-            "createdAt": "2026-05-29T21:25:38.875Z",
-            "editedAt": "2026-05-29T21:25:55.406Z"
+            "author": "Broder",
+            "editedAt": "2026-05-29T21:25:55.406Z",
+            "createdAt": "2026-05-29T21:25:38.875Z"
           }
         ],
         "customFields": {
@@ -1110,161 +1117,215 @@
         "group": "default"
       },
       {
-        "id": "mprg8ngime0w96msfu",
-        "title": "Colnago Concept",
+        "id": "mpy9g8mwys5j7khz7an",
+        "title": "Pesquisar por aspirador portátil",
         "description": "",
-        "dueDate": "2026-06-01",
-        "priority": "media",
-        "status": "acao-necessaria",
-        "children": [
-          {
-            "id": "mprgaam5mwxr23000h",
-            "title": "Canote Selim",
-            "status": "acao-necessaria",
-            "priority": "media",
-            "dueDate": "2026-06-01",
-            "description": "",
-            "children": [],
-            "createdAt": "2026-05-29T21:45:09.437Z",
-            "updatedAt": "2026-05-29T21:53:12.521Z",
-            "linkedItems": [],
-            "notes": "",
-            "tags": [],
-            "expanded": false,
-            "comments": [
-              {
-                "id": "c-1780091592521",
-                "author": "Usuário",
-                "text": "O canote da bicicleta está travado. Preciso entrar em contato com o Eduardo para perguntar como resolver. Em último caso, tenho que levar a bicicleta até Curitiba ou - ainda mais extremo - encontrar o famigerado extrator de canote e ajustá-lo para um canote aero de carbono. Aproveitar o contato para solicitar o número serial da bicicleta.",
-                "createdAt": "2026-05-29T21:53:12.521Z"
-              }
-            ],
-            "customFields": {
-              "col-mpncx3x8esctq8roca": "opt-1780091101371"
-            }
-          },
-          {
-            "id": "mprgevgnvtute0ls75o",
-            "title": "Roda Sava",
-            "status": "acao-necessaria",
-            "priority": "media",
-            "dueDate": "",
-            "description": "",
-            "children": [],
-            "createdAt": "2026-05-29T21:48:43.079Z",
-            "updatedAt": "2026-05-29T21:57:20.425Z",
-            "linkedItems": [],
-            "notes": "",
-            "tags": [],
-            "expanded": false,
-            "comments": [
-              {
-                "id": "c-1780091660227",
-                "author": "Usuário",
-                "text": "A roda Sava está com três problemas - além de todos os problemas que eu tive que resolver.\n• Problema 1 (mais severo): A gaiola do trocador traseiro está raspando nos raios da roda quando a marcha está no maior cog (30T).\n• Problema 2 (inconveniente): Os spokes interlaçados estão fazendo barulho ao pedalar a bike - ao menos, essa é a suspeita inicial. Verificar se é necessário aplicar mais tensão.\n• Problema 3: Ao ajustar o espaçamento do cubo, a roda ficou bastante deslocada para o lado esquerdo (non-drive side), chegando perifosamente perto do chainstays (embora ela não esteja mais raspando - como estava) Seria ideal estudar a reconstrução do cubo para resolver esse problema de alinhamento - talvez isso esteja associado aos spokes.",
-                "createdAt": "2026-05-29T21:54:20.227Z",
-                "editedAt": "2026-05-29T21:57:20.425Z"
-              }
-            ],
-            "timeStart": "",
-            "timeEnd": "",
-            "customFields": {
-              "col-mpncx3x8esctq8roca": "opt-1780091101371"
-            }
-          },
-          {
-            "id": "mprgq3vhy716rf3lpw9",
-            "title": "Adquirir gancheira",
-            "status": "pendente",
-            "priority": "baixa",
-            "dueDate": "",
-            "description": "",
-            "children": [],
-            "createdAt": "2026-05-29T21:57:27.197Z",
-            "updatedAt": "2026-05-29T21:59:59.916Z",
-            "linkedItems": [],
-            "notes": "",
-            "tags": [],
-            "expanded": false,
-            "comments": [
-              {
-                "id": "c-1780091999916",
-                "author": "Usuário",
-                "text": "A gancheira foi levemente danificada no lado de contato com a roda, em função do fio da rosca que estava exposto. Embora o setup atual esteja montado e funcional, é ideal manter em mente que uma nova gancheira pode ser necessária.\n\nProcurar por gancheira para a Colnago Concept ou suas similares (acredito que a V3 utilizava a mesma gancheira - confirmar).\n\nEm tempo, a eventual necessidade de aquisição de gancheira pode coincidir com a necessidade de aquisição de uma trava de canote para a Colnago Concept - aguardar a resolução do problema do canote para definir isso.",
-                "createdAt": "2026-05-29T21:59:59.916Z"
-              }
-            ],
-            "customFields": {
-              "col-mpncx3x8esctq8roca": "opt-1780091101371"
-            },
-            "timeStart": "",
-            "timeEnd": ""
-          }
-        ],
+        "dueDate": "2026-06-03",
+        "priority": "baixa",
+        "status": "pendente",
+        "children": [],
         "linkedItems": [],
         "notes": "",
         "tags": [],
         "expanded": false,
         "comments": [],
         "customFields": {
-          "col-mpncx3x8esctq8roca": "opt-1780091101371"
+          "col-mpncx3x8esctq8roca": "opt-1780502925111"
         },
+        "createdAt": "2026-06-03T16:08:12.728Z",
+        "updatedAt": "2026-06-03T16:08:51.838Z"
+      },
+      {
+        "id": "mprg8ngime0w96msfu",
+        "tags": [],
+        "notes": "",
+        "title": "Colnago Concept",
+        "status": "aguardando",
+        "dueDate": "2026-06-05",
+        "children": [
+          {
+            "id": "mprgaam5mwxr23000h",
+            "tags": [],
+            "notes": "",
+            "title": "Canote Selim",
+            "status": "aguardando",
+            "dueDate": "",
+            "children": [],
+            "comments": [
+              {
+                "id": "c-1780091592521",
+                "text": "O canote da bicicleta está travado. Preciso entrar em contato com o Eduardo para perguntar como resolver. Em último caso, tenho que levar a bicicleta até Curitiba ou - ainda mais extremo - encontrar o famigerado extrator de canote e ajustá-lo para um canote aero de carbono. Aproveitar o contato para solicitar o número serial da bicicleta.",
+                "author": "Usuário",
+                "createdAt": "2026-05-29T21:53:12.521Z"
+              },
+              {
+                "id": "c-1780502707601",
+                "author": "Usuário",
+                "text": "Contato feito com o Eduardo em 02/06/26. Ele deu dicas para a resolução do problema e, também, está disposto a mexer no canote se eu levar a bicicleta até ele.\n\nSugestão: levar a bicicleta junto na próxima passagem por Curitiba.",
+                "createdAt": "2026-06-03T16:05:07.601Z",
+                "editedAt": "2026-06-03T16:06:56.097Z"
+              }
+            ],
+            "expanded": false,
+            "priority": "baixa",
+            "createdAt": "2026-05-29T21:45:09.437Z",
+            "updatedAt": "2026-06-03T16:07:42.573Z",
+            "description": "",
+            "linkedItems": [],
+            "customFields": {
+              "col-mpncx3x8esctq8roca": "opt-1780091101371"
+            }
+          },
+          {
+            "id": "mprgevgnvtute0ls75o",
+            "tags": [],
+            "notes": "",
+            "title": "Roda Sava",
+            "status": "aguardando",
+            "dueDate": "2026-06-05",
+            "timeEnd": "",
+            "children": [
+              {
+                "id": "mpyeftudq3wxxj99q4",
+                "title": "Encontrar Cubo 24 furos",
+                "status": "acao-necessaria",
+                "priority": "media",
+                "dueDate": "2026-06-05",
+                "description": "É necessário encontrar um cubo de 24 spokes para substituir pelo cubo atual.",
+                "children": [],
+                "createdAt": "2026-06-03T18:27:51.637Z",
+                "updatedAt": "2026-06-03T18:32:03.538Z",
+                "linkedItems": [],
+                "notes": "",
+                "tags": [],
+                "expanded": false,
+                "comments": [],
+                "customFields": {
+                  "col-mpncx3x8esctq8roca": "opt-1780091101371"
+                },
+                "timeStart": "",
+                "timeEnd": ""
+              }
+            ],
+            "comments": [
+              {
+                "id": "c-1780091660227",
+                "text": "A roda Sava está com três problemas - além de todos os problemas que eu tive que resolver.\n• Problema 1 (mais severo): A gaiola do trocador traseiro está raspando nos raios da roda quando a marcha está no maior cog (30T).\n• Problema 2 (inconveniente): Os spokes interlaçados estão fazendo barulho ao pedalar a bike - ao menos, essa é a suspeita inicial. Verificar se é necessário aplicar mais tensão.\n• Problema 3: Ao ajustar o espaçamento do cubo, a roda ficou bastante deslocada para o lado esquerdo (non-drive side), chegando perifosamente perto do chainstays (embora ela não esteja mais raspando - como estava) Seria ideal estudar a reconstrução do cubo para resolver esse problema de alinhamento - talvez isso esteja associado aos spokes.",
+                "author": "Usuário",
+                "editedAt": "2026-05-29T21:57:20.425Z",
+                "createdAt": "2026-05-29T21:54:20.227Z"
+              },
+              {
+                "id": "c-1780502756640",
+                "author": "Usuário",
+                "text": "O Luiz não respondeu a tentativa de contato. Aguardar mais alguns dias. Caso contrário, talvez seja necessário realizar a aquisição de um cubo novo.",
+                "createdAt": "2026-06-03T16:05:56.640Z"
+              }
+            ],
+            "expanded": true,
+            "priority": "media",
+            "createdAt": "2026-05-29T21:48:43.079Z",
+            "timeStart": "",
+            "updatedAt": "2026-06-03T18:28:33.657Z",
+            "description": "",
+            "linkedItems": [],
+            "customFields": {
+              "col-mpncx3x8esctq8roca": "opt-1780091101371"
+            }
+          },
+          {
+            "id": "mprgq3vhy716rf3lpw9",
+            "tags": [],
+            "notes": "",
+            "title": "Adquirir gancheira",
+            "status": "pendente",
+            "dueDate": "",
+            "timeEnd": "",
+            "children": [],
+            "comments": [
+              {
+                "id": "c-1780091999916",
+                "text": "A gancheira foi levemente danificada no lado de contato com a roda, em função do fio da rosca que estava exposto. Embora o setup atual esteja montado e funcional, é ideal manter em mente que uma nova gancheira pode ser necessária.\n\nProcurar por gancheira para a Colnago Concept ou suas similares (acredito que a V3 utilizava a mesma gancheira - confirmar).\n\nEm tempo, a eventual necessidade de aquisição de gancheira pode coincidir com a necessidade de aquisição de uma trava de canote para a Colnago Concept - aguardar a resolução do problema do canote para definir isso.",
+                "author": "Usuário",
+                "createdAt": "2026-05-29T21:59:59.916Z"
+              }
+            ],
+            "expanded": false,
+            "priority": "baixa",
+            "createdAt": "2026-05-29T21:57:27.197Z",
+            "timeStart": "",
+            "updatedAt": "2026-06-03T16:03:45.318Z",
+            "description": "",
+            "linkedItems": [],
+            "customFields": {
+              "col-mpncx3x8esctq8roca": "opt-1780091101371"
+            }
+          }
+        ],
+        "comments": [],
+        "expanded": false,
+        "priority": "baixa",
         "createdAt": "2026-05-29T21:43:52.770Z",
-        "updatedAt": "2026-05-29T21:58:03.770Z"
+        "updatedAt": "2026-06-03T18:27:34.661Z",
+        "description": "",
+        "linkedItems": [],
+        "customFields": {
+          "col-mpncx3x8esctq8roca": "opt-1780091101371"
+        }
       },
       {
         "id": "mprg5vvq4agy1r28m0o",
-        "title": "Processo POA",
-        "description": "",
-        "dueDate": "2026-06-01",
-        "priority": "urgente",
-        "status": "aguardando",
-        "children": [],
-        "linkedItems": [],
-        "notes": "",
         "tags": [],
-        "expanded": false,
+        "notes": "",
+        "title": "Processo POA",
+        "status": "aguardando",
+        "dueDate": "2026-06-03",
+        "children": [],
         "comments": [
           {
             "id": "c-1780090953742",
-            "author": "Usuário",
             "text": "Entrar em contato com o Raul na Segunda para verificar o andamento dos procedimentos.",
+            "author": "Usuário",
             "createdAt": "2026-05-29T21:42:33.742Z"
           }
         ],
+        "expanded": false,
+        "priority": "urgente",
+        "createdAt": "2026-05-29T21:41:43.718Z",
+        "updatedAt": "2026-06-03T15:58:36.826Z",
+        "description": "",
+        "linkedItems": [],
         "customFields": {
           "col-mpncx3x8esctq8roca": "opt-1779843980510"
-        },
-        "createdAt": "2026-05-29T21:41:43.718Z",
-        "updatedAt": "2026-05-29T21:42:33.742Z"
+        }
       },
       {
         "id": "mprft7mvisi8q20isr",
-        "title": "Batizado Isabela",
-        "description": "",
-        "dueDate": "2026-07-11",
-        "priority": "alta",
-        "status": "acao-necessaria",
-        "children": [],
-        "linkedItems": [],
-        "notes": "",
         "tags": [],
-        "expanded": false,
+        "notes": "",
+        "title": "Batizado Isabela",
+        "status": "acao-necessaria",
+        "dueDate": "2026-07-11",
+        "timeEnd": "",
+        "children": [],
         "comments": [
           {
             "id": "c-1780090818848",
-            "author": "Usuário",
             "text": "Ver presente. Confirmar data com o Deco.",
+            "author": "Usuário",
             "createdAt": "2026-05-29T21:40:18.848Z"
           }
         ],
+        "expanded": false,
+        "priority": "alta",
+        "createdAt": "2026-05-29T21:31:52.423Z",
+        "timeStart": "",
+        "updatedAt": "2026-05-29T21:41:15.735Z",
+        "description": "",
+        "linkedItems": [],
         "customFields": {
           "col-mpncx3x8esctq8roca": "opt-1780090872018"
-        },
-        "createdAt": "2026-05-29T21:31:52.423Z",
-        "updatedAt": "2026-05-29T21:41:15.735Z",
-        "timeStart": "",
-        "timeEnd": ""
+        }
       },
       {
         "id": "mpndy2wwk6bspi4flbs",
@@ -1272,13 +1333,21 @@
         "class": "",
         "notes": "",
         "title": "Cancelar Assinatura ClickUp",
-        "status": "acao-necessaria",
-        "dueDate": "2026-05-27",
+        "status": "aguardando",
+        "dueDate": "2026-09-25",
         "children": [],
+        "comments": [
+          {
+            "id": "c-1780420729671",
+            "text": "Assinatura pausada em 02/06/2026. Será renovada automaticamente em 27/09/2026, cancelar antes da renovação (até lá, os dados permanecem disponíveis).",
+            "author": "Broder",
+            "createdAt": "2026-06-02T17:18:49.671Z"
+          }
+        ],
         "expanded": false,
-        "priority": "media",
+        "priority": "baixa",
         "createdAt": "2026-05-27T01:28:35.648Z",
-        "updatedAt": "2026-05-27T17:04:00.899Z",
+        "updatedAt": "2026-06-02T17:19:00.530Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1403,13 +1472,18 @@
           },
           {
             "id": "opt-1780090872018",
-            "label": "Família",
-            "color": "#0000fa"
+            "color": "#0000fa",
+            "label": "Família"
           },
           {
             "id": "opt-1780091101371",
-            "label": "Bike",
-            "color": "#969696"
+            "color": "#969696",
+            "label": "Bike"
+          },
+          {
+            "id": "opt-1780502925111",
+            "label": "Compras",
+            "color": "#849a13"
           }
         ],
         "visible": true
@@ -1428,7 +1502,7 @@
       }
     ],
     "showTime": false,
-    "_closedSectionOpen": true,
+    "_closedSectionOpen": false,
     "viewMode": "list",
     "sortBy": "created",
     "filterStatus": "all",
@@ -2102,7 +2176,7 @@
             "nome": "Compagás",
             "venc": "11/5/26",
             "valor": 46.13,
-            "status": "pago",
+            "status": "nao-pago",
             "obs": ""
           },
           {
@@ -2117,8 +2191,8 @@
             "id": 44,
             "nome": "Celular",
             "venc": "20/5/26",
-            "valor": 318.27,
-            "status": "pago",
+            "valor": 0,
+            "status": "debito",
             "obs": ""
           },
           {
@@ -2133,51 +2207,51 @@
         "5": [
           {
             "id": 1780116641836.969,
+            "obs": "",
             "nome": "Aluguel",
             "venc": "10/6/26",
-            "valor": 0,
-            "status": "nao-pago",
-            "obs": ""
+            "valor": 1878.53,
+            "status": "nao-pago"
           },
           {
             "id": 1780116641836.6943,
+            "obs": "00547212968",
             "nome": "Condomínio",
             "venc": "10/6/26",
-            "valor": 0,
-            "status": "nao-pago",
-            "obs": "00547212968"
+            "valor": 1531.17,
+            "status": "nao-pago"
           },
           {
             "id": 1780116641836.4788,
+            "obs": "",
             "nome": "Compagás",
-            "venc": "11/6/26",
-            "valor": 0,
-            "status": "nao-pago",
-            "obs": ""
+            "venc": "10/06/26",
+            "valor": 44.79,
+            "status": "nao-pago"
           },
           {
             "id": 1780116641836.3508,
+            "obs": "",
             "nome": "Internet",
             "venc": "2/6/26",
             "valor": 92.01,
-            "status": "debito",
-            "obs": ""
+            "status": "debito"
           },
           {
             "id": 1780116641836.436,
+            "obs": "",
             "nome": "Celular",
             "venc": "20/6/26",
             "valor": 0,
-            "status": "nao-pago",
-            "obs": ""
+            "status": "debito"
           },
           {
             "id": 1780116641836.5938,
+            "obs": "",
             "nome": "Unimed",
             "venc": "7/6/26",
             "valor": 844.01,
-            "status": "pago",
-            "obs": ""
+            "status": "pago"
           }
         ],
         "6": [],
@@ -2213,15 +2287,517 @@
       ]
     },
     "openMonths": {
-      "4": true,
       "5": true
     },
     "currentYear": 2026,
     "chatHistory": {}
   },
   "card": {
-    "faturas": [],
-    "transactions": {},
+    "cards": [
+      {
+        "id": "card-itau",
+        "cor": "#ec7000",
+        "nome": "Itaú",
+        "fechamento": 31,
+        "vencimento": 7
+      },
+      {
+        "id": "card-mp",
+        "cor": "#00bcff",
+        "nome": "Mercado Pago",
+        "fechamento": 26,
+        "vencimento": 1
+      },
+      {
+        "id": "card-nubank",
+        "cor": "#820ad1",
+        "nome": "Nubank",
+        "fechamento": 17,
+        "vencimento": 24
+      }
+    ],
+    "bills": {
+      "card-itau": {
+        "2026": {
+          "4": [
+            {
+              "id": "mq0aioubdfft817asbf",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "22/05/26",
+              "valor": -29.93,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory",
+              "nota": ""
+            },
+            {
+              "id": "mq0aioub25raimqxlpm",
+              "descricao": "DUQUE BIKES LTDA",
+              "data": "21/05/26",
+              "valor": 69.9,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub5absbncl26l",
+              "descricao": "TUDOOFERTAS.COM",
+              "data": "19/05/26",
+              "valor": 120,
+              "tipo": "despesa",
+              "categoria": "Vape",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubza3riyfa7ni",
+              "descricao": "RAIA330",
+              "data": "19/05/26",
+              "valor": 70.94,
+              "tipo": "despesa",
+              "categoria": "Paul",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub1k629oepz54",
+              "descricao": "DL *AliExpress BR Alip",
+              "data": "17/05/26",
+              "valor": 78.56,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub4a69bk38nuf",
+              "descricao": "MERCADOLIVRE*MERCA01/02",
+              "data": "15/05/26",
+              "valor": 135.35,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/2",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubn26b6dojr5k",
+              "descricao": "TUDOOFERTAS.COM",
+              "data": "15/05/26",
+              "valor": 120,
+              "tipo": "despesa",
+              "categoria": "Vape",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubgn9vmz981dw",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "15/05/26",
+              "valor": 37.88,
+              "tipo": "despesa",
+              "categoria": "AI",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubjarppionohg",
+              "descricao": "CLAUDE.AI SUBSCRIPTION",
+              "data": "14/05/26",
+              "valor": 1082.49,
+              "tipo": "despesa",
+              "categoria": "AI",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubh4fme8zb46j",
+              "descricao": "CBF FERRAMENTAS",
+              "data": "14/05/26",
+              "valor": 102.2,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub3n1sxz32y6k",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "14/05/26",
+              "valor": -140.19,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubqrxlq4wnj",
+              "descricao": "MP *ALIEXPRESS    01/03",
+              "data": "13/05/26",
+              "valor": 97.42,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/3",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubynuw1kr2f7o",
+              "descricao": "DL *AliExpress BR 01/03",
+              "data": "13/05/26",
+              "valor": 166.39,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/3",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub4jzjivbzrz",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "12/05/26",
+              "valor": 5.28,
+              "tipo": "despesa",
+              "categoria": "AI",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubl11a8wpe8j",
+              "descricao": "APIFY* SUBSCRIPTION",
+              "data": "11/05/26",
+              "valor": 150.22,
+              "tipo": "despesa",
+              "categoria": "AI",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub21ast7x0je6",
+              "descricao": "LanchesQDelicia",
+              "data": "11/05/26",
+              "valor": 130,
+              "tipo": "despesa",
+              "categoria": "Vape",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubxr6ge2umc",
+              "descricao": "CBF FERRAMENTAS",
+              "data": "11/05/26",
+              "valor": 33,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubf06jhpeng6n",
+              "descricao": "VIA EXPRESSA SPORTS LT",
+              "data": "11/05/26",
+              "valor": 70,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubytguiz7wai",
+              "descricao": "CBF FERRAMENTAS",
+              "data": "08/05/26",
+              "valor": 63.67,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubtmeud1nmx1",
+              "descricao": "MERCADOLIVRE*MERCA01/10",
+              "data": "07/05/26",
+              "valor": 66.41,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/10",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioublpzypwqwdvn",
+              "descricao": "MERCADO*MUNDOCOMPRAS",
+              "data": "07/05/26",
+              "valor": 512.4,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub6oxi1kz6s19",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "07/05/26",
+              "valor": -191.92,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubq63rislktwn",
+              "descricao": "FARM LONDRIN-CT",
+              "data": "06/05/26",
+              "valor": 623.2,
+              "tipo": "despesa",
+              "categoria": "Paul",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub1grvubczakn",
+              "descricao": "INDITEX BRAS-CT TDA",
+              "data": "06/05/26",
+              "valor": 1787.5,
+              "tipo": "despesa",
+              "categoria": "Paul",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub5zio4tophod",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "06/05/26",
+              "valor": 9.15,
+              "tipo": "despesa",
+              "categoria": "AI",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubivqslwmp4j",
+              "descricao": "ANTHROPIC",
+              "data": "05/05/26",
+              "valor": 261.08,
+              "tipo": "despesa",
+              "categoria": "AI",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub1opy0osvhpd",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "04/05/26",
+              "valor": 65.11,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubms8a4i861qd",
+              "descricao": "VIVARA            01/10",
+              "data": "04/05/26",
+              "valor": 382.5,
+              "tipo": "despesa",
+              "categoria": "Paul",
+              "parcela": "1/10",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubdkqo5804i4r",
+              "descricao": "MERCADO*MERCADOLIV01/03",
+              "data": "03/05/26",
+              "valor": 33,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/3",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubqucbj3dew7e",
+              "descricao": "MERCADOLIVRE*FIREBIKE",
+              "data": "03/05/26",
+              "valor": 62.82,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubdtwoi3ohymd",
+              "descricao": "MERCADOLIVRE*MERCA01/10",
+              "data": "03/05/26",
+              "valor": 73.56,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/10",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioubh6obegxq06h",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "03/05/26",
+              "valor": 2531.2,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mq0aioub56z1orxc8p8",
+              "descricao": "JV CAMBE LOJA DE CONVE",
+              "data": "02/05/26",
+              "valor": 19.78,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "",
+              "source": "memory",
+              "nota": "Abastecimento"
+            },
+            {
+              "id": "mq0aioub6nu90hh01pn",
+              "descricao": "JV CAMBE LOJA DE CONVE",
+              "data": "02/05/26",
+              "valor": 12.27,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "",
+              "source": "memory",
+              "nota": "Abastecimento"
+            },
+            {
+              "id": "mq0aioubmyknqcsj65q",
+              "descricao": "LOCALIZA RAC ACLDB01/03",
+              "data": "02/05/26",
+              "valor": 255.1,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "1/3",
+              "source": "memory",
+              "nota": "Locação carro (viagem bike - diária adicional, parcelado)"
+            },
+            {
+              "id": "mq0aioubbbxzh2q2ek8",
+              "descricao": "RIO SOLIMOES AUTO POST",
+              "data": "02/05/26",
+              "valor": 87.11,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "",
+              "source": "memory",
+              "nota": "Abastecimento"
+            },
+            {
+              "id": "mq0aioubcuwake08i47",
+              "descricao": "ZP     *LUIZ ALBE501/06",
+              "data": "02/05/26",
+              "valor": 750,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/6",
+              "source": "memory",
+              "nota": "Rodas Sava"
+            },
+            {
+              "id": "mq0aioubp2ih5bpy8km",
+              "descricao": "AUTO POSTO ESTRELA DA",
+              "data": "02/05/26",
+              "valor": 141.67,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "",
+              "source": "memory",
+              "nota": "Abastecimento"
+            },
+            {
+              "id": "mq0aioubhoen8jye995",
+              "descricao": "JIM.COM* DPA-CT TR01/10",
+              "data": "01/05/26",
+              "valor": 1290,
+              "tipo": "despesa",
+              "categoria": "Bike",
+              "parcela": "1/10",
+              "source": "memory",
+              "nota": "Colnago Concept"
+            },
+            {
+              "id": "mq0aioubwqwp0uqh1cn",
+              "descricao": "POSTO DO MEL II",
+              "data": "01/05/26",
+              "valor": 148.11,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "",
+              "source": "memory",
+              "nota": "Abastecimento"
+            },
+            {
+              "id": "mq0aioub7z1u5kzf7hp",
+              "descricao": "LOCALIZA RENT A CAR SA",
+              "data": "30/04/26",
+              "valor": 639.45,
+              "tipo": "despesa",
+              "categoria": "Viagem",
+              "parcela": "",
+              "source": "memory",
+              "nota": "Locação carro (buscar bike)"
+            },
+            {
+              "id": "mq0aioubpkp2m6ea8wf",
+              "descricao": "EC          *SAMSU02/18",
+              "data": "29/04/26",
+              "valor": 250.67,
+              "tipo": "despesa",
+              "categoria": "Tech",
+              "parcela": "2/18",
+              "source": "memory",
+              "nota": "Celular S25+"
+            },
+            {
+              "id": "mq0aioubvxbh7b74j9h",
+              "descricao": "DM*helphbomaxcom  02/12",
+              "data": "12/04/26",
+              "valor": 27.95,
+              "tipo": "despesa",
+              "categoria": "Subscriptions",
+              "parcela": "2/12",
+              "source": "memory",
+              "nota": "HBO Max"
+            },
+            {
+              "id": "mq0aioubahrwty5b6ie",
+              "descricao": "MLP    *KaBuM-KaBu03/10",
+              "data": "15/03/26",
+              "valor": 272.03,
+              "tipo": "despesa",
+              "categoria": "Tech",
+              "parcela": "3/10",
+              "source": "memory",
+              "nota": "CPU 9800X3D"
+            },
+            {
+              "id": "mq0aioubtxy3i5wt3t",
+              "descricao": "EC     *PICHAUINFO03/12",
+              "data": "14/03/26",
+              "valor": 129.23,
+              "tipo": "despesa",
+              "categoria": "Tech",
+              "parcela": "3/12",
+              "source": "memory",
+              "nota": "Placa-mãe B850"
+            }
+          ]
+        }
+      }
+    },
+    "billStatus": {
+      "card-itau": {
+        "2026": {
+          "4": {
+            "paid": true,
+            "paidAt": "2026-06-05T02:06:15.485Z"
+          }
+        }
+      }
+    },
     "categorias": [
       "Alimentação",
       "Transporte",
@@ -2231,14 +2807,185 @@
       "Casa",
       "Vestuário",
       "Serviços",
-      "Outros"
+      "Outros",
+      "Bike",
+      "Vape",
+      "Paul",
+      "AI",
+      "Viagem",
+      "Tech",
+      "Subscriptions"
     ],
-    "chatHistory": {}
+    "memory": [
+      {
+        "pattern": "MERCADOLIVRE*MERCADOL",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "DUQUE BIKES LTDA",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "TUDOOFERTAS.COM",
+        "categoria": "Vape"
+      },
+      {
+        "pattern": "RAIA330",
+        "categoria": "Paul"
+      },
+      {
+        "pattern": "DL *AliExpress BR Alip",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "MERCADOLIVRE*MERCA01/02",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "IOF COMPRA INTERNACIONA",
+        "categoria": "AI"
+      },
+      {
+        "pattern": "CLAUDE.AI SUBSCRIPTION",
+        "categoria": "AI"
+      },
+      {
+        "pattern": "CBF FERRAMENTAS",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "MP *ALIEXPRESS    01/03",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "DL *AliExpress BR 01/03",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "APIFY* SUBSCRIPTION",
+        "categoria": "AI"
+      },
+      {
+        "pattern": "LanchesQDelicia",
+        "categoria": "Vape"
+      },
+      {
+        "pattern": "VIA EXPRESSA SPORTS LT",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "MERCADOLIVRE*MERCA01/10",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "MERCADO*MUNDOCOMPRAS",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "FARM LONDRIN-CT",
+        "categoria": "Paul"
+      },
+      {
+        "pattern": "INDITEX BRAS-CT TDA",
+        "categoria": "Paul"
+      },
+      {
+        "pattern": "ANTHROPIC",
+        "categoria": "AI"
+      },
+      {
+        "pattern": "VIVARA            01/10",
+        "categoria": "Paul"
+      },
+      {
+        "pattern": "MERCADO*MERCADOLIV01/03",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "MERCADOLIVRE*FIREBIKE",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "JV CAMBE LOJA DE CONVE",
+        "categoria": "Viagem"
+      },
+      {
+        "pattern": "LOCALIZA RAC ACLDB01/03",
+        "categoria": "Viagem"
+      },
+      {
+        "pattern": "RIO SOLIMOES AUTO POST",
+        "categoria": "Viagem"
+      },
+      {
+        "pattern": "ZP     *LUIZ ALBE501/06",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "AUTO POSTO ESTRELA DA",
+        "categoria": "Viagem"
+      },
+      {
+        "pattern": "JIM.COM* DPA-CT TR01/10",
+        "categoria": "Bike"
+      },
+      {
+        "pattern": "POSTO DO MEL II",
+        "categoria": "Viagem"
+      },
+      {
+        "pattern": "LOCALIZA RENT A CAR SA",
+        "categoria": "Viagem"
+      },
+      {
+        "pattern": "EC          *SAMSU02/18",
+        "categoria": "Tech"
+      },
+      {
+        "pattern": "DM*helphbomaxcom  02/12",
+        "categoria": "Subscriptions"
+      },
+      {
+        "pattern": "MLP    *KaBuM-KaBu03/10",
+        "categoria": "Tech"
+      },
+      {
+        "pattern": "EC     *PICHAUINFO03/12",
+        "categoria": "Tech"
+      }
+    ],
+    "catGroups": [
+      {
+        "id": "grp-1780626840014",
+        "name": "Richard",
+        "color": "#6366f1",
+        "cats": [
+          "Bike",
+          "Subscriptions",
+          "Tech",
+          "Viagem"
+        ]
+      },
+      {
+        "id": "grp-1780626854329",
+        "name": "Paul",
+        "color": "#46ecc2",
+        "cats": [
+          "AI",
+          "Paul",
+          "Vape"
+        ]
+      }
+    ],
+    "faturas": [],
+    "transactions": {},
+    "chatHistory": {},
+    "payments": {}
   },
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "finance",
+    "activeTab": "card",
     "tabLabels": {
       "ai": "IA",
       "card": "Cartão",
