@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-06-05T19:50:01.539Z",
+  "_updatedAt": "2026-06-06T05:41:55.678Z",
   "tasks": {
     "items": [
       {
@@ -1117,6 +1117,23 @@
         "group": "default"
       },
       {
+        "id": "mq1qyfmtid93zal4gq",
+        "title": "Comprar Whey",
+        "description": "",
+        "dueDate": "2026-06-05",
+        "priority": "baixa",
+        "status": "pendente",
+        "children": [],
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "customFields": {},
+        "createdAt": "2026-06-06T02:41:33.605Z",
+        "updatedAt": "2026-06-06T02:41:42.480Z"
+      },
+      {
         "id": "mpy9g8mwys5j7khz7an",
         "title": "Pesquisar por aspirador portátil",
         "description": "",
@@ -1141,7 +1158,7 @@
         "notes": "",
         "title": "Colnago Concept",
         "status": "aguardando",
-        "dueDate": "2026-06-05",
+        "dueDate": "",
         "children": [
           {
             "id": "mprgaam5mwxr23000h",
@@ -1182,7 +1199,7 @@
             "notes": "",
             "title": "Roda Sava",
             "status": "aguardando",
-            "dueDate": "2026-06-05",
+            "dueDate": "",
             "timeEnd": "",
             "children": [
               {
@@ -1190,11 +1207,11 @@
                 "title": "Encontrar Cubo 24 furos",
                 "status": "acao-necessaria",
                 "priority": "media",
-                "dueDate": "2026-06-05",
+                "dueDate": "",
                 "description": "É necessário encontrar um cubo de 24 spokes para substituir pelo cubo atual.",
                 "children": [],
                 "createdAt": "2026-06-03T18:27:51.637Z",
-                "updatedAt": "2026-06-03T18:32:03.538Z",
+                "updatedAt": "2026-06-06T02:40:41.876Z",
                 "linkedItems": [],
                 "notes": "",
                 "tags": [],
@@ -1222,11 +1239,11 @@
                 "createdAt": "2026-06-03T16:05:56.640Z"
               }
             ],
-            "expanded": true,
+            "expanded": false,
             "priority": "media",
             "createdAt": "2026-05-29T21:48:43.079Z",
             "timeStart": "",
-            "updatedAt": "2026-06-03T18:28:33.657Z",
+            "updatedAt": "2026-06-06T02:40:43.445Z",
             "description": "",
             "linkedItems": [],
             "customFields": {
@@ -1266,7 +1283,7 @@
         "expanded": false,
         "priority": "baixa",
         "createdAt": "2026-05-29T21:43:52.770Z",
-        "updatedAt": "2026-06-03T18:27:34.661Z",
+        "updatedAt": "2026-06-06T02:40:44.965Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1279,7 +1296,7 @@
         "notes": "",
         "title": "Processo POA",
         "status": "aguardando",
-        "dueDate": "2026-06-05",
+        "dueDate": "2026-06-08",
         "children": [],
         "comments": [
           {
@@ -1287,12 +1304,18 @@
             "text": "Entrar em contato com o Raul na Segunda para verificar o andamento dos procedimentos.",
             "author": "Usuário",
             "createdAt": "2026-05-29T21:42:33.742Z"
+          },
+          {
+            "id": "c-1780713619763",
+            "author": "Usuário",
+            "text": "Conversar com o Raul na Segunda de manhã. Se não houver resposta, avaliar alternativas para a emissão do ITCMD.",
+            "createdAt": "2026-06-06T02:40:19.763Z"
           }
         ],
         "expanded": false,
         "priority": "urgente",
         "createdAt": "2026-05-29T21:41:43.718Z",
-        "updatedAt": "2026-06-05T03:06:19.190Z",
+        "updatedAt": "2026-06-06T02:40:19.763Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1502,7 +1525,7 @@
       }
     ],
     "showTime": false,
-    "_closedSectionOpen": false,
+    "_closedSectionOpen": true,
     "viewMode": "list",
     "sortBy": "created",
     "filterStatus": "all",
@@ -2176,7 +2199,7 @@
             "nome": "Compagás",
             "venc": "11/5/26",
             "valor": 46.13,
-            "status": "nao-pago",
+            "status": "pago",
             "obs": ""
           },
           {
@@ -2191,8 +2214,8 @@
             "id": 44,
             "nome": "Celular",
             "venc": "20/5/26",
-            "valor": 0,
-            "status": "debito",
+            "valor": 318.27,
+            "status": "pago",
             "obs": ""
           },
           {
@@ -2287,7 +2310,7 @@
       ]
     },
     "openMonths": {
-      "5": true
+      "4": true
     },
     "currentYear": 2026,
     "chatHistory": {}
@@ -3083,7 +3106,7 @@
             {
               "id": "78c72cc32a504fd9b595",
               "descricao": "MERCADOLIVRE*MERCA02/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "2/10",
               "categoria": "Bike",
@@ -3280,7 +3303,7 @@
             {
               "id": "faa2af80c6d441d7ac1d",
               "descricao": "MERCADOLIVRE*MERCA03/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "3/10",
               "categoria": "Bike",
@@ -3447,7 +3470,7 @@
             {
               "id": "e76496149a8a4c86b4cc",
               "descricao": "MERCADOLIVRE*MERCA04/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "4/10",
               "categoria": "Bike",
@@ -3584,7 +3607,7 @@
             {
               "id": "7df72cdaade34df08802",
               "descricao": "MERCADOLIVRE*MERCA05/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "5/10",
               "categoria": "Bike",
@@ -3721,7 +3744,7 @@
             {
               "id": "5916a78c57c0401c9d2c",
               "descricao": "MERCADOLIVRE*MERCA06/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "6/10",
               "categoria": "Bike",
@@ -3858,7 +3881,7 @@
             {
               "id": "0412b18ba93d48b680d7",
               "descricao": "MERCADOLIVRE*MERCA07/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "7/10",
               "categoria": "Bike",
@@ -3980,7 +4003,7 @@
             {
               "id": "94bc733d0628401baca3",
               "descricao": "MERCADOLIVRE*MERCA08/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "8/10",
               "categoria": "Bike",
@@ -4104,7 +4127,7 @@
             {
               "id": "efd5e14386bc4514aca6",
               "descricao": "MERCADOLIVRE*MERCA09/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "9/10",
               "categoria": "Bike",
@@ -4211,7 +4234,7 @@
             {
               "id": "de9efa7c73a148a5a130",
               "descricao": "MERCADOLIVRE*MERCA10/10",
-              "data": "07/05/26",
+              "data": "03/05/26",
               "valor": 73.56,
               "parcela": "10/10",
               "categoria": "Bike",
@@ -4454,6 +4477,14 @@
     "billStatus": {
       "card-itau": {
         "2026": {
+          "2": {
+            "paid": true,
+            "paidAt": "2026-06-06T02:35:59.931Z"
+          },
+          "3": {
+            "paid": true,
+            "paidAt": "2026-06-06T02:35:59.310Z"
+          },
           "4": {
             "paid": true,
             "paidAt": "2026-06-05T02:06:15.485Z"
@@ -4747,7 +4778,7 @@
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "tasks",
+    "activeTab": "card",
     "tabLabels": {
       "ai": "IA",
       "card": "Cartão",

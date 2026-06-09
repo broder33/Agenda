@@ -959,6 +959,14 @@ header {
 .upload-zone-icon { font-size: 36px; margin-bottom: 10px; }
 .upload-zone-title { font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: .5px; color: var(--text2); margin-bottom: 4px; }
 .upload-zone-sub { font-size: 12px; color: var(--muted); }
+tr.drag-over-top td { border-top: 2px solid var(--accent) !important; }
+tr.drag-over-bottom td { border-bottom: 2px solid var(--accent) !important; }
+tr.dragging { opacity: 0.4; }
+.drag-handle { transition: color .15s; }
+.drag-handle:hover { color: var(--text) !important; }
+.ac-dropdown { position:fixed;z-index:99999;background:var(--surface);border:1px solid var(--accent);border-radius:6px;max-height:180px;overflow-y:auto;min-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.4); }
+.ac-item { padding:7px 12px;cursor:pointer;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.ac-item:hover, .ac-item.ac-active { background:var(--accent);color:#000; }
 .transactions-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .transactions-table th {
   background: var(--surface2); padding: 8px 10px;
@@ -1316,7 +1324,7 @@ header {
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.2.16</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.2.73</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1465,7 +1473,7 @@ header {
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.2.16 — agenda-v0216</p>
+    <p class="version-tag">Agenda v0.2.73 — agenda-v0273</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1659,6 +1667,8 @@ function mergeState(saved) {
     if (!state.card.bills) state.card.bills = {};
     if (!state.card.memory) state.card.memory = [];
     if (!state.card.catGroups) state.card.catGroups = [];
+    if (!state.card.acMemory) state.card.acMemory = {};
+    acLoadMemory();
     if (!state.card.billStatus) state.card.billStatus = {};
     if (!state.card.payments) state.card.payments = {};
     if (!state.card.categorias) state.card.categorias = [];
@@ -1942,8 +1952,8 @@ function applySeeds() {
       const seedKey = y+'-'+m;
       if (!FINANCE_SEEDS[seedKey]) continue;
       const existing = state.finance.bills[y][m];
-      if (!existing || existing.length === 0 || seedChanged) {
-        // Aplica seed se vazio OU se a versão do seed mudou
+      if (!existing || existing.length === 0) {
+        // Aplica seed APENAS se vazio — nunca sobrescreve dados do usuário
         state.finance.bills[y][m] = FINANCE_SEEDS[seedKey];
       }
     }
@@ -3400,6 +3410,10 @@ function makeDraggable(el, handleEl) {
 }
 
 var _commentSortDesc = true; // true = mais novo primeiro
+var _cardSortLevels = [{ col: 'data', dir: 'desc' }]; // default: newest first
+var _cardViewMode = 'list'; // 'list' or 'month'
+var _cardCollapsedYears = {}; // year -> bool (false=expanded)
+var _cardMonthLabel = 'fechamento'; // 'fechamento' or 'vencimento'
 
 function openCommentDropdown(anchorEl, taskId) {
   closeCommentDropdown();
@@ -5343,11 +5357,167 @@ function showImportReview(cardId, y, m, txs, overlay) {
   overlay.innerHTML = ''; overlay.appendChild(box);
 }
 
+function findExistingInstallment(cardId, y, m, tx) {
+  // Find a transaction in the target month that matches by installmentGroupId
+  // OR by description similarity + parcela number
+  var bills = state.card.bills[cardId];
+  if (!bills || !bills[y] || !bills[y][m]) return null;
+  var existing = bills[y][m];
+
+  // First: exact installmentGroupId match
+  if (tx.installmentGroupId) {
+    var exact = existing.find(function(e){ return e.installmentGroupId === tx.installmentGroupId; });
+    if (exact) return exact;
+  }
+
+  // Second: description + parcela match (for imported files without groupId)
+  if (tx.parcela) {
+    var similar = existing.find(function(e){
+      if (!e.parcela || e.parcela !== tx.parcela) return false;
+      var d1 = (tx.descricao||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8);
+      var d2 = (e.descricao||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8);
+      return d1 && d2 && (d1 === d2 || d1.includes(d2) || d2.includes(d1));
+    });
+    if (similar) return similar;
+  }
+  return null;
+}
+
 function confirmImport(cardId, y, m, despesas, payments, overlay) {
+  // Detect parcelas that already exist in the system
+  var duplicates = [];
+  var fresh = [];
+
+  despesas.forEach(function(tx) {
+    var existing = findExistingInstallment(cardId, y, m, tx);
+    if (existing) {
+      duplicates.push({ imported: tx, existing: existing });
+    } else {
+      fresh.push(tx);
+    }
+  });
+
+  if (duplicates.length > 0) {
+    showInstallmentDuplicateReview(cardId, y, m, fresh, duplicates, payments, overlay);
+    return;
+  }
+
+  doImport(cardId, y, m, fresh, payments, overlay);
+}
+
+function showInstallmentDuplicateReview(cardId, y, m, fresh, duplicates, payments, overlay) {
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.cssText = 'max-width:580px;max-height:85vh;display:flex;flex-direction:column';
+
+  var hdr = document.createElement('div'); hdr.className = 'modal-header';
+  hdr.innerHTML = '<span>Parcelas já identificadas no sistema</span>';
+  var closeBtn = document.createElement('button'); closeBtn.className = 'modal-close'; closeBtn.textContent = '✕';
+  closeBtn.onclick = function(){ overlay.remove(); }; hdr.appendChild(closeBtn);
+
+  var bod = document.createElement('div');
+  bod.style.cssText = 'overflow-y:auto;flex:1;padding:16px;display:flex;flex-direction:column;gap:10px';
+
+  var desc = document.createElement('div');
+  desc.style.cssText = 'font-size:12px;color:var(--muted);line-height:1.5';
+  desc.textContent = 'As parcelas abaixo já foram identificadas no sistema e NÃO serão importadas. Remova o check para importar mesmo assim (substituir).';
+  bod.appendChild(desc);
+
+  // Toggle all
+  var toggleRow = document.createElement('div');
+  toggleRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)';
+  var toggleChk = document.createElement('input'); toggleChk.type = 'checkbox'; toggleChk.checked = true;
+  toggleChk.style.cssText = 'width:16px;height:16px;cursor:pointer;accent-color:var(--accent)';
+  var toggleLbl = document.createElement('span'); toggleLbl.style.cssText = 'font-size:12px;color:var(--muted)';
+  toggleLbl.textContent = 'Marcar/desmarcar todas';
+  var checks = [];
+  toggleChk.onchange = function() {
+    checks.forEach(function(c){ c.checked = toggleChk.checked; });
+  };
+  toggleRow.appendChild(toggleChk); toggleRow.appendChild(toggleLbl);
+  bod.appendChild(toggleRow);
+
+  // List of duplicates
+  duplicates.forEach(function(dup) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:6px;background:var(--surface2)';
+
+    // Main row with checkbox + info
+    var mainRow = document.createElement('div');
+    mainRow.style.cssText = 'display:flex;align-items:center;gap:10px';
+    var chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = true;
+    chk.style.cssText = 'width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--accent)';
+    checks.push(chk);
+    var info = document.createElement('div'); info.style.cssText = 'flex:1;min-width:0';
+    info.innerHTML = '<div style="font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+      + escHtml(dup.imported.descricao) + (dup.imported.parcela ? ' <span style="color:var(--muted)">(' + dup.imported.parcela + ')</span>' : '') + '</div>'
+      + '<div style="font-size:11px;color:var(--muted)">' + (dup.imported.data||'') + ' · ' + fmtBRL(parseFloat(dup.imported.valor)||0) + '</div>';
+    mainRow.appendChild(chk); mainRow.appendChild(info);
+    row.appendChild(mainRow);
+
+    // Sub-options (shown when unchecked)
+    var subRow = document.createElement('div');
+    subRow.style.cssText = 'display:none;padding-left:26px;display:none';
+    var subLabel = document.createElement('span');
+    subLabel.style.cssText = 'font-size:11px;color:var(--muted);margin-right:8px';
+    subLabel.textContent = 'Ação:';
+    var subSel = document.createElement('select');
+    subSel.style.cssText = 'font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:2px 6px;cursor:pointer';
+    subSel.innerHTML = '<option value="add">Adicionar (manter original)</option><option value="replace">Substituir (apagar original)</option>';
+    subRow.appendChild(subLabel); subRow.appendChild(subSel);
+    row.appendChild(subRow);
+
+    // Toggle sub-options visibility
+    chk.onchange = function() {
+      subRow.style.display = chk.checked ? 'none' : 'flex';
+      subRow.style.alignItems = 'center';
+    };
+
+    dup._chk = chk;
+    dup._subSel = subSel;
+    bod.appendChild(row);
+  });
+
+  var footer = document.createElement('div'); footer.className = 'modal-footer';
+  var cancelBtn = document.createElement('button'); cancelBtn.className = 'btn-sm'; cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = function(){ overlay.remove(); };
+  var confirmBtn = document.createElement('button'); confirmBtn.className = 'btn-sm accent'; confirmBtn.textContent = 'Confirmar importação';
+  confirmBtn.onclick = function() {
+    var toReplace = []; // will remove existing before adding
+    duplicates.forEach(function(dup) {
+      if (!dup._chk.checked) {
+        if (dup._subSel.value === 'replace') {
+          toReplace.push(dup.existing.id);
+          fresh.push(dup.imported);
+        } else {
+          // add: keep original, also add the new one
+          fresh.push(dup.imported);
+        }
+      }
+    });
+    doImportWithReplace(cardId, y, m, fresh, toReplace, payments, overlay);
+  };
+  footer.appendChild(cancelBtn); footer.appendChild(confirmBtn);
+
+  box.appendChild(hdr); box.appendChild(bod); box.appendChild(footer);
+  overlay.innerHTML = ''; overlay.appendChild(box);
+}
+
+function doImportWithReplace(cardId, y, m, despesas, replaceIds, payments, overlay) {
+  doImport(cardId, y, m, despesas, payments, overlay, replaceIds);
+}
+
+function doImport(cardId, y, m, despesas, payments, overlay, replaceIds) {
   pushUndo();
   ensureCardMonth(cardId, y, m);
-  // Clear existing transactions for this month (prevents duplicates on re-import)
-  state.card.bills[cardId][y][m] = [];
+  replaceIds = replaceIds || [];
+
+  // Remove only explicitly marked for replacement
+  if (replaceIds.length) {
+    state.card.bills[cardId][y][m] = state.card.bills[cardId][y][m].filter(function(ex) {
+      return !replaceIds.includes(ex.id);
+    });
+  }
 
   despesas.forEach(function(tx) {
     state.card.bills[cardId][y][m].push(tx);
@@ -5357,11 +5527,10 @@ function confirmImport(cardId, y, m, despesas, payments, overlay) {
   if (!state.card.payments) state.card.payments = {};
   if (!state.card.payments[cardId]) state.card.payments[cardId] = {};
   if (!state.card.payments[cardId][y]) state.card.payments[cardId][y] = {};
-  // Reset payments for this month before importing (prevents duplicates on re-import)
   state.card.payments[cardId][y][m] = [];
   payments.forEach(function(p){ state.card.payments[cardId][y][m].push(p); });
 
-  saveState(); overlay.remove(); renderCard();
+  saveState(); overlay.remove(); renderCardPreserve();
   showToast('✓ ' + despesas.length + ' transações importadas' + (payments.length ? ' + ' + payments.length + ' pagamento(s)' : ''));
 }
 
@@ -5539,8 +5708,10 @@ function openCardAnalysis(cardId) {
   months.sort(function(a,b){ return (b.y*12+b.m)-(a.y*12+a.m); });
 
   // Default to most recent month with data, or current
-  var selY = months.length ? months[0].y : curY;
-  var selM = months.length ? months[0].m : curM;
+  // Default to current month if available, else most recent with data
+  var selY = curY, selM = curM;
+  var hasCurMonth = months.some(function(mo){ return mo.y===curY && mo.m===curM; });
+  if (!hasCurMonth && months.length) { selY = months[0].y; selM = months[0].m; }
   var viewMode = 'category'; // 'category' or 'group'
 
   var overlay = document.createElement('div');
@@ -5813,6 +5984,32 @@ function openCardAnalysis(cardId) {
   showModal(overlay);
 }
 
+var _savedOpenBids = null; // preserved open state across renderCard
+
+function renderCardPreserve() {
+  // Capture current open state — always set _savedOpenBids (even if empty)
+  // so renderCardBills uses saved state instead of auto-opening highlight month
+  _savedOpenBids = [];
+  document.querySelectorAll('.month-body').forEach(function(b) {
+    if (b.id && b.style.display !== 'none') _savedOpenBids.push(b.id);
+  });
+  renderCard();
+  // _savedOpenBids already applied during renderCard via isOpen check
+  // but also force-apply after (for month view and edge cases)
+  var saved = _savedOpenBids;
+  _savedOpenBids = null;
+  if (saved && saved.length) {
+    saved.forEach(function(bid) {
+      var body = document.getElementById(bid);
+      if (body) {
+        body.style.display = 'block';
+        var hdr = body.previousElementSibling;
+        if (hdr) { var chev = hdr.querySelector('.month-chevron'); if (chev) chev.classList.add('open'); }
+      }
+    });
+  }
+}
+
 function renderCard() {
   var el = document.getElementById('card-panel-content');
   if (!el) return;
@@ -5885,9 +6082,57 @@ function openCardBills(cardId) {
   renderCard();
 }
 
+function calcPaymentCoverage(cardId, y, m) {
+  // Returns { coveredIds: Set, isPartial: bool, isFullyCovered: bool }
+  var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m]) || [];
+  var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
+  
+  var payTotal = pays.reduce(function(s,p){ return s+p.valor; }, 0);
+  if (!payTotal || !txs.length) return { coveredIds: {}, isPartial: false, isFullyCovered: false };
+
+  // Sort txs chronologically (oldest first), then by original array order for same date
+  var sorted = txs.slice().sort(function(a, b) {
+    var da = cardDateToNum(a.data||''), db = cardDateToNum(b.data||'');
+    if (da !== db) return da - db;
+    return txs.indexOf(a) - txs.indexOf(b);
+  });
+
+  // Only cover positive (expense) values — ignore estornos
+  var remaining = payTotal;
+  var coveredIds = {};
+  var allCovered = true;
+
+  sorted.forEach(function(tx) {
+    var v = parseFloat(tx.valor) || 0;
+    if (v <= 0) return; // skip estornos
+    if (remaining >= v - 0.01) {
+      coveredIds[tx.id] = true;
+      remaining -= v;
+    } else {
+      allCovered = false;
+    }
+  });
+
+  var totalExpenses = sorted.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); }, 0);
+  var isPartial = payTotal < totalExpenses - 0.01;
+
+  return { coveredIds: coveredIds, isPartial: isPartial, isFullyCovered: !isPartial };
+}
+
 function getBillStatus(cardId, y, m, card) {
   var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
   if (!txs.length) return 'empty'; // no transactions — neutral status
+  // Check payment model first
+  var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m]) || [];
+  if (pays.length) {
+    var despBruto = txs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); },0);
+    var estornos = txs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v<0?v:0); },0);
+    var totalFatura = despBruto + estornos;
+    var payTotal = pays.reduce(function(s,p){ return s+p.valor; },0);
+    if (Math.round((totalFatura - payTotal) * 100) / 100 < 0.01 && totalFatura > 0) return 'paid';
+    return 'partial';
+  }
+  // Fall back to manual toggle
   var status = (state.card.billStatus[cardId] && state.card.billStatus[cardId][y] && state.card.billStatus[cardId][y][m]) || {};
   if (status.paid) return 'paid';
   var now = new Date();
@@ -5917,7 +6162,7 @@ function toggleBillPaid(cardId, y, m) {
   }
   pushUndo();
   saveState();
-  renderCard();
+  renderCardPreserve();
 }
 
 function toggleInstallmentPanel(hdr) {
@@ -5958,7 +6203,20 @@ function buildInstallmentSummary(cardId) {
           };
         }
         if (absM >= nowAbs) {
-          groups[gid].futureParcels.push({ absM: absM, pNum: tx.installmentCurrent, valor: tx.valor });
+          var billStatus = getBillStatus(cardId, parseInt(y), parseInt(m), (state.card.cards||[]).find(function(c){ return c.id===cardId; }));
+          if (billStatus === 'paid') {
+            groups[gid].pastParcels.push({ absM: absM, pNum: tx.installmentCurrent });
+          } else if (billStatus === 'partial') {
+            // Check if this specific tx was covered by the payment algorithm
+            var cov = calcPaymentCoverage(cardId, parseInt(y), parseInt(m));
+            if (cov.coveredIds[tx.id]) {
+              groups[gid].pastParcels.push({ absM: absM, pNum: tx.installmentCurrent });
+            } else {
+              groups[gid].futureParcels.push({ absM: absM, pNum: tx.installmentCurrent, valor: tx.valor });
+            }
+          } else {
+            groups[gid].futureParcels.push({ absM: absM, pNum: tx.installmentCurrent, valor: tx.valor });
+          }
         } else {
           groups[gid].pastParcels.push({ absM: absM, pNum: tx.installmentCurrent });
         }
@@ -5998,11 +6256,9 @@ function buildInstallmentSummary(cardId) {
 
   activeGroups.forEach(function(g) {
     g.futureParcels.sort(function(a,b){ return a.absM - b.absM; });
-    var remaining = g.futureParcels.length;
     var futureTotal = g.futureParcels.reduce(function(s,p){ return s+p.valor; }, 0);
-    var minP = g.futureParcels[0].pNum;
-    var maxP = g.futureParcels[g.futureParcels.length-1].pNum;
-    var parcelLabel = minP === maxP ? minP + '/' + g.total : minP + '–' + maxP + '/' + g.total;
+    var remaining = g.futureParcels.length;
+    var parcelLabel = remaining + '/' + g.total;
     html += '<tr style="border-top:1px solid var(--border)">'
       + '<td style="padding:6px 8px;color:var(--text)">' + escHtml(g.desc)
       + (g.categoria ? ' <span style="font-size:10px;color:var(--muted)">(' + escHtml(g.categoria) + ')</span>' : '')
@@ -6021,7 +6277,7 @@ function buildInstallmentSummary(cardId) {
     + '<span style="font-family:DM Mono,monospace;font-weight:700;font-size:14px;color:var(--text)">' + fmtBRL(totalFutureAll) + '</span>'
     + '</div>';
 
-  // Total all cards
+  // Total all cards — exclude paid months
   var allCardsTotal = 0;
   (state.card.cards || []).forEach(function(c) {
     var cb = (state.card.bills && state.card.bills[c.id]) || {};
@@ -6029,6 +6285,8 @@ function buildInstallmentSummary(cardId) {
       Object.keys(cb[y]).forEach(function(m) {
         var absM = parseInt(y)*12+parseInt(m);
         if (absM < nowAbs) return;
+        var bStatus = getBillStatus(c.id, parseInt(y), parseInt(m), c);
+        if (bStatus === 'paid') return;
         (cb[y][m]||[]).forEach(function(tx) {
           if (tx.installmentGroupId) allCardsTotal += tx.valor;
         });
@@ -6045,6 +6303,324 @@ function buildInstallmentSummary(cardId) {
 
   html += '</div></div>';
   return html;
+}
+
+function wireCardDragDrop(container, cardId) {
+  var dragSrc = null;
+
+  container.querySelectorAll('tr[draggable="true"]').forEach(function(row) {
+    // Handle payment rows
+    if (row.dataset.payid) {
+      row.addEventListener('dragstart', function(e) {
+        dragSrc = row; row.style.opacity = '0.4';
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      row.addEventListener('dragend', function() {
+        row.style.opacity = ''; dragSrc = null;
+        container.querySelectorAll('tr').forEach(function(r){ r.classList.remove('drag-over-top','drag-over-bottom'); });
+      });
+      row.addEventListener('dragover', function(e) {
+        if (!dragSrc || row === dragSrc) return;
+        if (row.dataset.date !== dragSrc.dataset.date && row.dataset.payid !== undefined || dragSrc.dataset.date !== row.dataset.date) {
+          // Allow same date only
+          var srcDate = dragSrc.dataset.date || dragSrc.dataset.payid && '';
+          var tgtDate = row.dataset.date;
+          if (srcDate !== tgtDate) { e.dataTransfer.dropEffect = 'none'; return; }
+        }
+        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+        container.querySelectorAll('tr').forEach(function(r){ r.classList.remove('drag-over-top','drag-over-bottom'); });
+        var rect = row.getBoundingClientRect();
+        row.classList.add(e.clientY < rect.top + rect.height/2 ? 'drag-over-top' : 'drag-over-bottom');
+      });
+      row.addEventListener('dragleave', function(){ row.classList.remove('drag-over-top','drag-over-bottom'); });
+      row.addEventListener('drop', function(e) {
+        if (!dragSrc || row === dragSrc) return;
+        if ((dragSrc.dataset.date||'') !== (row.dataset.date||'')) return;
+        e.preventDefault();
+        row.classList.remove('drag-over-top','drag-over-bottom');
+        var monthBody = row.closest('.month-body');
+        if (!monthBody) return;
+        var bid = monthBody.id;
+        var lastD = bid.lastIndexOf('-'), mm = parseInt(bid.slice(lastD+1));
+        var rest = bid.slice(0,lastD), lastD2 = rest.lastIndexOf('-'), my = parseInt(rest.slice(lastD2+1));
+        var cid = rest.slice(3,lastD2);
+
+        // Determine if dragging payment over payment or tx
+        var srcIsPay = !!dragSrc.dataset.payid;
+        var tgtIsPay = !!row.dataset.payid;
+        if (srcIsPay) {
+          // Reorder within payments array
+          var pays = state.card.payments[cid] && state.card.payments[cid][my] && state.card.payments[cid][my][mm];
+          if (!pays) return;
+          var srcIdx = pays.findIndex(function(p){ return p.id === dragSrc.dataset.payid; });
+          var tgtIdx = pays.findIndex(function(p){ return p.id === row.dataset.payid; });
+          if (srcIdx === -1) return;
+          var rect2 = row.getBoundingClientRect();
+          var after = e.clientY >= rect2.top + rect2.height/2;
+          var item = pays.splice(srcIdx, 1)[0];
+          if (tgtIdx === -1) { pays.push(item); }
+          else {
+            var newTgt = pays.findIndex(function(p){ return p.id === row.dataset.payid; });
+            pays.splice(after ? newTgt+1 : newTgt, 0, item);
+          }
+          saveState();
+        } else {
+          // Payment dropped on tx or vice versa - handle in bills array
+          var bills = state.card.bills[cid] && state.card.bills[cid][my] && state.card.bills[cid][my][mm];
+          if (!bills) return;
+          var srcId = dragSrc.dataset.txid;
+          var tgtId = row.dataset.txid;
+          if (!srcId || !tgtId) return;
+          var srcIdx2 = bills.findIndex(function(t){ return t.id === srcId; });
+          var tgtIdx2 = bills.findIndex(function(t){ return t.id === tgtId; });
+          if (srcIdx2 === -1 || tgtIdx2 === -1) return;
+          var rect3 = row.getBoundingClientRect();
+          var after2 = e.clientY >= rect3.top + rect3.height/2;
+          var item2 = bills.splice(srcIdx2, 1)[0];
+          var newTgt2 = bills.findIndex(function(t){ return t.id === tgtId; });
+          bills.splice(after2 ? newTgt2+1 : newTgt2, 0, item2);
+          saveState();
+        }
+        var openBids = [];
+        document.querySelectorAll('.month-body').forEach(function(b){ if (b.id && b.style.display!=='none') openBids.push(b.id); });
+        renderCard();
+        openBids.forEach(function(bid2){ var body=document.getElementById(bid2); if(body){ body.style.display='block'; var h=body.previousElementSibling; if(h){var c=h.querySelector('.month-chevron');if(c)c.classList.add('open');} } });
+      });
+      return; // skip the rest of the forEach for pay rows
+    }
+    row.addEventListener('dragstart', function(e) {
+      dragSrc = row;
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', row.dataset.txid);
+    });
+    row.addEventListener('dragend', function() {
+      row.classList.remove('dragging');
+      container.querySelectorAll('tr').forEach(function(r){
+        r.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+      dragSrc = null;
+    });
+    row.addEventListener('dragover', function(e) {
+      if (!dragSrc || row === dragSrc) return;
+      // Only allow same day
+      if (row.dataset.date !== dragSrc.dataset.date) {
+        e.dataTransfer.dropEffect = 'none';
+        return;
+      }
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      container.querySelectorAll('tr').forEach(function(r){
+        r.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+      var rect = row.getBoundingClientRect();
+      var mid = rect.top + rect.height / 2;
+      if (e.clientY < mid) row.classList.add('drag-over-top');
+      else row.classList.add('drag-over-bottom');
+    });
+    row.addEventListener('dragleave', function() {
+      row.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+    row.addEventListener('drop', function(e) {
+      if (!dragSrc || row === dragSrc) return;
+      if (row.dataset.date !== dragSrc.dataset.date) return;
+      e.preventDefault();
+      row.classList.remove('drag-over-top', 'drag-over-bottom');
+
+      // Find which month this table belongs to
+      var monthBody = row.closest('.month-body');
+      if (!monthBody) return;
+      var bid = monthBody.id; // cb-cardId-y-m
+      var parts = bid.split('-');
+      var y = parseInt(parts[parts.length-2]);
+      var m = parseInt(parts[parts.length-1]);
+
+      var bills = state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m];
+      if (!bills) return;
+
+      var srcId = dragSrc.dataset.txid;
+      var tgtId = row.dataset.txid;
+      var srcIdx = bills.findIndex(function(t){ return t.id === srcId; });
+      var tgtIdx = bills.findIndex(function(t){ return t.id === tgtId; });
+      if (srcIdx === -1 || tgtIdx === -1) return;
+
+      // Remove src and insert at target position
+      var rect2 = row.getBoundingClientRect();
+      var insertAfter = e.clientY >= rect2.top + rect2.height / 2;
+      var item = bills.splice(srcIdx, 1)[0];
+      var newTgtIdx = bills.findIndex(function(t){ return t.id === tgtId; });
+      bills.splice(insertAfter ? newTgtIdx + 1 : newTgtIdx, 0, item);
+
+      saveState();
+      // Preserve open months
+      var openBids = [];
+      document.querySelectorAll('.month-body').forEach(function(b) {
+        if (b.id && b.style.display !== 'none') openBids.push(b.id);
+      });
+      renderCard();
+      openBids.forEach(function(bid) {
+        var body = document.getElementById(bid);
+        if (body) {
+          body.style.display = 'block';
+          var hdr = body.previousElementSibling;
+          if (hdr) { var chev = hdr.querySelector('.month-chevron'); if (chev) chev.classList.add('open'); }
+        }
+      });
+    });
+  });
+}
+
+function cardDisplayMonth(y, m, card) {
+  if (_cardMonthLabel === 'fechamento') return { y: y, m: m };
+  // Need card to compute correct offset
+  var c = card || (function(){
+    var el = document.getElementById('card-panel-content');
+    var cid = el && el.dataset.cardId;
+    return cid && (state.card.cards||[]).find(function(x){ return x.id===cid; });
+  })();
+  var fechDia = c ? c.fechamento : 1;
+  var vencDia = c ? c.vencimento : 10;
+  var offset;
+  // fechamento day tells us when the bill closes relative to expense month
+  // If fechamento is at end of month (e.g. day 31), expenses close that same month -> offset 0
+  // If fechamento is at beginning of next month (e.g. day 3), expenses close next month -> offset 1
+  // Simplified: if fechaDia >= 28, closes same month (offset 0); else closes next month (offset 1)
+  var fechOffset = (fechDia >= 28) ? 0 : 1;
+  // Vencimento is always the month after fechamento
+  var vencOffset = fechOffset + 1;
+  offset = (_cardMonthLabel === 'fechamento') ? fechOffset : vencOffset;
+  var absM = y * 12 + m + offset;
+  return { y: Math.floor(absM / 12), m: absM % 12 };
+}
+
+function toggleCardYear(y) {
+  if (y === new Date().getFullYear()) return;
+  _cardCollapsedYears[y] = (_cardCollapsedYears[y] !== false) ? false : true;
+  renderCardPreserve();
+}
+
+function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now = new Date();
+  var nowAbs = now.getFullYear() * 12 + now.getMonth();
+
+  // Collect all months with data
+  var allMonths = [];
+  years.forEach(function(y) {
+    var yb = bills[y] || {};
+    Object.keys(yb).map(Number).sort(function(a,b){return a-b;}).forEach(function(m) {
+      allMonths.push({ y: y, m: m });
+    });
+  });
+  if (!allMonths.some(function(x){ return x.y*12+x.m===nowAbs; })) {
+    allMonths.push({ y: now.getFullYear(), m: now.getMonth() });
+    allMonths.sort(function(a,b){ return (a.y*12+a.m)-(b.y*12+b.m); });
+  }
+
+  // Find default index = highlighted month
+  var defIdx = 0;
+  allMonths.forEach(function(mo,i){ if (mo.y*12+mo.m===highlightAbs) defIdx=i; });
+
+  var activeIdx = el.dataset.monthIdx !== undefined && el.dataset.monthIdx !== '' ? parseInt(el.dataset.monthIdx) : defIdx;
+  activeIdx = Math.max(0, Math.min(activeIdx, allMonths.length-1));
+  el.dataset.monthIdx = activeIdx;
+  var mo = allMonths[activeIdx];
+
+  // Header
+  var hd = document.createElement('div'); hd.className = 'section-hd';
+  var backBtn = document.createElement('button');
+  backBtn.style.cssText = 'background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;margin-right:8px';
+  backBtn.textContent = '← Cartões'; backBtn.onclick = backToCards;
+  var hdInfo = document.createElement('div');
+  hdInfo.innerHTML = '<div class="section-title" style="color:' + card.cor + '">' + escHtml(card.nome) + '</div><div class="section-sub">Fecha dia ' + card.fechamento + ' · Vence dia ' + card.vencimento + '</div>';
+  var editBtn = document.createElement('button'); editBtn.className = 'btn-sm'; editBtn.textContent = '⚙ Editar'; editBtn.onclick = function(){ openEditCardModal(card.id); };
+  var importBtn = document.createElement('button'); importBtn.className = 'btn-sm'; importBtn.textContent = '⬆ Importar'; importBtn.onclick = function(){ openImportBillModal(card.id); };
+  var addBillBtn = document.createElement('button'); addBillBtn.className = 'btn-sm accent'; addBillBtn.textContent = '+ Fatura'; addBillBtn.onclick = function(){ openAddBillModal(card.id); };
+  var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise'; analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
+  var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = '🏷 Grupos'; groupsBtn.onclick = openCatGroupsModal;
+  var vt = document.createElement('div'); vt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
+  var lb = document.createElement('button'); lb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)'; lb.textContent = '≡ Lista'; lb.onclick = function(){ _cardViewMode='list'; el.dataset.monthIdx=''; renderCard(); };
+  var mb = document.createElement('button'); mb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000'; mb.textContent = '◫ Mensal';
+  vt.appendChild(lb); vt.appendChild(mb);
+  var lt = document.createElement('div'); lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
+  var db = document.createElement('button'); db.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='fechamento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='fechamento'?'#000':'var(--muted)'); db.textContent='Fechamento'; db.onclick=function(){ _cardMonthLabel='fechamento'; renderCardPreserve(); };
+  var bb = document.createElement('button'); bb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='vencimento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='vencimento'?'#000':'var(--muted)'); bb.textContent='Vencimento'; bb.onclick=function(){ _cardMonthLabel='vencimento'; renderCardPreserve(); };
+  lt.appendChild(db); lt.appendChild(bb);
+  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(importBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(vt); hd.appendChild(lt); hd.appendChild(addBillBtn);
+
+  // Nav bar
+  var navBar = document.createElement('div');
+  navBar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px';
+  var prevBtn = document.createElement('button');
+  prevBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:6px;color:' + (activeIdx===0?'var(--border)':'var(--muted)') + ';cursor:pointer;font-size:20px;padding:4px 14px;transition:color .15s';
+  prevBtn.textContent = '‹'; prevBtn.disabled = activeIdx===0;
+  prevBtn.onclick = function(){ el.dataset.monthIdx = activeIdx-1; renderCard(); };
+  var nextBtn = document.createElement('button');
+  nextBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:6px;color:' + (activeIdx===allMonths.length-1?'var(--border)':'var(--muted)') + ';cursor:pointer;font-size:20px;padding:4px 14px;transition:color .15s';
+  nextBtn.textContent = '›'; nextBtn.disabled = activeIdx===allMonths.length-1;
+  nextBtn.onclick = function(){ el.dataset.monthIdx = activeIdx+1; renderCard(); };
+
+  var navCenter = document.createElement('div'); navCenter.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px';
+  var monthLbl = document.createElement('div'); monthLbl.style.cssText = 'font-size:16px;font-weight:600;color:var(--text)';
+  var dispMo = cardDisplayMonth(mo.y, mo.m, card); monthLbl.textContent = MONTHS_PT[dispMo.m] + ' ' + dispMo.y;
+  // Dots
+  var dotsDiv = document.createElement('div'); dotsDiv.style.cssText = 'display:flex;gap:3px;align-items:center';
+  var visStart = Math.max(0, activeIdx-4), visEnd = Math.min(allMonths.length-1, activeIdx+4);
+  for (var di=visStart; di<=visEnd; di++) {
+    var dot = document.createElement('div');
+    var isAct = di===activeIdx;
+    dot.style.cssText = 'width:'+(isAct?'18px':'6px')+';height:6px;border-radius:3px;background:'+(isAct?'var(--accent)':'var(--border)')+';cursor:pointer;transition:all .2s';
+    (function(idx){ dot.onclick = function(){ el.dataset.monthIdx=idx; renderCard(); }; })(di);
+    dotsDiv.appendChild(dot);
+  }
+  navCenter.appendChild(monthLbl); navCenter.appendChild(dotsDiv);
+  navBar.appendChild(prevBtn); navBar.appendChild(navCenter); navBar.appendChild(nextBtn);
+
+  // Swipe support
+  var swipeX = 0;
+  navBar.addEventListener('touchstart', function(e){ swipeX=e.touches[0].clientX; }, {passive:true});
+  navBar.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - swipeX;
+    if (Math.abs(dx)>50) { el.dataset.monthIdx = dx<0 ? Math.min(activeIdx+1,allMonths.length-1) : Math.max(activeIdx-1,0); renderCard(); }
+  }, {passive:true});
+
+  // Bill content
+  var txs = (bills[mo.y] && bills[mo.y][mo.m]) || [];
+  var status = getBillStatus(cardId, mo.y, mo.m, card);
+  var bid = 'cb-' + cardId + '-' + mo.y + '-' + mo.m;
+  var bruto = txs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); },0);
+  var net = bruto + txs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v<0?v:0); },0);
+
+  var billDiv = document.createElement('div');
+  billDiv.style.cssText = 'border:1px solid var(--border);border-radius:10px;overflow:hidden';
+  var billHdr = document.createElement('div');
+  billHdr.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2)';
+  var sb = document.createElement('span'); sb.style.cssText = 'font-size:10px;border-radius:4px;padding:2px 7px';
+  if (status==='paid'){sb.style.background='#1a3a1a';sb.style.color='#4caf50';sb.textContent='✓ Paga';}
+  else if (status==='overdue'){sb.style.background='#3a1a1a';sb.style.color='var(--danger)';sb.textContent='⚠ Em atraso';}
+  else if (status==='empty'){sb.style.background='var(--surface)';sb.style.color='var(--muted)';sb.textContent='Sem lançamentos';}
+  else{sb.style.background='#2a2a1a';sb.style.color='#f0a500';sb.textContent='● Em aberto';}
+  var te = document.createElement('span'); te.className='month-total'; te.textContent=fmtBRL(net);
+  billHdr.appendChild(sb); billHdr.appendChild(te);
+  if (status!=='empty') {
+    var pb = document.createElement('button');
+    pb.style.cssText = 'font-size:10px;background:'+(status==='paid'?'#1a3a1a':'none')+';color:'+(status==='paid'?'#4caf50':'var(--muted)')+';border:1px solid '+(status==='paid'?'#4caf5066':'var(--border)')+';border-radius:4px;padding:2px 8px;cursor:pointer;margin-left:auto';
+    pb.textContent = status==='paid'?'✓ Paga':'Marcar paga';
+    pb.onclick = function(){ toggleBillPaid(cardId, mo.y, mo.m); };
+    billHdr.appendChild(pb);
+  }
+  var billBody = document.createElement('div'); billBody.className='month-body'; billBody.id=bid;
+  billBody.innerHTML = buildCardTxTable(cardId, mo.y, mo.m, txs);
+  billDiv.appendChild(billHdr); billDiv.appendChild(billBody);
+
+  var wrapper = document.createElement('div');
+  wrapper.appendChild(hd); wrapper.appendChild(navBar); wrapper.appendChild(billDiv);
+  var sh = buildInstallmentSummary(cardId);
+  if (sh) wrapper.insertAdjacentHTML('beforeend', sh);
+  el.innerHTML = ''; el.appendChild(wrapper);
+  wireCardDragDrop(wrapper, cardId);
+  // Wire month header clicks for drag compatibility
+  wrapper.querySelectorAll('.month-header[data-bid]').forEach(function(h){ h.addEventListener('click', function(){ toggleCardBill(h.dataset.bid); }); });
 }
 
 function renderCardBills(el, cardId) {
@@ -6071,6 +6647,8 @@ function renderCardBills(el, cardId) {
   });
   if (highlightAbs === -1) highlightAbs = nowAbsH;
 
+  if (_cardViewMode === 'month') { renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs); return; }
+
   // Build header via createElement to avoid onclick/quote issues
   var hd = document.createElement('div'); hd.className = 'section-hd';
   var backBtn = document.createElement('button');
@@ -6089,7 +6667,27 @@ function renderCardBills(el, cardId) {
   analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
   var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = '🏷 Grupos';
   groupsBtn.onclick = openCatGroupsModal;
-  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(importBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(addBillBtn);
+  var viewToggle = document.createElement('div');
+  viewToggle.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
+  var listViewBtn = document.createElement('button');
+  listViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000';
+  listViewBtn.textContent = '≡ Lista';
+  listViewBtn.onclick = function(){ _cardViewMode='list'; renderCardPreserve(); };
+  var monthViewBtn = document.createElement('button');
+  monthViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)';
+  monthViewBtn.textContent = '◫ Mensal';
+  monthViewBtn.onclick = function(){ _cardViewMode='month'; renderCardPreserve(); };
+  viewToggle.appendChild(listViewBtn); viewToggle.appendChild(monthViewBtn);
+  var labelToggle = document.createElement('div');
+  labelToggle.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
+  var despBtn = document.createElement('button');
+  despBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='fechamento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='fechamento'?'#000':'var(--muted)');
+  despBtn.textContent = 'Fechamento'; despBtn.onclick = function(){ _cardMonthLabel='fechamento'; renderCardPreserve(); };
+  var bancoBtn = document.createElement('button');
+  bancoBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='vencimento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='vencimento'?'#000':'var(--muted)');
+  bancoBtn.textContent = 'Vencimento'; bancoBtn.onclick = function(){ _cardMonthLabel='vencimento'; renderCardPreserve(); };
+  labelToggle.appendChild(despBtn); labelToggle.appendChild(bancoBtn);
+  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(importBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(viewToggle); hd.appendChild(labelToggle); hd.appendChild(addBillBtn);
   var html = '';
 
   var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -6098,9 +6696,11 @@ function renderCardBills(el, cardId) {
     var yearBills = (bills[y]) || {};
     var months = Object.keys(yearBills).map(Number).sort(function(a,b){return b-a;});
     if (!months.length && y !== currentYear) return;
-
-    html += '<div style="margin-top:16px">'
-      + '<div style="font-family:DM Mono,monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">' + y + '</div>';
+    var isCurrentYear = (y === currentYear);
+    var isCollapsed = !isCurrentYear && (_cardCollapsedYears[y] !== false);
+    var chevRot = isCollapsed ? '0' : '90';
+    html += '<div style="margin-top:16px">'      + '<div onclick="toggleCardYear(' + y + ')" style="font-family:DM Mono,monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none">'      + '<span style="font-size:9px;display:inline-block;transform:rotate(' + chevRot + 'deg);transition:transform .2s">▶</span>'      + '<span>' + y + '</span></div>';
+    if (isCollapsed) { html += '</div>'; return; }
 
     months.forEach(function(m) {
       var txs = yearBills[m] || [];
@@ -6108,7 +6708,8 @@ function renderCardBills(el, cardId) {
       var bid = 'cb-' + cardId + '-' + y + '-' + m;
       var status = getBillStatus(cardId, y, m, card);
       var isHighlight = (y * 12 + m === highlightAbs);
-      var isOpen = isHighlight;
+      // If we have a saved state, use it; otherwise auto-open the highlight month
+      var isOpen = _savedOpenBids !== null ? _savedOpenBids.includes(bid) : isHighlight;
 
       // Status badge
       var statusBadge, headerExtra = '';
@@ -6116,8 +6717,8 @@ function renderCardBills(el, cardId) {
         statusBadge = '<span style="font-size:10px;background:var(--surface2);color:var(--muted);border-radius:4px;padding:2px 7px">Sem lançamentos</span>';
       } else if (status === 'paid') {
         statusBadge = '<span style="font-size:10px;background:#1a3a1a;color:#4caf50;border-radius:4px;padding:2px 7px">✓ Paga</span>';
-      } else if (status === 'overdue') {
-        statusBadge = '<span style="font-size:10px;background:#3a1a1a;color:var(--danger);border-radius:4px;padding:2px 7px">⚠ Em atraso</span>';
+      } else if (status === 'partial') {
+        statusBadge = '<span style="font-size:10px;background:#1a2a2a;color:#26c6da;border-radius:4px;padding:2px 7px">◑ Parcialmente pago</span>';
         if (isHighlight) headerExtra = 'border-left:3px solid var(--danger);';
       } else {
         statusBadge = '<span style="font-size:10px;background:#2a2a1a;color:#f0a500;border-radius:4px;padding:2px 7px">● Em aberto</span>';
@@ -6127,10 +6728,10 @@ function renderCardBills(el, cardId) {
       var payBtn = status === 'empty' ? '' :
         '<button onclick="event.stopPropagation();cardBillAction(this,\'togglePaid\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" style="font-size:10px;background:' + (status==='paid'?'#1a3a1a':'none') + ';color:' + (status==='paid'?'#4caf50':'var(--muted)') + ';border:1px solid ' + (status==='paid'?'#4caf5066':'var(--border)') + ';border-radius:4px;padding:2px 8px;cursor:pointer;white-space:nowrap">' + (status==='paid'?'✓ Paga':'Marcar paga') + '</button>';
 
-      html += '<div class="month-block" style="margin-bottom:8px' + (isHighlight ? ';box-shadow:0 0 0 1px var(--accent)44;border-radius:8px' : '') + '">'
-        + '<div class="month-header" onclick="toggleCardBill(this.dataset.bid)" data-bid="' + bid + '" style="' + headerExtra + '">'
-        + '<span class="month-chevron' + (isOpen ? ' open' : '') + '">▶</span>'
-        + '<span class="month-name">' + MONTHS_PT[m] + '</span>'
+      var dispM = cardDisplayMonth(y, m, card);
+      var dispLabel = MONTHS_PT[dispM.m] + (dispM.y !== y ? ' ' + dispM.y : '');
+
+      html += '<div class="month-block" style="margin-bottom:8px' + (isHighlight ? ';box-shadow:0 0 0 1px var(--accent)44;border-radius:8px' : '') + '">'        + '<div class="month-header" data-bid="' + bid + '" style="' + headerExtra + '">'        + '<span class="month-chevron' + (isOpen ? ' open' : '') + '">▶</span>'        + '<span class="month-name">' + dispLabel + '</span>'
         + '<div class="month-pills">' + statusBadge + '</div>'
         + (total ? '<span class="month-total">' + fmtBRL(total) + '</span>' : '')
         + payBtn
@@ -6150,9 +6751,318 @@ function renderCardBills(el, cardId) {
   wrapper.insertAdjacentHTML('beforeend', html);
   el.innerHTML = '';
   el.appendChild(wrapper);
+  // Wire up month-header clicks — use addEventListener so stopPropagation works inside
+  wrapper.querySelectorAll('.month-header[data-bid]').forEach(function(hdr) {
+    hdr.addEventListener('click', function() { toggleCardBill(hdr.dataset.bid); });
+  });
+  // Wire drag & drop for card transactions
+  wireCardDragDrop(wrapper, cardId);
   // Append installment summary
   var summaryHtml = buildInstallmentSummary(cardId);
   if (summaryHtml) el.insertAdjacentHTML('beforeend', summaryHtml);
+}
+
+function cardSortClick(col) {
+  var existing = _cardSortLevels.findIndex(function(s){ return s.col === col; });
+  if (existing === -1) {
+    _cardSortLevels.push({ col: col, dir: 'asc' });
+  } else if (_cardSortLevels[existing].dir === 'asc') {
+    _cardSortLevels[existing].dir = 'desc';
+  } else {
+    _cardSortLevels.splice(existing, 1);
+  }
+  renderCardPreserve();
+}
+
+function cardDateToNum(d) {
+  // Convert DD/MM/YY to YYYYMMDD number for correct chronological sort
+  if (!d) return 0;
+  var p = d.split('/');
+  if (p.length < 3) return 0;
+  var yr = parseInt(p[2]) + (parseInt(p[2]) < 100 ? 2000 : 0);
+  return yr * 10000 + parseInt(p[1]) * 100 + parseInt(p[0]);
+}
+
+function sortCardTxs(txs) {
+  if (!_cardSortLevels.length) return txs;
+  return txs.slice().sort(function(a, b) {
+    for (var i = 0; i < _cardSortLevels.length; i++) {
+      var s = _cardSortLevels[i];
+      var av, bv;
+      if (s.col === 'valor') {
+        av = parseFloat(a.valor)||0; bv = parseFloat(b.valor)||0;
+      } else if (s.col === 'data') {
+        av = cardDateToNum(a.data); bv = cardDateToNum(b.data);
+      } else {
+        av = (a[s.col] || '').toLowerCase(); bv = (b[s.col] || '').toLowerCase();
+      }
+      var cmp = av < bv ? -1 : av > bv ? 1 : 0;
+      if (cmp !== 0) return s.dir === 'asc' ? cmp : -cmp;
+    }
+    return 0;
+  });
+}
+
+function cardSortBadge(col) {
+  var idx = _cardSortLevels.findIndex(function(s){ return s.col === col; });
+  if (idx === -1) return '';
+  var s = _cardSortLevels[idx];
+  return ' <span style="font-size:9px;opacity:0.7">' + (idx+1) + (s.dir==='asc'?'↑':'↓') + '</span>';
+}
+
+
+/* ── Autocomplete ───────────────────────────────────────────── */
+var _acMemory = {};
+
+function acGetKey(field) { return 'ac_' + field; }
+
+function acRemember(field, value) {
+  if (!value || value.trim().length < 2) return;
+  var key = acGetKey(field);
+  if (!_acMemory[key]) _acMemory[key] = [];
+  var arr = _acMemory[key];
+  var idx = arr.indexOf(value);
+  if (idx !== -1) arr.splice(idx, 1);
+  arr.unshift(value);
+  if (arr.length > 100) arr.pop();
+  if (!state.card.acMemory) state.card.acMemory = {};
+  state.card.acMemory[key] = arr;
+  saveState();
+}
+
+function acLoadMemory() {
+  if (state.card && state.card.acMemory) _acMemory = state.card.acMemory;
+  // Pre-populate tx-desc from existing transaction descriptions
+  var key = acGetKey('tx-desc');
+  if (!_acMemory[key] || !_acMemory[key].length) {
+    var descs = [];
+    var bills = state.card && state.card.bills || {};
+    Object.keys(bills).forEach(function(cid) {
+      Object.keys(bills[cid]).forEach(function(y) {
+        Object.keys(bills[cid][y]).forEach(function(m) {
+          (bills[cid][y][m] || []).forEach(function(tx) {
+            if (tx.descricao && !descs.includes(tx.descricao)) descs.push(tx.descricao);
+          });
+        });
+      });
+    });
+    if (descs.length) _acMemory[key] = descs;
+  }
+  // Pre-populate detalhes from existing notas
+  var keyD = acGetKey('detalhes');
+  if (!_acMemory[keyD] || !_acMemory[keyD].length) {
+    var notas = [];
+    var bills2 = state.card && state.card.bills || {};
+    Object.keys(bills2).forEach(function(cid) {
+      Object.keys(bills2[cid]).forEach(function(y) {
+        Object.keys(bills2[cid][y]).forEach(function(m) {
+          (bills2[cid][y][m] || []).forEach(function(tx) {
+            if (tx.nota && !notas.includes(tx.nota)) notas.push(tx.nota);
+          });
+        });
+      });
+    });
+    if (notas.length) _acMemory[keyD] = notas;
+  }
+}
+
+function acSuggest(field, query) {
+  var key = acGetKey(field);
+  var arr = _acMemory[key] || [];
+  if (!query) return arr.slice(0, 8);
+  var q = query.toLowerCase();
+  return arr.filter(function(v){ return v.toLowerCase().includes(q) && v !== query; }).slice(0, 8);
+}
+
+function acAttach(input, field, onSelect) {
+  var dd = null;
+  var activeIdx = -1;
+
+  function closeAc() { if (dd) { dd.remove(); dd = null; } activeIdx = -1; }
+
+  function openAc(items) {
+    closeAc();
+    if (!items.length) return;
+    dd = document.createElement('div');
+    dd.className = 'ac-dropdown';
+    var rect = input.getBoundingClientRect();
+    dd.style.cssText = 'position:fixed;top:' + (rect.bottom + 2) + 'px;left:' + rect.left + 'px;min-width:' + Math.max(rect.width, 200) + 'px;z-index:99999';
+    items.forEach(function(item, i) {
+      var el = document.createElement('div');
+      el.className = 'ac-item';
+      el.textContent = item;
+      el.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        input.value = item;
+        if (onSelect) onSelect(item);
+        closeAc();
+      });
+      dd.appendChild(el);
+    });
+    document.body.appendChild(dd);
+  }
+
+  function updateActive(newIdx) {
+    if (!dd) return;
+    var items = dd.querySelectorAll('.ac-item');
+    items.forEach(function(el, i){ el.classList.toggle('ac-active', i === newIdx); });
+    activeIdx = newIdx;
+  }
+
+  input.addEventListener('input', function() {
+    var s = acSuggest(field, input.value);
+    if (s.length && input.value.length > 0) openAc(s); else closeAc();
+  });
+  input.addEventListener('focus', function() {
+    var s = acSuggest(field, input.value);
+    if (s.length) openAc(s);
+  });
+  input.addEventListener('keydown', function(e) {
+    if (!dd) return;
+    var items = dd.querySelectorAll('.ac-item');
+    if (e.key === 'ArrowDown') { e.preventDefault(); updateActive(Math.min(activeIdx+1, items.length-1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); updateActive(Math.max(activeIdx-1, 0)); }
+    else if ((e.key === 'Enter' || e.key === 'Tab') && activeIdx >= 0 && items[activeIdx]) {
+      e.preventDefault(); input.value = items[activeIdx].textContent;
+      if (onSelect) onSelect(input.value); closeAc();
+    } else if (e.key === 'Escape') { closeAc(); }
+  });
+  input.addEventListener('blur', function(){ setTimeout(closeAc, 150); });
+}
+
+function getInstallmentNota(tx, cardId) {
+  if (tx.nota) return tx.nota;
+  if (!tx.installmentGroupId) return '';
+  var bills = state.card.bills[cardId] || {};
+  var gid = tx.installmentGroupId;
+  for (var y in bills) {
+    for (var m in bills[y]) {
+      var found = (bills[y][m] || []).find(function(t){ return t.installmentGroupId === gid && t.nota; });
+      if (found) return found.nota;
+    }
+  }
+  return '';
+}
+
+function propagateInstallmentField(tx, field, value, cardId) {
+  // Propagate categoria or descricao changes to all parcelas of same group
+  if (!tx.installmentGroupId) return;
+  var gid = tx.installmentGroupId;
+  var bills = state.card.bills[cardId] || {};
+  Object.keys(bills).forEach(function(y) {
+    Object.keys(bills[y]).forEach(function(m) {
+      (bills[y][m] || []).forEach(function(t) {
+        if (t.installmentGroupId === gid && t.id !== tx.id) {
+          t[field] = value;
+        }
+      });
+    });
+  });
+}
+
+function inlineEditCardTx(cell) {
+  var cardId = cell.dataset.cid;
+  var y = parseInt(cell.dataset.y);
+  var m = parseInt(cell.dataset.m);
+  var txId = cell.dataset.txid;
+  var field = cell.dataset.field;
+  var bills = state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m];
+  var tx = bills && bills.find(function(t){ return t.id === txId; });
+  if (!tx || cell.querySelector('input')) return;
+
+  var cur = tx[field] !== undefined ? String(tx[field]) : '';
+  var input = document.createElement('input');
+  input.style.cssText = 'width:100%;background:transparent;border:none;border-bottom:1px solid var(--accent);outline:none;color:var(--text);font-size:12px;padding:0;font-family:inherit;text-align:inherit';
+
+  if (field === 'data') {
+    input.placeholder = 'DD/MM/AA';
+    input.value = cur;
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus(); input.select();
+    input.addEventListener('click', function(e){ e.stopPropagation(); });
+    input.addEventListener('blur', function() {
+      var val = input.value.trim();
+      if (val) { tx.data = val; saveState(); }
+      cell.textContent = tx.data || '—';
+    });
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'Escape') { cell.textContent = cur || '—'; }
+    });
+    // Open date picker
+    openTxDatePicker(input);
+    input.addEventListener('change', function(){ tx.data = input.value; saveState(); });
+
+  } else if (field === 'valor') {
+    input.type = 'number'; input.step = '0.01';
+    input.value = parseFloat(cur) || 0;
+    input.style.textAlign = 'right';
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus(); input.select();
+    input.addEventListener('click', function(e){ e.stopPropagation(); });
+    input.addEventListener('blur', function() {
+      var val = parseFloat(input.value);
+      if (!isNaN(val)) {
+        tx.valor = val; saveState();
+        // Refresh the month body to update totals
+        var monthBody = cell.closest('.month-body');
+        if (monthBody) {
+          // bid format: cb-{cardId}-{y}-{m}
+          var bid = monthBody.id; // e.g. cb-card-itau-2026-4
+          var lastDash = bid.lastIndexOf('-');
+          var mm = parseInt(bid.slice(lastDash + 1));
+          var rest = bid.slice(0, lastDash);
+          var lastDash2 = rest.lastIndexOf('-');
+          var my = parseInt(rest.slice(lastDash2 + 1));
+          var cid = rest.slice(3, lastDash2); // remove 'cb-' prefix
+          // Read fresh from state after saveState
+          var freshTxs = (state.card.bills[cid] && state.card.bills[cid][my] && state.card.bills[cid][my][mm]) || [];
+          monthBody.innerHTML = buildCardTxTable(cid, my, mm, freshTxs);
+          wireCardDragDrop(monthBody, cid);
+          // Update month header total
+          var mhdr = monthBody.previousElementSibling;
+          if (mhdr) {
+            var totalEl = mhdr.querySelector('.month-total');
+            if (totalEl) {
+              var newBruto = freshTxs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); },0);
+              var newEst = freshTxs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v<0?v:0); },0);
+              totalEl.textContent = fmtBRL(newBruto + newEst);
+            }
+          }
+          return;
+        }
+      }
+      cell.style.color = tx.valor < 0 ? '#4caf50' : '';
+      cell.textContent = fmtBRL(parseFloat(tx.valor)||0);
+    });
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'Escape') { cell.textContent = fmtBRL(parseFloat(cur)||0); }
+    });
+
+  } else { // descricao
+    input.value = cur;
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus(); input.select();
+    acAttach(input, 'tx-desc', null);
+    input.addEventListener('click', function(e){ e.stopPropagation(); });
+    input.addEventListener('blur', function() {
+      var val = input.value.trim();
+      if (val) {
+        tx.descricao = val;
+        if (tx.installmentGroupId) propagateInstallmentField(tx, 'descricao', val, cardId);
+        saveState(); acRemember('tx-desc', val);
+      }
+      cell.innerHTML = escHtml(tx.descricao||'') + (tx.parcela ? ' <span style="font-size:10px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</span>' : '');
+    });
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'Escape') { cell.innerHTML = escHtml(cur) + (tx.parcela ? ' <span style="font-size:10px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</span>' : ''); }
+    });
+  }
 }
 
 function editCardTxNota(el, cardId, y, m, txId) {
@@ -6160,53 +7070,302 @@ function editCardTxNota(el, cardId, y, m, txId) {
   var tx = txList && txList.find(function(t){ return t.id === txId; });
   if (!tx || el.querySelector('textarea')) return;
   var cur = tx.nota || '';
-  el.innerHTML = '';
+  var cur = tx.nota || getInstallmentNota(tx, cardId) || '';
   var ta = document.createElement('textarea');
   ta.value = cur;
   ta.style.cssText = 'width:100%;min-width:180px;min-height:60px;max-height:200px;background:var(--surface);border:1px solid var(--accent);border-radius:4px;color:var(--text);font-size:12px;padding:4px 6px;resize:vertical;font-family:DM Sans,sans-serif';
   ta.addEventListener('click', function(e){ e.stopPropagation(); });
-  ta.addEventListener('blur', function() { tx.nota = ta.value.trim(); saveState(); el.innerHTML = tx.nota ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">' + escHtml(tx.nota) + '</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ descrição</span>'; });
+  ta.addEventListener('blur', function() { var val = ta.value.trim(); if (val !== tx.nota) acRemember('detalhes', val); tx.nota = val; if (tx.installmentGroupId) propagateInstallmentField(tx, 'nota', val, cardId); saveState(); if (document.body.contains(el)) { el.innerHTML = val ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">' + escHtml(val) + '</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ descrição</span>'; } });
   ta.addEventListener('keydown', function(e){ if (e.key === 'Escape') { tx.nota = cur; el.innerHTML = cur ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">' + escHtml(cur) + '</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ descrição</span>'; } });
   el.appendChild(ta); ta.focus();
 }
 
+
+function openAddPaymentModal(cardId, y, m) {
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'add-payment-modal';
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.maxWidth = '340px';
+
+  var hdr = document.createElement('div'); hdr.className = 'modal-header';
+  hdr.innerHTML = '<span>Registrar Pagamento — ' + MONTHS_PT[m] + '/' + y + '</span>';
+  var closeBtn = document.createElement('button'); closeBtn.className = 'modal-close'; closeBtn.textContent = '✕';
+  closeBtn.onclick = function(){ overlay.remove(); }; hdr.appendChild(closeBtn);
+
+  var bod = document.createElement('div');
+  bod.style.cssText = 'padding:16px;display:flex;flex-direction:column;gap:12px';
+
+  // Date field
+  var dateField = document.createElement('div'); dateField.className = 'modal-field';
+  dateField.innerHTML = '<label class="modal-label">Data do pagamento</label>';
+  var payDataInput = document.createElement('input'); payDataInput.className = 'modal-input';
+  payDataInput.id = 'pay-data'; payDataInput.placeholder = 'DD/MM/AA';
+  payDataInput.readOnly = true; payDataInput.style.cursor = 'pointer';
+  payDataInput.addEventListener('click', function(){ openTxDatePicker(payDataInput); });
+  dateField.appendChild(payDataInput); bod.appendChild(dateField);
+
+  // Value field
+  var valField = document.createElement('div'); valField.className = 'modal-field';
+  valField.innerHTML = '<label class="modal-label">Valor pago (R$)</label>';
+  var payValorInput = document.createElement('input'); payValorInput.className = 'modal-input';
+  payValorInput.id = 'pay-valor'; payValorInput.type = 'number';
+  payValorInput.step = '0.01'; payValorInput.min = '0'; payValorInput.placeholder = '0,00';
+  valField.appendChild(payValorInput); bod.appendChild(valField);
+
+  // Description field
+  var descField = document.createElement('div'); descField.className = 'modal-field';
+  descField.innerHTML = '<label class="modal-label">Descrição (opcional)</label>';
+  var payDescInput = document.createElement('input'); payDescInput.className = 'modal-input';
+  payDescInput.id = 'pay-desc'; payDescInput.placeholder = 'Ex: Pagamento parcial';
+  descField.appendChild(payDescInput); bod.appendChild(descField);
+
+  // Nota/Detalhes field
+  var notaField = document.createElement('div'); notaField.className = 'modal-field';
+  notaField.innerHTML = '<label class="modal-label">Detalhes (opcional)</label>';
+  var payNotaInput = document.createElement('textarea'); payNotaInput.className = 'modal-input';
+  payNotaInput.id = 'pay-nota'; payNotaInput.placeholder = 'Observações sobre o pagamento';
+  payNotaInput.style.cssText = 'min-height:60px;resize:vertical;font-family:DM Sans,sans-serif';
+  notaField.appendChild(payNotaInput); bod.appendChild(notaField);
+
+  var footer = document.createElement('div'); footer.className = 'modal-footer';
+  var cancelBtn = document.createElement('button'); cancelBtn.className = 'btn-sm'; cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button'); saveBtn.className = 'btn-sm accent'; saveBtn.textContent = 'Registrar';
+  saveBtn.onclick = function() {
+    var dataVal = document.getElementById('pay-data').value.trim();
+    var valor = parseFloat(document.getElementById('pay-valor').value);
+    if (!dataVal) { showToast('Informe a data do pagamento'); return; }
+    if (!valor || valor <= 0) { showToast('Informe o valor pago'); return; }
+    var desc = document.getElementById('pay-desc').value.trim();
+    if (!state.card.payments) state.card.payments = {};
+    if (!state.card.payments[cardId]) state.card.payments[cardId] = {};
+    if (!state.card.payments[cardId][y]) state.card.payments[cardId][y] = {};
+    if (!state.card.payments[cardId][y][m]) state.card.payments[cardId][y][m] = [];
+    pushUndo();
+    var nota = document.getElementById('pay-nota') ? document.getElementById('pay-nota').value.trim() : '';
+    state.card.payments[cardId][y][m].push({ id: uuid(), data: dataVal, valor: valor, descricao: desc, nota: nota });
+    saveState(); overlay.remove(); renderCardPreserve();
+    showToast('Pagamento registrado: ' + fmtBRL(valor));
+  };
+  footer.appendChild(cancelBtn); footer.appendChild(saveBtn);
+  box.appendChild(hdr); box.appendChild(bod); box.appendChild(footer);
+  overlay.appendChild(box);
+  showModal(overlay);
+}
+
+function inlineEditPayment(cell) {
+  var cardId = cell.dataset.cid;
+  var y = parseInt(cell.dataset.y);
+  var m = parseInt(cell.dataset.m);
+  var pid = cell.dataset.pid;
+  var field = cell.dataset.field;
+  var pays = state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m];
+  var p = pays && pays.find(function(x){ return x.id === pid; });
+  if (!p || cell.querySelector('input')) return;
+  var cur = p[field] !== undefined ? String(p[field]) : '';
+  var input = document.createElement('input');
+  input.style.cssText = 'width:100%;background:transparent;border:none;border-bottom:1px solid #4caf50;outline:none;color:#4caf50;font-size:12px;padding:0;font-family:inherit;text-align:inherit';
+
+  if (field === 'data') {
+    input.placeholder = 'DD/MM/AA'; input.readOnly = true; input.style.cursor = 'pointer';
+    input.value = cur; cell.innerHTML = ''; cell.appendChild(input);
+    input.addEventListener('click', function(e){ e.stopPropagation(); openTxDatePicker(input); });
+    input.addEventListener('blur', function() {
+      var val = input.value.trim();
+      if (val) { p.data = val; saveState(); }
+      if (document.body.contains(cell)) cell.textContent = p.data || '—';
+    });
+    // Use MutationObserver to detect when calendar sets the value
+    var observer = new MutationObserver(function() {
+      var val = input.value.trim();
+      if (val && val !== cur) { p.data = val; saveState(); cur = val; }
+    });
+    observer.observe(input, { attributes: true, attributeFilter: ['value'] });
+    // Also override input.value setter to catch calendar selection
+    var origDescriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+    Object.defineProperty(input, 'value', {
+      get: function() { return origDescriptor.get.call(this); },
+      set: function(v) { origDescriptor.set.call(this, v); if (v && v !== cur) { p.data = v; saveState(); cur = v; if (document.body.contains(cell)) cell.textContent = v; } }
+    });
+    openTxDatePicker(input);
+  } else if (field === 'valor') {
+    input.type = 'number'; input.step = '0.01'; input.value = parseFloat(cur)||0; input.style.textAlign = 'right';
+    cell.innerHTML = ''; cell.appendChild(input); input.focus(); input.select();
+    input.addEventListener('click', function(e){ e.stopPropagation(); });
+    input.addEventListener('blur', function() {
+      var val = parseFloat(input.value);
+      if (!isNaN(val) && val > 0) { p.valor = val; saveState(); }
+      if (document.body.contains(cell)) cell.textContent = '-' + fmtBRL(p.valor);
+    });
+    input.addEventListener('keydown', function(e){ if (e.key==='Enter') input.blur(); if (e.key==='Escape' && document.body.contains(cell)) cell.textContent = '-' + fmtBRL(parseFloat(cur)||0); });
+  } else if (field === 'nota') {
+    var ta = document.createElement('textarea');
+    ta.style.cssText = 'width:100%;min-height:60px;max-height:150px;background:var(--surface);border:1px solid var(--accent);border-radius:4px;color:var(--text2);font-size:11px;padding:4px 6px;resize:vertical;font-family:DM Sans,sans-serif';
+    ta.value = cur; cell.innerHTML = ''; cell.appendChild(ta); ta.focus();
+    ta.addEventListener('click', function(e){ e.stopPropagation(); });
+    ta.addEventListener('blur', function() {
+      var val = ta.value.trim();
+      p.nota = val; saveState();
+      if (document.body.contains(cell)) cell.innerHTML = val ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap">' + escHtml(val) + '</span>' : '<span style="font-size:11px;color:var(--border)">+ detalhes</span>';
+    });
+    ta.addEventListener('keydown', function(e){ if (e.key==='Escape') ta.blur(); });
+  } else {
+    input.value = cur; cell.innerHTML = ''; cell.appendChild(input); input.focus(); input.select();
+    input.addEventListener('click', function(e){ e.stopPropagation(); });
+    input.addEventListener('blur', function() {
+      var val = input.value.trim();
+      if (val) { p.descricao = val; saveState(); }
+      if (document.body.contains(cell)) cell.innerHTML = '\ud83d\udcb3 ' + escHtml(p.descricao||'Pagamento');
+    });
+    input.addEventListener('keydown', function(e){ if (e.key==='Enter') input.blur(); if (e.key==='Escape' && document.body.contains(cell)) cell.innerHTML = '\ud83d\udcb3 ' + escHtml(cur||'Pagamento'); });
+  }
+}
+
+function removePayment(cardId, y, m, payId) {
+  confirmAction('Remover pagamento', 'O pagamento será removido.', function() {
+    pushUndo();
+    var pays = state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m];
+    if (pays) {
+      state.card.payments[cardId][y][m] = pays.filter(function(p){ return p.id !== payId; });
+    }
+    saveState(); renderCardPreserve();
+  });
+}
+
 function buildCardTxTable(cardId, y, m, txs) {
+  txs = sortCardTxs(txs);
   var cats = state.card.categorias || [];
-  if (!txs.length) return '<div class="empty-cell">Nenhuma transação. <button class="btn-sm" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Adicionar</button></div>';
+  var isDragMode = _cardSortLevels.length === 1 && _cardSortLevels[0].col === 'data';
+
+  // Merge payments into the transaction list for chronological display
+  var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m]) || [];
+
+  function makePayRow(p) {
+    return '<tr style="background:#1a3020" draggable="' + (isDragMode ? 'true' : 'false') + '" data-payid="' + p.id + '" data-date="' + (p.data||'') + '">'
+      + (isDragMode ? '<td style="width:24px;cursor:grab;color:#4caf50;font-size:14px;text-align:center;user-select:none">⠿</td>' : '')
+      + '<td style="color:#4caf50;font-size:12px;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer" onclick="inlineEditPayment(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-pid="' + p.id + '" data-field="data">' + (p.data||'—') + '</td>'
+      + '<td style="color:#4caf50;cursor:pointer" onclick="inlineEditPayment(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-pid="' + p.id + '" data-field="descricao">\ud83d\udcb3 ' + escHtml(p.descricao||'Pagamento') + '</td>'
+      + '<td style="color:#4caf50;font-family:DM Mono,monospace;text-align:right;cursor:pointer;white-space:nowrap" onclick="inlineEditPayment(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-pid="' + p.id + '" data-field="valor">-' + fmtBRL(p.valor) + '</td>'
+      + '<td style="cursor:pointer" onclick="inlineEditPayment(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-pid="' + p.id + '" data-field="nota">' + (p.nota ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap">' + escHtml(p.nota) + '</span>' : '<span style="font-size:11px;color:var(--border)">+ detalhes</span>') + '</td>'
+      + '<td></td>'
+      + '<td><button class="btn-sm del" onclick="removePayment(this.dataset.cid,parseInt(this.dataset.y),parseInt(this.dataset.m),this.dataset.pid)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-pid="' + p.id + '" style="font-size:10px;padding:1px 5px">\u2715</button></td>'
+      + '</tr>';
+  }
+
+  // Build combined sorted list of txs and payments
+  // Always sort combined by date (same direction as current sort, defaulting to desc)
+  var sortDir = (_cardSortLevels.length && _cardSortLevels[0].col === 'data' && _cardSortLevels[0].dir === 'asc') ? 1 : -1;
+  var isDateSort = _cardSortLevels.length === 1 && _cardSortLevels[0].col === 'data';
+  var combined = txs.map(function(t, i){ return { type: 'tx', data: t, dateNum: cardDateToNum(t.data||''), origIdx: i }; })
+    .concat(pays.map(function(p){ return { type: 'pay', data: p, dateNum: cardDateToNum(p.data||'') }; }));
+  // Always sort combined by date so payments appear at correct position
+  combined.sort(function(a, b) {
+    var d = (a.dateNum - b.dateNum) * sortDir;
+    if (d !== 0) return d;
+    // Payments after txs on same date
+    if (a.type !== b.type) return a.type === 'pay' ? 1 : -1;
+    return (a.origIdx||0) - (b.origIdx||0);
+  });
+  // Always use combined order for txs so rows and combined stay in sync
+  txs = combined.filter(function(x){ return x.type==='tx'; }).map(function(x){ return x.data; });
+
+
+  if (!txs.length && !pays.length) return '<div class="empty-cell">Nenhuma transação. <button class="btn-sm" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Adicionar</button></div>';
+  if (!txs.length) {
+    // Only payments, no expenses
+    var onlyPayRows = pays.map(function(p){
+      return '<tr style="background:#1a3020">'
+        + '<td style="color:#4caf50;font-size:12px;font-family:DM Mono,monospace">' + (p.data||'') + '</td>'
+        + '<td colspan="2" style="color:#4caf50">💳 ' + escHtml(p.descricao||'Pagamento') + ' <span style="font-family:DM Mono,monospace;font-weight:600">-' + fmtBRL(p.valor) + '</span></td>'
+        + '<td></td><td></td>'
+        + '<td><button class="btn-sm del" onclick="removePayment(this.dataset.cid,parseInt(this.dataset.y),parseInt(this.dataset.m),this.dataset.pid)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-pid="' + p.id + '" style="font-size:10px;padding:1px 5px">✕</button></td>'
+        + '</tr>';
+    }).join('');
+    return '<div style="overflow-x:auto" onclick="event.stopPropagation()"><table class="transactions-table"><tbody>' + onlyPayRows + '</tbody></table></div>';
+  }
+
   var rows = txs.map(function(tx) {
     var opts = ['<option value="">— Classificar</option>'].concat(cats.map(function(c){
       return '<option value="' + escHtml(c) + '"' + (tx.categoria===c?' selected':'') + '>' + escHtml(c) + '</option>';
     })).join('');
-    return '<tr id="ctx-' + tx.id + '">'
-      + '<td style="color:var(--text2);font-size:12px;font-family:\'DM Mono\',monospace;white-space:nowrap">' + (tx.data||'') + '</td>'
-      + '<td>' + escHtml(tx.descricao||'') + (tx.parcela ? ' <span style="font-size:10px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</span>' : '') + '</td>'
-      + '<td style="text-align:right;font-family:\'DM Mono\',monospace;white-space:nowrap;' + ((parseFloat(tx.valor)||0) < 0 ? 'color:#4caf50' : '') + '">' + fmtBRL(parseFloat(tx.valor)||0) + '</td>'
-      + '<td onclick="editCardTxNota(this,\'' + cardId + '\',' + y + ',' + m + ',\'' + tx.id + '\')" style="cursor:pointer;min-width:120px;max-width:240px;vertical-align:top">' + (tx.nota ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">' + escHtml(tx.nota) + '</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ descrição</span>') + '</td>'
+    return '<tr id="ctx-' + tx.id + '" draggable="' + (isDragMode ? 'true' : 'false') + '" data-txid="' + tx.id + '" data-date="' + (tx.data||'') + '">'
+      + (isDragMode ? '<td style="width:24px;cursor:grab;color:var(--muted);font-size:14px;text-align:center;user-select:none">⠿</td>' : '')
+      + '<td style="color:var(--text2);font-size:12px;font-family:\'DM Mono\',monospace;white-space:nowrap;cursor:pointer" onclick="inlineEditCardTx(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" data-field="data">' + (tx.data||'—') + '</td>'
+      + '<td style="cursor:pointer" onclick="inlineEditCardTx(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" data-field="descricao">' + escHtml(tx.descricao||'') + (tx.parcela ? ' <span style="font-size:10px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</span>' : '') + '</td>'
+      + '<td style="text-align:right;font-family:\'DM Mono\',monospace;white-space:nowrap;cursor:pointer;' + ((parseFloat(tx.valor)||0) < 0 ? 'color:#4caf50' : '') + '" onclick="inlineEditCardTx(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" data-field="valor">' + fmtBRL(parseFloat(tx.valor)||0) + '</td>'
+      + (function(){ var _n = tx.nota || getInstallmentNota(tx, cardId); return '<td onclick="editCardTxNota(this,\'' + cardId + '\',' + y + ',' + m + ',\'' + tx.id + '\')" style="cursor:pointer;min-width:120px;max-width:240px;vertical-align:top">' + (_n ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">' + escHtml(_n) + '</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ descrição</span>') + '</td>'; })()
       + '<td><select class="cat-select" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" onchange="cardTxCatChange(this)">' + opts + '</select></td>'
       + '<td><button class="btn-sm del" onclick="cardBillAction(this,\'removeTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '">✕</button></td>'
       + '</tr>';
   }).join('');
+
+  // Build allRows: interleave tx rows and payment rows in combined sorted order
+  // Also insert divider for partial payments
+  var coverage = pays.length ? calcPaymentCoverage(cardId, y, m) : { coveredIds: {}, isPartial: false };
+  var allRows;
+  if (pays.length) {
+    var txRowList2 = rows.match(/<tr[\s\S]*?<\/tr>/g) || [];
+    var txIdx2 = 0;
+    var dividerInserted = false;
+    allRows = combined.map(function(item) {
+      if (item.type === 'pay') return makePayRow(item.data);
+      var row = txRowList2[txIdx2++] || '';
+      // Insert divider before first uncovered tx in partial payment
+      if (coverage.isPartial && !dividerInserted && item.type === 'tx' && !coverage.coveredIds[item.data.id]) {
+        dividerInserted = true;
+        return '<tr><td colspan="7" style="padding:0"><div style="border-top:2px dashed var(--border);margin:2px 0;position:relative"><span style="position:absolute;left:50%;transform:translateX(-50%) translateY(-50%);background:var(--surface);padding:0 8px;font-size:10px;color:var(--muted);white-space:nowrap">↑ Quitado · Em aberto ↓</span></div></td></tr>' + row;
+      }
+      return row;
+    }).join('');
+  } else {
+    allRows = rows;
+  }
   // Separate positive (despesas) from negative (estornos)
   var despesasBruto = txs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); },0);
   var estornos = txs.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v<0?v:0); },0);
   var total = despesasBruto + estornos; // net of refunds
-  // Payments for this bill (actual bill payments, separate from refunds)
+  // Payments for this bill
   var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m]) || [];
   var payTotal = pays.reduce(function(s,p){ return s+p.valor; }, 0);
-  var estornoHtml = estornos < 0 ? '<tr style="background:#1a3020"><td colspan="2" style="padding:6px 10px;color:#4caf50;font-size:12px">↩ Estornos</td><td style="padding:6px 10px;text-align:right;color:#4caf50;font-family:DM Mono,monospace">' + fmtBRL(estornos) + '</td><td colspan="3"></td></tr>' : '';
-  var payHtml = pays.length ? '<tr style="background:#1a3a1a"><td colspan="2" style="padding:6px 10px;color:#4caf50;font-size:12px">💳 Pagamento recebido</td><td style="padding:6px 10px;text-align:right;color:#4caf50;font-family:DM Mono,monospace">-' + fmtBRL(payTotal) + '</td><td colspan="3"></td></tr>' : '';
-  var saldo = total - payTotal;
-  var hasExtras = estornos < 0 || pays.length;
-  var totalFooter = hasExtras
-    ? '<tr><td colspan="2" style="padding:6px 10px;color:var(--muted);font-size:11px">TOTAL BRUTO</td><td style="padding:6px 10px;text-align:right;font-family:DM Mono,monospace">' + fmtBRL(despesasBruto) + '</td><td colspan="3"></td></tr>' + estornoHtml + payHtml + '<tr style="border-top:2px solid var(--border)"><td colspan="2" style="padding:8px 10px;font-weight:600">TOTAL LÍQUIDO</td><td style="padding:8px 10px;text-align:right;font-weight:700;font-family:DM Mono,monospace;color:' + (saldo <= 0 ? '#4caf50' : 'var(--text)') + '">' + fmtBRL(saldo) + '</td><td colspan="3"></td></tr>'
-    : '<tr><td colspan="2" style="padding:8px 10px;color:var(--muted)">TOTAL</td><td style="padding:8px 10px;text-align:right;font-weight:600;font-family:DM Mono,monospace">' + fmtBRL(total) + '</td><td colspan="3"></td></tr>';
+  var totalFatura = despesasBruto + estornos; // net of refunds
+  var emAberto = Math.round(Math.max(0, totalFatura - payTotal) * 100) / 100; // round to cents
+  var quitada = emAberto < 0.01 && totalFatura > 0;
+  // Footer: Total da fatura (net), Pago, Em aberto
+  var totalFooter = '<tr style="border-top:2px solid var(--border)">'
+    + '<td colspan="2" style="padding:8px 10px;color:var(--muted);font-size:11px">TOTAL DA FATURA</td>'
+    + '<td style="padding:8px 10px;text-align:right;font-family:DM Mono,monospace;font-weight:600">' + fmtBRL(totalFatura) + '</td>'
+    + '<td colspan="3"></td></tr>';
+  if (pays.length) {
+    totalFooter += '<tr style="background:#1a3020">'
+      + '<td colspan="2" style="padding:6px 10px;color:#4caf50;font-size:11px">PAGO</td>'
+      + '<td style="padding:6px 10px;text-align:right;color:#4caf50;font-family:DM Mono,monospace">-' + fmtBRL(payTotal) + '</td>'
+      + '<td colspan="3"></td></tr>';
+    var saldoColor = emAberto <= 0 ? '#4caf50' : 'var(--danger)';
+    totalFooter += '<tr style="border-top:1px solid var(--border)">'
+      + '<td colspan="2" style="padding:8px 10px;font-weight:600;color:' + saldoColor + '">' + (emAberto <= 0 ? '\u2713 Quitada' : 'EM ABERTO') + '</td>'
+      + '<td style="padding:8px 10px;text-align:right;font-weight:700;font-family:DM Mono,monospace;color:' + saldoColor + '">' + fmtBRL(Math.abs(emAberto)) + '</td>'
+      + '<td colspan="3"></td></tr>';
+  }
 
-  return '<div style="overflow-x:auto">'
+  return '<div style="overflow-x:auto" onclick="event.stopPropagation()">'
     + '<div style="padding:8px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)">'
-    + '<button class="btn-sm accent" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Transação</button>'
+    + '<button class="btn-sm accent" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Despesa</button>'
+    + '<button class="btn-sm" onclick="openAddPaymentModal(this.dataset.cid,parseInt(this.dataset.y),parseInt(this.dataset.m))" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Pagamento</button>'
     + '</div>'
-    + '<table class="transactions-table"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Descrição</th><th style="text-align:right">Valor</th><th style="text-align:left">Descrição</th><th style="text-align:left">Categoria</th><th></th></tr></thead>'
-    + '<tbody>' + rows + '</tbody>'
+    + '<table class="transactions-table"><thead><tr>'
+    + (isDragMode ? '<th style="width:24px"></th>' : '')
+    + '<th style="text-align:left;cursor:pointer;user-select:none" onclick="event.stopPropagation();cardSortClick(\'data\')">Data' + cardSortBadge('data') + '</th>'
+    + '<th style="text-align:left;cursor:pointer;user-select:none" onclick="event.stopPropagation();cardSortClick(\'descricao\')">Descrição' + cardSortBadge('descricao') + '</th>'
+    + '<th style="text-align:right;cursor:pointer;user-select:none" onclick="event.stopPropagation();cardSortClick(\'valor\')">Valor' + cardSortBadge('valor') + '</th>'
+    + '<th style="text-align:left">Detalhes</th>'
+    + '<th style="text-align:left;cursor:pointer;user-select:none" onclick="event.stopPropagation();cardSortClick(\'categoria\')">Categoria' + cardSortBadge('categoria') + '</th>'
+    + '<th></th></tr></thead>'
+    + '<tbody>' + allRows + '</tbody>'
     + '<tfoot>' + totalFooter + '</tfoot>'
     + '</table></div>';
 }
@@ -6259,6 +7418,8 @@ function setCardTxCat(cardId, y, m, txId, cat) {
   var tx = txs.find(function(t){ return t.id === txId; });
   if (tx) {
     tx.categoria = cat;
+    // Propagate to all parcelas of same group
+    if (tx.installmentGroupId) propagateInstallmentField(tx, 'categoria', cat, cardId);
     // Update memory
     if (cat) {
       var mem = state.card.memory || [];
@@ -6528,6 +7689,10 @@ function openAddTxModal(cardId, y, m) {
   var saveBtn = document.createElement('button');
   saveBtn.className = 'btn-sm accent'; saveBtn.textContent = 'Salvar';
   saveBtn.onclick = function(){ saveNewTx(cardId, y, m); };
+  setTimeout(function(){
+    var descInput = document.getElementById('tx-desc');
+    if (descInput) acAttach(descInput, 'tx-desc', null);
+  }, 50);
   footer.appendChild(cancelBtn);
   footer.appendChild(saveBtn);
 
@@ -6548,6 +7713,18 @@ function openAddTxModal(cardId, y, m) {
   toggle.appendChild(btn1x);
   toggle.appendChild(btnParc);
   document.getElementById('tx-parc-total').addEventListener('input', function(){ syncInstallmentValues('parcela'); });
+  // Attach autocomplete to description field — auto-fill category on select
+  var descInput = document.getElementById('tx-desc');
+  if (descInput) acAttach(descInput, 'tx-desc', function(val) {
+    var mem = state.card.memory || [];
+    var match = mem.find(function(m) {
+      return m.pattern === val || val.toLowerCase().includes(m.pattern.toLowerCase()) || m.pattern.toLowerCase().includes(val.toLowerCase());
+    });
+    if (match && match.categoria) {
+      var catSel = document.getElementById('tx-cat');
+      if (catSel) catSel.value = match.categoria;
+    }
+  });
 }
 
 function setTxMode(mode) {
@@ -6584,6 +7761,7 @@ function ensureCardMonth(cardId, y, m) {
 function saveNewTx(cardId, y, m) {
   var desc = document.getElementById('tx-desc').value.trim();
   if (!desc) { showToast('Descrição obrigatória'); return; }
+  acRemember('tx-desc', desc);
   var dataStr = document.getElementById('tx-data').value || '';
   var cat = document.getElementById('tx-cat').value;
   var isParc = document.getElementById('tx-fields-parc').style.display !== 'none';
@@ -6595,7 +7773,7 @@ function saveNewTx(cardId, y, m) {
     ensureCardMonth(cardId, y, m);
     state.card.bills[cardId][y][m].push(tx);
     if (cat) updateCardMemory(desc, cat);
-    pushUndo(); saveState(); closeAddTxModal(); renderCard();
+    pushUndo(); saveState(); closeAddTxModal(); renderCardPreserve();
     return;
   }
 
@@ -6679,7 +7857,7 @@ function saveNewTx(cardId, y, m) {
     return;
   }
 
-  saveState(); closeAddTxModal(); renderCard();
+  saveState(); closeAddTxModal(); renderCardPreserve();
   showToast('Parcelamento criado: ' + parcTotal + 'x de ' + fmtBRL(parcValor));
 }
 
@@ -6715,7 +7893,7 @@ function saveNewTx_LEGACY(cardId, y, m) {
     else mem.push({ pattern: tx.descricao, categoria: tx.categoria });
     state.card.memory = mem;
   }
-  saveState(); closeAddTxModal(); renderCard();
+  saveState(); closeAddTxModal(); renderCardPreserve();
 }
 
 function renderCardFaturas(){renderCard();}
