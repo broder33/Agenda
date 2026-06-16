@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -193,6 +194,7 @@ header {
 .section-hd {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  position: relative; z-index: 2;
 }
 .section-title {
   font-family: 'Bebas Neue', sans-serif;
@@ -824,6 +826,7 @@ header {
 .fin-table tbody tr:last-child { border-bottom: none; }
 .fin-table tbody tr:hover { background: var(--surface2); }
 .fin-table td { padding: 9px 12px; vertical-align: middle; }
+.fin-table td:nth-child(5) { max-width: 180px; }
 .editable-cell { cursor: text; }
 .editable-cell:hover { background: var(--surface2); }
 .inline-badge {
@@ -1191,7 +1194,7 @@ tr.dragging { opacity: 0.4; }
 <body>
 
 <!-- ═══════════════════ CONFIRM MODAL ═══════════════════ -->
-<div class="modal-overlay" id="confirmModal">
+<div class="modal-overlay" id="confirmModal" style="z-index:100000">
   <div class="modal-box" style="max-width:340px">
     <div class="modal-title" id="confirmTitle">Confirmar</div>
     <div class="modal-msg" id="confirmMsg"></div>
@@ -1272,6 +1275,54 @@ tr.dragging { opacity: 0.4; }
   </div>
 </div>
 
+<!-- ═══════════════════ CATEGORY MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="catManagerModal" style="z-index:99999">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title">Gerenciar Categorias</div>
+    <div id="catManagerList" class="col-manager" style="max-height:320px;overflow-y:auto"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+      <input class="modal-input" id="newCatLabel" placeholder="Nome da nova categoria" style="flex:1">
+      <button class="btn-modal-save" onclick="addCategoria()">+ Adicionar</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closeCatManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ RULES MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="rulesManagerModal" style="z-index:99999">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-title">⚡ Regras de Classificação</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">O padrão é buscado como <b>substring</b> na descrição — ex: "99" casa com "DL*99 RIDE", "IFD" casa com "IFD*iFood".</div>
+    <div id="rulesList" style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+    <div style="margin-top:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <input class="modal-input" id="newRulePattern" placeholder='Padrão (ex: "IFD", "99", "Uber")' style="flex:1;min-width:120px">
+      <select class="modal-input" id="newRuleCat" style="flex:1;min-width:120px"></select>
+      <input class="modal-input" id="newRuleNota" placeholder="Detalhe (ex: iFood)" style="flex:1;min-width:120px">
+      <button class="btn-modal-save" onclick="addRule()">+ Regra</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closeRulesManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAY HISTORY MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="payHistoryModal" style="z-index:99999">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-title">⚙ Histórico de Autocompletar</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Remova entradas indesejadas do autocompletar de pagamentos.</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">DESCRIÇÃO</div>
+    <div id="payHistDescList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;margin-bottom:14px"></div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">DETALHES</div>
+    <div id="payHistNotaList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-modal-cancel" onclick="document.getElementById('payHistoryModal').classList.remove('show')">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ TASK MODAL ═══════════════════ -->
 <div class="modal-overlay" id="taskModal">
   <div class="modal-box">
@@ -1324,7 +1375,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.2.73</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.4.23</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1399,15 +1450,7 @@ tr.dragging { opacity: 0.4; }
 
 <!-- ════════ TAB: FINANÇAS ════════ -->
 <div class="tab-panel" id="panel-finance">
-  <div class="section-hd">
-    <div>
-      <div class="section-title">Finanças</div>
-      <div class="section-sub" id="financeSub">Contas mensais</div>
-    </div>
-    <div style="display:flex;gap:6px;align-items:center">
-      <button class="btn-sm" onclick="openFinanceChat()">⚡ IA</button>
-    </div>
-  </div>
+  <div id="financeHd"></div>
   <div class="year-tabs-row" id="yearTabsRow"></div>
   <div id="monthList"></div>
   <!-- Finance AI chat (collapsible) -->
@@ -1419,6 +1462,22 @@ tr.dragging { opacity: 0.4; }
 <!-- ════════ TAB: CARTÃO ════════ -->
 <div class="tab-panel" id="panel-card">
   <div id="card-panel-content"></div>
+</div>
+
+<!-- ════════ TAB: DASHBOARD ════════ -->
+<div class="tab-panel" id="panel-dashboard">
+  <div class="section-hd" style="margin-bottom:4px">
+    <div>
+      <div class="section-title">Dashboard</div>
+      <div class="section-sub" id="dashboardSub">Visão consolidada de despesas</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="btn-sm" onclick="openCatGroupsModal()">🏷 Grupos</button>
+      <button class="btn-sm" onclick="openCatManager()">⚙ Categorias</button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:0" id="dashboardControls"></div>
+  </div>
+  <div id="dashboardContent" style="padding:0 0 24px 0"></div>
 </div>
 
 <!-- ════════ TAB: IA ════════ -->
@@ -1473,7 +1532,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.2.73 — agenda-v0273</p>
+    <p class="version-tag">Agenda v0.4.23 — agenda-v0423</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1571,11 +1630,9 @@ function updateAuthUI() {
 }
 
 function showApp(loggedIn) {
-  // App sempre visível — tela de login não bloqueia mais o app
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appContent').style.display = 'block';
   document.getElementById('tabsBar').style.display = 'flex';
-  // Botão de login aparece no menu quando não há sessão
   updateAuthUI();
 }
 
@@ -1672,6 +1729,8 @@ function mergeState(saved) {
     if (!state.card.billStatus) state.card.billStatus = {};
     if (!state.card.payments) state.card.payments = {};
     if (!state.card.categorias) state.card.categorias = [];
+    if (!state.card.rules) state.card.rules = [];
+    migrateCategorias();
   }
   if (saved.config) {
     state.config = { ...state.config, ...saved.config };
@@ -1966,8 +2025,8 @@ function applySeeds() {
 /* ═══════════════════════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════════════════════ */
-const TAB_IDS = ['tasks', 'finance', 'card', 'ai', 'settings'];
-const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', ai: 'IA', settings: 'Config' };
+const TAB_IDS = ['tasks', 'finance', 'card', 'dashboard', 'ai', 'settings'];
+const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', dashboard: 'Dashboard', ai: 'IA', settings: 'Config' };
 
 function getTabLabel(tabId) {
   return (state.config.tabLabels && state.config.tabLabels[tabId]) || TAB_DEFAULTS[tabId] || tabId;
@@ -2021,11 +2080,11 @@ function startTabEdit(btn, tabId) {
 
 function switchTab(tabId) {
   state.config.activeTab = tabId;
-  // Update active class without re-rendering tabs (preserves dblclick listeners)
   document.querySelectorAll('#tabsBar .tab').forEach(function(b){
     b.classList.toggle('active', b.dataset.tab === tabId);
   });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tabId));
+  if (tabId === 'dashboard') renderDashboard();
   saveState();
 }
 
@@ -2036,6 +2095,7 @@ function renderAll() {
   renderCard();
   const activeTab = state.config.activeTab || 'tasks';
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + activeTab));
+  if (activeTab === 'dashboard') renderDashboard();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2100,9 +2160,10 @@ function openTaskModal(taskId) {
   // Date display
   var dateHidden = document.getElementById('tm-date');
   var dateDisplay = document.getElementById('tm-date-display');
-  dateHidden.value = task?.dueDate || '';
-  dateDisplay.textContent = task?.dueDate ? formatDate(task.dueDate) : 'Selecionar data…';
-  dateDisplay.style.color = task?.dueDate ? 'var(--text)' : 'var(--text2)';
+  var today = new Date().toISOString().slice(0,10);
+  dateHidden.value = task?.dueDate || today;
+  dateDisplay.textContent = task?.dueDate ? formatDate(task.dueDate) : formatDate(today);
+  dateDisplay.style.color = 'var(--text)';
   // Populate priority select dynamically
   var prioSel = document.getElementById('tm-priority');
   prioSel.innerHTML = getPriorities().filter(function(p){ return p.role !== 'none'; }).map(function(p){
@@ -2224,7 +2285,7 @@ function saveTask() {
 
 function deleteTask() {
   if (!_editingTaskId) return;
-  confirmAction('Excluir tarefa', 'Tem certeza? A tarefa e todos os seus filhos serão removidos.', () => {
+  confirmAction('Excluir tarefa', 'Tem certeza? A tarefa e todas as suas subtarefas serão removidas.', () => {
     function removeFromTree(items, id) {
       const idx = items.findIndex(t => t.id === id);
       if (idx !== -1) { items.splice(idx, 1); return true; }
@@ -2248,7 +2309,7 @@ function quickAddTask() {
   pushUndo();
   state.tasks.items.unshift({
     id: uuid(), title, description: '',
-    dueDate: '', priority: '',
+    dueDate: new Date().toISOString().slice(0,10), priority: '',
     status: 'pendente', children: [], linkedItems: [], notes: '', tags: [], expanded: false,
     comments: [], customFields: {},
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
@@ -3412,6 +3473,7 @@ function makeDraggable(el, handleEl) {
 var _commentSortDesc = true; // true = mais novo primeiro
 var _cardSortLevels = [{ col: 'data', dir: 'desc' }]; // default: newest first
 var _cardViewMode = 'list'; // 'list' or 'month'
+var _cardFocusedBill = null; // { y, m } of the currently open bill in list view
 var _cardCollapsedYears = {}; // year -> bool (false=expanded)
 var _cardMonthLabel = 'fechamento'; // 'fechamento' or 'vencimento'
 
@@ -4250,7 +4312,7 @@ function cycleStatus(taskId) {
 
 function deleteTaskById(taskId) {
   pushUndo();
-  confirmAction('Excluir tarefa', 'A tarefa e todos os seus filhos serão removidos.', function() {
+  confirmAction('Excluir tarefa', 'A tarefa e todas as suas subtarefas serão removidas.', function() {
     function removeFromTree(items, id) {
       var idx = items.findIndex(function(t){return t.id===id;});
       if (idx!==-1){items.splice(idx,1);return true;}
@@ -4297,7 +4359,7 @@ function addChildTask(parentId) {
   if(!parent.children)parent.children=[];
   // Inherit customFields (categories) from parent, unlocked so child can be edited freely
   var inheritedFields = parent.customFields ? JSON.parse(JSON.stringify(parent.customFields)) : {};
-  parent.children.push({id:uuid(),title:'Nova subtarefa',status:parent.status||'pendente',priority:'',dueDate:'',description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false,comments:[],customFields:inheritedFields});
+  parent.children.push({id:uuid(),title:'Nova subtarefa',status:parent.status||'pendente',priority:'',dueDate:new Date().toISOString().slice(0,10),description:'',children:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),linkedItems:[],notes:'',tags:[],expanded:false,comments:[],customFields:inheritedFields});
   parent.expanded=true;
   saveState();renderTasks();
   // Open modal to edit the new subtask
@@ -4626,6 +4688,28 @@ function renderFinance() {
   const y = state.finance.currentYear;
   const container = document.getElementById('monthList');
   if (!container) return;
+
+  // Build header dynamically (avoids static HTML onclick binding issues)
+  var finHd = document.getElementById('financeHd');
+  if (finHd && !finHd.hasChildNodes()) {
+    var hd = document.createElement('div');
+    hd.className = 'section-hd';
+    var hdLeft = document.createElement('div');
+    var hdTitle = document.createElement('div'); hdTitle.className = 'section-title'; hdTitle.textContent = 'Finanças';
+    var hdSub = document.createElement('div'); hdSub.className = 'section-sub'; hdSub.id = 'financeSub'; hdSub.textContent = 'Contas mensais';
+    hdLeft.appendChild(hdTitle); hdLeft.appendChild(hdSub);
+    var hdRight = document.createElement('div'); hdRight.style.cssText = 'display:flex;gap:6px;align-items:center';
+    var grpBtn = document.createElement('button'); grpBtn.className = 'btn-sm'; grpBtn.textContent = '🏷 Grupos';
+    grpBtn.onclick = openCatGroupsModal;
+    var catBtn = document.createElement('button'); catBtn.className = 'btn-sm'; catBtn.textContent = '⚙ Categorias';
+    catBtn.onclick = openCatManager;
+    var iaBtn = document.createElement('button'); iaBtn.className = 'btn-sm'; iaBtn.textContent = '⚡ IA';
+    iaBtn.onclick = openFinanceChat;
+    hdRight.appendChild(grpBtn); hdRight.appendChild(catBtn); hdRight.appendChild(iaBtn);
+    hd.appendChild(hdLeft); hd.appendChild(hdRight);
+    finHd.appendChild(hd);
+  }
+
   const ytRow = document.getElementById('yearTabsRow');
   if (ytRow) ytRow.innerHTML = FINANCE_YEARS.map(function(yr){return '<button class="year-chip '+(yr===y?'active':'')+'" onclick="setFinYear('+yr+')">'+yr+'</button>';}).join('');
   const active = state.finance.activeMonths[y] || [];
@@ -4671,13 +4755,14 @@ function buildMonthBlock(y, m) {
 
 function buildFinTable(y, m) {
   const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
-  let tbody=rows.length?rows.map(function(r){return finRowHTML(y,m,r);}).join(''):'<tr><td colspan="6" class="empty-cell">Nenhuma conta. Adicione abaixo.</td></tr>';
-  return '<div style="overflow-x:auto"><table class="fin-table"><thead><tr><th>Nome</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Observações</th><th></th></tr></thead><tbody>'+tbody+'</tbody></table></div>'
+  let tbody=rows.length?rows.map(function(r){return finRowHTML(y,m,r);}).join(''):'<tr><td colspan="7" class="empty-cell">Nenhuma conta. Adicione abaixo.</td></tr>';
+  return '<div style="overflow-x:auto"><table class="fin-table"><thead><tr><th>Nome</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Categoria</th><th>Observações</th><th></th></tr></thead><tbody>'+tbody+'</tbody></table></div>'
     +'<div class="add-row">'
     +'<input type="text" id="fn-'+y+'-'+m+'-nome" placeholder="Nome da conta"/>'
     +'<input type="date" id="fn-'+y+'-'+m+'-venc"/>'
     +'<input type="text" id="fn-'+y+'-'+m+'-valor" placeholder="Valor"/>'
     +'<select id="fn-'+y+'-'+m+'-status"><option value="nao-pago">Não pago</option><option value="pago">Pago</option><option value="debito">Débito automático</option><option value="aguardando">Aguardando emissão</option></select>'
+    +'<select id="fn-'+y+'-'+m+'-cat">'+buildCatOpts('')+'</select>'
     +'<input type="text" id="fn-'+y+'-'+m+'-obs" placeholder="Observações"/>'
     +'<button class="btn-add-fin" onclick="addFinBill('+y+','+m+')">+ ADD</button></div>';
 }
@@ -4770,11 +4855,14 @@ function openFinDateDropdown(ev, y, m, id) {
 
 function finRowHTML(y,m,r) {
   const val=(parseFloat(r.valor)||0)>0?fmtBRL(parseFloat(r.valor)):'–';
+  const catLabel=escHtml(getCatName(r.categoriaId)||'— Classificar');
+  const catBtn='<button class="cat-select" onclick="openCatDD(event,'+y+','+m+','+r.id+')" style="cursor:pointer;text-align:left;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+catLabel+'</button>';
   return '<tr id="frow-'+y+'-'+m+'-'+r.id+'">'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="nome" style="font-weight:500">'+escHtml(r.nome||'–')+'</td>'
     +'<td class="editable-cell" onclick="openFinDateDropdown(event,'+y+','+m+','+r.id+')" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="venc" style="color:var(--text2);cursor:pointer">'+(r.venc||'–')+'</td>'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="valor">'+val+'</td>'
     +'<td><span class="inline-badge '+r.status+'" onclick="openStatusDD(event,'+y+','+m+','+r.id+')">'+(STATUS_LABELS[r.status]||r.status)+'</span></td>'
+    +'<td>'+catBtn+'</td>'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="obs" style="color:var(--text2)">'+escHtml(r.obs||'')+'</td>'
     +'<td><button class="btn-sm del" onclick="delFinBill('+y+','+m+','+r.id+')">✕</button></td>'
     +'</tr>';
@@ -4845,7 +4933,46 @@ function openStatusDD(e,y,m,id) {
 }
 function closeStatusDD(){const el=document.getElementById('status-dd');if(el)el.remove();}
 
+function openCatDD(e, y, m, id) {
+  e.stopPropagation(); closeCatDD();
+  var btn = e.currentTarget; var rect = btn.getBoundingClientRect();
+  var cats = state.card.categorias || [];
+  var dd = document.createElement('div'); dd.className = 'status-dropdown'; dd.id = 'cat-dd';
+  var top = rect.bottom + 4;
+  if (top + (cats.length + 2) * 32 > window.innerHeight) top = rect.top - (cats.length + 2) * 32 - 8;
+  dd.style.top = top + 'px'; dd.style.left = rect.left + 'px'; dd.style.minWidth = '160px';
+  // Opção vazia
+  var emptyBtn = document.createElement('button'); emptyBtn.className = 'status-opt';
+  emptyBtn.style.cssText = 'color:var(--muted)'; emptyBtn.textContent = '— Classificar';
+  emptyBtn.onclick = function(ev) { ev.stopPropagation(); saveFinField(y,m,id,'categoriaId',''); closeCatDD(); refreshFinRow(y,m,id); };
+  dd.appendChild(emptyBtn);
+  cats.forEach(function(cat) {
+    var b = document.createElement('button'); b.className = 'status-opt';
+    b.style.cssText = 'color:var(--text)'; b.textContent = cat.name;
+    b.onclick = function(ev) { ev.stopPropagation(); var _nom=(function(){var rows=(state.finance.bills[y]&&state.finance.bills[y][m])||[];var r=rows.find(function(x){return x.id==id;});return r?r.nome:'';})(); saveFinField(y,m,id,'categoriaId',cat.id); closeCatDD(); refreshFinRow(y,m,id); setTimeout(function(){ openFinCatPropagateModal(_nom,cat.id,y,m,id); },0); };
+    dd.appendChild(b);
+  });
+  // Gerenciar
+  var sep = document.createElement('div'); sep.style.cssText = 'border-top:1px solid var(--border);margin:4px 0';
+  dd.appendChild(sep);
+  var mgrBtn = document.createElement('button'); mgrBtn.className = 'status-opt';
+  mgrBtn.style.cssText = 'color:var(--muted)'; mgrBtn.textContent = '⚙ Gerenciar categorias';
+  mgrBtn.onclick = function(ev) { ev.stopPropagation(); closeCatDD(); _catManagerContext = {y:y, m:m, id:id, source:'fin'}; openCatManager(); };
+  dd.appendChild(mgrBtn);
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('click', closeCatDD, {once:true}); }, 0);
+}
+function closeCatDD() { var el = document.getElementById('cat-dd'); if (el) el.remove(); }
+
+function refreshFinRow(y, m, id) {
+  var rows = (state.finance.bills[y] && state.finance.bills[y][m]) ? state.finance.bills[y][m] : [];
+  var r = rows.find(function(x){ return x.id == id; }); if (!r) return;
+  var row = document.getElementById('frow-'+y+'-'+m+'-'+id);
+  if (row) row.outerHTML = finRowHTML(y, m, r);
+}
+
 function saveFinField(y,m,id,field,value){
+  if (field === 'categoriaId' && value === '__manage__') { openCatManager(); return; }
   const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
   const r=rows.find(function(x){return x.id==id;});if(!r)return;
   r[field]=value;saveState();
@@ -4853,12 +4980,174 @@ function saveFinField(y,m,id,field,value){
   if(row)row.outerHTML=finRowHTML(y,m,r);refreshFinHeader(y,m);
 }
 
+function openFinCatPropagateModal(nome, categoria, originY, originM, originId) {
+  // Find all other occurrences (case-insensitive) in finance.bills, excluding origin
+  var nomeLower = nome.toLowerCase();
+  var allBills = state.finance.bills || {};
+  var others = [];
+  Object.keys(allBills).forEach(function(fy) {
+    Object.keys(allBills[fy]).forEach(function(fm) {
+      (allBills[fy][fm] || []).forEach(function(r) {
+        if (r.id == originId) return; // skip origin
+        if (r.nome.toLowerCase() !== nomeLower) return;
+        others.push({ y: parseInt(fy), m: parseInt(fm), r: r });
+      });
+    });
+  });
+  if (!others.length) return; // no other occurrences — nothing to do
+
+  // Build the modal — reuse catManagerModal, opening it if not already open
+  var overlay = document.getElementById('catManagerModal');
+  if (!overlay) return;
+  var wasOpen = overlay.classList.contains('show');
+  var modalBox = overlay.querySelector('.modal-box');
+  var originalContent = wasOpen ? modalBox.innerHTML : null;
+  overlay.classList.add('show');
+
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now = new Date();
+  var allYears = [];
+  Object.keys(allBills).forEach(function(fy){ if(!allYears.includes(parseInt(fy))) allYears.push(parseInt(fy)); });
+  allYears.sort();
+  var minY = allYears[0] || now.getFullYear();
+  var maxY = allYears[allYears.length-1] || now.getFullYear();
+
+  function yearMonthOpts(selY, selM) {
+    var opts = '';
+    for (var y = minY; y <= maxY; y++) {
+      for (var mo = 0; mo < 12; mo++) {
+        var sel = (y === selY && mo === selM) ? ' selected' : '';
+        opts += '<option value="' + y + '-' + mo + '"' + sel + '>' + MONTHS_PT[mo] + '/' + y + '</option>';
+      }
+    }
+    return opts;
+  }
+
+  modalBox.innerHTML = ''
+    + '<div class="modal-title">Aplicar categoria em outros meses</div>'
+    + '<div style="font-size:12px;color:var(--muted);margin-bottom:14px">Encontradas <b>' + others.length + '</b> outra(s) ocorrência(s) de <b>"' + escHtml(nome) + '"</b>.</div>'
+
+    // Scope selector
+    + '<div style="margin-bottom:14px">'
+    + '<div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Aplicar em</div>'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
+    + '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px"><input type="radio" name="fin-prop-scope" value="all" checked> Todos os meses</label>'
+    + '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px"><input type="radio" name="fin-prop-scope" value="range"> Intervalo</label>'
+    + '</div>'
+    + '<div id="fin-prop-range" style="display:none;margin-top:10px;display:none;gap:10px;align-items:center;flex-wrap:wrap">'
+    + '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--muted)">De</span>'
+    + '<select class="modal-input" id="fin-prop-from" style="font-size:12px">' + yearMonthOpts(minY, 0) + '</select></div>'
+    + '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--muted)">Até</span>'
+    + '<select class="modal-input" id="fin-prop-to" style="font-size:12px">' + yearMonthOpts(maxY, 11) + '</select></div>'
+    + '</div>'
+    + '</div>'
+
+    // Mode selector
+    + '<div style="margin-bottom:18px">'
+    + '<div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Modo</div>'
+    + '<div style="display:flex;flex-direction:column;gap:6px">'
+    + '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px"><input type="radio" name="fin-prop-mode" value="empty" checked> Somente sem categoria</label>'
+    + '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px"><input type="radio" name="fin-prop-mode" value="all"> Todos (sobrescrever existentes)</label>'
+    + '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px"><input type="radio" name="fin-prop-mode" value="none"> Somente esta linha</label>'
+    + '</div>'
+    + '</div>'
+
+    // Actions
+    + '<div class="modal-actions">'
+    + '<button class="btn-modal-cancel" id="fin-prop-cancel">Cancelar</button>'
+    + '<button class="btn-modal-save" id="fin-prop-confirm">Confirmar</button>'
+    + '</div>';
+
+  // Wire scope toggle
+  var rangeDiv = modalBox.querySelector('#fin-prop-range');
+  modalBox.querySelectorAll('input[name="fin-prop-scope"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      rangeDiv.style.display = this.value === 'range' ? 'flex' : 'none';
+    });
+  });
+
+  // Cancel
+  modalBox.querySelector('#fin-prop-cancel').onclick = function() {
+    _catManagerContext = null;
+    if (wasOpen && originalContent) {
+      modalBox.innerHTML = originalContent;
+      openCatManager();
+      overlay.classList.add('show');
+    } else {
+      overlay.classList.remove('show');
+    }
+  };
+
+  // Confirm
+  modalBox.querySelector('#fin-prop-confirm').onclick = function() {
+    var scope = modalBox.querySelector('input[name="fin-prop-scope"]:checked').value;
+    var mode = modalBox.querySelector('input[name="fin-prop-mode"]:checked').value;
+
+    if (mode === 'none') {
+      if (wasOpen && originalContent) { _catManagerContext = null; modalBox.innerHTML = originalContent; openCatManager(); }
+      else { _catManagerContext = null; overlay.classList.remove('show'); }
+      return;
+    }
+
+    // Filter by scope
+    var filtered = others;
+    if (scope === 'range') {
+      var fromVal = document.getElementById('fin-prop-from').value.split('-');
+      var toVal = document.getElementById('fin-prop-to').value.split('-');
+      var fromY = parseInt(fromVal[0]), fromM = parseInt(fromVal[1]);
+      var toY = parseInt(toVal[0]), toM = parseInt(toVal[1]);
+      filtered = others.filter(function(o) {
+        var oabs = o.y * 12 + o.m;
+        return oabs >= fromY * 12 + fromM && oabs <= toY * 12 + toM;
+      });
+    }
+
+    if (!filtered.length) {
+      showToast('Nenhuma ocorrência no intervalo selecionado.');
+      modalBox.innerHTML = originalContent;
+      overlay.classList.remove('show');
+      return;
+    }
+
+    // Filter by mode
+    var toOverwrite = mode === 'all' ? filtered.filter(function(o){ return o.r.categoriaId && o.r.categoriaId !== categoria; }) : [];
+    var toApply = mode === 'all' ? filtered : filtered.filter(function(o){ return !o.r.categoriaId; });
+
+    function applyPropagation() {
+      toApply.forEach(function(o) { o.r.categoriaId = categoria; });
+      saveState();
+      // Refresh open months
+      var openM = state.finance.openMonths;
+      var cy = state.finance.currentYear;
+      Object.keys(openM).forEach(function(mo) {
+        if (openM[mo]) refreshFinBlock(cy, parseInt(mo));
+      });
+      showToast('✓ Categoria aplicada a ' + toApply.length + ' ocorrência(s).');
+      _catManagerContext = null;
+      overlay.classList.remove('show');
+    }
+
+    if (mode === 'all' && toOverwrite.length > 0) {
+      // Need confirmation before overwriting
+      if (wasOpen && originalContent) { _catManagerContext = null; modalBox.innerHTML = originalContent; openCatManager(); }
+      else { _catManagerContext = null; overlay.classList.remove('show'); }
+      confirmAction(
+        'Sobrescrever categorias?',
+        toOverwrite.length + ' ocorrência(s) já possuem categoria e serão sobrescritas. Confirmar?',
+        applyPropagation
+      );
+    } else {
+      applyPropagation();
+    }
+  };
+}
+
 function addFinBill(y,m){
   const nome=document.getElementById('fn-'+y+'-'+m+'-nome').value.trim();if(!nome)return;
   if(!state.finance.bills[y])state.finance.bills[y]={};
   if(!state.finance.bills[y][m])state.finance.bills[y][m]=[];
   const vencRaw=document.getElementById('fn-'+y+'-'+m+'-venc').value;
-  state.finance.bills[y][m].push({id:Date.now(),nome,venc:vencRaw?parseDateFromISO(vencRaw):'',valor:parseFloat(document.getElementById('fn-'+y+'-'+m+'-valor').value.replace(',','.'))||0,status:document.getElementById('fn-'+y+'-'+m+'-status').value,obs:document.getElementById('fn-'+y+'-'+m+'-obs').value});
+  state.finance.bills[y][m].push({id:Date.now(),nome,venc:vencRaw?parseDateFromISO(vencRaw):'',valor:parseFloat(document.getElementById('fn-'+y+'-'+m+'-valor').value.replace(',','.'))||0,status:document.getElementById('fn-'+y+'-'+m+'-status').value,categoria:document.getElementById('fn-'+y+'-'+m+'-cat').value,obs:document.getElementById('fn-'+y+'-'+m+'-obs').value});
   saveState();refreshFinBlock(y,m);
 }
 
@@ -4948,7 +5237,8 @@ function openAddBillModal(cardId) {
   box.appendChild(hdr);
   var bod = document.createElement('div');
   bod.className = 'modal-body'; bod.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:16px';
-  bod.innerHTML = '<div style="display:flex;gap:12px">'
+  bod.innerHTML = '<div style="font-size:12px;color:var(--muted)">Selecione o mês e ano da fatura a criar.</div>'
+    + '<div style="display:flex;gap:12px">'
     + '<div class="modal-field" style="flex:1"><label class="modal-label">Mês</label><select class="modal-input" id="ab-month">' + monthOpts + '</select></div>'
     + '<div class="modal-field" style="flex:1"><label class="modal-label">Ano</label><select class="modal-input" id="ab-year">' + yearOpts + '</select></div>'
     + '</div>';
@@ -4976,7 +5266,7 @@ function openAddBillModal(cardId) {
   showModal(overlay);
 }
 
-function openImportBillModal(cardId) {
+function openImportBillModal(cardId, preY, preM) {
   var overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.id = 'import-bill-modal';
@@ -5000,26 +5290,28 @@ function openImportBillModal(cardId) {
   var bankSel = document.createElement('select'); bankSel.className = 'modal-input'; bankSel.id = 'import-bank';
   var card = (state.card.cards||[]).find(function(c){ return c.id === cardId; });
   var bankName = card ? card.nome.toLowerCase() : '';
-  [['itau','Itaú (XLSX/CSV)'],['nubank','Nubank (CSV)'],['mercadopago','Mercado Pago (CSV)']].forEach(function(b){
+  [['itau','Itaú (XLSX/CSV)'],['nubank','Nubank (CSV/PDF)'],['mercadopago','Mercado Pago (PDF)']].forEach(function(b){
     var opt = document.createElement('option'); opt.value = b[0]; opt.textContent = b[1];
     if (bankName.includes(b[0] === 'mercadopago' ? 'mercado' : b[0])) opt.selected = true;
     bankSel.appendChild(opt);
   });
   bankRow.appendChild(bankSel); bod.appendChild(bankRow);
 
-  // Month/Year
+  // Month/Year — pre-select if provided
   var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var now = new Date();
+  var defaultM = (preM !== undefined) ? preM : now.getMonth();
+  var defaultY = (preY !== undefined) ? preY : now.getFullYear();
   var periodRow = document.createElement('div'); periodRow.style.cssText = 'display:flex;gap:12px';
   var mField = document.createElement('div'); mField.className = 'modal-field'; mField.style.flex = '1';
   mField.innerHTML = '<label class="modal-label">Mês</label>';
   var mSel = document.createElement('select'); mSel.className = 'modal-input'; mSel.id = 'import-month';
-  MONTHS_PT.forEach(function(m,i){ var o=document.createElement('option'); o.value=i; o.textContent=m; if(i===now.getMonth()) o.selected=true; mSel.appendChild(o); });
+  MONTHS_PT.forEach(function(m,i){ var o=document.createElement('option'); o.value=i; o.textContent=m; if(i===defaultM) o.selected=true; mSel.appendChild(o); });
   mField.appendChild(mSel); periodRow.appendChild(mField);
   var yField = document.createElement('div'); yField.className = 'modal-field'; yField.style.flex = '1';
   yField.innerHTML = '<label class="modal-label">Ano</label>';
   var ySel = document.createElement('select'); ySel.className = 'modal-input'; ySel.id = 'import-year';
-  [now.getFullYear()-1, now.getFullYear(), now.getFullYear()+1].forEach(function(y){ var o=document.createElement('option'); o.value=y; o.textContent=y; if(y===now.getFullYear()) o.selected=true; ySel.appendChild(o); });
+  [now.getFullYear()-1, now.getFullYear(), now.getFullYear()+1].forEach(function(y){ var o=document.createElement('option'); o.value=y; o.textContent=y; if(y===defaultY) o.selected=true; ySel.appendChild(o); });
   yField.appendChild(ySel); periodRow.appendChild(yField);
   bod.appendChild(periodRow);
 
@@ -5027,7 +5319,7 @@ function openImportBillModal(cardId) {
   var fileField = document.createElement('div'); fileField.className = 'modal-field';
   fileField.innerHTML = '<label class="modal-label">Arquivo</label>';
   var fileInput = document.createElement('input'); fileInput.type = 'file'; fileInput.className = 'modal-input';
-  fileInput.accept = '.xlsx,.xls,.csv'; fileInput.id = 'import-file';
+  fileInput.accept = '.xlsx,.xls,.csv,.pdf'; fileInput.id = 'import-file';
   fileInput.style.cssText = 'cursor:pointer;padding:6px';
   fileField.appendChild(fileInput); bod.appendChild(fileField);
 
@@ -5058,8 +5350,40 @@ function processImport(cardId, overlay) {
   var file = fileInput.files[0];
   statusEl.textContent = 'Lendo arquivo...';
 
-  var reader = new FileReader();
-  reader.onload = function(e) {
+  var isPdf = file.name.match(/\.pdf$/i) || file.type === 'application/pdf';
+
+  if (isPdf) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var pdfjsLib = window['pdfjs-dist/build/pdf'];
+      if (!pdfjsLib) { statusEl.textContent = 'Erro: biblioteca PDF não disponível.'; return; }
+      pdfjsLib.getDocument({ data: e.target.result }).promise.then(function(pdf) {
+        var pagePromises = [];
+        for (var i = 1; i <= pdf.numPages; i++) {
+          pagePromises.push(pdf.getPage(i).then(function(page) {
+            return page.getTextContent().then(function(tc) {
+              return tc.items.map(function(item){ return item.str; }).join(' ');
+            });
+          }));
+        }
+        Promise.all(pagePromises).then(function(texts) {
+          try {
+            var fullText = texts.join('\n');
+            var bank = document.getElementById('import-bank') ? document.getElementById('import-bank').value : 'mercadopago';
+            var txs = bank === 'nubank' ? parseNubankPDF(fullText, y, m) : parseMercadoPagoPDF(fullText, y, m);
+            if (!txs.length) { statusEl.textContent = 'Nenhuma transação encontrada.'; return; }
+            statusEl.textContent = txs.length + ' transações encontradas. Classificando...';
+            classifyAndReview(cardId, y, m, txs, overlay);
+          } catch(err) { statusEl.textContent = 'Erro: ' + err.message; }
+        });
+      }).catch(function(err) { statusEl.textContent = 'Erro ao ler PDF: ' + err.message; });
+    };
+    reader.readAsArrayBuffer(file);
+    return;
+  }
+
+  var reader2 = new FileReader();
+  reader2.onload = function(e) {
     try {
       var txs = parseRawBill(e.target.result, bank, file.name);
       if (!txs.length) { statusEl.textContent = 'Nenhuma transação encontrada.'; return; }
@@ -5069,10 +5393,9 @@ function processImport(cardId, overlay) {
       statusEl.textContent = 'Erro: ' + err.message;
     }
   };
-
   var isXlsx = file.name.match(/\.xlsx?$/i);
-  if (isXlsx) reader.readAsArrayBuffer(file);
-  else reader.readAsText(file, 'UTF-8');
+  if (isXlsx) reader2.readAsArrayBuffer(file);
+  else reader2.readAsText(file, 'UTF-8');
 }
 
 function parseRawBill(data, bank, filename) {
@@ -5140,9 +5463,12 @@ function parseRawBill(data, bank, filename) {
     } else {
       var ds = String(d).trim();
       var dm = ds.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+      var dmIso = !dm && ds.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
       if (dm) {
         var yr = dm[3].length === 2 ? dm[3] : dm[3].slice(2);
         data_str = dm[1].padStart(2,'0') + '/' + dm[2].padStart(2,'0') + '/' + yr;
+      } else if (dmIso) {
+        data_str = dmIso[3].padStart(2,'0') + '/' + dmIso[2].padStart(2,'0') + '/' + dmIso[1].slice(2);
       } else { data_str = ds.slice(0, 10); }
     }
 
@@ -5188,39 +5514,163 @@ function parseRawBill(data, bank, filename) {
       }
     }
 
-    txs.push({ id: uuid(), descricao: descricao, data: data_str, valor: valor, tipo: 'despesa', categoria: categoria, parcela: parcela });
+    var _catObj = (state.card.categorias||[]).find(function(c){return c.name===categoria;}); if(!_catObj&&categoria){_catObj={id:genCatId(),name:categoria};state.card.categorias.push(_catObj);} txs.push({ id: uuid(), descricao: descricao, data: data_str, valor: valor, tipo: 'despesa', categoriaId: _catObj?_catObj.id:'', parcela: parcela });
+  }
+  return txs;
+}
+
+function parseNubankPDF(text, billY, billM) {
+  var MESES = { JAN:0, FEV:1, MAR:2, ABR:3, MAI:4, JUN:5, JUL:6, AGO:7, SET:8, OUT:9, NOV:10, DEZ:11 };
+  var txs = [];
+
+  // Extract transactions section
+  var startIdx = text.search(/TRANSA[ÇC][OÕ]ES\s{2,}DE\s/i);
+  if (startIdx === -1) startIdx = text.search(/TRANSA[ÇC][OÕ]ES/i);
+  var endIdx = text.search(/Em cumprimento|Como assegurado/i);
+  if (endIdx === -1) endIdx = text.length;
+  var section = startIdx !== -1 ? text.slice(startIdx, endIdx) : text;
+
+  var skipDescs = /^(Richard Broder|RICHARD BRODER|Saldo em atraso|Juros de d\u00edvida encerrada|Encerramento de d\u00edvida|Cr\u00e9dito de atraso|Pagamentos e Financiamentos)/i;
+
+  // Split into blocks by DD MMM pattern
+  var blocks = section.split(/(?=\d{2}\s+(?:JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)\s{2,})/i);
+
+  blocks.forEach(function(block) {
+    block = block.trim();
+    if (!block) return;
+    var dm = block.match(/^(\d{2})\s+(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)\s{2,}(?:[^\w\n]*\d{4}\s{2,})?([\s\S]*)/i);
+    if (!dm) return;
+    var dd = dm[1], mesStr = dm[2].toUpperCase(), rest = dm[3];
+    var mesIdx = MESES[mesStr];
+    if (mesIdx === undefined) return;
+
+    // Description: text before first double space
+    var descMatch = rest.match(/^(.+?)\s{2,}/);
+    var desc = descMatch ? descMatch[1].trim() : rest.split(/\s+R\$/)[0].trim();
+    if (!desc) return;
+    if (skipDescs.test(desc)) return;
+
+    // Truncate rest at "Pagamentos e Financiamentos" to avoid picking up its values
+    var pagIdx = rest.search(/Pagamentos e Financiamentos/i);
+    var restTrunc = pagIdx !== -1 ? rest.slice(0, pagIdx) : rest;
+
+    // Find last R$ value in truncated rest
+    var allVals = [];
+    var valPattern = /([-\u2212]?)R\$\s*([\d.]+,\d{2})/g;
+    var vm;
+    while ((vm = valPattern.exec(restTrunc)) !== null) {
+      allVals.push({ neg: !!vm[1], valStr: vm[2] });
+    }
+    if (!allVals.length) return;
+    var last = allVals[allVals.length - 1];
+    if (last.neg) return;
+    var valor = parseFloat(last.valStr.replace(/\./g,'').replace(',','.'));
+    if (isNaN(valor) || valor === 0) return;
+
+    // Detail text: between desc and last R$ value
+    var nota = '';
+    var lastRIdx = restTrunc.lastIndexOf('R\u0024 ' + last.valStr);
+    if (lastRIdx === -1) lastRIdx = restTrunc.lastIndexOf('R\u0024' + last.valStr);
+    if (descMatch && lastRIdx > descMatch[0].length) {
+      nota = restTrunc.slice(descMatch[0].length, lastRIdx).replace(/\s+/g,' ').trim();
+      if (nota.length > 150) nota = nota.slice(0, 150) + '\u2026';
+    }
+
+    var txY = (billY !== undefined && mesIdx > billM) ? billY - 1 : (billY || new Date().getFullYear());
+    var yy = String(txY).slice(2);
+    var mm = String(mesIdx + 1).padStart(2, '0');
+    var isPagamento = /^Pagamento/i.test(desc);
+
+    txs.push({ id: uuid(), descricao: desc, data: dd+'/'+mm+'/'+yy, valor: valor,
+      tipo: isPagamento ? 'pagamento' : 'despesa', categoriaId: '', nota: nota, parcela: '' });
+  });
+  return txs;
+}
+function parseMercadoPagoPDF(text, billY, billM) {
+  // billY and billM are the selected import month (0-indexed month)
+  // Transactions from months > billM likely belong to the previous year
+  var txs = [];
+  var pattern = /(\d{2})\/(\d{2})\s+(.+?)\s+R\$\s*([\d.]+,\d{2})(?=\s|$)/g;
+  var match;
+  while ((match = pattern.exec(text)) !== null) {
+    var dd = match[1], mm = match[2], desc = match[3].trim();
+    var valorStr = match[4].replace(/\./g,'').replace(',','.');
+    var valor = parseFloat(valorStr);
+    if (isNaN(valor) || valor <= 0) continue;
+    if (/^a\s+\d{2}\/\d{2}/i.test(desc)) continue;
+    if (/\d{2}\/\d{2}\s+a\s+\d{2}\/\d{2}/.test(desc)) continue;
+    if (/^(Consumos de|Tarifas e encargos|Multas por atraso|Total da fatura de|Pagamentos e créditos|Total$)/i.test(desc)) continue;
+    if (/^Total:|^\d+\s*\+/i.test(desc)) continue;
+    if (/^USD/i.test(desc)) continue;
+
+    // Deduce year: if tx month > bill month, it's from the previous year
+    var txMonthIdx = parseInt(mm) - 1; // 0-indexed
+    var txY = (billY !== undefined && txMonthIdx > billM) ? billY - 1 : (billY || new Date().getFullYear());
+    var yy = String(txY).slice(2);
+
+    var isPagamento = /^Pagamento da fatura/i.test(desc);
+    var parcela = '';
+    var parcMatch = desc.match(/(\d{1,2})\/(\d{1,2})$/);
+    if (parcMatch) {
+      var pNum = parseInt(parcMatch[1]), pTot = parseInt(parcMatch[2]);
+      if (pNum >= 1 && pTot >= 2 && pNum <= pTot && pTot <= 99) parcela = pNum + '/' + pTot;
+    }
+    txs.push({ id: uuid(), descricao: desc, data: dd+'/'+mm+'/'+yy, valor: valor, tipo: isPagamento ? 'pagamento' : 'despesa', categoriaId: '', parcela: parcela });
   }
   return txs;
 }
 
 function classifyAndReview(cardId, y, m, txs, overlay) {
+  acLoadMemory(); // refresh memory including any notas added since boot
   var mem = state.card.memory || [];
   var cats = state.card.categorias || [];
 
+  // Apply rules first
+  txs.forEach(function(tx) {
+    if (tx.tipo === 'pagamento') return;
+    var rule = matchRule(tx.descricao || '');
+    if (!rule) return;
+    if (rule.categoriaId) { tx.categoriaId = rule.categoriaId; tx.source = tx.source || 'memory'; }
+    if (rule.nota) tx.nota = rule.nota;
+  });
+
   // Apply memory — fuzzy match
+  var notaMem = state.card.notaMemory || {};
   txs.forEach(function(tx) {
     if (tx.tipo === 'pagamento') return;
     var desc = tx.descricao.toLowerCase();
     // Exact match first
     var exact = mem.find(function(e){ return e.pattern.toLowerCase() === desc; });
-    if (exact) { tx.categoria = exact.categoria; tx.source = 'memory'; return; }
+    if (exact) {
+      tx.categoriaId = exact.categoriaId;
+      if (!tx.nota && getNotaFromMemory(tx.descricao)) tx.nota = getNotaFromMemory(tx.descricao);
+      tx.source = 'memory'; return;
+    }
     // Partial match
     var partial = mem.find(function(e){
       var p = e.pattern.toLowerCase();
       return desc.includes(p) || p.includes(desc) ||
-        // Match base name ignoring installment suffix
         desc.replace(/\s*\d{2}\/\d{2}$/, '').includes(p.replace(/\s*\d{2}\/\d{2}$/, ''));
     });
-    if (partial) { tx.categoria = partial.categoria; tx.source = 'memory'; }
+    if (partial) {
+      tx.categoriaId = partial.categoriaId;
+      if (!tx.nota && getNotaFromMemory(tx.descricao)) tx.nota = getNotaFromMemory(tx.descricao);
+      tx.source = 'memory';
+    } else if (!tx.nota && getNotaFromMemory(tx.descricao)) {
+      // No category match but nota exists in memory
+      tx.nota = getNotaFromMemory(tx.descricao);
+    }
   });
 
-  var unknown = txs.filter(function(tx){ return tx.tipo === 'despesa' && !tx.categoria; });
+  var unknown = txs.filter(function(tx){ return tx.tipo === 'despesa' && !tx.categoriaId; });
 
   // Ensure all categories from file exist in the system
-  var fileCats = txs.map(function(t){ return t.categoria; }).filter(Boolean);
-  fileCats.forEach(function(cat) {
-    if (cat && !state.card.categorias.includes(cat)) {
-      state.card.categorias.push(cat);
+  // Ensure categories from file exist in library (by name, creating if needed)
+  txs.forEach(function(t) {
+    if (t._fileName && !t.categoriaId) {
+      var existing = (state.card.categorias||[]).find(function(c){ return c.name === t._fileName; });
+      if (!existing) { existing = { id: genCatId(), name: t._fileName }; state.card.categorias.push(existing); }
+      t.categoriaId = existing.id;
     }
   });
 
@@ -5256,7 +5706,12 @@ function classifyAndReview(cardId, y, m, txs, overlay) {
       classifs.forEach(function(c) {
         var idx = c.indice - 1;
         if (idx >= 0 && idx < unknown.length) {
-          unknown[idx].categoria = c.categoria || '';
+          var aiCatName = c.categoria || ''; // AI returns name — resolved to id below
+          if (aiCatName) {
+            var aiCat = (state.card.categorias||[]).find(function(x){ return x.name === aiCatName; });
+            if (!aiCat) { aiCat = { id: genCatId(), name: aiCatName }; state.card.categorias.push(aiCat); }
+            unknown[idx].categoriaId = aiCat.id;
+          }
           unknown[idx].estabelecimento = c.estabelecimento || '';
           unknown[idx].source = c.confianca === 'alta' ? 'ia_alta' : c.confianca === 'media' ? 'ia_media' : 'ia_baixa';
         }
@@ -5272,16 +5727,19 @@ function classifyAndReview(cardId, y, m, txs, overlay) {
 function showImportReview(cardId, y, m, txs, overlay) {
   var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var cats = state.card.categorias || [];
-  var catOpts = '<option value="">— Classificar</option>' + cats.map(function(c){ return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+  var catOpts = buildCatOpts('');
 
   var payments = txs.filter(function(t){ return t.tipo === 'pagamento'; });
   var despesas = txs.filter(function(t){ return t.tipo !== 'pagamento'; });
   // Tag transactions with categoria from file (no source set) as 'file'
-  despesas.forEach(function(t){ if (t.categoria && !t.source) t.source = 'file'; });
-  var fromMemory = despesas.filter(function(t){ return t.source === 'memory'; });
-  var fromFile = despesas.filter(function(t){ return t.source === 'file'; });
-  var fromIA = despesas.filter(function(t){ return t.source && t.source.startsWith('ia'); });
-  var manual = despesas.filter(function(t){ return !t.source; });
+  despesas.forEach(function(t){ if (t.categoriaId && !t.source) t.source = 'file'; });
+  // Tag duplicates (already exist in target month)
+  despesas.forEach(function(t){ if (findExistingInstallment(cardId, y, m, t)) t._duplicate = true; });
+  var fromMemory = despesas.filter(function(t){ return t.source === 'memory' && !t._duplicate; });
+  var fromFile = despesas.filter(function(t){ return t.source === 'file' && !t._duplicate; });
+  var fromIA = despesas.filter(function(t){ return t.source && t.source.startsWith('ia') && !t._duplicate; });
+  var manual = despesas.filter(function(t){ return !t.source && !t._duplicate; });
+  var duplicates = despesas.filter(function(t){ return t._duplicate; });
 
   var box = document.createElement('div'); box.className = 'modal-box'; box.style.maxWidth = '680px';
   var hdr = document.createElement('div'); hdr.className = 'modal-header';
@@ -5299,23 +5757,24 @@ function showImportReview(cardId, y, m, txs, overlay) {
   if (fromFile.length) summary.innerHTML += '<span style="font-size:11px;background:#1a3020;color:#4caf50;padding:3px 8px;border-radius:4px">📋 ' + fromFile.length + ' do arquivo</span>';
   if (fromIA.length) summary.innerHTML += '<span style="font-size:11px;background:#1a2a3a;color:#60a5fa;padding:3px 8px;border-radius:4px">🔍 ' + fromIA.length + ' pela IA</span>';
   if (manual.length) summary.innerHTML += '<span style="font-size:11px;background:#3a1a1a;color:var(--danger);padding:3px 8px;border-radius:4px">⚠ ' + manual.length + ' pendentes</span>';
+  if (duplicates.length) summary.innerHTML += '<span style="font-size:11px;background:#2a1a3a;color:#a78bfa;padding:3px 8px;border-radius:4px">🔄 ' + duplicates.length + ' já existem</span>';
   bod.appendChild(summary);
 
   // Transactions table
   var table = document.createElement('table');
   table.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px';
   var thead = document.createElement('thead');
-  thead.innerHTML = '<tr style="background:var(--surface2)"><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Data</th><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Descrição</th><th style="padding:8px;text-align:right;color:var(--muted);font-weight:400">Valor</th><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Categoria</th></tr>';
+  thead.innerHTML = '<tr style="background:var(--surface2)"><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Data</th><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Descrição</th><th style="padding:8px;text-align:right;color:var(--muted);font-weight:400">Valor</th><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Detalhes</th><th style="padding:8px;text-align:left;color:var(--muted);font-weight:400">Categoria</th></tr>';
   table.appendChild(thead);
   var tbody = document.createElement('tbody');
 
   despesas.forEach(function(tx, i) {
     var tr = document.createElement('tr');
-    var rowBg = !tx.categoria ? 'background:#3a1a1a' : tx.source && tx.source.startsWith('ia') ? 'background:#1a2030' : tx.source === 'file' ? 'background:#1a3020' : '';
+    var rowBg = tx._duplicate ? 'background:#2a1a3a' : !tx.categoriaId ? 'background:#3a1a1a' : tx.source && tx.source.startsWith('ia') ? 'background:#1a2030' : tx.source === 'file' ? 'background:#1a3020' : '';
     if (rowBg) tr.style.cssText = rowBg;
     tr.style.borderBottom = '1px solid var(--border)';
 
-    var sourceIcon = tx.source === 'memory' ? '🧠 ' : tx.source === 'file' ? '📋 ' : tx.source && tx.source.startsWith('ia') ? '🔍 ' : '⚠ ';
+    var sourceIcon = tx._duplicate ? '🔄 ' : tx.source === 'memory' ? '🧠 ' : tx.source === 'file' ? '📋 ' : tx.source && tx.source.startsWith('ia') ? '🔍 ' : '⚠ ';
     var desc = escHtml(tx.descricao);
     if (tx.estabelecimento && tx.estabelecimento !== tx.descricao) {
       desc += ' <span style="font-size:10px;color:var(--muted)">(' + escHtml(tx.estabelecimento) + ')</span>';
@@ -5328,16 +5787,26 @@ function showImportReview(cardId, y, m, txs, overlay) {
     var catCell = document.createElement('td'); catCell.style.cssText = 'padding:6px 8px';
 
     var sel = document.createElement('select');
-    sel.style.cssText = 'font-size:11px;background:var(--surface);border:1px solid ' + (!tx.categoria ? 'var(--danger)' : 'var(--border)') + ';border-radius:4px;color:var(--text);padding:2px 4px;width:100%';
+    sel.className = 'import-review-cat-sel';
+    sel.style.cssText = 'font-size:11px;background:var(--surface);border:1px solid ' + (!tx.categoriaId ? 'var(--danger)' : 'var(--border)') + ';border-radius:4px;color:var(--text);padding:2px 4px;width:100%';
     sel.innerHTML = catOpts;
-    if (tx.categoria) sel.value = tx.categoria;
+    if (tx.categoriaId) sel.value = tx.categoriaId;
     sel.addEventListener('change', function(){
-      despesas[i].categoria = this.value;
+      if (this.value === '__manage__') { this.value = despesas[i].categoriaId || ''; openCatManager(); return; }
+      despesas[i].categoriaId = this.value;
       this.style.borderColor = this.value ? 'var(--border)' : 'var(--danger)';
     });
     catCell.appendChild(sel);
 
-    tr.appendChild(dateCell); tr.appendChild(descCell); tr.appendChild(valCell); tr.appendChild(catCell);
+    var notaCell = document.createElement('td'); notaCell.style.cssText = 'padding:6px 8px';
+    var notaInput = document.createElement('input');
+    notaInput.style.cssText = 'font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:2px 4px;width:100%';
+    notaInput.placeholder = '+ detalhe';
+    notaInput.value = tx.nota || '';
+    notaInput.addEventListener('input', function(){ despesas[i].nota = this.value; });
+    notaCell.appendChild(notaInput);
+
+    tr.appendChild(dateCell); tr.appendChild(descCell); tr.appendChild(valCell); tr.appendChild(notaCell); tr.appendChild(catCell);
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
@@ -5355,6 +5824,18 @@ function showImportReview(cardId, y, m, txs, overlay) {
 
   box.appendChild(hdr); box.appendChild(bod); box.appendChild(footer);
   overlay.innerHTML = ''; overlay.appendChild(box);
+}
+
+function getNotaFromMemory(desc) {
+  var notaMem = state.card.notaMemory || {};
+  if (notaMem[desc]) return notaMem[desc];
+  var lower = desc.toLowerCase();
+  var keys = Object.keys(notaMem);
+  var ci = keys.find(function(k){ return k.toLowerCase() === lower; });
+  if (ci) return notaMem[ci];
+  var sub = keys.find(function(k){ var kl = k.toLowerCase(); return lower.includes(kl) || kl.includes(lower); });
+  if (sub) return notaMem[sub];
+  return '';
 }
 
 function findExistingInstallment(cardId, y, m, tx) {
@@ -5380,6 +5861,20 @@ function findExistingInstallment(cardId, y, m, tx) {
     });
     if (similar) return similar;
   }
+
+  // Third: date + description + value match (for non-installment transactions)
+  var d1 = (tx.data||'').slice(0,5); // DD/MM
+  var desc1 = (tx.descricao||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);
+  var val1 = parseFloat(tx.valor)||0;
+  var byValue = existing.find(function(e){
+    if (Math.abs((parseFloat(e.valor)||0) - val1) > 0.01) return false;
+    var d2 = (e.data||'').slice(0,5);
+    if (d1 && d2 && d1 !== d2) return false;
+    var desc2 = (e.descricao||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);
+    return desc1 && desc2 && (desc1 === desc2 || desc1.startsWith(desc2.slice(0,8)) || desc2.startsWith(desc1.slice(0,8)));
+  });
+  if (byValue) return byValue;
+
   return null;
 }
 
@@ -5521,7 +6016,7 @@ function doImport(cardId, y, m, despesas, payments, overlay, replaceIds) {
 
   despesas.forEach(function(tx) {
     state.card.bills[cardId][y][m].push(tx);
-    if (tx.categoria) updateCardMemory(tx.descricao, tx.categoria);
+    if (tx.categoriaId) updateCardMemory(tx.descricao, tx.categoriaId);
   });
 
   if (!state.card.payments) state.card.payments = {};
@@ -5535,6 +6030,523 @@ function doImport(cardId, y, m, despesas, payments, overlay, replaceIds) {
 }
 
 
+
+/* ═══ DASHBOARD ═══ */
+var _dashY = new Date().getFullYear();
+var _dashM = new Date().getMonth();
+var _dashLabel = 'fechamento';
+var _dashAccum = false; // acumulado do ano
+var _dashActiveSources = null; // null = all active; Set of source ids when filtered
+var _dashViewMode = 'group'; // 'category' or 'group'
+var _dashPayFilter = 'all'; // 'all' | 'paid' | 'open'
+
+var DASH_COLORS = ['#6366f1','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#8b5cf6','#f97316','#14b8a6','#84cc16','#e11d48','#0ea5e9','#d946ef','#fb923c','#a3e635'];
+
+function getDashboardExpenses(y, m, label, payFilter) {
+  payFilter = payFilter || 'all';
+  var expenses = [];
+  (state.card.cards||[]).forEach(function(card) {
+    var bills = (state.card.bills[card.id]||{});
+    Object.keys(bills).forEach(function(by) {
+      Object.keys(bills[by]).forEach(function(bm) {
+        var billY = parseInt(by), billM = parseInt(bm);
+        var displayM, displayY;
+        if (label === 'vencimento') {
+          var venc = card.vencimento||1, fech = card.fechamento||1;
+          if (venc < fech) { displayM=(billM+1)%12; displayY=billM===11?billY+1:billY; }
+          else { displayM=billM; displayY=billY; }
+        } else { displayM=billM; displayY=billY; }
+        if (displayY!==y || displayM!==m) return;
+        var billPaid = getBillStatus(card.id, billY, billM, card) === 'paid';
+        var pays = (state.card.payments&&state.card.payments[card.id]&&state.card.payments[card.id][billY]&&state.card.payments[card.id][billY][billM])||[];
+        var payTotal = pays.reduce(function(s,p){return s+(parseFloat(p.valor)||0);},0);
+        // Use coverage logic for paid/open filtering
+        var coverage = (payFilter !== 'all') ? calcPaymentCoverage(card.id, billY, billM) : null;
+        (bills[by][bm]||[]).forEach(function(tx) {
+          if (tx.tipo==='pagamento') return;
+          var valor = parseFloat(tx.valor)||0;
+          if (valor===0) return;
+          // Estornos always included (they reduce the total regardless of pay filter)
+          if (valor<0 && payFilter === 'open') return;
+          if (valor>0 && payFilter === 'paid' && !(coverage && coverage.coveredIds[tx.id])) return;
+          if (valor>0 && payFilter === 'open' && (coverage && coverage.coveredIds[tx.id])) return;
+          expenses.push({ descricao:tx.descricao, valor:valor, categoriaId:tx.categoriaId||'', source:card.id, sourceLabel:card.nome, pago:billPaid, data:tx.data||'', nota:tx.nota||'', parcela:tx.parcela||'', _billPayTotal:payTotal });
+        });
+      });
+    });
+  });
+  // Contas
+  var finBills = (state.finance.bills[y]&&state.finance.bills[y][m])||[];
+  finBills.forEach(function(r) {
+    var valor = parseFloat(r.valor)||0;
+    if (valor<=0) return;
+    var isPago = r.status==='pago'||r.status==='debito';
+    if (payFilter === 'paid' && !isPago) return;
+    if (payFilter === 'open' && isPago) return;
+    expenses.push({ descricao:r.nome, valor:valor, categoriaId:r.categoriaId||'', source:'contas', sourceLabel:'Contas', pago:isPago, data:r.venc||'', nota:r.obs||'' });
+  });
+  return expenses;
+}
+
+function renderDashboard() {
+  var content = document.getElementById('dashboardContent');
+  var controls = document.getElementById('dashboardControls');
+  if (!content || !controls) return;
+
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now = new Date();
+
+  // Controls
+  controls.innerHTML = '';
+  var prevBtn = document.createElement('button'); prevBtn.className='btn-sm'; prevBtn.textContent='‹';
+  prevBtn.onclick = function(){
+    if (_dashAccum) { _dashY--; } else { _dashM--; if(_dashM<0){_dashM=11;_dashY--;} }
+    _dashPayFilter='all'; _dashActiveSources=null; renderDashboard();
+  };
+  var periodLabel = document.createElement('span');
+  periodLabel.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);min-width:130px;text-align:center';
+  periodLabel.textContent = _dashAccum ? String(_dashY) : MONTHS_PT[_dashM]+' '+_dashY;
+  var nextBtn = document.createElement('button'); nextBtn.className='btn-sm'; nextBtn.textContent='›';
+  nextBtn.onclick = function(){
+    if (_dashAccum) { _dashY++; } else { _dashM++; if(_dashM>11){_dashM=0;_dashY++;} }
+    _dashPayFilter='all'; _dashActiveSources=null; renderDashboard();
+  };
+  var todayBtn = document.createElement('button'); todayBtn.className='btn-sm'; todayBtn.textContent='Hoje';
+  todayBtn.onclick = function(){ _dashY=now.getFullYear(); _dashM=now.getMonth(); _dashPayFilter='all'; _dashActiveSources=null; renderDashboard(); };
+
+  // Acumulado toggle
+  var accumWrap = document.createElement('div');
+  accumWrap.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 10px';
+  var accumTrack = document.createElement('div');
+  accumTrack.style.cssText = 'width:28px;height:16px;border-radius:8px;position:relative;flex-shrink:0;transition:background .2s;background:'+(_dashAccum?'var(--accent)':'var(--border)');
+  var accumThumb = document.createElement('div');
+  accumThumb.style.cssText = 'position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s;left:'+(_dashAccum?'14px':'2px');
+  accumTrack.appendChild(accumThumb);
+  var accumLabel = document.createElement('span');
+  accumLabel.style.cssText = 'font-size:11px;font-family:DM Mono,monospace;color:'+(_dashAccum?'var(--text)':'var(--muted)');
+  accumLabel.textContent = 'Acumulado do ano';
+  accumWrap.appendChild(accumTrack);
+  accumWrap.appendChild(accumLabel);
+  accumWrap.onclick = function(){ _dashAccum=!_dashAccum; _dashPayFilter='all'; renderDashboard(); };
+
+  // Label toggle (hidden in accum mode)
+  var lt = document.createElement('div');
+  lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-left:0'+(_dashAccum?';opacity:0.3;pointer-events:none':'');
+  ['fechamento','vencimento'].forEach(function(lbl){
+    var b=document.createElement('button');
+    b.style.cssText='padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(lbl===_dashLabel?'var(--accent)':'var(--surface2)')+';color:'+(lbl===_dashLabel?'#000':'var(--muted)');
+    b.textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+    b.onclick=function(){ _dashLabel=lbl; renderDashboard(); };
+    lt.appendChild(b);
+  });
+
+  var ctrlLeft = document.createElement('div');
+  ctrlLeft.style.cssText = 'display:flex;align-items:center;gap:4px;flex-wrap:wrap';
+  ctrlLeft.appendChild(prevBtn); ctrlLeft.appendChild(periodLabel); ctrlLeft.appendChild(nextBtn);
+  ctrlLeft.appendChild(todayBtn);
+  ctrlLeft.appendChild(accumWrap);
+  ctrlLeft.appendChild(lt);
+  controls.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:6px';
+  controls.appendChild(ctrlLeft);
+
+  // Source filter
+  var sourceBar = document.createElement('div');
+  sourceBar.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;padding:0 0 8px 0;align-items:flex-start';
+  var allSources = (state.card.cards||[]).map(function(c){ return {id:c.id, label:c.nome, color:c.cor||'var(--accent)'}; });
+  allSources.push({id:'contas', label:'Contas', color:'var(--muted)'});
+  // Init: if null, all active
+  if (!_dashActiveSources) _dashActiveSources = new Set(allSources.map(function(s){return s.id;}));
+  // Card sources group
+  var cardSources = allSources.filter(function(s){ return s.id !== 'contas'; });
+  var contasSource = allSources.find(function(s){ return s.id === 'contas'; });
+
+  function makeToggle(s) {
+    var isActive = _dashActiveSources.has(s.id);
+    var color = s.color || 'var(--text2)';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none';
+    var track = document.createElement('div');
+    track.style.cssText = 'width:28px;height:16px;border-radius:8px;position:relative;flex-shrink:0;transition:background .2s;background:'+(isActive?color:'var(--border)');
+    var thumb = document.createElement('div');
+    thumb.style.cssText = 'position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s;left:'+(isActive?'14px':'2px');
+    track.appendChild(thumb);
+    var label = document.createElement('span');
+    label.style.cssText = 'font-size:11px;font-family:DM Mono,monospace;white-space:nowrap;color:'+(isActive?'var(--text)':'var(--muted)');
+    label.textContent = s.label;
+    wrap.appendChild(track);
+    wrap.appendChild(label);
+    wrap.onclick = function() {
+      if (_dashActiveSources.has(s.id)) {
+        if (_dashActiveSources.size > 1) _dashActiveSources.delete(s.id);
+      } else {
+        _dashActiveSources.add(s.id);
+      }
+      renderDashboard();
+    };
+    return wrap;
+  }
+
+  // Cartões group box
+  var cartoesBox = document.createElement('div');
+  cartoesBox.style.cssText = 'display:flex;flex-direction:column;gap:6px;border:1px solid var(--border);border-radius:8px;padding:8px 12px';
+  var cartoesLabel = document.createElement('div');
+  cartoesLabel.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase';
+  cartoesLabel.textContent = 'Cartões';
+  var cartoesRow = document.createElement('div');
+  cartoesRow.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap;align-items:center';
+  cardSources.forEach(function(s){ cartoesRow.appendChild(makeToggle(s)); });
+  cartoesBox.appendChild(cartoesLabel);
+  cartoesBox.appendChild(cartoesRow);
+  sourceBar.appendChild(cartoesBox);
+
+  // Contas — same box structure as Cartões for alignment
+  if (contasSource) {
+    var contasBox = document.createElement('div');
+    contasBox.style.cssText = 'display:flex;flex-direction:column;gap:6px;border:1px solid transparent;border-radius:8px;padding:8px 12px';
+    var contasLabelSpacer = document.createElement('div');
+    contasLabelSpacer.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;letter-spacing:1px;color:transparent;user-select:none';
+    contasLabelSpacer.textContent = 'x';
+    contasBox.appendChild(contasLabelSpacer);
+    contasBox.appendChild(makeToggle(contasSource));
+    sourceBar.appendChild(contasBox);
+  }
+
+  // Get expenses — accum mode sums all months of the year
+  var allExpenses;
+  if (_dashAccum) {
+    allExpenses = [];
+    for (var mo = 0; mo <= 11; mo++) {
+      allExpenses = allExpenses.concat(getDashboardExpenses(_dashY, mo, _dashLabel, 'all'));
+    }
+  } else {
+    allExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, 'all');
+  }
+  var allFiltered = allExpenses.filter(function(e){ return !_dashActiveSources || _dashActiveSources.has(e.source); });
+  // expenses for chart/detail uses payFilter; totals always use full set
+  var filteredExpenses;
+  if (_dashPayFilter==='all') {
+    filteredExpenses = allFiltered;
+  } else if (_dashAccum) {
+    var _fe = [];
+    for (var _mo = 0; _mo <= 11; _mo++) {
+      _fe = _fe.concat(getDashboardExpenses(_dashY, _mo, _dashLabel, _dashPayFilter));
+    }
+    filteredExpenses = _fe.filter(function(e){ return !_dashActiveSources || _dashActiveSources.has(e.source); });
+  } else {
+    filteredExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter).filter(function(e){ return !_dashActiveSources || _dashActiveSources.has(e.source); });
+  }
+  var expenses = filteredExpenses;
+
+  // Build catMap
+  var catMap = {};
+  expenses.forEach(function(e){
+    var cat = getCatName(e.categoriaId)||'Sem categoria';
+    catMap[cat] = (catMap[cat]||0) + e.valor;
+  });
+  Object.keys(catMap).forEach(function(k){ if(catMap[k]<=0) delete catMap[k]; });
+  var totalPositive = Math.round(Object.values(catMap).reduce(function(s,v){return s+v;},0) * 100) / 100;
+
+  // View mode toggle
+  var toggleDiv = document.createElement('div');
+  toggleDiv.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;width:fit-content';
+  var hasGroups = (state.card.catGroups||[]).length>0;
+  ['category','group'].forEach(function(mode){
+    var b=document.createElement('button');
+    b.style.cssText='padding:6px 12px;border:none;font-size:12px;cursor:pointer;background:'+(mode===_dashViewMode?'var(--accent)':'var(--surface2)')+';color:'+(mode===_dashViewMode?'#000':'var(--muted)');
+    b.textContent=mode==='category'?'Por categoria':'Por grupo';
+    if(mode==='group'&&!hasGroups){b.disabled=true;b.title='Crie grupos primeiro';}
+    b.onclick=function(){ if(mode==='group'&&!hasGroups)return; _dashViewMode=mode; renderDashboard(); };
+    toggleDiv.appendChild(b);
+  });
+
+  // Totals — always computed from full (unfiltered by pay) expense set
+  var totalMes = Math.round(allFiltered.reduce(function(s,e){return s+e.valor;},0) * 100) / 100;
+  var totalPago = 0;
+  if (_dashAccum) {
+    // In accum mode, sum payments bill by bill across all months
+    (state.card.cards||[]).forEach(function(card) {
+      if (_dashActiveSources && !_dashActiveSources.has(card.id)) return;
+      var bills = state.card.bills[card.id] || {};
+      Object.keys(bills).forEach(function(by) {
+        if (parseInt(by) !== _dashY) return;
+        Object.keys(bills[by]).forEach(function(bm) {
+          var txs = bills[by][bm] || [];
+          var billTotal = txs.filter(function(t){ return t.tipo !== 'pagamento'; })
+            .reduce(function(s,t){ return s + (parseFloat(t.valor)||0); }, 0);
+          var pays = (state.card.payments&&state.card.payments[card.id]&&state.card.payments[card.id][by]&&state.card.payments[card.id][by][bm])||[];
+          var payTotal = pays.reduce(function(s,p){ return s+(parseFloat(p.valor)||0); }, 0);
+          totalPago += Math.min(payTotal, billTotal);
+        });
+      });
+    });
+    // Contas
+    if (!_dashActiveSources || _dashActiveSources.has('contas')) {
+      for (var _m = 0; _m <= 11; _m++) {
+        var finBills = (state.finance.bills[_dashY]&&state.finance.bills[_dashY][_m])||[];
+        finBills.forEach(function(r){ if (r.status==='pago'||r.status==='debito') totalPago += parseFloat(r.valor)||0; });
+      }
+    }
+  } else {
+    var seenCardSources = {};
+    allFiltered.forEach(function(e) {
+      if (e.source === 'contas') { if (e.pago) totalPago += e.valor; return; }
+      if (!seenCardSources[e.source]) {
+        seenCardSources[e.source] = { payTotal: e._billPayTotal||0, billTotal: 0 };
+      }
+      seenCardSources[e.source].billTotal += e.valor;
+    });
+    Object.values(seenCardSources).forEach(function(b) {
+      totalPago += Math.min(b.payTotal, b.billTotal);
+    });
+  }
+  var totalAberto = Math.max(0, Math.round((totalMes - totalPago) * 100) / 100);
+
+  var summaryDiv = document.createElement('div');
+  summaryDiv.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px';
+  [['Total do mês',totalMes,'var(--text)','all'],['Pago',totalPago,'#22c55e','paid'],['Em aberto',totalAberto,'var(--danger)','open']].forEach(function(item){
+    var c=document.createElement('div');
+    var isActive = _dashPayFilter === item[3];
+    c.style.cssText='background:var(--surface2);border-radius:8px;padding:12px 16px;flex:1;min-width:120px;cursor:pointer;transition:all .15s;border:2px solid '+(isActive?item[2]:'transparent');
+    c.innerHTML='<div style="font-size:11px;color:var(--muted);margin-bottom:4px">'+item[0]+'</div><div style="font-size:18px;font-weight:700;color:'+item[2]+'">'+fmtBRL(item[1])+'</div>';
+    c.onmouseover=function(){ if(!isActive) this.style.borderColor='var(--border)'; };
+    c.onmouseout=function(){ if(!isActive) this.style.borderColor='transparent'; };
+    c.onclick=(function(filter){ return function(){ _dashPayFilter=filter; renderDashboard(); }; })(item[3]);
+    summaryDiv.appendChild(c);
+  });
+
+  // Build displayCats (same logic as openCardAnalysis)
+  var cats = Object.keys(catMap).map(function(k){return{name:k,val:catMap[k]};});
+  cats.sort(function(a,b){return b.val-a.val;});
+  var displayCats = cats;
+
+  if (_dashViewMode==='group' && hasGroups) {
+    var groups = state.card.catGroups||[];
+    var grouped = {};
+    var usedCats = [];
+    groups.forEach(function(g){
+      var total=0;
+      (g.cats||[]).forEach(function(c){var n=getCatName(c);total+=catMap[n]||0; usedCats.push(n);});
+      if(total>0) grouped[g.name||g.nome]={val:total,color:g.color};
+    });
+    Object.keys(catMap).forEach(function(c){
+      if(!usedCats.includes(c)) grouped[c]={val:catMap[c],color:null}; // c is already a name here
+    });
+    displayCats=Object.keys(grouped).map(function(k){return{name:k,val:grouped[k].val,color:grouped[k].color};});
+    displayCats.sort(function(a,b){return b.val-a.val;});
+  }
+
+  // Donut SVG
+  var cx=110,cy=110,r=85,ri=55,circumference=2*Math.PI*r;
+  var svgSlices=''; var cumPct=0;
+  displayCats.forEach(function(cat,i){
+    var pct=cat.val/(_dashPayFilter==='all'?totalMes:totalPositive||1);
+    var color=cat.color||DASH_COLORS[i%DASH_COLORS.length];
+    var dashLen=pct*circumference; var gapLen=circumference-dashLen;
+    var rotation=cumPct*360-90;
+    svgSlices+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="28" stroke-dasharray="'+dashLen.toFixed(2)+' '+gapLen.toFixed(2)+'" transform="rotate('+rotation.toFixed(2)+' '+cx+' '+cy+')" />';
+    cumPct+=pct;
+  });
+
+  var chartDiv=document.createElement('div');
+  chartDiv.style.cssText='display:flex;justify-content:center;padding:8px 0';
+  chartDiv.innerHTML='<svg width="220" height="220" viewBox="0 0 220 220">'+svgSlices+'<circle cx="'+cx+'" cy="'+cy+'" r="'+ri+'" fill="var(--surface)"/><text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">TOTAL</text><text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600" font-family="DM Mono,monospace">'+fmtBRL(_dashPayFilter==='all'?totalMes:totalPositive)+'</text></svg>';
+
+  // Category/Group list (same visual as openCardAnalysis)
+  var list=document.createElement('div');
+  list.style.cssText='display:flex;flex-direction:column;gap:2px';
+  displayCats.forEach(function(cat,i){
+    var pct=(cat.val/(_dashPayFilter==='all'?totalMes:totalPositive)*100).toFixed(1);
+    var color=cat.color||DASH_COLORS[i%DASH_COLORS.length];
+    var groupDef=_dashViewMode==='group'?(state.card.catGroups||[]).find(function(g){return ((g.name||g.nome)===cat.name);}):null;
+    var subCats=[];
+    if(groupDef&&groupDef.cats){
+      groupDef.cats.forEach(function(c){var n=getCatName(c);if(catMap[n])subCats.push({name:n,val:catMap[n]});});
+      subCats.sort(function(a,b){return b.val-a.val;});
+    }
+    var isExpandable=subCats.length>0;
+
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .15s';
+    row.onmouseover=function(){this.style.background='var(--surface2)';};
+    row.onmouseout=function(){this.style.background='';};
+    var dot=document.createElement('div'); dot.style.cssText='width:12px;height:12px;border-radius:50%;flex-shrink:0;background:'+color;
+    var nameEl=document.createElement('span'); nameEl.style.cssText='flex:1;font-size:13px;color:var(--text)'; nameEl.textContent=cat.name;
+    var pctEl=document.createElement('span'); pctEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace'; pctEl.textContent=pct+'%';
+    var valEl=document.createElement('span'); valEl.style.cssText='font-size:13px;font-weight:600;font-family:DM Mono,monospace;color:var(--text);min-width:100px;text-align:right'; valEl.textContent=fmtBRL(cat.val);
+    var chev=document.createElement('span'); chev.style.cssText='font-size:10px;color:var(--muted);transition:transform .2s'; chev.textContent='▶';
+    row.appendChild(dot); row.appendChild(nameEl); row.appendChild(pctEl); row.appendChild(valEl); row.appendChild(chev);
+    list.appendChild(row);
+
+    // Expense items for this cat/group
+    var expDiv=document.createElement('div');
+    expDiv.style.cssText='display:none;background:var(--surface);border-left:2px solid '+color+';margin:0 12px 4px 36px;border-radius:0 6px 6px 0;padding:4px 0';
+
+    if(isExpandable){
+      // Sub-categories
+      subCats.forEach(function(sc){
+        var scPct=(sc.val/cat.val*100).toFixed(1);
+        var scRow=document.createElement('div'); scRow.style.cssText='display:flex;align-items:center;gap:10px;padding:6px 12px;cursor:pointer';
+        scRow.onmouseover=function(){this.style.background='rgba(255,255,255,0.05)';};
+        scRow.onmouseout=function(){this.style.background='';};
+        var scBar=document.createElement('div'); scBar.style.cssText='width:3px;height:14px;border-radius:2px;background:'+color+';flex-shrink:0;opacity:.6';
+        var scName=document.createElement('span'); scName.style.cssText='flex:1;font-size:12px;color:var(--text)'; scName.textContent=sc.name;
+        var scPctEl=document.createElement('span'); scPctEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace'; scPctEl.textContent=scPct+'%';
+        var scVal=document.createElement('span'); scVal.style.cssText='font-size:12px;font-family:DM Mono,monospace;color:var(--muted);min-width:100px;text-align:right'; scVal.textContent=fmtBRL(sc.val);
+        var scChev=document.createElement('span'); scChev.style.cssText='font-size:9px;color:var(--muted);transition:transform .2s'; scChev.textContent='▶';
+        scRow.appendChild(scBar); scRow.appendChild(scName); scRow.appendChild(scPctEl); scRow.appendChild(scVal); scRow.appendChild(scChev);
+        var scExpDiv=buildDashExpenseList(expenses, sc.name, color);
+        scRow.onclick=function(){ var open=scExpDiv.style.display!=='none'; scExpDiv.style.display=open?'none':'block'; scChev.style.transform=open?'':'rotate(90deg)'; };
+        expDiv.appendChild(scRow); expDiv.appendChild(scExpDiv);
+      });
+    } else {
+      // Direct expense list for this category
+      var items=expenses.filter(function(e){return (getCatName(e.categoriaId)||'Sem categoria')===cat.name;});
+      items.sort(function(a,b){return (b.data||'').localeCompare(a.data||'');});
+      items.forEach(function(e){
+        var eRow=document.createElement('div'); eRow.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px';
+        var dateEl=document.createElement('span'); dateEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace;width:62px;flex-shrink:0'; dateEl.textContent=e.data||'—';
+        var descEl=document.createElement('span'); descEl.style.cssText='flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; descEl.textContent=e.descricao+(e.parcela?' ('+e.parcela+')':''); descEl.title=e.descricao;
+        var notaEl=document.createElement('span'); notaEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; notaEl.textContent=e.nota||''; notaEl.title=e.nota||'';
+        var srcEl=document.createElement('span'); srcEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0'; srcEl.textContent=e.sourceLabel;
+        var valEl2=document.createElement('span'); valEl2.style.cssText='font-size:11px;font-family:DM Mono,monospace;color:var(--muted);width:80px;text-align:right;flex-shrink:0'; valEl2.textContent=fmtBRL(e.valor);
+        eRow.appendChild(dateEl); eRow.appendChild(descEl); eRow.appendChild(notaEl); eRow.appendChild(srcEl); eRow.appendChild(valEl2);
+        expDiv.appendChild(eRow);
+      });
+    }
+
+    row.onclick=function(){ var open=expDiv.style.display!=='none'; expDiv.style.display=open?'none':'block'; chev.style.transform=open?'':'rotate(90deg)'; };
+    list.appendChild(expDiv);
+  });
+
+  content.innerHTML='';
+  content.appendChild(sourceBar);
+  content.appendChild(summaryDiv);
+  content.appendChild(toggleDiv);
+  content.appendChild(chartDiv);
+  content.appendChild(list);
+}
+
+function buildDashExpenseList(expenses, catName, color) {
+  var div=document.createElement('div');
+  div.style.cssText='display:none;background:var(--surface);border-left:2px solid '+color+';margin:0 12px 4px 48px;border-radius:0 6px 6px 0;padding:4px 0';
+  var items=expenses.filter(function(e){return (getCatName(e.categoriaId)||'Sem categoria')===catName;});
+  items.sort(function(a,b){return (b.data||'').localeCompare(a.data||'');});
+  items.forEach(function(e){
+    var row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px';
+    var dateEl=document.createElement('span'); dateEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace;width:62px;flex-shrink:0'; dateEl.textContent=e.data||'—';
+    var descEl=document.createElement('span'); descEl.style.cssText='flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; descEl.textContent=e.descricao+(e.parcela?' ('+e.parcela+')':''); descEl.title=e.descricao;
+    var notaEl=document.createElement('span'); notaEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; notaEl.textContent=e.nota||''; notaEl.title=e.nota||'';
+    var srcEl=document.createElement('span'); srcEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0'; srcEl.textContent=e.sourceLabel;
+    var valEl=document.createElement('span'); valEl.style.cssText='font-size:11px;font-family:DM Mono,monospace;color:var(--muted);width:80px;text-align:right;flex-shrink:0'; valEl.textContent=fmtBRL(e.valor);
+    row.appendChild(dateEl); row.appendChild(descEl); row.appendChild(notaEl); row.appendChild(srcEl); row.appendChild(valEl);
+    div.appendChild(row);
+  });
+  return div;
+}
+
+
+function getRules() { return state.card.rules || []; }
+
+function openRulesManager(cardId, y, m) {
+  renderRulesManager();
+  // Populate category dropdown
+  var sel = document.getElementById('newRuleCat');
+  if (sel) {
+    sel.innerHTML = '<option value="">— Categoria —</option>'
+      + (state.card.categorias||[]).map(function(c){ return '<option value="'+escHtml(c.id)+'">'+escHtml(c.name)+'</option>'; }).join('');
+  }
+  // Show/hide apply button based on context
+  var actions = document.querySelector('#rulesManagerModal .modal-actions');
+  if (actions) {
+    var applyBtn = document.getElementById('rulesApplyBtn');
+    if (!applyBtn) {
+      applyBtn = document.createElement('button');
+      applyBtn.id = 'rulesApplyBtn';
+      applyBtn.className = 'btn-modal-save';
+      actions.insertBefore(applyBtn, actions.firstChild);
+    }
+    if (cardId !== undefined) {
+      applyBtn.style.display = '';
+      applyBtn.textContent = '⚡ Aplicar a este mês';
+      applyBtn.onclick = function() { applyRulesToBill(cardId, y, m); closeRulesManager(); };
+    } else {
+      applyBtn.style.display = 'none';
+    }
+  }
+  document.getElementById('rulesManagerModal').classList.add('show');
+}
+
+function closeRulesManager() { document.getElementById('rulesManagerModal').classList.remove('show'); }
+
+function renderRulesManager() {
+  var list = document.getElementById('rulesList');
+  if (!list) return;
+  var rules = getRules();
+  if (!rules.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 4px">Nenhuma regra definida.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  rules.forEach(function(rule, i) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:6px;align-items:center;padding:6px 8px;background:var(--surface2);border-radius:6px';
+    row.innerHTML = '<span style="flex:1;font-size:12px;color:var(--accent);font-family:DM Mono,monospace">' + escHtml(rule.pattern) + '</span>'
+      + '<span style="font-size:12px;color:var(--text)">→</span>'
+      + '<span style="flex:1;font-size:12px;color:var(--text)">' + escHtml(rule.categoria||'—') + '</span>'
+      + '<span style="flex:1;font-size:12px;color:var(--muted)">' + escHtml(rule.nota||'—') + '</span>'
+      + '<button class="status-del-btn" onclick="deleteRule('+i+')">✕</button>';
+    list.appendChild(row);
+  });
+}
+
+function addRule() {
+  var pattern = document.getElementById('newRulePattern').value.trim();
+  var cat = document.getElementById('newRuleCat').value;
+  var nota = document.getElementById('newRuleNota').value.trim();
+  if (!pattern) { showToast('Informe o padrão'); return; }
+  if (!state.card.rules) state.card.rules = [];
+  state.card.rules.push({ pattern: pattern, categoriaId: cat, nota: nota });
+  document.getElementById('newRulePattern').value = '';
+  document.getElementById('newRuleNota').value = '';
+  saveState(); renderRulesManager();
+}
+
+function deleteRule(idx) {
+  if (!state.card.rules) return;
+  state.card.rules.splice(idx, 1);
+  saveState(); renderRulesManager();
+}
+
+function matchRule(desc) {
+  // Returns first matching rule for a description, or null
+  var rules = getRules();
+  var d = desc.toLowerCase();
+  for (var i = 0; i < rules.length; i++) {
+    if (d.includes(rules[i].pattern.toLowerCase())) return rules[i];
+  }
+  return null;
+}
+
+function applyRulesToBill(cardId, y, m) {
+  var rules = getRules();
+  if (!rules.length) { showToast('Nenhuma regra definida'); return; }
+  var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
+  var changed = 0;
+  txs.forEach(function(tx) {
+    if (tx.tipo === 'pagamento') return;
+    var rule = matchRule(tx.descricao || '');
+    if (!rule) return;
+    if (rule.categoriaId) tx.categoriaId = rule.categoriaId;
+    if (rule.nota) tx.nota = rule.nota;
+    changed++;
+  });
+  if (changed) {
+    saveState(); renderCardPreserve();
+    showToast(changed + ' transaç' + (changed === 1 ? 'ão atualizada' : 'ões atualizadas'));
+  } else {
+    showToast('Nenhuma transação correspondeu às regras');
+  }
+}
 
 function openCatGroupsModal() {
   var overlay = document.createElement('div');
@@ -5575,7 +6587,7 @@ function renderCatGroups() {
   // Find ungrouped categories
   var grouped = [];
   groups.forEach(function(g){ grouped = grouped.concat(g.cats || []); });
-  var ungrouped = cats.filter(function(c){ return !grouped.includes(c); });
+  var ungrouped = cats.filter(function(c){ return !grouped.includes(c.id); });
 
   if (!groups.length) {
     bod.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum grupo criado. Clique em "+ Novo grupo" para começar.</div>';
@@ -5615,7 +6627,7 @@ function renderCatGroups() {
     (g.cats || []).forEach(function(cat, ci) {
       var chip = document.createElement('span');
       chip.style.cssText = 'display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--text)';
-      chip.textContent = cat + ' ';
+      chip.textContent = getCatName(cat) + ' ';
       var rm = document.createElement('button');
       rm.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0;line-height:1';
       rm.textContent = '×';
@@ -5631,7 +6643,7 @@ function renderCatGroups() {
     addCatSel.style.cssText = 'font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--muted);padding:3px 8px;cursor:pointer';
     addCatSel.innerHTML = '<option value="">+ Adicionar categoria</option>';
     ungrouped.forEach(function(c){
-      var o = document.createElement('option'); o.value = c; o.textContent = c;
+      var o = document.createElement('option'); o.value = c.id; o.textContent = c.name;
       addCatSel.appendChild(o);
     });
     addCatSel.onchange = function(){
@@ -5649,7 +6661,7 @@ function renderCatGroups() {
   if (ungrouped.length) {
     var info = document.createElement('div');
     info.style.cssText = 'font-size:11px;color:var(--muted);padding:4px 2px';
-    info.textContent = 'Sem grupo: ' + ungrouped.join(', ');
+    info.textContent = 'Sem grupo: ' + ungrouped.map(function(c){return c.name;}).join(', ');
     bod.appendChild(info);
   }
 }
@@ -5666,10 +6678,170 @@ function addCatGroup() {
   saveState(); renderCatGroups();
 }
 
+/* ═══ CATEGORY MANAGER ═══ */
+var _catManagerContext = null; // {y, m, id, source:'fin'|'card'|null}
+function openCatManager(ctx) {
+  if (ctx !== undefined) _catManagerContext = ctx || null;
+  renderCatManager();
+  var modal = document.getElementById('catManagerModal');
+  if (modal) modal.classList.add('show');
+  // Update modal title to reflect context
+  var titleEl = modal && modal.querySelector('.modal-title');
+  if (titleEl) titleEl.textContent = 'Gerenciar Categorias';
+}
+function closeCatManager() { _catManagerContext = null; document.getElementById('catManagerModal').classList.remove('show'); }
+
+function renderCatManager() {
+  var list = document.getElementById('catManagerList');
+  if (!list) return;
+  var cats = state.card.categorias || [];
+  if (!cats.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 4px">Nenhuma categoria cadastrada.</div>';
+    return;
+  }
+  list.innerHTML = cats.map(function(cat, i) {
+    return '<div class="status-manager-row" draggable="true" data-catidx="' + i + '" style="cursor:default">'
+      + '<span style="cursor:grab;color:var(--muted);padding:0 6px 0 0;font-size:14px;user-select:none">⠿</span>'
+      + '<input class="status-manager-label-input" value="' + escHtml(cat.name) + '" data-idx="' + i + '" '
+      + 'onblur="renameCategoria(' + i + ',this.value)" '
+      + 'onkeydown="if(event.key===\'Enter\'){this.blur();}">'
+      + '<button class="status-del-btn" onclick="deleteCategoria(&#39;' + escHtml(cat.id) + '&#39;)">✕</button>'
+      + '</div>';
+  }).join('');
+
+  // Drag-to-reorder
+  var dragSrcIdx = null;
+  list.querySelectorAll('[data-catidx]').forEach(function(row) {
+    row.addEventListener('dragstart', function(e) {
+      dragSrcIdx = parseInt(row.dataset.catidx);
+      e.dataTransfer.effectAllowed = 'move';
+      row.style.opacity = '0.5';
+    });
+    row.addEventListener('dragend', function() { row.style.opacity = ''; });
+    row.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      var tgtIdx = parseInt(row.dataset.catidx);
+      list.querySelectorAll('[data-catidx]').forEach(function(r) { r.style.borderTop = ''; r.style.borderBottom = ''; });
+      if (tgtIdx < dragSrcIdx) row.style.borderTop = '2px solid var(--accent)';
+      else if (tgtIdx > dragSrcIdx) row.style.borderBottom = '2px solid var(--accent)';
+    });
+    row.addEventListener('dragleave', function() { row.style.borderTop = ''; row.style.borderBottom = ''; });
+    row.addEventListener('drop', function(e) {
+      e.preventDefault();
+      row.style.borderTop = ''; row.style.borderBottom = '';
+      var tgtIdx = parseInt(row.dataset.catidx);
+      if (tgtIdx === dragSrcIdx) return;
+      var cats = state.card.categorias;
+      var moved = cats.splice(dragSrcIdx, 1)[0];
+      cats.splice(tgtIdx, 0, moved);
+      saveState(); renderCatManager(); refreshImportReviewSelects();
+    });
+  });
+}
+
+function renameCategoria(idx, newName) {
+  newName = newName.trim();
+  var cats = state.card.categorias || [];
+  var cat = cats[idx];
+  if (!cat || !newName || newName === cat.name) return;
+  if (cats.find(function(c, i){ return i !== idx && c.name === newName; })) {
+    showToast('Categoria já existe'); renderCatManager(); return;
+  }
+  // Just rename in library — all references use ID, no need to touch transactions
+  cat.name = newName;
+  saveState(); renderCatManager(); renderCardPreserve(); refreshImportReviewSelects();
+  setTimeout(function() {
+    var y = state.finance.currentYear;
+    Object.keys(state.finance.openMonths).forEach(function(m) {
+      if (state.finance.openMonths[m]) refreshFinBlock(y, parseInt(m));
+    });
+  }, 0);
+}
+
+function refreshImportReviewSelects() {
+  // Update all category selects inside the import review modal
+  var selects = document.querySelectorAll('.import-review-cat-sel');
+  selects.forEach(function(sel) {
+    var current = sel.value;
+    sel.innerHTML = buildCatOpts(current);
+  });
+}
+
+function addCategoria() {
+  var input = document.getElementById('newCatLabel');
+  var label = input.value.trim();
+  if (!label) return;
+  if (!state.card.categorias) state.card.categorias = [];
+  if (state.card.categorias.find(function(c){ return c.name === label; })) { showToast('Categoria já existe'); return; }
+  var newCat = { id: genCatId(), name: label };
+  state.card.categorias.push(newCat);
+  input.value = '';
+  saveState(); renderCatManager(); renderCardPreserve(); refreshImportReviewSelects();
+  // If opened from a specific row, apply immediately
+  if (_catManagerContext) {
+    var ctx = _catManagerContext;
+    _catManagerContext = null; // consume context immediately
+    if (ctx.source === 'fin') {
+      var _rows = (state.finance.bills[ctx.y]&&state.finance.bills[ctx.y][ctx.m])||[];
+      var _r = _rows.find(function(x){return x.id==ctx.id;});
+      var _nom = _r ? _r.nome : '';
+      saveFinField(ctx.y, ctx.m, ctx.id, 'categoriaId', newCat.id);
+      setTimeout(function(){ openFinCatPropagateModal(_nom, newCat.id, ctx.y, ctx.m, ctx.id); }, 0);
+    } else if (ctx.source === 'card') {
+      setCardTxCat(ctx.cardId, ctx.y, ctx.m, ctx.id, label);
+      closeCatManager();
+    }
+  }
+}
+
+function deleteCategoria(catId) {
+  var cats = state.card.categorias || [];
+  var cat = cats.find(function(c){ return c.id === catId; });
+  if (!cat) return;
+  // Count usage
+  var count = 0;
+  var bills = state.card.bills || {};
+  Object.keys(bills).forEach(function(cid) {
+    Object.keys(bills[cid]).forEach(function(y) {
+      Object.keys(bills[cid][y]).forEach(function(m) {
+        (bills[cid][y][m] || []).forEach(function(tx) { if (tx.categoriaId === catId) count++; });
+      });
+    });
+  });
+  var finBills = state.finance.bills || {};
+  Object.keys(finBills).forEach(function(fy) {
+    Object.keys(finBills[fy]).forEach(function(fm) {
+      (finBills[fy][fm] || []).forEach(function(r) { if (r.categoriaId === catId) count++; });
+    });
+  });
+  var msg = count > 0
+    ? count + ' transaç' + (count === 1 ? 'ão usa' : 'ões usam') + ' esta categoria e ficarão sem categoria.'
+    : 'Esta categoria não está em uso.';
+  confirmAction('Excluir categoria "' + cat.name + '"', msg, function() {
+    // Remove from library only — transações with this categoriaId resolve to '' via getCatName
+    state.card.categorias = cats.filter(function(c) { return c.id !== catId; });
+    // Remove from catGroups
+    (state.card.catGroups || []).forEach(function(g) {
+      if (g.cats) g.cats = g.cats.filter(function(c) { return c !== catId; });
+    });
+    // Remove from memory and rules
+    if (state.card.memory) state.card.memory = state.card.memory.filter(function(m) { return m.categoriaId !== catId; });
+    if (state.card.rules) state.card.rules = state.card.rules.filter(function(r) { return r.categoriaId !== catId; });
+    saveState(); renderCatManager(); renderCardPreserve(); refreshImportReviewSelects();
+    setTimeout(function() {
+      var y = state.finance.currentYear;
+      Object.keys(state.finance.openMonths).forEach(function(m) {
+        if (state.finance.openMonths[m]) refreshFinBlock(y, parseInt(m));
+      });
+    }, 0);
+  });
+}
+
 function buildExpenseList(txs, catName, color) {
   var div = document.createElement('div');
   div.style.cssText = 'display:none;background:var(--surface);border-left:2px solid '+color+';margin:0 12px 4px 36px;border-radius:0 6px 6px 0;padding:4px 0';
-  var items = txs.filter(function(t){ return (t.categoria||'Sem categoria') === catName; });
+  var items = txs.filter(function(t){ return (getCatName(t.categoriaId)||'Sem categoria') === catName; });
   items.sort(function(a,b){ return (b.data||'').localeCompare(a.data||''); });
   items.forEach(function(tx) {
     var row = document.createElement('div');
@@ -5707,11 +6879,15 @@ function openCardAnalysis(cardId) {
   });
   months.sort(function(a,b){ return (b.y*12+b.m)-(a.y*12+a.m); });
 
-  // Default to most recent month with data, or current
-  // Default to current month if available, else most recent with data
-  var selY = curY, selM = curM;
-  var hasCurMonth = months.some(function(mo){ return mo.y===curY && mo.m===curM; });
-  if (!hasCurMonth && months.length) { selY = months[0].y; selM = months[0].m; }
+  // Default: use focused bill if available, else current month, else most recent
+  var selY, selM;
+  if (_cardFocusedBill && months.some(function(mo){ return mo.y===_cardFocusedBill.y && mo.m===_cardFocusedBill.m; })) {
+    selY = _cardFocusedBill.y; selM = _cardFocusedBill.m;
+  } else {
+    selY = curY; selM = curM;
+    var hasCurMonth = months.some(function(mo){ return mo.y===curY && mo.m===curM; });
+    if (!hasCurMonth && months.length) { selY = months[0].y; selM = months[0].m; }
+  }
   var viewMode = 'category'; // 'category' or 'group'
 
   var overlay = document.createElement('div');
@@ -5728,7 +6904,7 @@ function openCardAnalysis(cardId) {
     txs.forEach(function(tx) {
       var v = parseFloat(tx.valor) || 0;
       if (v === 0) return;
-      var cat = tx.categoria || 'Sem categoria';
+      var cat = getCatName(tx.categoriaId) || 'Sem categoria';
       if (!catMap[cat]) catMap[cat] = 0;
       catMap[cat] += v;
     });
@@ -5788,9 +6964,18 @@ function openCardAnalysis(cardId) {
     var titleEl = document.createElement('span');
     titleEl.style.cssText = 'font-size:14px;font-weight:600;color:var(--text)';
     titleEl.textContent = MONTHS_PT[selM] + ' ' + selY;
+    var curMonthBtn = document.createElement('button');
+    curMonthBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;font-size:10px;padding:2px 6px;margin-left:4px';
+    curMonthBtn.textContent = 'Atual';
+    curMonthBtn.title = 'Ir para o mês atual';
+    curMonthBtn.onclick = function() {
+      var hasCur = months.some(function(mo){ return mo.y===curY && mo.m===curM; });
+      if (hasCur) { selY=curY; selM=curM; rerender(); }
+      else showToast('Mês atual sem lançamentos');
+    };
     var closeBtn = document.createElement('button'); closeBtn.className = 'modal-close'; closeBtn.textContent = '✕';
     closeBtn.onclick = function(){ overlay.remove(); };
-    hdr.appendChild(prevBtn); hdr.appendChild(titleEl); hdr.appendChild(nextBtn); hdr.appendChild(closeBtn);
+    hdr.appendChild(prevBtn); hdr.appendChild(titleEl); hdr.appendChild(nextBtn); hdr.appendChild(curMonthBtn); hdr.appendChild(closeBtn);
 
     // Body
     var bod = document.createElement('div');
@@ -5821,7 +7006,7 @@ function openCardAnalysis(cardId) {
       var usedCats = [];
       groups.forEach(function(g) {
         var total = 0;
-        (g.cats||[]).forEach(function(c){ total += catMap[c]||0; usedCats.push(c); });
+        (g.cats||[]).forEach(function(c){ var n=getCatName(c); total += catMap[n]||0; usedCats.push(n); });
         if (total > 0) grouped[g.name] = { val: total, color: g.color };
       });
       // Add ungrouped cats
@@ -5853,7 +7038,7 @@ function openCardAnalysis(cardId) {
     chartDiv.innerHTML = '<svg width="220" height="220" viewBox="0 0 220 220">'
       + svgSlices
       + '<circle cx="'+cx+'" cy="'+cy+'" r="'+ri+'" fill="var(--surface)"/>'
-      + '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">TOTAL</text>'
+      + '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">'+(_dashPayFilter==='paid'?'PAGO':_dashPayFilter==='open'?'EM ABERTO':'TOTAL')+'</text>'
       + '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600" font-family="DM Mono,monospace">'+fmtBRL(totalPositive)+'</text>'
       + '</svg>';
     bod.appendChild(chartDiv);
@@ -5870,7 +7055,8 @@ function openCardAnalysis(cardId) {
       var subCats = [];
       if (groupDef && groupDef.cats) {
         groupDef.cats.forEach(function(c) {
-          if (catMap[c]) subCats.push({ name: c, val: catMap[c] });
+          var n = getCatName(c);
+          if (catMap[n]) subCats.push({ name: n, val: catMap[n] });
         });
         subCats.sort(function(a,b){ return b.val - a.val; });
       }
@@ -6082,42 +7268,6 @@ function openCardBills(cardId) {
   renderCard();
 }
 
-function calcPaymentCoverage(cardId, y, m) {
-  // Returns { coveredIds: Set, isPartial: bool, isFullyCovered: bool }
-  var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m]) || [];
-  var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
-  
-  var payTotal = pays.reduce(function(s,p){ return s+p.valor; }, 0);
-  if (!payTotal || !txs.length) return { coveredIds: {}, isPartial: false, isFullyCovered: false };
-
-  // Sort txs chronologically (oldest first), then by original array order for same date
-  var sorted = txs.slice().sort(function(a, b) {
-    var da = cardDateToNum(a.data||''), db = cardDateToNum(b.data||'');
-    if (da !== db) return da - db;
-    return txs.indexOf(a) - txs.indexOf(b);
-  });
-
-  // Only cover positive (expense) values — ignore estornos
-  var remaining = payTotal;
-  var coveredIds = {};
-  var allCovered = true;
-
-  sorted.forEach(function(tx) {
-    var v = parseFloat(tx.valor) || 0;
-    if (v <= 0) return; // skip estornos
-    if (remaining >= v - 0.01) {
-      coveredIds[tx.id] = true;
-      remaining -= v;
-    } else {
-      allCovered = false;
-    }
-  });
-
-  var totalExpenses = sorted.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); }, 0);
-  var isPartial = payTotal < totalExpenses - 0.01;
-
-  return { coveredIds: coveredIds, isPartial: isPartial, isFullyCovered: !isPartial };
-}
 
 function getBillStatus(cardId, y, m, card) {
   var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
@@ -6178,6 +7328,34 @@ function clearBillPayments(cardId, y, m) {
   }
 }
 
+function calcPaymentCoverage(cardId, y, m) {
+  // Returns { coveredIds: {}, isPartial: bool }
+  // Used only by buildInstallmentSummary to determine which txs are covered by partial payments
+  var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y] && state.card.payments[cardId][y][m]) || [];
+  var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
+  var payTotal = pays.reduce(function(s,p){ return s+p.valor; }, 0);
+  if (!payTotal || !txs.length) return { coveredIds: {}, isPartial: false };
+  // Sort chronologically (oldest first), preserving original order for same date
+  var sorted = txs.slice().sort(function(a, b) {
+    var da = cardDateToNum(a.data||''), db = cardDateToNum(b.data||'');
+    if (da !== db) return da - db;
+    return txs.indexOf(a) - txs.indexOf(b);
+  });
+  // Adjust payTotal for estornos: estornos reduce what needs to be paid
+  var estornos = sorted.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v<0?Math.abs(v):0); }, 0);
+  var effectivePayTotal = payTotal + estornos;
+  var remaining = effectivePayTotal;
+  var coveredIds = {};
+  sorted.forEach(function(tx) {
+    var v = parseFloat(tx.valor) || 0;
+    if (v <= 0) { coveredIds[tx.id] = true; return; } // estornos always covered
+    if (remaining >= v - 0.01) { coveredIds[tx.id] = true; remaining -= v; }
+  });
+  var totalExpenses = sorted.reduce(function(s,t){ var v=parseFloat(t.valor)||0; return s+(v>0?v:0); }, 0);
+  var totalNet = totalExpenses - estornos;
+  return { coveredIds: coveredIds, isPartial: payTotal < totalNet - 0.01 };
+}
+
 function buildInstallmentSummary(cardId) {
   // Collect all future installments for this card
   var now = new Date();
@@ -6197,7 +7375,7 @@ function buildInstallmentSummary(cardId) {
             desc: tx.descricao,
             parcValor: tx.valor,
             total: tx.installmentTotal,
-            categoria: tx.categoria || '',
+            categoriaId: tx.categoriaId || '',
             futureParcels: [],
             pastParcels: []
           };
@@ -6207,7 +7385,6 @@ function buildInstallmentSummary(cardId) {
           if (billStatus === 'paid') {
             groups[gid].pastParcels.push({ absM: absM, pNum: tx.installmentCurrent });
           } else if (billStatus === 'partial') {
-            // Check if this specific tx was covered by the payment algorithm
             var cov = calcPaymentCoverage(cardId, parseInt(y), parseInt(m));
             if (cov.coveredIds[tx.id]) {
               groups[gid].pastParcels.push({ absM: absM, pNum: tx.installmentCurrent });
@@ -6534,7 +7711,6 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var hdInfo = document.createElement('div');
   hdInfo.innerHTML = '<div class="section-title" style="color:' + card.cor + '">' + escHtml(card.nome) + '</div><div class="section-sub">Fecha dia ' + card.fechamento + ' · Vence dia ' + card.vencimento + '</div>';
   var editBtn = document.createElement('button'); editBtn.className = 'btn-sm'; editBtn.textContent = '⚙ Editar'; editBtn.onclick = function(){ openEditCardModal(card.id); };
-  var importBtn = document.createElement('button'); importBtn.className = 'btn-sm'; importBtn.textContent = '⬆ Importar'; importBtn.onclick = function(){ openImportBillModal(card.id); };
   var addBillBtn = document.createElement('button'); addBillBtn.className = 'btn-sm accent'; addBillBtn.textContent = '+ Fatura'; addBillBtn.onclick = function(){ openAddBillModal(card.id); };
   var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise'; analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
   var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = '🏷 Grupos'; groupsBtn.onclick = openCatGroupsModal;
@@ -6546,7 +7722,7 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var db = document.createElement('button'); db.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='fechamento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='fechamento'?'#000':'var(--muted)'); db.textContent='Fechamento'; db.onclick=function(){ _cardMonthLabel='fechamento'; renderCardPreserve(); };
   var bb = document.createElement('button'); bb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='vencimento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='vencimento'?'#000':'var(--muted)'); bb.textContent='Vencimento'; bb.onclick=function(){ _cardMonthLabel='vencimento'; renderCardPreserve(); };
   lt.appendChild(db); lt.appendChild(bb);
-  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(importBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(vt); hd.appendChild(lt); hd.appendChild(addBillBtn);
+  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(vt); hd.appendChild(lt); hd.appendChild(addBillBtn);
 
   // Nav bar
   var navBar = document.createElement('div');
@@ -6659,8 +7835,6 @@ function renderCardBills(el, cardId) {
     + '<div class="section-sub">Fecha dia ' + card.fechamento + ' · Vence dia ' + card.vencimento + '</div>';
   var editBtn = document.createElement('button'); editBtn.className = 'btn-sm'; editBtn.textContent = '⚙ Editar';
   editBtn.onclick = function(){ openEditCardModal(card.id); };
-  var importBtn = document.createElement('button'); importBtn.className = 'btn-sm'; importBtn.textContent = '⬆ Importar';
-  importBtn.onclick = function(){ openImportBillModal(card.id); };
   var addBillBtn = document.createElement('button'); addBillBtn.className = 'btn-sm accent'; addBillBtn.textContent = '+ Fatura';
   addBillBtn.onclick = function(){ openAddBillModal(card.id); };
   var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise';
@@ -6687,7 +7861,7 @@ function renderCardBills(el, cardId) {
   bancoBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='vencimento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='vencimento'?'#000':'var(--muted)');
   bancoBtn.textContent = 'Vencimento'; bancoBtn.onclick = function(){ _cardMonthLabel='vencimento'; renderCardPreserve(); };
   labelToggle.appendChild(despBtn); labelToggle.appendChild(bancoBtn);
-  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(importBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(viewToggle); hd.appendChild(labelToggle); hd.appendChild(addBillBtn);
+  hd.appendChild(backBtn); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(groupsBtn); hd.appendChild(analysisBtn); hd.appendChild(viewToggle); hd.appendChild(labelToggle); hd.appendChild(addBillBtn);
   var html = '';
 
   var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -6754,6 +7928,15 @@ function renderCardBills(el, cardId) {
   // Wire up month-header clicks — use addEventListener so stopPropagation works inside
   wrapper.querySelectorAll('.month-header[data-bid]').forEach(function(hdr) {
     hdr.addEventListener('click', function() { toggleCardBill(hdr.dataset.bid); });
+  });
+  // Set _cardFocusedBill to whichever bill is currently open
+  wrapper.querySelectorAll('.month-body').forEach(function(b) {
+    if (b.id && b.style.display !== 'none') {
+      var parts = b.id.split('-');
+      var m = parseInt(parts[parts.length-1]);
+      var y = parseInt(parts[parts.length-2]);
+      if (!isNaN(y) && !isNaN(m)) { _cardFocusedBill = { y: y, m: m }; }
+    }
   });
   // Wire drag & drop for card transactions
   wireCardDragDrop(wrapper, cardId);
@@ -6834,20 +8017,42 @@ function acLoadMemory() {
   if (state.card && state.card.acMemory) _acMemory = state.card.acMemory;
   // Pre-populate tx-desc from existing transaction descriptions
   var key = acGetKey('tx-desc');
-  if (!_acMemory[key] || !_acMemory[key].length) {
-    var descs = [];
-    var bills = state.card && state.card.bills || {};
-    Object.keys(bills).forEach(function(cid) {
-      Object.keys(bills[cid]).forEach(function(y) {
-        Object.keys(bills[cid][y]).forEach(function(m) {
-          (bills[cid][y][m] || []).forEach(function(tx) {
-            if (tx.descricao && !descs.includes(tx.descricao)) descs.push(tx.descricao);
-          });
+  var descs = [];
+  var bills = state.card && state.card.bills || {};
+  // Collect all txs with date for sorting
+  var allTxs = [];
+  Object.keys(bills).forEach(function(cid) {
+    Object.keys(bills[cid]).forEach(function(y) {
+      Object.keys(bills[cid][y]).forEach(function(m) {
+        (bills[cid][y][m] || []).forEach(function(tx) {
+          if (tx.descricao) allTxs.push(tx);
         });
       });
     });
-    if (descs.length) _acMemory[key] = descs;
-  }
+  });
+  // Sort by date descending (most recent first)
+  allTxs.sort(function(a, b) { return cardDateToNum(b.data||'') - cardDateToNum(a.data||''); });
+  // Build acMemory for descriptions (unique, most recent first)
+  allTxs.forEach(function(tx) {
+    if (!descs.includes(tx.descricao)) descs.push(tx.descricao);
+  });
+  if (descs.length) _acMemory[key] = descs;
+  // Build/refresh state.card.memory from transactions (last used category per description)
+  if (!state.card.memory) state.card.memory = [];
+  allTxs.forEach(function(tx) {
+    if (!tx.descricao || !tx.categoriaId) return;
+    var ex = state.card.memory.find(function(x){ return x.pattern === tx.descricao; });
+    if (!ex) state.card.memory.push({ pattern: tx.descricao, categoriaId: tx.categoriaId||'' });
+    // allTxs is sorted most-recent first, so first occurrence wins (most recent category)
+  });
+  // Build desc->nota map (most recent nota per description)
+  // Reset to rebuild fresh from transactions (avoids stale empty entries)
+  state.card.notaMemory = {};
+  allTxs.forEach(function(tx) {
+    if (!tx.descricao || !tx.nota) return;
+    // allTxs sorted most-recent first; only set if not yet found (first with nota wins)
+    if (!state.card.notaMemory[tx.descricao]) state.card.notaMemory[tx.descricao] = tx.nota;
+  });
   // Pre-populate detalhes from existing notas
   var keyD = acGetKey('detalhes');
   if (!_acMemory[keyD] || !_acMemory[keyD].length) {
@@ -6877,6 +8082,7 @@ function acSuggest(field, query) {
 function acAttach(input, field, onSelect) {
   var dd = null;
   var activeIdx = -1;
+  var _picking = false;
 
   function closeAc() { if (dd) { dd.remove(); dd = null; } activeIdx = -1; }
 
@@ -6887,15 +8093,19 @@ function acAttach(input, field, onSelect) {
     dd.className = 'ac-dropdown';
     var rect = input.getBoundingClientRect();
     dd.style.cssText = 'position:fixed;top:' + (rect.bottom + 2) + 'px;left:' + rect.left + 'px;min-width:' + Math.max(rect.width, 200) + 'px;z-index:99999';
-    items.forEach(function(item, i) {
+    items.forEach(function(item) {
       var el = document.createElement('div');
       el.className = 'ac-item';
       el.textContent = item;
       el.addEventListener('mousedown', function(e) {
         e.preventDefault();
+        _picking = true;
+      });
+      el.addEventListener('click', function() {
         input.value = item;
-        if (onSelect) onSelect(item);
         closeAc();
+        _picking = false;
+        if (onSelect) onSelect(item);
       });
       dd.appendChild(el);
     });
@@ -6914,8 +8124,14 @@ function acAttach(input, field, onSelect) {
     if (s.length && input.value.length > 0) openAc(s); else closeAc();
   });
   input.addEventListener('focus', function() {
+    if (_picking) return;
+    if (input.value.length > 0) return;
     var s = acSuggest(field, input.value);
     if (s.length) openAc(s);
+  });
+  input.addEventListener('blur', function() {
+    if (_picking) return;
+    setTimeout(closeAc, 150);
   });
   input.addEventListener('keydown', function(e) {
     if (!dd) return;
@@ -6923,11 +8139,13 @@ function acAttach(input, field, onSelect) {
     if (e.key === 'ArrowDown') { e.preventDefault(); updateActive(Math.min(activeIdx+1, items.length-1)); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); updateActive(Math.max(activeIdx-1, 0)); }
     else if ((e.key === 'Enter' || e.key === 'Tab') && activeIdx >= 0 && items[activeIdx]) {
-      e.preventDefault(); input.value = items[activeIdx].textContent;
-      if (onSelect) onSelect(input.value); closeAc();
+      e.preventDefault();
+      input.value = items[activeIdx].textContent;
+      var val = input.value;
+      closeAc();
+      if (onSelect) onSelect(val);
     } else if (e.key === 'Escape') { closeAc(); }
   });
-  input.addEventListener('blur', function(){ setTimeout(closeAc, 150); });
 }
 
 function getInstallmentNota(tx, cardId) {
@@ -7056,7 +8274,9 @@ function inlineEditCardTx(cell) {
         if (tx.installmentGroupId) propagateInstallmentField(tx, 'descricao', val, cardId);
         saveState(); acRemember('tx-desc', val);
       }
-      cell.innerHTML = escHtml(tx.descricao||'') + (tx.parcela ? ' <span style="font-size:10px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</span>' : '');
+      setTimeout(function() {
+        if (document.body.contains(cell)) cell.innerHTML = escHtml(tx.descricao||'') + (tx.parcela ? ' <span style="font-size:10px;color:var(--muted)">' + escHtml(tx.parcela||'') + '</span>' : '');
+      }, 0);
     });
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') input.blur();
@@ -7152,10 +8372,84 @@ function openAddPaymentModal(cardId, y, m) {
     saveState(); overlay.remove(); renderCardPreserve();
     showToast('Pagamento registrado: ' + fmtBRL(valor));
   };
-  footer.appendChild(cancelBtn); footer.appendChild(saveBtn);
+  var histBtn = document.createElement('button');
+  histBtn.className = 'btn-modal-cancel';
+  histBtn.textContent = '⚙ Histórico';
+  histBtn.onclick = function(){ openPayHistoryManager(cardId); };
+  footer.appendChild(histBtn); footer.appendChild(cancelBtn); footer.appendChild(saveBtn);
   box.appendChild(hdr); box.appendChild(bod); box.appendChild(footer);
   overlay.appendChild(box);
   showModal(overlay);
+
+  // Autocomplete for payment description — built from past payment descriptions
+  var payDescDescs = [];
+  var allPays = state.card.payments || {};
+  Object.keys(allPays).forEach(function(cid) {
+    Object.keys(allPays[cid]).forEach(function(py) {
+      Object.keys(allPays[cid][py]).forEach(function(pm) {
+        (allPays[cid][py][pm] || []).forEach(function(p) {
+          if (p.descricao && !payDescDescs.includes(p.descricao)) payDescDescs.push(p.descricao);
+        });
+      });
+    });
+  });
+  ['Pagamento total', 'Pagamento antecipado', 'Pagamento parcial', 'Pagamento mínimo'].forEach(function(d) {
+    if (!payDescDescs.includes(d)) payDescDescs.push(d);
+  });
+  var _acPayKey = acGetKey('pay-desc-' + cardId);
+  _acMemory[_acPayKey] = payDescDescs;
+  acAttach(payDescInput, 'pay-desc-' + cardId, null);
+
+  // Autocomplete for payment nota — built from past payment notas
+  var payNotaDescs = [];
+  Object.keys(allPays).forEach(function(cid) {
+    Object.keys(allPays[cid]).forEach(function(py) {
+      Object.keys(allPays[cid][py]).forEach(function(pm) {
+        (allPays[cid][py][pm] || []).forEach(function(p) {
+          if (p.nota && !payNotaDescs.includes(p.nota)) payNotaDescs.push(p.nota);
+        });
+      });
+    });
+  });
+  if (payNotaDescs.length) {
+    var _acPayNotaKey = acGetKey('pay-nota-' + cardId);
+    _acMemory[_acPayNotaKey] = payNotaDescs;
+    acAttach(payNotaInput, 'pay-nota-' + cardId, null);
+  }
+}
+
+function openPayHistoryManager(cardId) {
+  renderPayHistoryManager(cardId);
+  document.getElementById('payHistoryModal').classList.add('show');
+}
+
+function renderPayHistoryManager(cardId) {
+  // Build current lists from _acMemory
+  var descKey = acGetKey('pay-desc-' + cardId);
+  var notaKey = acGetKey('pay-nota-' + cardId);
+  var descs = (_acMemory[descKey] || []).slice();
+  var notas = (_acMemory[notaKey] || []).slice();
+
+  function renderList(containerId, items, key) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    if (!items.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:4px">Nenhuma entrada.</div>'; return; }
+    el.innerHTML = '';
+    items.forEach(function(item, i) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--surface2);border-radius:4px';
+      row.innerHTML = '<span style="flex:1;font-size:12px;color:var(--text)">' + escHtml(item) + '</span>'
+        + '<button class="status-del-btn" style="flex-shrink:0">✕</button>';
+      row.querySelector('button').onclick = function() {
+        _acMemory[key] = (_acMemory[key] || []).filter(function(v){ return v !== item; });
+        renderPayHistoryManager(cardId);
+      };
+      el.appendChild(row);
+    });
+  }
+
+  renderList('payHistDescList', descs, descKey);
+  renderList('payHistNotaList', notas, notaKey);
 }
 
 function inlineEditPayment(cell) {
@@ -7275,7 +8569,7 @@ function buildCardTxTable(cardId, y, m, txs) {
   txs = combined.filter(function(x){ return x.type==='tx'; }).map(function(x){ return x.data; });
 
 
-  if (!txs.length && !pays.length) return '<div class="empty-cell">Nenhuma transação. <button class="btn-sm" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Adicionar</button></div>';
+  if (!txs.length && !pays.length) return '<div class="empty-cell">Nenhuma transação. <button class="btn-sm" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Despesa</button> <button class="btn-sm" onclick="openImportBillModal(\'' + cardId + '\',' + y + ',' + m + ')">⬆ Importar</button></div>';
   if (!txs.length) {
     // Only payments, no expenses
     var onlyPayRows = pays.map(function(p){
@@ -7290,9 +8584,7 @@ function buildCardTxTable(cardId, y, m, txs) {
   }
 
   var rows = txs.map(function(tx) {
-    var opts = ['<option value="">— Classificar</option>'].concat(cats.map(function(c){
-      return '<option value="' + escHtml(c) + '"' + (tx.categoria===c?' selected':'') + '>' + escHtml(c) + '</option>';
-    })).join('');
+    var opts = buildCatOpts(tx.categoriaId||'');
     return '<tr id="ctx-' + tx.id + '" draggable="' + (isDragMode ? 'true' : 'false') + '" data-txid="' + tx.id + '" data-date="' + (tx.data||'') + '">'
       + (isDragMode ? '<td style="width:24px;cursor:grab;color:var(--muted);font-size:14px;text-align:center;user-select:none">⠿</td>' : '')
       + '<td style="color:var(--text2);font-size:12px;font-family:\'DM Mono\',monospace;white-space:nowrap;cursor:pointer" onclick="inlineEditCardTx(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" data-field="data">' + (tx.data||'—') + '</td>'
@@ -7305,22 +8597,13 @@ function buildCardTxTable(cardId, y, m, txs) {
   }).join('');
 
   // Build allRows: interleave tx rows and payment rows in combined sorted order
-  // Also insert divider for partial payments
-  var coverage = pays.length ? calcPaymentCoverage(cardId, y, m) : { coveredIds: {}, isPartial: false };
   var allRows;
   if (pays.length) {
     var txRowList2 = rows.match(/<tr[\s\S]*?<\/tr>/g) || [];
     var txIdx2 = 0;
-    var dividerInserted = false;
     allRows = combined.map(function(item) {
       if (item.type === 'pay') return makePayRow(item.data);
-      var row = txRowList2[txIdx2++] || '';
-      // Insert divider before first uncovered tx in partial payment
-      if (coverage.isPartial && !dividerInserted && item.type === 'tx' && !coverage.coveredIds[item.data.id]) {
-        dividerInserted = true;
-        return '<tr><td colspan="7" style="padding:0"><div style="border-top:2px dashed var(--border);margin:2px 0;position:relative"><span style="position:absolute;left:50%;transform:translateX(-50%) translateY(-50%);background:var(--surface);padding:0 8px;font-size:10px;color:var(--muted);white-space:nowrap">↑ Quitado · Em aberto ↓</span></div></td></tr>' + row;
-      }
-      return row;
+      return txRowList2[txIdx2++] || '';
     }).join('');
   } else {
     allRows = rows;
@@ -7356,6 +8639,8 @@ function buildCardTxTable(cardId, y, m, txs) {
     + '<div style="padding:8px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)">'
     + '<button class="btn-sm accent" onclick="cardBillAction(this,\'addTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Despesa</button>'
     + '<button class="btn-sm" onclick="openAddPaymentModal(this.dataset.cid,parseInt(this.dataset.y),parseInt(this.dataset.m))" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">+ Pagamento</button>'
+    + '<button class="btn-sm" onclick="openImportBillModal(this.dataset.cid,parseInt(this.dataset.y),parseInt(this.dataset.m))" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">⬆ Importar</button>'
+    + '<button class="btn-sm" onclick="openRulesManager(\'' + cardId + '\',' + y + ',' + m + ')">⚡ Regras</button>'
     + '</div>'
     + '<table class="transactions-table"><thead><tr>'
     + (isDragMode ? '<th style="width:24px"></th>' : '')
@@ -7387,12 +8672,109 @@ function cardBillAction(btn, action) {
   else if (action === 'deleteCard') deleteCard(cid);
 }
 
+function genCatId() {
+  return 'cat-' + Math.random().toString(36).slice(2, 9) + Math.random().toString(36).slice(2, 5);
+}
+
+function getCatName(id) {
+  if (!id) return '';
+  var cat = (state.card.categorias || []).find(function(c) { return c.id === id; });
+  return cat ? cat.name : '';
+}
+
+function getCatId(name) {
+  if (!name) return '';
+  var cat = (state.card.categorias || []).find(function(c) { return c.name === name; });
+  return cat ? cat.id : '';
+}
+
+function migrateCategorias() {
+  var cats = state.card.categorias || [];
+  if (!cats.length) return;
+  // Already migrated if first entry is an object
+  if (typeof cats[0] === 'object' && cats[0].id) return;
+
+  // Build name→id map
+  var nameToId = {};
+  state.card.categorias = cats.map(function(name) {
+    var id = genCatId();
+    nameToId[name] = id;
+    return { id: id, name: String(name) };
+  });
+
+  function migrateField(obj, field) {
+    if (obj[field] && typeof obj[field] === 'string') {
+      var id = nameToId[obj[field]];
+      obj.categoriaId = id || '';
+      delete obj[field];
+    }
+  }
+
+  // Migrate card.bills
+  var bills = state.card.bills || {};
+  Object.keys(bills).forEach(function(cid) {
+    Object.keys(bills[cid]).forEach(function(y) {
+      Object.keys(bills[cid][y]).forEach(function(m) {
+        (bills[cid][y][m] || []).forEach(function(tx) { migrateField(tx, 'categoria'); });
+      });
+    });
+  });
+
+  // Migrate finance.bills
+  var finBills = state.finance.bills || {};
+  Object.keys(finBills).forEach(function(fy) {
+    Object.keys(finBills[fy]).forEach(function(fm) {
+      (finBills[fy][fm] || []).forEach(function(r) { migrateField(r, 'categoria'); });
+    });
+  });
+
+  // Migrate catGroups.cats (array of names → array of ids)
+  (state.card.catGroups || []).forEach(function(g) {
+    if (g.cats && g.cats.length && typeof g.cats[0] === 'string') {
+      g.cats = g.cats.map(function(name) { return nameToId[name] || ''; }).filter(Boolean);
+    }
+  });
+
+  // Migrate memory (desc→categoria string → desc→categoriaId)
+  (state.card.memory || []).forEach(function(m) {
+    if (m.categoria && !m.categoriaId) {
+      m.categoriaId = nameToId[m.categoria] || '';
+      delete m.categoria;
+    }
+  });
+
+  // Migrate rules
+  (state.card.rules || []).forEach(function(r) {
+    if (r.categoria && !r.categoriaId) {
+      r.categoriaId = nameToId[r.categoria] || '';
+      delete r.categoria;
+    }
+  });
+
+  saveState();
+}
+
+function buildCatOpts(selectedId) {
+  var cats = state.card.categorias || [];
+  var opts = '<option value="">— Classificar</option>'
+    + cats.map(function(c){ return '<option value="' + escHtml(c.id) + '"' + (selectedId===c.id?' selected':'') + '>' + escHtml(c.name) + '</option>'; }).join('')
+    + '<option value="" disabled style="color:var(--border)">──────────</option>'
+    + '<option value="__manage__" style="color:var(--muted)">⚙ Gerenciar categorias</option>';
+  return opts;
+}
+
 function cardTxCatChange(sel) {
+  if (sel.value === '__manage__') {
+    sel.value = sel.dataset.prev || '';
+    openCatManager();
+    return;
+  }
+  sel.dataset.prev = sel.value;
   var cid = sel.dataset.cid;
   var y = parseInt(sel.dataset.y);
   var m = parseInt(sel.dataset.m);
   var txid = sel.dataset.txid;
-  setCardTxCat(cid, y, m, txid, sel.value);
+  setCardTxCat(cid, y, m, txid, sel.value); // sel.value is now categoriaId
 }
 
 function backToCards() {
@@ -7407,27 +8789,26 @@ function toggleCardBill(id) {
   if (body.style.display === 'none' || !body.style.display) {
     body.style.display = 'block';
     if (chevron) chevron.classList.add('open');
+    // Track focused bill: id format is cb-{cardId}-{y}-{m}
+    var parts = id.split('-');
+    var m = parseInt(parts[parts.length-1]);
+    var y = parseInt(parts[parts.length-2]);
+    if (!isNaN(y) && !isNaN(m)) _cardFocusedBill = { y: y, m: m };
   } else {
     body.style.display = 'none';
     if (chevron) chevron.classList.remove('open');
   }
 }
 
-function setCardTxCat(cardId, y, m, txId, cat) {
+function setCardTxCat(cardId, y, m, txId, catId) {
   var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
   var tx = txs.find(function(t){ return t.id === txId; });
   if (tx) {
-    tx.categoria = cat;
+    tx.categoriaId = catId;
     // Propagate to all parcelas of same group
-    if (tx.installmentGroupId) propagateInstallmentField(tx, 'categoria', cat, cardId);
+    if (tx.installmentGroupId) propagateInstallmentField(tx, 'categoriaId', catId, cardId);
     // Update memory
-    if (cat) {
-      var mem = state.card.memory || [];
-      var existing = mem.find(function(m){ return m.pattern === tx.descricao; });
-      if (existing) existing.categoria = cat;
-      else mem.push({ pattern: tx.descricao, categoria: cat });
-      state.card.memory = mem;
-    }
+    if (catId) updateCardMemory(tx.descricao, catId);
     saveState();
   }
 }
@@ -7652,8 +9033,7 @@ function openAddTxModal(cardId, y, m) {
   box.className = 'modal-box';
   box.style.maxWidth = '440px';
 
-  var catOpts = '<option value="">— Classificar</option>'
-    + (state.card.categorias||[]).map(function(c){ return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+  var catOpts = buildCatOpts('');
 
   box.innerHTML = '<div class="modal-header"><span>Nova Transação</span><button class="modal-close" onclick="closeAddTxModal()">✕</button></div>'
     + '<div style="display:flex;flex-direction:column;gap:12px;padding:16px">'
@@ -7667,6 +9047,7 @@ function openAddTxModal(cardId, y, m) {
     // 1x fields
     + '<div id="tx-fields-1x">'
     + '<div class="modal-field"><label class="modal-label">Valor (R$)</label><input class="modal-input" id="tx-valor" type="number" step="0.01" min="0" placeholder="0,00"></div>'
+    + '<div class="modal-field"><label class="modal-label">Detalhes (opcional)</label><input class="modal-input" id="tx-nota" placeholder="Descrição do item"></div>'
     + '</div>'
     // Installment fields (hidden by default)
     + '<div id="tx-fields-parc" style="display:none;flex-direction:column;gap:10px">'
@@ -7689,10 +9070,6 @@ function openAddTxModal(cardId, y, m) {
   var saveBtn = document.createElement('button');
   saveBtn.className = 'btn-sm accent'; saveBtn.textContent = 'Salvar';
   saveBtn.onclick = function(){ saveNewTx(cardId, y, m); };
-  setTimeout(function(){
-    var descInput = document.getElementById('tx-desc');
-    if (descInput) acAttach(descInput, 'tx-desc', null);
-  }, 50);
   footer.appendChild(cancelBtn);
   footer.appendChild(saveBtn);
 
@@ -7713,16 +9090,28 @@ function openAddTxModal(cardId, y, m) {
   toggle.appendChild(btn1x);
   toggle.appendChild(btnParc);
   document.getElementById('tx-parc-total').addEventListener('input', function(){ syncInstallmentValues('parcela'); });
+  // Handle __manage__ in category select
+  var catSelTx = document.getElementById('tx-cat');
+  if (catSelTx) catSelTx.addEventListener('change', function(){ if (this.value === '__manage__') { this.value = ''; openCatManager(); } });
   // Attach autocomplete to description field — auto-fill category on select
   var descInput = document.getElementById('tx-desc');
   if (descInput) acAttach(descInput, 'tx-desc', function(val) {
     var mem = state.card.memory || [];
-    var match = mem.find(function(m) {
-      return m.pattern === val || val.toLowerCase().includes(m.pattern.toLowerCase()) || m.pattern.toLowerCase().includes(val.toLowerCase());
-    });
-    if (match && match.categoria) {
+    var match = mem.find(function(m){ return m.pattern === val; })
+              || mem.find(function(m){ return m.pattern.toLowerCase() === val.toLowerCase(); });
+    if (match && match.categoriaId) {
       var catSel = document.getElementById('tx-cat');
-      if (catSel) catSel.value = match.categoria;
+      if (catSel) {
+        // Verify the category exists as an option in the select
+        var exists = Array.from(catSel.options).some(function(o){ return o.value === match.categoriaId; });
+        if (exists) catSel.value = match.categoriaId;
+      }
+    }
+    var notaInput = document.getElementById('tx-nota');
+    if (notaInput) {
+      var notaMem = state.card.notaMemory || {};
+      var nota = notaMem[val] || (notaMem[Object.keys(notaMem).find(function(k){ return k.toLowerCase() === val.toLowerCase(); })] || '');
+      if (nota) notaInput.value = nota;
     }
   });
 }
@@ -7769,10 +9158,13 @@ function saveNewTx(cardId, y, m) {
   if (!isParc) {
     // Simple 1x transaction
     var valor = parseFloat(document.getElementById('tx-valor').value) || 0;
-    var tx = { id: uuid(), descricao: desc, data: dataStr, valor: valor, parcela: '', categoria: cat };
+    var nota = (document.getElementById('tx-nota') ? document.getElementById('tx-nota').value.trim() : '') || '';
+    var tx = { id: uuid(), descricao: desc, data: dataStr, valor: valor, parcela: '', categoriaId: cat, nota: nota };
+    if (!cat) { var rule = matchRule(desc); if (rule) { if (rule.categoriaId) tx.categoriaId = rule.categoriaId; if (rule.nota && !nota) tx.nota = rule.nota; } }
     ensureCardMonth(cardId, y, m);
     state.card.bills[cardId][y][m].push(tx);
     if (cat) updateCardMemory(desc, cat);
+    if (nota) { if (!state.card.notaMemory) state.card.notaMemory = {}; state.card.notaMemory[desc] = nota; }
     pushUndo(); saveState(); closeAddTxModal(); renderCardPreserve();
     return;
   }
@@ -7783,6 +9175,7 @@ function saveNewTx(cardId, y, m) {
   var parcValor = parseFloat(document.getElementById('tx-parc-valor').value) || 0;
   if (!parcValor) { showToast('Informe o valor da parcela'); return; }
   if (parcTotal < 2) { showToast('Total de parcelas deve ser ≥ 2'); return; }
+  var notaParc = (document.getElementById('tx-nota') ? document.getElementById('tx-nota').value.trim() : '') || '';
 
   var grpId = 'grp-' + Date.now();
 
@@ -7813,7 +9206,8 @@ function saveNewTx(cardId, y, m) {
       data: dataStr,
       valor: parcValor,
       parcela: pNum + '/' + parcTotal,
-      categoria: cat,
+      categoriaId: cat,
+      nota: notaParc,
       installmentGroupId: grpId,
       installmentTotal: parcTotal,
       installmentCurrent: pNum,
@@ -7831,6 +9225,7 @@ function saveNewTx(cardId, y, m) {
   });
 
   if (cat) updateCardMemory(desc, cat);
+  if (notaParc) { if (!state.card.notaMemory) state.card.notaMemory = {}; state.card.notaMemory[desc] = notaParc; }
 
   // Ask about past parcels if any
   if (pastParcels.length > 0) {
@@ -7861,11 +9256,11 @@ function saveNewTx(cardId, y, m) {
   showToast('Parcelamento criado: ' + parcTotal + 'x de ' + fmtBRL(parcValor));
 }
 
-function updateCardMemory(desc, cat) {
+function updateCardMemory(desc, catId) {
   var mem = state.card.memory || [];
   var ex = mem.find(function(x){ return x.pattern === desc; });
-  if (ex) ex.categoria = cat;
-  else mem.push({ pattern: desc, categoria: cat });
+  if (ex) ex.categoriaId = catId;
+  else mem.push({ pattern: desc, categoriaId: catId });
   state.card.memory = mem;
 }
 
@@ -7879,18 +9274,18 @@ function saveNewTx_LEGACY(cardId, y, m) {
     data: dataStr,
     valor: parseFloat(document.getElementById('tx-valor').value) || 0,
     parcela: document.getElementById('tx-parcela') ? document.getElementById('tx-parcela').value.trim() : '',
-    categoria: document.getElementById('tx-cat').value
+    categoriaId: document.getElementById('tx-cat').value
   };
   if (!state.card.bills[cardId]) state.card.bills[cardId] = {};
   if (!state.card.bills[cardId][y]) state.card.bills[cardId][y] = {};
   if (!state.card.bills[cardId][y][m]) state.card.bills[cardId][y][m] = [];
   state.card.bills[cardId][y][m].push(tx);
   // Update memory if category set
-  if (tx.categoria) {
+  if (tx.categoriaId) {
     var mem = state.card.memory || [];
     var ex = mem.find(function(x){ return x.pattern === tx.descricao; });
-    if (ex) ex.categoria = tx.categoria;
-    else mem.push({ pattern: tx.descricao, categoria: tx.categoria });
+    if (ex) ex.categoriaId = tx.categoriaId;
+    else mem.push({ pattern: tx.descricao, categoriaId: tx.categoriaId||'' });
     state.card.memory = mem;
   }
   saveState(); closeAddTxModal(); renderCardPreserve();
