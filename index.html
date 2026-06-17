@@ -203,9 +203,9 @@ header {
 .section-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .btn-sm {
   font-family: 'DM Mono', monospace;
-  font-size: 11px; padding: 5px 12px;
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  background: transparent; color: var(--text2);
+  font-size: 12px; padding: 6px 12px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface2); color: var(--muted);
   cursor: pointer; transition: all .15s; white-space: nowrap;
 }
 .btn-sm:hover { border-color: var(--text2); color: var(--text); }
@@ -756,6 +756,7 @@ header {
 .modal-input:focus, .modal-select:focus, .modal-textarea:focus { border-color: var(--accent); }
 .modal-textarea { resize: vertical; min-height: 70px; }
 .modal-select option { background: var(--surface); }
+select option { background: var(--bg, #0f0f0f); color: var(--text, #f0f0f0); }
 .modal-row { display: flex; gap: 8px; }
 .modal-row .modal-field { flex: 1; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
@@ -1375,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.4.23</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.4.82</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1465,6 +1466,10 @@ tr.dragging { opacity: 0.4; }
 </div>
 
 <!-- ════════ TAB: DASHBOARD ════════ -->
+<div class="tab-panel" id="panel-debit">
+  <div id="debit-root"></div>
+</div>
+
 <div class="tab-panel" id="panel-dashboard">
   <div class="section-hd" style="margin-bottom:4px">
     <div>
@@ -1472,8 +1477,8 @@ tr.dragging { opacity: 0.4; }
       <div class="section-sub" id="dashboardSub">Visão consolidada de despesas</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <button class="btn-sm" onclick="openCatGroupsModal()">🏷 Grupos</button>
-      <button class="btn-sm" onclick="openCatManager()">⚙ Categorias</button>
+      <button class="btn-sm" onclick="openCatGroupsModal()">Grupos</button>
+      <button class="btn-sm" onclick="openCatManager()">Categorias</button>
     </div>
     <div style="display:flex;gap:6px;align-items:center;margin-bottom:0" id="dashboardControls"></div>
   </div>
@@ -1532,7 +1537,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.4.23 — agenda-v0423</p>
+    <p class="version-tag">Agenda v0.4.82 — agenda-v0482</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1686,11 +1691,19 @@ let state = {
     memory: [],
     catGroups: []
   },
+  debit: {
+    accounts: [],
+    transactions: {},
+    memory: [],
+    acMemory: {},
+    ignoreKeywords: ['PIX RICHARD','TRANSF PROPRIA','TED PROPRIA'],
+    recurringCategories: []
+  },
   config: {
     apiKey: '',
     theme: 'dark',
     activeTab: 'tasks',
-    tabLabels: { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', ai: 'IA', settings: 'Config' }
+    tabLabels: { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', ai: 'IA', settings: 'Config' }
   }
 };
 
@@ -1731,6 +1744,15 @@ function mergeState(saved) {
     if (!state.card.categorias) state.card.categorias = [];
     if (!state.card.rules) state.card.rules = [];
     migrateCategorias();
+  }
+  if (saved.debit) {
+    state.debit = { ...state.debit, ...saved.debit };
+    if (!state.debit.accounts) state.debit.accounts = [];
+    if (!state.debit.transactions) state.debit.transactions = {};
+    if (!state.debit.memory) state.debit.memory = [];
+    if (!state.debit.acMemory) state.debit.acMemory = {};
+    if (!state.debit.ignoreKeywords) state.debit.ignoreKeywords = [];
+    if (!state.debit.recurringCategories) state.debit.recurringCategories = [];
   }
   if (saved.config) {
     state.config = { ...state.config, ...saved.config };
@@ -1784,7 +1806,7 @@ var _skipUndo = false;
 
 function pushUndo() {
   if (_skipUndo) return;
-  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card }));
+  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card, debit: state.debit }));
   _redoSnapshot = null; // clear redo when new action is taken
   updateUndoRedoBtns();
 }
@@ -1792,7 +1814,7 @@ function pushUndo() {
 function undo() {
   if (!_undoSnapshot) return;
   // Save current for redo
-  _redoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card }));
+  _redoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card, debit: state.debit }));
   var snap = _undoSnapshot;
   _undoSnapshot = null;
   state.tasks = snap.tasks;
@@ -1809,7 +1831,7 @@ function undo() {
 function redo() {
   if (!_redoSnapshot) return;
   // Save current for undo
-  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card }));
+  _undoSnapshot = JSON.parse(JSON.stringify({ tasks: state.tasks, finance: state.finance, card: state.card, debit: state.debit }));
   var snap = _redoSnapshot;
   _redoSnapshot = null;
   state.tasks = snap.tasks;
@@ -2025,8 +2047,8 @@ function applySeeds() {
 /* ═══════════════════════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════════════════════ */
-const TAB_IDS = ['tasks', 'finance', 'card', 'dashboard', 'ai', 'settings'];
-const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', dashboard: 'Dashboard', ai: 'IA', settings: 'Config' };
+const TAB_IDS = ['tasks', 'finance', 'card', 'debit', 'dashboard', 'ai', 'settings'];
+const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', dashboard: 'Dashboard', ai: 'IA', settings: 'Config' };
 
 function getTabLabel(tabId) {
   return (state.config.tabLabels && state.config.tabLabels[tabId]) || TAB_DEFAULTS[tabId] || tabId;
@@ -2085,6 +2107,7 @@ function switchTab(tabId) {
   });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tabId));
   if (tabId === 'dashboard') renderDashboard();
+  if (tabId === 'debit') renderDebit();
   saveState();
 }
 
@@ -2093,6 +2116,7 @@ function renderAll() {
   renderTasks();
   renderFinance();
   renderCard();
+  renderDebit();
   const activeTab = state.config.activeTab || 'tasks';
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + activeTab));
   if (activeTab === 'dashboard') renderDashboard();
@@ -4699,9 +4723,9 @@ function renderFinance() {
     var hdSub = document.createElement('div'); hdSub.className = 'section-sub'; hdSub.id = 'financeSub'; hdSub.textContent = 'Contas mensais';
     hdLeft.appendChild(hdTitle); hdLeft.appendChild(hdSub);
     var hdRight = document.createElement('div'); hdRight.style.cssText = 'display:flex;gap:6px;align-items:center';
-    var grpBtn = document.createElement('button'); grpBtn.className = 'btn-sm'; grpBtn.textContent = '🏷 Grupos';
+    var grpBtn = document.createElement('button'); grpBtn.className = 'btn-sm'; grpBtn.textContent = 'Grupos';
     grpBtn.onclick = openCatGroupsModal;
-    var catBtn = document.createElement('button'); catBtn.className = 'btn-sm'; catBtn.textContent = '⚙ Categorias';
+    var catBtn = document.createElement('button'); catBtn.className = 'btn-sm'; catBtn.textContent = 'Categorias';
     catBtn.onclick = openCatManager;
     var iaBtn = document.createElement('button'); iaBtn.className = 'btn-sm'; iaBtn.textContent = '⚡ IA';
     iaBtn.onclick = openFinanceChat;
@@ -6037,6 +6061,7 @@ var _dashM = new Date().getMonth();
 var _dashLabel = 'fechamento';
 var _dashAccum = false; // acumulado do ano
 var _dashActiveSources = null; // null = all active; Set of source ids when filtered
+var _dashActiveGroups = null; // null = all active; Set of group names when filtered
 var _dashViewMode = 'group'; // 'category' or 'group'
 var _dashPayFilter = 'all'; // 'all' | 'paid' | 'open'
 
@@ -6070,7 +6095,8 @@ function getDashboardExpenses(y, m, label, payFilter) {
           if (valor<0 && payFilter === 'open') return;
           if (valor>0 && payFilter === 'paid' && !(coverage && coverage.coveredIds[tx.id])) return;
           if (valor>0 && payFilter === 'open' && (coverage && coverage.coveredIds[tx.id])) return;
-          expenses.push({ descricao:tx.descricao, valor:valor, categoriaId:tx.categoriaId||'', source:card.id, sourceLabel:card.nome, pago:billPaid, data:tx.data||'', nota:tx.nota||'', parcela:tx.parcela||'', _billPayTotal:payTotal });
+          var nota = tx.nota || getInstallmentNota(tx, card.id) || '';
+          expenses.push({ descricao:tx.descricao||'', valor:valor, categoriaId:tx.categoriaId||'', source:card.id, sourceLabel:'💳 '+card.nome, pago:billPaid, data:tx.data||'', nota:nota, parcela:tx.parcela||'', _billPayTotal:payTotal });
         });
       });
     });
@@ -6085,7 +6111,1116 @@ function getDashboardExpenses(y, m, label, payFilter) {
     if (payFilter === 'open' && isPago) return;
     expenses.push({ descricao:r.nome, valor:valor, categoriaId:r.categoriaId||'', source:'contas', sourceLabel:'Contas', pago:isPago, data:r.venc||'', nota:r.obs||'' });
   });
+  // Débito
+  (state.debit.accounts||[]).forEach(function(acc) {
+    var txs = (state.debit.transactions[acc.id]||[]);
+    txs.forEach(function(tx) {
+      if (tx.ignorarDashboard) return;
+      var dataYM = tx.data ? tx.data.slice(0,7) : '';
+      var txY = parseInt(dataYM.slice(0,4)), txM = parseInt(dataYM.slice(5,7))-1;
+      if (txY !== y || txM !== m) return;
+      var valor = tx.estorno ? -(tx.valor||0) : (tx.valor||0);
+      if (valor === 0) return;
+      if (payFilter === 'open') return; // debit is always "paid" immediately
+      var rawData = tx.data||'';
+      var fmtData = rawData.length===10 ? rawData.slice(8,10)+'/'+rawData.slice(5,7)+'/'+rawData.slice(2,4) : rawData;
+      expenses.push({ descricao:tx.descricao, valor:valor, categoriaId:tx.categoriaId||'', source:acc.id, sourceLabel:'🏦 '+acc.nome, pago:true, data:fmtData, nota:tx.nota||'' });
+    });
+  });
   return expenses;
+}
+
+// ═══════════════════════════════════════════════
+// DÉBITO — state vars
+// ═══════════════════════════════════════════════
+var _debitActiveAccount = null;
+var _debitSortLevels = [{ col: 'data', dir: 'desc' }];
+var _debitViewMode = 'carousel';
+var _debitActiveMonthIdx = {}; // accountId -> monthIdx
+
+function getDebitCats() { return state.card.categorias || []; }
+function getDebitCatName(id) {
+  var c = getDebitCats().find(function(x){ return x.id===id; });
+  return c ? (c.name||c.nome||'') : '';
+}
+
+function getDebitMonths(accountId) {
+  var txs = (state.debit.transactions[accountId] || []);
+  var set = {};
+  txs.forEach(function(t){ var d = t.data ? t.data.slice(0,7) : null; if(d) set[d]=1; });
+  var now = new Date();
+  var ym = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  set[ym] = 1;
+  return Object.keys(set).sort().reverse();
+}
+
+function getDebitMonthTxs(accountId, ym) {
+  return (state.debit.transactions[accountId] || []).filter(function(t){
+    return t.data && t.data.slice(0,7) === ym;
+  }).sort(function(a,b){ return a.data < b.data ? 1 : -1; });
+}
+
+function renderDebit() {
+  var root = document.getElementById('debit-root');
+  if (!root) return;
+  root.innerHTML = '';
+
+  var accounts = state.debit.accounts || [];
+
+  // Header
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:20px';
+  var title = document.createElement('div');
+  title.className = 'section-title';
+  title.textContent = 'Débito';
+  var headerBtns = document.createElement('div');
+  headerBtns.style.cssText = 'display:flex;gap:8px';
+  var addAccBtn = document.createElement('button');
+  addAccBtn.className = 'btn-sm';
+  addAccBtn.textContent = 'Nova conta';
+  addAccBtn.onclick = openAddDebitAccountModal;
+  headerBtns.appendChild(addAccBtn);
+  header.appendChild(title);
+  header.appendChild(headerBtns);
+  root.appendChild(header);
+
+  if (!accounts.length) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;color:var(--muted);font-family:DM Mono,monospace;font-size:13px;padding:60px 0';
+    empty.textContent = 'Nenhuma conta cadastrada. Clique em "Nova conta" para começar.';
+    root.appendChild(empty);
+    return;
+  }
+
+  // Account tabs
+  var tabsWrap = document.createElement('div');
+  tabsWrap.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px';
+
+  accounts.forEach(function(acc) {
+    var btn = document.createElement('button');
+    var isActive = _debitActiveAccount === acc.id;
+    btn.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;padding:6px 14px;border-radius:6px;border:2px solid '+(isActive?acc.cor:'var(--border)')+';background:'+(isActive?acc.cor+'22':'var(--surface2)')+';color:'+(isActive?acc.cor:'var(--muted)')+';cursor:pointer;font-weight:'+(isActive?'600':'400');
+    btn.textContent = acc.nome;
+    btn.onclick = function() {
+      _debitActiveAccount = isActive ? null : acc.id;
+      renderDebit();
+    };
+    tabsWrap.appendChild(btn);
+  });
+  root.appendChild(tabsWrap);
+
+  if (!_debitActiveAccount) {
+    renderDebitOverview(root, accounts);
+  } else {
+    var acc = accounts.find(function(a){ return a.id === _debitActiveAccount; });
+    if (acc) renderDebitAccount(root, acc);
+  }
+}
+
+function renderDebitOverview(root, accounts) {
+  var now = new Date();
+  var ym = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+
+  accounts.forEach(function(acc) {
+    var txs = getDebitMonthTxs(acc.id, ym).filter(function(t){ return !t.recorrente && !t.ignorarDashboard; });
+    var total = txs.reduce(function(s,t){ return s + (t.estorno ? -(t.valor||0) : (t.valor||0)); }, 0);
+
+    var card = document.createElement('div');
+    card.style.cssText = 'border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--surface2)';
+    card.onmouseenter = function(){ card.style.borderColor = acc.cor; };
+    card.onmouseleave = function(){ card.style.borderColor = 'var(--border)'; };
+    card.onclick = function(){ _debitActiveAccount = acc.id; renderDebit(); };
+
+    var left = document.createElement('div');
+    var dot = document.createElement('span');
+    dot.style.cssText = 'display:inline-block;width:10px;height:10px;border-radius:50%;background:'+acc.cor+';margin-right:10px';
+    var name = document.createElement('span');
+    name.style.cssText = 'font-family:DM Mono,monospace;font-size:14px;font-weight:600;color:var(--text)';
+    name.textContent = acc.nome;
+    left.appendChild(dot); left.appendChild(name);
+
+    var right = document.createElement('div');
+    right.style.cssText = 'text-align:right';
+    var val = document.createElement('div');
+    val.style.cssText = 'font-family:DM Mono,monospace;font-size:16px;font-weight:600;color:var(--text)';
+    val.textContent = 'R$ '+total.toFixed(2).replace('.',',');
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:10px;color:var(--muted);font-family:DM Mono,monospace';
+    sub.textContent = txs.length+' transaç'+(txs.length===1?'ão':'ões')+' este mês';
+    right.appendChild(val); right.appendChild(sub);
+
+    card.appendChild(left); card.appendChild(right);
+    root.appendChild(card);
+  });
+}
+
+function renderDebitAccount(root, acc) {
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var allMonths = getDebitMonths(acc.id);
+  var storedIdx = _debitActiveMonthIdx[acc.id] || 0;
+  if (storedIdx >= allMonths.length) storedIdx = 0;
+  var ym = allMonths[storedIdx];
+
+  // Header
+  var hd = document.createElement('div'); hd.className = 'section-hd';
+  var dot = document.createElement('span');
+  dot.style.cssText = 'display:inline-block;width:10px;height:10px;border-radius:50%;background:'+acc.cor+';flex-shrink:0';
+  var hdInfo = document.createElement('div');
+  hdInfo.innerHTML = '<div class="section-title" style="color:'+acc.cor+'">'+escHtml(acc.nome)+'</div>';
+  var editBtn = document.createElement('button'); editBtn.className='btn-sm'; editBtn.textContent='Editar conta';
+  editBtn.onclick = function(){ openEditDebitAccountModal(acc.id); };
+  var groupsBtn = document.createElement('button'); groupsBtn.className='btn-sm'; groupsBtn.textContent='Grupos';
+  groupsBtn.onclick = openCatGroupsModal;
+  var addTxBtn = document.createElement('button'); addTxBtn.className='btn-sm accent'; addTxBtn.textContent='+ Transação';
+  addTxBtn.onclick = function(){ openAddDebitTxModal(acc.id, ym); };
+  var importBtn = document.createElement('button'); importBtn.className='btn-sm'; importBtn.textContent='Importar extrato';
+  importBtn.onclick = function(){ openDebitImportModal(acc.id); };
+  var viewToggle = document.createElement('div');
+  viewToggle.style.cssText='display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
+  var listBtn = document.createElement('button');
+  listBtn.style.cssText='padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_debitViewMode==='list'?'var(--accent)':'var(--surface2)')+';color:'+(_debitViewMode==='list'?'#000':'var(--muted)');
+  listBtn.textContent='≡ Lista';
+  listBtn.onclick=function(){ _debitViewMode='list'; renderDebit(); };
+  var carBtn = document.createElement('button');
+  carBtn.style.cssText='padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_debitViewMode==='carousel'?'var(--accent)':'var(--surface2)')+';color:'+(_debitViewMode==='carousel'?'#000':'var(--muted)');
+  carBtn.textContent='◫ Carousel';
+  carBtn.onclick=function(){ _debitViewMode='carousel'; renderDebit(); };
+  viewToggle.appendChild(listBtn); viewToggle.appendChild(carBtn);
+  hd.appendChild(dot); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(groupsBtn); hd.appendChild(viewToggle); hd.appendChild(addTxBtn); hd.appendChild(importBtn);
+  root.appendChild(hd);
+
+  // List view — all months expanded
+  if (_debitViewMode === 'list') {
+    var allTxs = (state.debit.transactions[acc.id]||[]).slice().sort(function(a,b){ return a.data<b.data?1:-1; });
+    var byMonth = {};
+    allTxs.forEach(function(tx){
+      var m = tx.data ? tx.data.slice(0,7) : 'unknown';
+      if (!byMonth[m]) byMonth[m] = [];
+      byMonth[m].push(tx);
+    });
+    Object.keys(byMonth).sort().reverse().forEach(function(ym2){
+      var pts = ym2.split('-');
+      var MONTHS_PT2 = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      var label = pts.length===2 ? MONTHS_PT2[parseInt(pts[1])-1]+' '+pts[0] : ym2;
+      var mTxs = byMonth[ym2];
+      var mTotal = mTxs.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
+
+      var mHdr = document.createElement('div');
+      mHdr.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px 8px 0 0;margin-top:12px;cursor:pointer';
+      var mLbl = document.createElement('span'); mLbl.style.cssText='font-size:13px;font-weight:600;color:var(--text);font-family:DM Mono,monospace'; mLbl.textContent=label;
+      var mVal = document.createElement('span'); mVal.style.cssText='font-size:13px;font-family:DM Mono,monospace;color:var(--text)'; mVal.textContent='R$ '+Math.abs(mTotal).toFixed(2).replace('.',',');
+      var mBody = document.createElement('div'); mBody.style.cssText='border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow:hidden';
+      mHdr.appendChild(mLbl); mHdr.appendChild(mVal);
+      mHdr.onclick=function(){ mBody.style.display=mBody.style.display==='none'?'block':'none'; };
+      mBody.innerHTML = buildDebitTxTable(acc.id, ym2, mTxs);
+      root.appendChild(mHdr); root.appendChild(mBody);
+      wireDebitDragDrop(mBody, acc.id, ym2);
+    });
+    return;
+  }
+
+  // Carousel nav
+  var navBar = document.createElement('div');
+  navBar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px';
+  var prevBtn = document.createElement('button');
+  prevBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:6px;color:'+(storedIdx>=allMonths.length-1?'var(--border)':'var(--muted)')+';cursor:pointer;font-size:20px;padding:4px 14px';
+  prevBtn.textContent='‹'; prevBtn.disabled = storedIdx >= allMonths.length-1;
+  prevBtn.onclick = function(){ _debitActiveMonthIdx[acc.id]=storedIdx+1; renderDebit(); };
+  var nextBtn = document.createElement('button');
+  nextBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:6px;color:'+(storedIdx<=0?'var(--border)':'var(--muted)')+';cursor:pointer;font-size:20px;padding:4px 14px';
+  nextBtn.textContent='›'; nextBtn.disabled = storedIdx <= 0;
+  nextBtn.onclick = function(){ _debitActiveMonthIdx[acc.id]=storedIdx-1; renderDebit(); };
+  var navCenter = document.createElement('div'); navCenter.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px';
+  var monthLbl = document.createElement('div'); monthLbl.style.cssText='font-size:16px;font-weight:600;color:var(--text)';
+  if (ym) { var pts=ym.split('-'); monthLbl.textContent=MONTHS_PT[parseInt(pts[1])-1]+' '+pts[0]; }
+  var dotsDiv = document.createElement('div'); dotsDiv.style.cssText='display:flex;gap:3px;align-items:center';
+  var visStart=Math.max(0,storedIdx-4), visEnd=Math.min(allMonths.length-1,storedIdx+4);
+  for (var di=visStart; di<=visEnd; di++) {
+    var dotEl=document.createElement('div'); var isAct=di===storedIdx;
+    dotEl.style.cssText='width:'+(isAct?'18px':'6px')+';height:6px;border-radius:3px;background:'+(isAct?'var(--accent)':'var(--border)')+';cursor:pointer;transition:all .2s';
+    (function(idx){ dotEl.onclick=function(){ _debitActiveMonthIdx[acc.id]=idx; renderDebit(); }; })(di);
+    dotsDiv.appendChild(dotEl);
+  }
+  navCenter.appendChild(monthLbl); navCenter.appendChild(dotsDiv);
+  navBar.appendChild(prevBtn); navBar.appendChild(navCenter); navBar.appendChild(nextBtn);
+  root.appendChild(navBar);
+
+  // Summary cards
+  var txs = getDebitMonthTxs(acc.id, ym);
+  var totalAll = txs.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
+  var pontuais = txs.filter(function(t){ return !t.ignorarDashboard; });
+  var totalPontual = pontuais.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
+  var summary = document.createElement('div');
+  summary.style.cssText='display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap';
+  function makeDebitSummCard(label, val, color) {
+    var c=document.createElement('div'); c.style.cssText='flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:var(--surface2)';
+    var l=document.createElement('div'); l.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px'; l.textContent=label;
+    var v=document.createElement('div'); v.style.cssText='font-size:17px;font-weight:600;color:'+(color||'var(--text)')+';font-family:DM Mono,monospace'; v.textContent='R$ '+Math.abs(val).toFixed(2).replace('.',',');
+    c.appendChild(l); c.appendChild(v); return c;
+  }
+  summary.appendChild(makeDebitSummCard('Total do mês', totalAll, 'var(--text)'));
+  root.appendChild(summary);
+
+  // Transaction table
+  var tableWrap = document.createElement('div');
+  tableWrap.style.cssText='border:1px solid var(--border);border-radius:10px;overflow:hidden';
+  tableWrap.innerHTML = buildDebitTxTable(acc.id, ym, txs);
+  root.appendChild(tableWrap);
+  wireDebitDragDrop(tableWrap, acc.id, ym);
+}
+
+function debitSortBadge(col) {
+  var idx = _debitSortLevels.findIndex(function(s){ return s.col===col; });
+  if (idx===-1) return '';
+  var s=_debitSortLevels[idx];
+  return ' <span style="font-size:9px;opacity:0.7">'+(idx+1)+(s.dir==='asc'?'↑':'↓')+'</span>';
+}
+
+function debitSortClick(col) {
+  var existing=_debitSortLevels.findIndex(function(s){ return s.col===col; });
+  if (existing===-1) { _debitSortLevels.push({col:col,dir:'asc'}); }
+  else if (_debitSortLevels[existing].dir==='asc') { _debitSortLevels[existing].dir='desc'; }
+  else { _debitSortLevels.splice(existing,1); }
+  renderDebit();
+}
+
+function sortDebitTxs(txs) {
+  if (!_debitSortLevels.length) return txs;
+  return txs.slice().sort(function(a,b){
+    for (var i=0;i<_debitSortLevels.length;i++){
+      var s=_debitSortLevels[i], av, bv;
+      if (s.col==='valor'){ av=a.valor||0; bv=b.valor||0; }
+      else if (s.col==='data'){ av=a.data||''; bv=b.data||''; }
+      else { av=(a[s.col]||'').toLowerCase(); bv=(b[s.col]||'').toLowerCase(); }
+      var cmp=av<bv?-1:av>bv?1:0;
+      if (cmp!==0) return s.dir==='asc'?cmp:-cmp;
+    }
+    return 0;
+  });
+}
+
+function buildDebitTxTable(accountId, ym, txs) {
+  txs = sortDebitTxs(txs);
+  var isDrag = _debitSortLevels.length===1 && _debitSortLevels[0].col==='data';
+
+  if (!txs.length) return '<div class="empty-cell">Nenhuma transação. <button class="btn-sm" onclick="openAddDebitTxModal(\''+accountId+'\',\''+ym+'\')">+ Transação</button> <button class="btn-sm" onclick="openDebitImportModal(\''+accountId+'\')">⬆ Importar</button></div>';
+
+  var rows = txs.map(function(tx){
+    var catName = getDebitCatName(tx.categoriaId);
+    var opts = buildCatOpts(tx.categoriaId||'');
+    var valColor = tx.estorno ? 'color:#4caf50' : '';
+    var valFmt = (tx.estorno?'+ ':'- ')+'R$ '+(tx.valor||0).toFixed(2).replace('.',',');
+    var nota = tx.nota||'';
+    var rowStyle = tx.ignorarDashboard ? 'opacity:.5' : '';
+    var catSelStyle = !tx.categoriaId ? 'background:rgba(239,68,68,.15)' : '';
+    return '<tr draggable="'+(isDrag?'true':'false')+'" data-txid="'+tx.id+'" data-date="'+(tx.data||'')+'" style="'+rowStyle+'">'+(isDrag?'<td style="width:24px;cursor:grab;color:var(--muted);font-size:14px;text-align:center;user-select:none">⠿</td>':'')+'<td style="color:var(--text2);font-size:12px;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="data">'+(tx.data?tx.data.slice(8,10)+'/'+tx.data.slice(5,7)+'/'+tx.data.slice(2,4):'—')+'</td>'+'<td style="cursor:pointer" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="descricao">'+escHtml(tx.descricao||'')+'</td>'+'<td style="text-align:right;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer;'+valColor+'" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="valor">'+valFmt+'</td>'+'<td onclick="editDebitTxNota(this,\''+accountId+'\',\''+ym+'\',\''+tx.id+'\')" style="cursor:pointer;min-width:100px;max-width:200px;vertical-align:top">'+(nota?'<span style="font-size:11px;color:var(--text2);white-space:pre-wrap">'+escHtml(nota)+'</span>':'<span style="font-size:11px;color:var(--border)">+ detalhe</span>')+'</td>'+'<td><select class="cat-select" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" onchange="debitTxCatChange(this);this.style.background=this.value?\'\':\' rgba(239,68,68,.15)\'" style="'+catSelStyle+'">'+opts+'</select></td>'+'<td><button class="btn-sm del" onclick="removeDebitTx(\''+accountId+'\',\''+tx.id+'\')" style="font-size:10px;padding:1px 5px">✕</button></td>'+'</tr>';
+  }).join('');
+
+  var total = txs.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
+  var footer = '<tr style="border-top:2px solid var(--border)">'+(isDrag?'<td></td>':'')+'<td colspan="2" style="padding:8px 10px;color:var(--muted);font-size:11px">TOTAL DO MÊS</td>'+'<td style="padding:8px 10px;text-align:right;font-family:DM Mono,monospace;font-weight:600">R$ '+Math.abs(total).toFixed(2).replace('.',',')+'</td>'+'<td colspan="3"></td></tr>';
+
+  return '<div style="overflow-x:auto" onclick="event.stopPropagation()">'+'<div style="padding:8px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)">'+'<button class="btn-sm accent" onclick="openAddDebitTxModal(\''+accountId+'\',\''+ym+'\')">+ Transação</button>'+'<button class="btn-sm" onclick="openDebitImportModal(\''+accountId+'\')">⬆ Importar</button>'+'<button class="btn-sm" onclick="openDebitRules(\''+accountId+'\',\''+ym+'\')">⚡ Regras</button>'+'<button class="btn-sm danger" onclick="removeDebitMonth(\''+accountId+'\',\''+ym+'\')" style="margin-left:auto">Apagar mês</button>'+'</div>'+'<table class="transactions-table"><thead><tr>'+(isDrag?'<th style="width:24px"></th>':'')+'<th style="text-align:left;cursor:pointer;user-select:none" onclick="debitSortClick(\'data\')">Data'+debitSortBadge('data')+'</th>'+'<th style="text-align:left;cursor:pointer;user-select:none" onclick="debitSortClick(\'descricao\')">Descrição'+debitSortBadge('descricao')+'</th>'+'<th style="text-align:right;cursor:pointer;user-select:none" onclick="debitSortClick(\'valor\')">Valor'+debitSortBadge('valor')+'</th>'+'<th style="text-align:left">Detalhes</th>'+'<th style="text-align:left;cursor:pointer;user-select:none" onclick="debitSortClick(\'categoria\')">Categoria'+debitSortBadge('categoria')+'</th>'+'<th></th></tr></thead>'+'<tbody>'+rows+'</tbody>'+'<tfoot>'+footer+'</tfoot>'+'</table></div>';
+}
+
+function debitTxCatChange(sel) {
+  if (sel.value === '__manage__') { sel.value = ''; openCatManager(); return; }
+  var accountId = sel.dataset.acid, txid = sel.dataset.txid;
+  var txs = state.debit.transactions[accountId]||[];
+  var tx = txs.find(function(t){ return t.id===txid; });
+  if (!tx) return;
+  tx.categoriaId = sel.value;
+  if (tx.descricao && tx.categoriaId) state.debit.acMemory[tx.descricao.trim().toLowerCase()] = tx.categoriaId;
+  saveState();
+}
+
+function removeDebitTx(accountId, txid) {
+  confirmAction('Remover transação', 'A transação será removida.', function(){
+    state.debit.transactions[accountId] = (state.debit.transactions[accountId]||[]).filter(function(t){ return t.id!==txid; });
+    saveState(); renderDebit();
+  });
+}
+
+function removeDebitMonth(accountId, ym) {
+  confirmAction('Apagar mês', 'Todas as transações de '+ym+' serão removidas.', function(){
+    state.debit.transactions[accountId] = (state.debit.transactions[accountId]||[]).filter(function(t){ return !t.data || t.data.slice(0,7) !== ym; });
+    saveState(); renderDebit();
+  });
+}
+
+function openDebitRules(accountId, ym) {
+  openRulesManager(undefined, undefined, undefined);
+  // Override the apply button for debit context
+  setTimeout(function(){
+    var applyBtn = document.getElementById('rulesApplyBtn');
+    if (applyBtn) {
+      applyBtn.style.display = '';
+      applyBtn.textContent = '⚡ Aplicar a este mês';
+      applyBtn.onclick = function(){
+        var rules = getRules();
+        if (!rules.length) { showToast('Nenhuma regra definida'); return; }
+        var txs = (state.debit.transactions[accountId]||[]).filter(function(t){ return t.data && t.data.slice(0,7)===ym; });
+        var changed = 0;
+        txs.forEach(function(tx){
+          var rule = matchRule(tx.descricao||'');
+          if (!rule) return;
+          if (rule.categoriaId) tx.categoriaId = rule.categoriaId;
+          if (rule.nota) tx.nota = rule.nota;
+          changed++;
+        });
+        if (changed) { saveState(); renderDebit(); showToast(changed+' transaç'+(changed===1?'ão':'ões')+' atualizada(s)'); }
+        else showToast('Nenhuma transação correspondeu às regras');
+        closeRulesManager();
+      };
+    }
+  }, 50);
+}
+
+function inlineEditDebitTx(cell) {
+  var accountId = cell.dataset.acid, ym = cell.dataset.ym, txid = cell.dataset.txid, field = cell.dataset.field;
+  var txs = state.debit.transactions[accountId]||[];
+  var tx = txs.find(function(t){ return t.id===txid; });
+  if (!tx) return;
+
+  if (field === 'categoriaId') {
+    var sel = document.createElement('select');
+    sel.className = 'cat-select';
+    sel.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;background:var(--surface);border:1px solid var(--accent);border-radius:4px;padding:2px';
+    sel.innerHTML = buildCatOpts(tx.categoriaId||'');
+    cell.innerHTML=''; cell.appendChild(sel); sel.focus();
+    sel.onchange = function(){
+      if (sel.value==='__manage__'){ sel.value=tx.categoriaId||''; openCatManager(); return; }
+      tx.categoriaId=sel.value;
+      if (tx.descricao && tx.categoriaId) state.debit.acMemory[tx.descricao.trim().toLowerCase()]=tx.categoriaId;
+      saveState(); renderDebit();
+    };
+    sel.onblur = function(){ renderDebit(); };
+    return;
+  }
+
+  if (field === 'descricao') {
+    var orig = tx[field]||'';
+    var input = document.createElement('input');
+    input.type = 'text'; input.value = orig;
+    input.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;width:100%;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:2px 4px;box-sizing:border-box';
+    cell.innerHTML=''; cell.appendChild(input); input.focus(); input.select();
+    // Autocomplete from debit memory
+    acAttach(input, 'debit-desc-'+accountId, function(val){
+      tx.descricao = val;
+      var memCat = state.debit.acMemory && state.debit.acMemory[val.trim().toLowerCase()];
+      if (memCat) { tx.categoriaId = memCat; }
+      saveState(); renderDebit();
+    });
+    // Populate ac memory key with debit descriptions
+    var debitDescs = Object.keys(state.debit.acMemory||{});
+    if (!_acMemory['debit-desc-'+accountId] || !_acMemory['debit-desc-'+accountId].length) {
+      _acMemory['debit-desc-'+accountId] = debitDescs.map(function(k){ return k; });
+    }
+    function commitDesc() { tx.descricao=input.value.trim(); if(tx.categoriaId) state.debit.acMemory[tx.descricao.toLowerCase()]=tx.categoriaId; saveState(); renderDebit(); }
+    input.onblur=function(){ setTimeout(commitDesc, 200); };
+    input.onkeydown=function(e){ if(e.key==='Enter') commitDesc(); if(e.key==='Escape') renderDebit(); };
+    return;
+  }
+  var input = document.createElement('input');
+  input.type = field==='valor'?'number':field==='data'?'date':'text';
+  input.value = orig;
+  input.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;width:100%;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:2px 4px;box-sizing:border-box';
+  cell.innerHTML=''; cell.appendChild(input); input.focus(); input.select();
+  function commit() {
+    var v=input.value.trim();
+    if (field==='valor') tx.valor=parseFloat(v)||0;
+    else tx[field]=v;
+    if (field==='descricao' && tx.categoriaId) state.debit.acMemory[v.toLowerCase()]=tx.categoriaId;
+    saveState(); renderDebit();
+  }
+  input.onblur=commit;
+  input.onkeydown=function(e){ if(e.key==='Enter') commit(); if(e.key==='Escape') renderDebit(); };
+}
+
+function editDebitTxNota(el, accountId, ym, txid) {
+  var txs = state.debit.transactions[accountId]||[];
+  var tx = txs.find(function(t){ return t.id===txid; });
+  if (!tx || el.querySelector('textarea')) return;
+  var cur = tx.nota||'';
+  var ta = document.createElement('textarea');
+  ta.value = cur;
+  ta.style.cssText = 'width:100%;min-width:180px;min-height:60px;max-height:200px;background:var(--surface);border:1px solid var(--accent);border-radius:4px;color:var(--text);font-size:12px;padding:4px 6px;resize:vertical;font-family:DM Sans,sans-serif';
+  ta.addEventListener('click', function(e){ e.stopPropagation(); });
+  ta.addEventListener('blur', function(){
+    var val = ta.value.trim();
+    tx.nota = val;
+    saveState();
+    if (document.body.contains(el)) {
+      el.innerHTML = val ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">'+escHtml(val)+'</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ detalhe</span>';
+    }
+  });
+  ta.addEventListener('keydown', function(e){
+    if (e.key==='Escape') {
+      tx.nota = cur;
+      el.innerHTML = cur ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">'+escHtml(cur)+'</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ detalhe</span>';
+    }
+  });
+  el.appendChild(ta); ta.focus();
+}
+
+function wireDebitDragDrop(container, accountId, ym) {
+  var dragSrc = null;
+  container.querySelectorAll('tr[draggable="true"]').forEach(function(row) {
+    row.addEventListener('dragstart', function(e){
+      dragSrc=row; row.classList.add('dragging'); e.dataTransfer.effectAllowed='move';
+    });
+    row.addEventListener('dragend', function(){
+      row.classList.remove('dragging');
+      container.querySelectorAll('tr').forEach(function(r){ r.classList.remove('drag-over-top','drag-over-bottom'); });
+      dragSrc=null;
+    });
+    row.addEventListener('dragover', function(e){
+      if (!dragSrc||row===dragSrc) return;
+      if (row.dataset.date!==dragSrc.dataset.date){ e.dataTransfer.dropEffect='none'; return; }
+      e.preventDefault(); e.dataTransfer.dropEffect='move';
+      container.querySelectorAll('tr').forEach(function(r){ r.classList.remove('drag-over-top','drag-over-bottom'); });
+      var rect=row.getBoundingClientRect();
+      row.classList.add(e.clientY<rect.top+rect.height/2?'drag-over-top':'drag-over-bottom');
+    });
+    row.addEventListener('dragleave', function(){ row.classList.remove('drag-over-top','drag-over-bottom'); });
+    row.addEventListener('drop', function(e){
+      if (!dragSrc||row===dragSrc) return;
+      if (row.dataset.date!==dragSrc.dataset.date) return;
+      e.preventDefault();
+      row.classList.remove('drag-over-top','drag-over-bottom');
+      var txArr = state.debit.transactions[accountId]||[];
+      var srcIdx=txArr.findIndex(function(t){ return t.id===dragSrc.dataset.txid; });
+      var tgtIdx=txArr.findIndex(function(t){ return t.id===row.dataset.txid; });
+      if (srcIdx===-1||tgtIdx===-1) return;
+      var rect2=row.getBoundingClientRect();
+      var after=e.clientY>=rect2.top+rect2.height/2;
+      var item=txArr.splice(srcIdx,1)[0];
+      var newTgt=txArr.findIndex(function(t){ return t.id===row.dataset.txid; });
+      txArr.splice(after?newTgt+1:newTgt,0,item);
+      saveState(); renderDebit();
+    });
+  });
+}
+
+
+function openAddDebitTxModal(accountId, ym) {
+  var ymParts = (ym||'').split('-');
+  var defaultDate = ym ? ym+'-'+new Date().getDate().toString().padStart(2,'0') : new Date().toISOString().slice(0,10);
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;display:flex;align-items:center;justify-content:center';
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:360px;max-width:95vw';
+
+  var title = document.createElement('h3');
+  title.style.cssText = 'margin:0 0 16px;font-family:DM Mono,monospace;font-size:14px;color:var(--text)';
+  title.textContent = 'Nova transação';
+
+  function field(label, type, id, val) {
+    var wrap = document.createElement('div'); wrap.style.cssText='margin-bottom:12px';
+    var lbl = document.createElement('label'); lbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; lbl.textContent=label;
+    var inp = document.createElement(type==='select'?'select':'input');
+    if (type!=='select') inp.type=type;
+    inp.id=id; inp.style.cssText='width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
+    if (val!=null) inp.value=val;
+    wrap.appendChild(lbl); wrap.appendChild(inp); return wrap;
+  }
+
+  var fData = field('Data','date','dbt-data', defaultDate);
+  var fDesc = field('Descrição','text','dbt-desc','');
+  var fVal = field('Valor (R$)','number','dbt-val','');
+  var fCat = field('Categoria','select','dbt-cat','');
+  var catSel = fCat.querySelector('select');
+  var noneOpt = document.createElement('option'); noneOpt.value=''; noneOpt.textContent='— Sem categoria'; catSel.appendChild(noneOpt);
+  getDebitCats().forEach(function(c){ var o=document.createElement('option'); o.value=c.id; o.textContent=c.name||c.nome; catSel.appendChild(o); });
+
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:16px';
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button'); saveBtn.className='btn-sm accent'; saveBtn.textContent='Salvar';
+  saveBtn.onclick = function() {
+    var data = document.getElementById('dbt-data').value;
+    var desc = document.getElementById('dbt-desc').value.trim();
+    var val = parseFloat(document.getElementById('dbt-val').value)||0;
+    var catId = document.getElementById('dbt-cat').value;
+    if (!data || !desc || !val) return;
+    var tx = { id: uuid(), data: data, descricao: desc, valor: val, categoriaId: catId,
+      ignorarDashboard: false, estorno: false };
+    if (!state.debit.transactions[accountId]) state.debit.transactions[accountId]=[];
+    state.debit.transactions[accountId].push(tx);
+    if (catId) state.debit.acMemory[desc.toLowerCase()] = catId;
+    saveState(); overlay.remove(); renderDebit();
+  };
+  btnRow.appendChild(cancelBtn); btnRow.appendChild(saveBtn);
+
+  modal.appendChild(title); modal.appendChild(fData); modal.appendChild(fDesc);
+  modal.appendChild(fVal); modal.appendChild(fCat); modal.appendChild(btnRow);
+  overlay.appendChild(modal);
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+  setTimeout(function(){ document.getElementById('dbt-desc').focus(); },50);
+}
+
+function openAddDebitAccountModal() {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;display:flex;align-items:center;justify-content:center';
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:320px;max-width:95vw';
+  var title = document.createElement('h3');
+  title.style.cssText = 'margin:0 0 16px;font-family:DM Mono,monospace;font-size:14px;color:var(--text)';
+  title.textContent = 'Nova conta de débito';
+
+  function fld(label, type, id, val) {
+    var wrap=document.createElement('div'); wrap.style.cssText='margin-bottom:12px';
+    var lbl=document.createElement('label'); lbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; lbl.textContent=label;
+    var inp=document.createElement('input'); inp.type=type; inp.id=id;
+    inp.style.cssText='width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
+    if(val!=null) inp.value=val;
+    wrap.appendChild(lbl); wrap.appendChild(inp); return wrap;
+  }
+
+  var fNome = fld('Nome','text','dba-nome','');
+  var fCor = fld('Cor','color','dba-cor','#6366f1');
+
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:16px';
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button'); saveBtn.className='btn-sm accent'; saveBtn.textContent='Criar conta';
+  saveBtn.onclick = function() {
+    var nome = document.getElementById('dba-nome').value.trim();
+    var cor = document.getElementById('dba-cor').value;
+    if (!nome) return;
+    var acc = { id: 'debit-'+uuid(), nome: nome, cor: cor };
+    if (!state.debit.accounts) state.debit.accounts=[];
+    state.debit.accounts.push(acc);
+    saveState(); overlay.remove(); renderDebit();
+  };
+  btnRow.appendChild(cancelBtn); btnRow.appendChild(saveBtn);
+
+  modal.appendChild(title); modal.appendChild(fNome); modal.appendChild(fCor); modal.appendChild(btnRow);
+  overlay.appendChild(modal);
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+  setTimeout(function(){ document.getElementById('dba-nome').focus(); },50);
+}
+
+function openEditDebitAccountModal(accountId) {
+  var acc = (state.debit.accounts||[]).find(function(a){ return a.id===accountId; });
+  if (!acc) return;
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;display:flex;align-items:center;justify-content:center';
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:320px;max-width:95vw';
+  var title = document.createElement('h3');
+  title.style.cssText = 'margin:0 0 16px;font-family:DM Mono,monospace;font-size:14px;color:var(--text)';
+  title.textContent = 'Editar conta';
+
+  function fld(label, type, id, val) {
+    var wrap=document.createElement('div'); wrap.style.cssText='margin-bottom:12px';
+    var lbl=document.createElement('label'); lbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; lbl.textContent=label;
+    var inp=document.createElement('input'); inp.type=type; inp.id=id;
+    inp.style.cssText='width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
+    if(val!=null) inp.value=val;
+    wrap.appendChild(lbl); wrap.appendChild(inp); return wrap;
+  }
+
+  var fNome = fld('Nome','text','dbe-nome', acc.nome);
+  var fCor = fld('Cor','color','dbe-cor', acc.cor||'#6366f1');
+
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:8px;justify-content:space-between;margin-top:16px';
+  var delBtn = document.createElement('button'); delBtn.className='btn-sm danger'; delBtn.textContent='Remover conta';
+  delBtn.onclick = function(){
+    confirmAction('Remover conta','Todas as transações de "'+acc.nome+'" serão removidas.', function(){
+      state.debit.accounts = state.debit.accounts.filter(function(a){ return a.id!==accountId; });
+      delete state.debit.transactions[accountId];
+      if (_debitActiveAccount===accountId) _debitActiveAccount=null;
+      saveState(); overlay.remove(); renderDebit();
+    });
+  };
+  var right = document.createElement('div'); right.style.cssText='display:flex;gap:8px';
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button'); saveBtn.className='btn-sm accent'; saveBtn.textContent='Salvar';
+  saveBtn.onclick = function() {
+    acc.nome = document.getElementById('dbe-nome').value.trim() || acc.nome;
+    acc.cor = document.getElementById('dbe-cor').value;
+    saveState(); overlay.remove(); renderDebit();
+  };
+  right.appendChild(cancelBtn); right.appendChild(saveBtn);
+  btnRow.appendChild(delBtn); btnRow.appendChild(right);
+
+  modal.appendChild(title); modal.appendChild(fNome); modal.appendChild(fCor); modal.appendChild(btnRow);
+  overlay.appendChild(modal);
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
+function openDebitImportModal(accountId) {
+  var acc = (state.debit.accounts||[]).find(function(a){ return a.id===accountId; });
+  if (!acc) return;
+
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;display:flex;align-items:center;justify-content:center';
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--bg, #111827);border:1px solid var(--border);border-radius:12px;padding:24px;width:400px;max-width:95vw';
+
+  var title = document.createElement('div'); title.className='section-title'; title.style.marginBottom='16px'; title.textContent='Importar extrato';
+
+  // File input
+  var fileWrap = document.createElement('div'); fileWrap.style.marginBottom='12px';
+  var fileLbl = document.createElement('label'); fileLbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; fileLbl.textContent='Arquivo (PDF)';
+  var fileInput = document.createElement('input'); fileInput.type='file'; fileInput.accept='.pdf';
+  fileInput.style.cssText='width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
+  fileWrap.appendChild(fileLbl); fileWrap.appendChild(fileInput);
+
+  // Ignore keywords config
+  var ignWrap = document.createElement('div'); ignWrap.style.marginBottom='12px';
+  var ignLbl = document.createElement('label'); ignLbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; ignLbl.textContent='Ignorar linhas contendo (uma por linha)';
+  var ignTa = document.createElement('textarea');
+  ignTa.style.cssText='width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:11px;color:var(--text);height:80px;resize:vertical';
+  ignTa.value = (state.debit.ignoreKeywords||[]).join('\n');
+  ignWrap.appendChild(ignLbl); ignWrap.appendChild(ignTa);
+
+  // Recurring categories config
+  var recWrap = document.createElement('div'); recWrap.style.marginBottom='16px';
+  var recLbl = document.createElement('label'); recLbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; recLbl.textContent='Categorias recorrentes (ignorar no dashboard)';
+  var recNote = document.createElement('div'); recNote.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;margin-bottom:6px'; recNote.textContent='Despesas nessas categorias serão marcadas como "ignorar no dashboard"';
+  var cats = state.card.categorias||[];
+  var recDiv = document.createElement('div'); recDiv.style.cssText='display:flex;flex-wrap:wrap;gap:6px';
+  var recCats = new Set(state.debit.recurringCategories||[]);
+  cats.forEach(function(c){
+    var btn = document.createElement('button');
+    btn.style.cssText='font-size:10px;font-family:DM Mono,monospace;padding:3px 8px;border-radius:4px;border:1px solid '+(recCats.has(c.id)?'var(--accent)':'var(--border)')+';background:'+(recCats.has(c.id)?'rgba(99,102,241,.15)':'var(--surface2)')+';color:'+(recCats.has(c.id)?'var(--accent)':'var(--muted)')+';cursor:pointer';
+    btn.textContent=c.nome; btn.dataset.catId=c.id;
+    btn.onclick=function(){
+      if(recCats.has(c.id)){recCats.delete(c.id);btn.style.borderColor='var(--border)';btn.style.background='var(--surface2)';btn.style.color='var(--muted)';}
+      else{recCats.add(c.id);btn.style.borderColor='var(--accent)';btn.style.background='rgba(99,102,241,.15)';btn.style.color='var(--accent)';}
+    };
+    recDiv.appendChild(btn);
+  });
+  recWrap.appendChild(recLbl); recWrap.appendChild(recNote); recWrap.appendChild(recDiv);
+
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now = new Date();
+
+  // Month/year selector
+  var monthWrap = document.createElement('div'); monthWrap.style.marginBottom='12px';
+  var monthLbl = document.createElement('label'); monthLbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; monthLbl.textContent='Mês de referência';
+  var monthRow = document.createElement('div'); monthRow.style.cssText='display:flex;gap:8px';
+  var mSel = document.createElement('select');
+  mSel.style.cssText='flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
+  MONTHS_PT.forEach(function(m,i){ var o=document.createElement('option'); o.value=i; o.textContent=m; if(i===now.getMonth()-1 || (now.getMonth()===0 && i===11)) o.selected=true; else if(i===now.getMonth()-1) o.selected=true; mSel.appendChild(o); });
+  // Default to previous month
+  mSel.value = now.getMonth()===0 ? 11 : now.getMonth()-1;
+  var ySel = document.createElement('select');
+  ySel.style.cssText='width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
+  var defaultY = now.getMonth()===0 ? now.getFullYear()-1 : now.getFullYear();
+  for (var y=now.getFullYear()-2; y<=now.getFullYear(); y++) {
+    var o=document.createElement('option'); o.value=y; o.textContent=y; if(y===defaultY) o.selected=true; ySel.appendChild(o);
+  }
+  monthRow.appendChild(mSel); monthRow.appendChild(ySel);
+  monthWrap.appendChild(monthLbl); monthWrap.appendChild(monthRow);
+
+  var statusEl = document.createElement('div'); statusEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace;min-height:16px;margin-bottom:8px';
+
+  var btnRow = document.createElement('div'); btnRow.style.cssText='display:flex;gap:8px;justify-content:flex-end';
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ overlay.remove(); };
+  var importBtn = document.createElement('button'); importBtn.className='btn-sm accent'; importBtn.textContent='Ler arquivo';
+  importBtn.onclick = function() {
+    if (!fileInput.files.length) { statusEl.textContent='Selecione um arquivo.'; return; }
+    var selectedM = parseInt(mSel.value);
+    var selectedY = parseInt(ySel.value);
+    var selectedYM = selectedY+'-'+String(selectedM+1).padStart(2,'0');
+    // Save ignore keywords and recurring categories
+    state.debit.ignoreKeywords = ignTa.value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    state.debit.recurringCategories = Array.from(recCats);
+    saveState();
+
+    var file = fileInput.files[0];
+    statusEl.textContent='Lendo arquivo...';
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var pdfjsLib = window['pdfjs-dist/build/pdf'];
+      if (!pdfjsLib) { statusEl.textContent='Erro: biblioteca PDF não disponível.'; return; }
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+      pdfjsLib.getDocument({ data: e.target.result }).promise.then(function(pdf) {
+        var pagePromises = [];
+        for (var i=1; i<=pdf.numPages; i++) {
+          pagePromises.push(pdf.getPage(i).then(function(page){
+            return page.getTextContent().then(function(tc){
+              var vp = page.getViewport({scale:1});
+              var h = vp.height;
+              return tc.items.map(function(item){
+                return {
+                  str: item.str,
+                  x: item.transform[4],
+                  y: h - item.transform[5]  // convert to top-down
+                };
+              }).filter(function(t){ return t.str && t.str.trim(); });
+            });
+          }));
+        }
+        Promise.all(pagePromises).then(function(allItems) {
+          try {
+            // Flatten with page y-offset
+            var items = [];
+            var yOff = 0;
+            allItems.forEach(function(pageItems) {
+              var maxY = 0;
+              pageItems.forEach(function(t){
+                items.push({str:t.str, x:t.x, y:t.y+yOff});
+                if (t.y > maxY) maxY = t.y;
+              });
+              yOff += maxY + 100;
+            });
+            var txs = parseDebitMercadoPagoPDF(items, state.debit.ignoreKeywords, state.debit.recurringCategories);
+            console.log('Debit txs parsed:', txs.length, txs.slice(0,10).map(function(t){return t.data+' | '+t.descricao;}));
+            if (!txs.length) { statusEl.textContent='Nenhuma transação encontrada.'; return; }
+            statusEl.textContent=txs.length+' transações encontradas. Classificando...';
+            classifyAndReviewDebit(accountId, txs, overlay, selectedYM);
+          } catch(err) { statusEl.textContent='Erro: '+err.message; console.error('Parse error:', err); }
+        });
+      }).catch(function(err){ statusEl.textContent='Erro ao ler PDF: '+(err && err.message ? err.message : String(err)); console.error('PDF error:', err); });
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  btnRow.appendChild(cancelBtn); btnRow.appendChild(importBtn);
+
+  modal.appendChild(title); modal.appendChild(fileWrap); modal.appendChild(monthWrap); modal.appendChild(ignWrap);
+  modal.appendChild(recWrap); modal.appendChild(statusEl); modal.appendChild(btnRow);
+  overlay.appendChild(modal);
+  overlay.onclick=function(e){ if(e.target===overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
+function parseDebitMercadoPagoPDF(items, ignoreKeywords, recurringCatIds) {
+  var estornoKws = ['reembolso','estorno','devolução','rendimentos'];
+  var defaultIgnore = ['pix recebido richard broder wang'];
+  var allIgnore = defaultIgnore.concat((ignoreKeywords||[]).map(function(k){ return k.toLowerCase(); }));
+
+  // Exact column X boundaries from MP PDF:
+  // Date:   x ~ 40   (x < 80)
+  // Desc:   x ~ 89   (80 <= x < 190)
+  // ID:     x ~ 197  (190 <= x < 290)
+  // Value:  x ~ 299-320 (290 <= x < 360)
+  // Saldo:  x >= 360 — ignored
+
+  // Group tokens into rows by Y (tolerance ±3px)
+  var rows = [];
+  items.forEach(function(item) {
+    var s = item.str.replace(/\s/g,'');
+    if (!s) return;
+    for (var r = 0; r < rows.length; r++) {
+      if (Math.abs(rows[r].y - item.y) <= 3) {
+        rows[r].tokens.push(item); return;
+      }
+    }
+    rows.push({y: item.y, tokens: [item]});
+  });
+  rows.sort(function(a,b){ return a.y - b.y; });
+
+  // Classify each row's tokens into columns
+  var classified = rows.map(function(row) {
+    var date='', descParts=[], id='', valParts=[];
+    row.tokens.sort(function(a,b){ return a.x - b.x; });
+    row.tokens.forEach(function(t) {
+      var s = t.str.trim();
+      if (!s) return;
+      if (t.x < 80)        date = s;
+      else if (t.x < 190)  descParts.push(s);
+      else if (t.x < 290)  id = (id+s).replace(/\s/g,'');
+      else if (t.x < 360 && s !== 'R$') valParts.push(s);
+    });
+    return {
+      y: row.y,
+      date: date,
+      desc: descParts.join(' '),
+      id: id,
+      val: valParts.join('').replace(/[^-\d,.]/g,'')
+    };
+  });
+
+  // A transaction row is one that has an ID (10+ digits)
+  // Its description may span multiple rows near the same Y
+  var consumed = {};
+  var txs = [];
+  for (var i = 0; i < classified.length; i++) {
+    var row = classified[i];
+    if (!row.id || !/^\d{10,}$/.test(row.id)) continue;
+    if (!row.val) continue;
+
+    // Collect description from this row and nearby desc-only rows
+    var descParts = [];
+    // Look back up to 3 rows for desc-only lines within 30px
+    for (var j = i-1; j >= 0 && (row.y - classified[j].y) < 30; j--) {
+      var pr = classified[j];
+      if (pr.id || pr.val || pr.date) break;
+      if (pr.desc && !consumed[j]) { descParts.unshift(pr.desc); consumed[j] = true; }
+    }
+    // This row's own desc
+    if (row.desc) descParts.push(row.desc);
+    // Look ahead up to rows within 15px
+    for (var j = i+1; j < classified.length && (classified[j].y - row.y) < 15; j++) {
+      var nr = classified[j];
+      if (nr.id || nr.val || nr.date) break;
+      if (nr.desc && !consumed[j]) { descParts.push(nr.desc); consumed[j] = true; }
+    }
+    var desc = descParts.join(' ').trim();
+    if (!desc) continue;
+
+    // Date: from this row or nearest preceding row with a date
+    var rawDate = row.date;
+    if (!rawDate) {
+      for (var j = i-1; j >= 0 && j >= i-3; j--) {
+        if (classified[j].date) { rawDate = classified[j].date; break; }
+      }
+    }
+    if (!rawDate || !/^\d{2}-\d{2}-\d{4}$/.test(rawDate)) continue;
+
+    var rawVal = row.val.replace(/\./g,'').replace(',','.');
+    var valor = parseFloat(rawVal);
+    if (isNaN(valor)) continue;
+
+    var dp = rawDate.split('-');
+    var isoDate = dp[2]+'-'+dp[1]+'-'+dp[0];
+    var descLower = desc.toLowerCase();
+    if (allIgnore.some(function(kw){ return kw && descLower.includes(kw); })) continue;
+    var isEstorno = estornoKws.some(function(kw){ return descLower.includes(kw); });
+    if (valor > 0 && !isEstorno) continue;
+
+    txs.push({
+      id: uuid(), data: isoDate, descricao: desc,
+      valor: Math.abs(valor), categoriaId: '',
+      ignorarDashboard: false, estorno: isEstorno,
+      _recurringCatIds: recurringCatIds||[]
+    });
+  }
+  return txs;
+}
+
+function classifyAndReviewDebit(accountId, txs, overlay, selectedYM) {
+  var mem = state.debit.acMemory || {};
+  var cats = state.card.categorias || [];
+  var recurringCatIds = state.debit.recurringCategories || [];
+
+  // Apply memory classification
+  txs.forEach(function(tx) {
+    var key = tx.descricao.trim().toLowerCase();
+    if (mem[key]) { tx.categoriaId = mem[key]; tx.source = 'memory'; return; }
+    // Partial match
+    var keys = Object.keys(mem);
+    for (var i=0; i<keys.length; i++) {
+      if (key.includes(keys[i]) || keys[i].includes(key)) {
+        tx.categoriaId = mem[keys[i]]; tx.source = 'memory'; break;
+      }
+    }
+  });
+
+  // Mark recurring categories as ignorarDashboard
+  txs.forEach(function(tx) {
+    if (tx.categoriaId && recurringCatIds.indexOf(tx.categoriaId) !== -1) {
+      tx.ignorarDashboard = true;
+    }
+  });
+
+  // Check for duplicates
+  var existing = state.debit.transactions[accountId] || [];
+  txs.forEach(function(tx) {
+    var dup = existing.find(function(e){
+      return e.data===tx.data && Math.abs(e.valor-tx.valor)<0.01 && e.descricao===tx.descricao;
+    });
+    if (dup) tx._duplicate = true;
+  });
+
+  var unknown = txs.filter(function(tx){ return !tx.categoriaId && !tx.estorno; });
+
+  if (!unknown.length || !state.config.apiKey) {
+    showDebitImportReview(accountId, txs, overlay, selectedYM);
+    return;
+  }
+
+  // Classify unknown via AI
+  var descriptions = unknown.map(function(tx,i){ return (i+1)+'. '+tx.descricao; }).join('\n');
+  var catList = cats.map(function(c){ return c.nome; }).join(', ');
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':state.config.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514', max_tokens:1000,
+      system:'Você é um classificador de despesas de conta corrente brasileira. Classifique cada item na categoria mais adequada. Responda APENAS com JSON válido, sem texto adicional, no formato: {"classificacoes":[{"indice":1,"categoria":"Nome da categoria","confianca":"alta|media|baixa"}]}',
+      messages:[{role:'user',content:'Categorias disponíveis: '+catList+'\n\nClassifique estas despesas:\n'+descriptions}]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    try {
+      var text = data.content && data.content[0] && data.content[0].text || '{}';
+      var result = JSON.parse(text.replace(/```json|```/g,'').trim());
+      (result.classificacoes||[]).forEach(function(c) {
+        var idx = c.indice-1;
+        if (idx<0||idx>=unknown.length) return;
+        var cat = cats.find(function(x){ return x.nome===c.categoria; });
+        if (cat) {
+          unknown[idx].categoriaId = cat.id;
+          unknown[idx].source = c.confianca==='alta'?'ia_alta':c.confianca==='media'?'ia_media':'ia_baixa';
+          // Mark recurring if needed
+          if (recurringCatIds.indexOf(cat.id)!==-1) unknown[idx].ignorarDashboard=true;
+        }
+      });
+    } catch(e) {}
+    showDebitImportReview(accountId, txs, overlay, selectedYM);
+  })
+  .catch(function(){ showDebitImportReview(accountId, txs, overlay, selectedYM); });
+}
+
+function showDebitImportReview(accountId, txs, overlay, selectedYM) {
+  var catOpts = buildCatOpts('');
+
+  var fromMemory = txs.filter(function(t){ return t.source==='memory' && !t._duplicate; });
+  var fromIA     = txs.filter(function(t){ return t.source && t.source.startsWith('ia') && !t._duplicate; });
+  var manual     = txs.filter(function(t){ return !t.source && !t._duplicate; });
+  var duplicates = txs.filter(function(t){ return t._duplicate; });
+
+  // Selection state — non-duplicates selected by default
+  var selected = {};
+  txs.forEach(function(tx){ selected[tx.id] = !tx._duplicate; });
+
+  overlay.innerHTML='';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0';
+
+  var box = document.createElement('div'); box.className='modal-box'; box.style.maxWidth='740px';
+  var hdr = document.createElement('div'); hdr.className='modal-header';
+  hdr.innerHTML='<span>Revisar extrato · '+txs.length+' transações</span>';
+  var closeBtn = document.createElement('button'); closeBtn.className='modal-close'; closeBtn.textContent='✕';
+  closeBtn.onclick=function(){ overlay.remove(); };
+  hdr.appendChild(closeBtn);
+
+  var bod = document.createElement('div'); bod.style.cssText='max-height:65vh;overflow-y:auto';
+
+  // Summary pills
+  var summary = document.createElement('div');
+  summary.style.cssText='display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap';
+  if (fromMemory.length) summary.innerHTML+='<span style="font-size:11px;background:var(--surface2);color:var(--muted);padding:3px 8px;border-radius:4px">🧠 '+fromMemory.length+' da memória</span>';
+  if (fromIA.length)     summary.innerHTML+='<span style="font-size:11px;background:#1a2a3a;color:#60a5fa;padding:3px 8px;border-radius:4px">🔍 '+fromIA.length+' pela IA</span>';
+  if (manual.length)     summary.innerHTML+='<span style="font-size:11px;background:#3a1a1a;color:var(--danger);padding:3px 8px;border-radius:4px">⚠ '+manual.length+' pendentes</span>';
+  if (duplicates.length) summary.innerHTML+='<span style="font-size:11px;background:#2a1a3a;color:#a78bfa;padding:3px 8px;border-radius:4px">🔄 '+duplicates.length+' já existem (desmarcadas)</span>';
+  bod.appendChild(summary);
+
+  // Table
+  var table = document.createElement('table');
+  table.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
+  var thead = document.createElement('thead');
+  // Select-all checkbox
+  var selAllChk = document.createElement('input'); selAllChk.type='checkbox'; selAllChk.checked=true;
+  selAllChk.title='Selecionar/desmarcar todas';
+  selAllChk.onchange=function(){
+    txs.forEach(function(tx){ if(!tx._duplicate) selected[tx.id]=selAllChk.checked; });
+    // Re-render checkboxes
+    table.querySelectorAll('input[type=checkbox][data-txid]').forEach(function(cb){
+      var tx = txs.find(function(t){ return t.id===cb.dataset.txid; });
+      if (tx && !tx._duplicate) cb.checked = selAllChk.checked;
+    });
+  };
+  var thChk = document.createElement('th'); thChk.style.cssText='padding:8px;width:30px'; thChk.appendChild(selAllChk);
+  thead.innerHTML='<tr style="background:var(--surface2)"></tr>';
+  thead.querySelector('tr').appendChild(thChk);
+  ['Data','Descrição','Valor','Detalhes','Categoria'].forEach(function(h){
+    var th=document.createElement('th'); th.style.cssText='padding:8px;text-align:left;color:var(--muted);font-weight:400'; th.textContent=h;
+    thead.querySelector('tr').appendChild(th);
+  });
+  table.appendChild(thead);
+  var tbody = document.createElement('tbody');
+
+  txs.forEach(function(tx, i) {
+    var tr = document.createElement('tr');
+    var isDup = tx._duplicate;
+    var rowBg = isDup ? 'background:#2a1a3a;opacity:.5' : !tx.categoriaId ? 'background:#3a1a1a' : tx.source && tx.source.startsWith('ia') ? 'background:#1a2030' : '';
+    if (rowBg) tr.style.cssText=rowBg;
+    tr.style.borderBottom='1px solid var(--border)';
+
+    // Checkbox
+    var chkCell = document.createElement('td'); chkCell.style.cssText='padding:6px 8px;text-align:center';
+    var chk = document.createElement('input'); chk.type='checkbox'; chk.dataset.txid=tx.id;
+    chk.checked = selected[tx.id];
+    chk.disabled = isDup;
+    chk.onchange = function(){ selected[tx.id]=chk.checked; };
+    chkCell.appendChild(chk);
+
+    var sourceIcon = isDup ? '🔄 ' : tx.source==='memory' ? '🧠 ' : tx.source && tx.source.startsWith('ia') ? '🔍 ' : '⚠ ';
+
+    var dateCell = document.createElement('td');
+    dateCell.style.cssText='padding:6px 8px;color:var(--muted);white-space:nowrap';
+    dateCell.textContent = tx.data ? tx.data.slice(8,10)+'/'+tx.data.slice(5,7)+'/'+tx.data.slice(0,4) : '—';
+
+    var descCell = document.createElement('td');
+    descCell.style.cssText='padding:6px 8px';
+    descCell.innerHTML = sourceIcon + (tx.estorno ? '↩ ' : '') + escHtml(tx.descricao);
+
+    var valCell = document.createElement('td');
+    valCell.style.cssText='padding:6px 8px;text-align:right;font-family:DM Mono,monospace'+(tx.estorno?';color:#4caf50':'');
+    valCell.textContent = (tx.estorno ? '+' : '-') + ' R$ '+tx.valor.toFixed(2).replace('.',',');
+
+    var notaCell = document.createElement('td'); notaCell.style.cssText='padding:6px 8px';
+    var notaInput = document.createElement('input');
+    notaInput.style.cssText='font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:2px 4px;width:100%';
+    notaInput.placeholder='+ detalhe'; notaInput.value=tx.nota||'';
+    notaInput.addEventListener('input', function(){ txs[i].nota=this.value; });
+    if (isDup) notaInput.disabled=true;
+    notaCell.appendChild(notaInput);
+
+    var catCell = document.createElement('td'); catCell.style.cssText='padding:6px 8px';
+    var sel = document.createElement('select');
+    sel.className='import-review-cat-sel';
+    sel.style.cssText='font-size:11px;background:var(--surface);border:1px solid '+(tx.categoriaId?'var(--border)':'var(--danger)')+';border-radius:4px;color:var(--text);padding:2px 4px;width:100%';
+    sel.innerHTML=catOpts;
+    if (tx.categoriaId) sel.value=tx.categoriaId;
+    sel.addEventListener('change', function(){
+      if (this.value==='__manage__') { this.value=txs[i].categoriaId||''; openCatManager(); return; }
+      txs[i].categoriaId=this.value;
+      txs[i].source='manual';
+      txs[i].ignorarDashboard=(state.debit.recurringCategories||[]).indexOf(this.value)!==-1;
+      this.style.borderColor=this.value?'var(--border)':'var(--danger)';
+    });
+    if (isDup) sel.disabled=true;
+    catCell.appendChild(sel);
+
+    tr.appendChild(chkCell); tr.appendChild(dateCell); tr.appendChild(descCell); tr.appendChild(valCell);
+    tr.appendChild(notaCell); tr.appendChild(catCell);
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  bod.appendChild(table);
+
+  // Footer
+  var foot = document.createElement('div');
+  foot.style.cssText='display:flex;gap:8px;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--border)';
+  var footLeft = document.createElement('div');
+  footLeft.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace';
+  footLeft.textContent='Desmarque as transações que não deseja importar';
+  var footRight = document.createElement('div'); footRight.style.cssText='display:flex;gap:8px';
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ overlay.remove(); };
+  var confirmBtn = document.createElement('button'); confirmBtn.className='btn-sm accent'; confirmBtn.textContent='Confirmar importação';
+  confirmBtn.onclick=function(){
+    var toImport=txs.filter(function(t){ return selected[t.id] && !t._duplicate; });
+    toImport.forEach(function(tx){
+      if (tx.categoriaId && tx.descricao) state.debit.acMemory[tx.descricao.trim().toLowerCase()]=tx.categoriaId;
+      delete tx._duplicate; delete tx._recurringCatIds; delete tx.source;
+    });
+    if (!state.debit.transactions[accountId]) state.debit.transactions[accountId]=[];
+    state.debit.transactions[accountId]=state.debit.transactions[accountId].concat(toImport);
+    saveState();
+    if (selectedYM) {
+      var allMonths=getDebitMonths(accountId);
+      var idx=allMonths.indexOf(selectedYM);
+      if (idx!==-1) _debitActiveMonthIdx[accountId]=idx;
+    }
+    overlay.remove(); renderDebit();
+  };
+  footRight.appendChild(cancelBtn); footRight.appendChild(confirmBtn);
+  foot.appendChild(footLeft); foot.appendChild(footRight);
+
+  box.appendChild(hdr); box.appendChild(bod); box.appendChild(foot);
+  overlay.appendChild(box);
 }
 
 function renderDashboard() {
@@ -6101,7 +7236,7 @@ function renderDashboard() {
   var prevBtn = document.createElement('button'); prevBtn.className='btn-sm'; prevBtn.textContent='‹';
   prevBtn.onclick = function(){
     if (_dashAccum) { _dashY--; } else { _dashM--; if(_dashM<0){_dashM=11;_dashY--;} }
-    _dashPayFilter='all'; _dashActiveSources=null; renderDashboard();
+    _dashPayFilter='all'; renderDashboard();
   };
   var periodLabel = document.createElement('span');
   periodLabel.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);min-width:130px;text-align:center';
@@ -6109,10 +7244,10 @@ function renderDashboard() {
   var nextBtn = document.createElement('button'); nextBtn.className='btn-sm'; nextBtn.textContent='›';
   nextBtn.onclick = function(){
     if (_dashAccum) { _dashY++; } else { _dashM++; if(_dashM>11){_dashM=0;_dashY++;} }
-    _dashPayFilter='all'; _dashActiveSources=null; renderDashboard();
+    _dashPayFilter='all'; renderDashboard();
   };
   var todayBtn = document.createElement('button'); todayBtn.className='btn-sm'; todayBtn.textContent='Hoje';
-  todayBtn.onclick = function(){ _dashY=now.getFullYear(); _dashM=now.getMonth(); _dashPayFilter='all'; _dashActiveSources=null; renderDashboard(); };
+  todayBtn.onclick = function(){ _dashY=now.getFullYear(); _dashM=now.getMonth(); _dashPayFilter='all'; renderDashboard(); };
 
   // Acumulado toggle
   var accumWrap = document.createElement('div');
@@ -6149,33 +7284,55 @@ function renderDashboard() {
   controls.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:6px';
   controls.appendChild(ctrlLeft);
 
-  // Source filter
-  var sourceBar = document.createElement('div');
-  sourceBar.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;padding:0 0 8px 0;align-items:flex-start';
+  // Source filter — Exibir dropdown
   var allSources = (state.card.cards||[]).map(function(c){ return {id:c.id, label:c.nome, color:c.cor||'var(--accent)'}; });
   allSources.push({id:'contas', label:'Contas', color:'var(--muted)'});
-  // Init: if null, all active
+  var debitSources = (state.debit.accounts||[]).map(function(a){ return {id:a.id, label:a.nome, color:a.cor||'var(--accent)'}; });
+  debitSources.forEach(function(s){ allSources.push(s); });
   if (!_dashActiveSources) _dashActiveSources = new Set(allSources.map(function(s){return s.id;}));
-  // Card sources group
-  var cardSources = allSources.filter(function(s){ return s.id !== 'contas'; });
-  var contasSource = allSources.find(function(s){ return s.id === 'contas'; });
 
-  function makeToggle(s) {
+  var exibirWrap = document.createElement('div');
+  exibirWrap.style.cssText = 'position:relative;display:inline-block';
+
+  var exibirBtn = document.createElement('button');
+  var allActive = allSources.every(function(s){ return _dashActiveSources.has(s.id); });
+  exibirBtn.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:'+(allActive?'var(--muted)':'var(--text)')+';cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px';
+  exibirBtn.innerHTML = 'Exibir' + (!allActive ? ' <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent)"></span>' : '');
+
+  var exibirDd = document.createElement('div');
+  exibirDd.style.cssText = 'display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--bg2, #1e1e2e);border:1px solid var(--border);border-radius:8px;padding:8px 0;z-index:9000;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.35)';
+
+  // Section label helper
+  function makeSecLabel(text) {
+    var d = document.createElement('div');
+    d.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase;padding:4px 14px 2px';
+    d.textContent = text;
+    return d;
+  }
+
+  function makeCheckRow(s) {
     var isActive = _dashActiveSources.has(s.id);
-    var color = s.color || 'var(--text2)';
-    var wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none';
-    var track = document.createElement('div');
-    track.style.cssText = 'width:28px;height:16px;border-radius:8px;position:relative;flex-shrink:0;transition:background .2s;background:'+(isActive?color:'var(--border)');
-    var thumb = document.createElement('div');
-    thumb.style.cssText = 'position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s;left:'+(isActive?'14px':'2px');
-    track.appendChild(thumb);
-    var label = document.createElement('span');
-    label.style.cssText = 'font-size:11px;font-family:DM Mono,monospace;white-space:nowrap;color:'+(isActive?'var(--text)':'var(--muted)');
-    label.textContent = s.label;
-    wrap.appendChild(track);
-    wrap.appendChild(label);
-    wrap.onclick = function() {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 14px;cursor:pointer;user-select:none';
+    row.onmouseenter = function(){ row.style.background='var(--bg3,var(--border))'; };
+    row.onmouseleave = function(){ row.style.background=''; };
+
+    var dot = document.createElement('span');
+    dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+(isActive ? (s.color||'var(--accent)') : 'var(--border)');
+
+    var chk = document.createElement('span');
+    chk.style.cssText = 'font-size:12px;color:'+(isActive?'var(--accent)':'var(--border)');
+    chk.textContent = isActive ? '✓' : '○';
+
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;color:'+(isActive?'var(--text)':'var(--muted)');
+    lbl.textContent = s.label;
+
+    row.appendChild(dot);
+    row.appendChild(chk);
+    row.appendChild(lbl);
+    row.onclick = function(e) {
+      e.stopPropagation();
       if (_dashActiveSources.has(s.id)) {
         if (_dashActiveSources.size > 1) _dashActiveSources.delete(s.id);
       } else {
@@ -6183,33 +7340,87 @@ function renderDashboard() {
       }
       renderDashboard();
     };
-    return wrap;
+    return row;
   }
 
-  // Cartões group box
-  var cartoesBox = document.createElement('div');
-  cartoesBox.style.cssText = 'display:flex;flex-direction:column;gap:6px;border:1px solid var(--border);border-radius:8px;padding:8px 12px';
-  var cartoesLabel = document.createElement('div');
-  cartoesLabel.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase';
-  cartoesLabel.textContent = 'Cartões';
-  var cartoesRow = document.createElement('div');
-  cartoesRow.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap;align-items:center';
-  cardSources.forEach(function(s){ cartoesRow.appendChild(makeToggle(s)); });
-  cartoesBox.appendChild(cartoesLabel);
-  cartoesBox.appendChild(cartoesRow);
-  sourceBar.appendChild(cartoesBox);
+  var cardSources = allSources.filter(function(s){ return s.id !== 'contas' && !debitSources.find(function(d){ return d.id===s.id; }); });
+  var contasSource = allSources.find(function(s){ return s.id === 'contas'; });
+  var allGroups = state.card.catGroups || [];
+  if (!_dashActiveGroups) _dashActiveGroups = new Set(allGroups.map(function(g){ return g.name||g.nome; }));
 
-  // Contas — same box structure as Cartões for alignment
+  function makeSep() {
+    var sep = document.createElement('div');
+    sep.style.cssText = 'border-top:1px solid var(--border);margin:4px 0';
+    return sep;
+  }
+
+  function makeGroupCheckRow(g) {
+    var gname = g.name || g.nome;
+    var isActive = _dashActiveGroups.has(gname);
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 14px;cursor:pointer;user-select:none';
+    row.onmouseenter = function(){ row.style.background='var(--bg3,var(--border))'; };
+    row.onmouseleave = function(){ row.style.background=''; };
+    var dot = document.createElement('span');
+    dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+(isActive ? (g.color||'var(--accent)') : 'var(--border)');
+    var chk = document.createElement('span');
+    chk.style.cssText = 'font-size:12px;color:'+(isActive?'var(--accent)':'var(--border)');
+    chk.textContent = isActive ? '✓' : '○';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;color:'+(isActive?'var(--text)':'var(--muted)');
+    lbl.textContent = gname;
+    row.appendChild(dot); row.appendChild(chk); row.appendChild(lbl);
+    row.onclick = function(e) {
+      e.stopPropagation();
+      if (_dashActiveGroups.has(gname)) {
+        if (_dashActiveGroups.size > 1) _dashActiveGroups.delete(gname);
+      } else {
+        _dashActiveGroups.add(gname);
+      }
+      renderDashboard();
+    };
+    return row;
+  }
+
+  if (cardSources.length) {
+    exibirDd.appendChild(makeSecLabel('Cartões'));
+    cardSources.forEach(function(s){ exibirDd.appendChild(makeCheckRow(s)); });
+  }
   if (contasSource) {
-    var contasBox = document.createElement('div');
-    contasBox.style.cssText = 'display:flex;flex-direction:column;gap:6px;border:1px solid transparent;border-radius:8px;padding:8px 12px';
-    var contasLabelSpacer = document.createElement('div');
-    contasLabelSpacer.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;letter-spacing:1px;color:transparent;user-select:none';
-    contasLabelSpacer.textContent = 'x';
-    contasBox.appendChild(contasLabelSpacer);
-    contasBox.appendChild(makeToggle(contasSource));
-    sourceBar.appendChild(contasBox);
+    if (cardSources.length) exibirDd.appendChild(makeSep());
+    exibirDd.appendChild(makeSecLabel('Contas'));
+    exibirDd.appendChild(makeCheckRow(contasSource));
   }
+  if (debitSources.length) {
+    if (cardSources.length || contasSource) exibirDd.appendChild(makeSep());
+    exibirDd.appendChild(makeSecLabel('Débito'));
+    debitSources.forEach(function(s){ exibirDd.appendChild(makeCheckRow(s)); });
+  }
+  if (allGroups.length) {
+    if (cardSources.length || contasSource) exibirDd.appendChild(makeSep());
+    exibirDd.appendChild(makeSecLabel('Grupos'));
+    allGroups.forEach(function(g){ exibirDd.appendChild(makeGroupCheckRow(g)); });
+  }
+
+  var _exibirOpen = false;
+  exibirBtn.onclick = function(e) {
+    e.stopPropagation();
+    _exibirOpen = !_exibirOpen;
+    exibirDd.style.display = _exibirOpen ? 'block' : 'none';
+  };
+  document.addEventListener('mousedown', function closeExibir(e) {
+    if (!exibirWrap.contains(e.target)) {
+      exibirDd.style.display = 'none';
+      _exibirOpen = false;
+      document.removeEventListener('mousedown', closeExibir);
+    }
+  });
+
+  exibirWrap.appendChild(exibirBtn);
+  exibirWrap.appendChild(exibirDd);
+
+  var sourceBar = document.createElement('div');
+  sourceBar.style.cssText = 'display:none';
 
   // Get expenses — accum mode sums all months of the year
   var allExpenses;
@@ -6221,7 +7432,21 @@ function renderDashboard() {
   } else {
     allExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, 'all');
   }
-  var allFiltered = allExpenses.filter(function(e){ return !_dashActiveSources || _dashActiveSources.has(e.source); });
+  function expInActiveGroup(e) {
+    if (!_dashActiveGroups) return true;
+    var allGroups = state.card.catGroups || [];
+    if (!allGroups.length) return true;
+    var catName = getCatName(e.categoriaId) || 'Sem categoria';
+    for (var gi = 0; gi < allGroups.length; gi++) {
+      var g = allGroups[gi];
+      var gname = g.name || g.nome;
+      if (!_dashActiveGroups.has(gname)) continue;
+      if ((g.cats||[]).some(function(c){ return getCatName(c) === catName; })) return true;
+    }
+    // expense not in any group — show if at least one group is fully active (i.e. not all groups filtered)
+    return _dashActiveGroups.size === allGroups.length;
+  }
+  var allFiltered = allExpenses.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); });
   // expenses for chart/detail uses payFilter; totals always use full set
   var filteredExpenses;
   if (_dashPayFilter==='all') {
@@ -6231,9 +7456,9 @@ function renderDashboard() {
     for (var _mo = 0; _mo <= 11; _mo++) {
       _fe = _fe.concat(getDashboardExpenses(_dashY, _mo, _dashLabel, _dashPayFilter));
     }
-    filteredExpenses = _fe.filter(function(e){ return !_dashActiveSources || _dashActiveSources.has(e.source); });
+    filteredExpenses = _fe.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); });
   } else {
-    filteredExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter).filter(function(e){ return !_dashActiveSources || _dashActiveSources.has(e.source); });
+    filteredExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter).filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); });
   }
   var expenses = filteredExpenses;
 
@@ -6243,7 +7468,8 @@ function renderDashboard() {
     var cat = getCatName(e.categoriaId)||'Sem categoria';
     catMap[cat] = (catMap[cat]||0) + e.valor;
   });
-  Object.keys(catMap).forEach(function(k){ if(catMap[k]<=0) delete catMap[k]; });
+  // Remove zero entries only; negatives (rendimentos/estornos) are kept
+  Object.keys(catMap).forEach(function(k){ if(catMap[k]===0) delete catMap[k]; });
   var totalPositive = Math.round(Object.values(catMap).reduce(function(s,v){return s+v;},0) * 100) / 100;
 
   // View mode toggle
@@ -6263,33 +7489,48 @@ function renderDashboard() {
   var totalMes = Math.round(allFiltered.reduce(function(s,e){return s+e.valor;},0) * 100) / 100;
   var totalPago = 0;
   if (_dashAccum) {
-    // In accum mode, sum payments bill by bill across all months
+    // Accum: calculate pay ratio per card from raw bills, apply to filtered totals
+    var cardPayRatios = {};
     (state.card.cards||[]).forEach(function(card) {
       if (_dashActiveSources && !_dashActiveSources.has(card.id)) return;
       var bills = state.card.bills[card.id] || {};
+      var rawBillTotal = 0, rawPayTotal = 0;
       Object.keys(bills).forEach(function(by) {
         if (parseInt(by) !== _dashY) return;
         Object.keys(bills[by]).forEach(function(bm) {
           var txs = bills[by][bm] || [];
-          var billTotal = txs.filter(function(t){ return t.tipo !== 'pagamento'; })
-            .reduce(function(s,t){ return s + (parseFloat(t.valor)||0); }, 0);
+          rawBillTotal += txs.filter(function(t){ return t.tipo !== 'pagamento'; })
+            .reduce(function(s,t){ return s+(parseFloat(t.valor)||0); }, 0);
           var pays = (state.card.payments&&state.card.payments[card.id]&&state.card.payments[card.id][by]&&state.card.payments[card.id][by][bm])||[];
-          var payTotal = pays.reduce(function(s,p){ return s+(parseFloat(p.valor)||0); }, 0);
-          totalPago += Math.min(payTotal, billTotal);
+          rawPayTotal += pays.reduce(function(s,p){ return s+(parseFloat(p.valor)||0); }, 0);
         });
       });
+      cardPayRatios[card.id] = rawBillTotal > 0 ? Math.min(1, rawPayTotal / rawBillTotal) : 1;
     });
-    // Contas
-    if (!_dashActiveSources || _dashActiveSources.has('contas')) {
-      for (var _m = 0; _m <= 11; _m++) {
-        var finBills = (state.finance.bills[_dashY]&&state.finance.bills[_dashY][_m])||[];
-        finBills.forEach(function(r){ if (r.status==='pago'||r.status==='debito') totalPago += parseFloat(r.valor)||0; });
+    // Apply ratio to filtered expenses per source
+    var filteredBySource = {};
+    allFiltered.forEach(function(e) {
+      if (!filteredBySource[e.source]) filteredBySource[e.source] = 0;
+      filteredBySource[e.source] += e.valor;
+    });
+    Object.keys(filteredBySource).forEach(function(src) {
+      if (src === 'contas') {
+        var paidContas = allFiltered.filter(function(e){ return e.source==='contas' && e.pago; });
+        totalPago += paidContas.reduce(function(s,e){ return s+e.valor; }, 0);
+        return;
       }
-    }
+      var isDebit = (state.debit.accounts||[]).some(function(a){ return a.id===src; });
+      if (isDebit) { totalPago += filteredBySource[src]; return; }
+      var ratio = cardPayRatios[src] !== undefined ? cardPayRatios[src] : 1;
+      totalPago += filteredBySource[src] * ratio;
+    });
   } else {
     var seenCardSources = {};
     allFiltered.forEach(function(e) {
       if (e.source === 'contas') { if (e.pago) totalPago += e.valor; return; }
+      // Debit accounts — always paid immediately; use net value (expenses - estornos)
+      var isDebitSource = (state.debit.accounts||[]).some(function(a){ return a.id===e.source; });
+      if (isDebitSource) { totalPago += e.valor; return; }
       if (!seenCardSources[e.source]) {
         seenCardSources[e.source] = { payTotal: e._billPayTotal||0, billTotal: 0 };
       }
@@ -6316,7 +7557,11 @@ function renderDashboard() {
 
   // Build displayCats (same logic as openCardAnalysis)
   var cats = Object.keys(catMap).map(function(k){return{name:k,val:catMap[k]};});
-  cats.sort(function(a,b){return b.val-a.val;});
+  cats.sort(function(a,b){
+    if (a.val < 0 && b.val >= 0) return 1;
+    if (a.val >= 0 && b.val < 0) return -1;
+    return Math.abs(b.val)-Math.abs(a.val);
+  });
   var displayCats = cats;
 
   if (_dashViewMode==='group' && hasGroups) {
@@ -6355,8 +7600,10 @@ function renderDashboard() {
   var list=document.createElement('div');
   list.style.cssText='display:flex;flex-direction:column;gap:2px';
   displayCats.forEach(function(cat,i){
-    var pct=(cat.val/(_dashPayFilter==='all'?totalMes:totalPositive)*100).toFixed(1);
-    var color=cat.color||DASH_COLORS[i%DASH_COLORS.length];
+    var isCredit = cat.val < 0;
+    var absVal = Math.abs(cat.val);
+    var pct=(absVal/(_dashPayFilter==='all'?Math.abs(totalMes):totalPositive||1)*100).toFixed(1);
+    var color= isCredit ? '#22c55e' : (cat.color||DASH_COLORS[i%DASH_COLORS.length]);
     var groupDef=_dashViewMode==='group'?(state.card.catGroups||[]).find(function(g){return ((g.name||g.nome)===cat.name);}):null;
     var subCats=[];
     if(groupDef&&groupDef.cats){
@@ -6372,7 +7619,7 @@ function renderDashboard() {
     var dot=document.createElement('div'); dot.style.cssText='width:12px;height:12px;border-radius:50%;flex-shrink:0;background:'+color;
     var nameEl=document.createElement('span'); nameEl.style.cssText='flex:1;font-size:13px;color:var(--text)'; nameEl.textContent=cat.name;
     var pctEl=document.createElement('span'); pctEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace'; pctEl.textContent=pct+'%';
-    var valEl=document.createElement('span'); valEl.style.cssText='font-size:13px;font-weight:600;font-family:DM Mono,monospace;color:var(--text);min-width:100px;text-align:right'; valEl.textContent=fmtBRL(cat.val);
+    var valEl=document.createElement('span'); valEl.style.cssText='font-size:13px;font-weight:600;font-family:DM Mono,monospace;color:'+(isCredit?'#22c55e':'var(--text)')+';min-width:100px;text-align:right'; valEl.textContent=(isCredit?'+ ':'')+fmtBRL(absVal);
     var chev=document.createElement('span'); chev.style.cssText='font-size:10px;color:var(--muted);transition:transform .2s'; chev.textContent='▶';
     row.appendChild(dot); row.appendChild(nameEl); row.appendChild(pctEl); row.appendChild(valEl); row.appendChild(chev);
     list.appendChild(row);
@@ -6418,10 +7665,16 @@ function renderDashboard() {
     list.appendChild(expDiv);
   });
 
+  var toggleRow = document.createElement('div');
+  toggleRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px';
+  toggleDiv.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content';
+  toggleRow.appendChild(toggleDiv);
+  toggleRow.appendChild(exibirWrap);
+
   content.innerHTML='';
   content.appendChild(sourceBar);
   content.appendChild(summaryDiv);
-  content.appendChild(toggleDiv);
+  content.appendChild(toggleRow);
   content.appendChild(chartDiv);
   content.appendChild(list);
 }
@@ -6993,7 +8246,7 @@ function openCardAnalysis(cardId) {
     grpToggle.textContent = 'Por grupo';
     var hasGroups = (state.card.catGroups||[]).length > 0;
     grpToggle.disabled = !hasGroups;
-    grpToggle.title = hasGroups ? '' : 'Crie grupos primeiro em 🏷 Grupos';
+    grpToggle.title = hasGroups ? '' : 'Crie grupos primeiro em Grupos';
     grpToggle.onclick = function(){ if(hasGroups){ viewMode='group'; rerender(); } };
     toggleDiv.appendChild(catToggle); toggleDiv.appendChild(grpToggle);
     bod.appendChild(toggleDiv);
@@ -7713,10 +8966,10 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var editBtn = document.createElement('button'); editBtn.className = 'btn-sm'; editBtn.textContent = '⚙ Editar'; editBtn.onclick = function(){ openEditCardModal(card.id); };
   var addBillBtn = document.createElement('button'); addBillBtn.className = 'btn-sm accent'; addBillBtn.textContent = '+ Fatura'; addBillBtn.onclick = function(){ openAddBillModal(card.id); };
   var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise'; analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
-  var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = '🏷 Grupos'; groupsBtn.onclick = openCatGroupsModal;
+  var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = 'Grupos'; groupsBtn.onclick = openCatGroupsModal;
   var vt = document.createElement('div'); vt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
   var lb = document.createElement('button'); lb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)'; lb.textContent = '≡ Lista'; lb.onclick = function(){ _cardViewMode='list'; el.dataset.monthIdx=''; renderCard(); };
-  var mb = document.createElement('button'); mb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000'; mb.textContent = '◫ Mensal';
+  var mb = document.createElement('button'); mb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000'; mb.textContent = '◫ Carousel';
   vt.appendChild(lb); vt.appendChild(mb);
   var lt = document.createElement('div'); lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
   var db = document.createElement('button'); db.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='fechamento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='fechamento'?'#000':'var(--muted)'); db.textContent='Fechamento'; db.onclick=function(){ _cardMonthLabel='fechamento'; renderCardPreserve(); };
@@ -7839,7 +9092,7 @@ function renderCardBills(el, cardId) {
   addBillBtn.onclick = function(){ openAddBillModal(card.id); };
   var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise';
   analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
-  var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = '🏷 Grupos';
+  var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = 'Grupos';
   groupsBtn.onclick = openCatGroupsModal;
   var viewToggle = document.createElement('div');
   viewToggle.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
@@ -7849,7 +9102,7 @@ function renderCardBills(el, cardId) {
   listViewBtn.onclick = function(){ _cardViewMode='list'; renderCardPreserve(); };
   var monthViewBtn = document.createElement('button');
   monthViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)';
-  monthViewBtn.textContent = '◫ Mensal';
+  monthViewBtn.textContent = '◫ Carousel';
   monthViewBtn.onclick = function(){ _cardViewMode='month'; renderCardPreserve(); };
   viewToggle.appendChild(listViewBtn); viewToggle.appendChild(monthViewBtn);
   var labelToggle = document.createElement('div');
@@ -8015,6 +9268,13 @@ function acRemember(field, value) {
 
 function acLoadMemory() {
   if (state.card && state.card.acMemory) _acMemory = state.card.acMemory;
+  // Populate debit description keys from acMemory
+  if (state.debit && state.debit.acMemory) {
+    var debitDescs = Object.keys(state.debit.acMemory);
+    (state.debit.accounts||[]).forEach(function(acc){
+      _acMemory['debit-desc-'+acc.id] = debitDescs;
+    });
+  }
   // Pre-populate tx-desc from existing transaction descriptions
   var key = acGetKey('tx-desc');
   var descs = [];
