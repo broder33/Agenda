@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-06-17T05:41:22.862Z",
+  "_updatedAt": "2026-06-18T02:31:10.279Z",
   "tasks": {
     "items": [
       {
@@ -2546,7 +2546,7 @@
             "obs": "",
             "nome": "Celular",
             "venc": "20/6/26",
-            "valor": 0,
+            "valor": 318.27,
             "status": "debito",
             "categoriaId": "cat-0cihdyll7p"
           },
@@ -2558,9 +2558,83 @@
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
+          },
+          {
+            "id": 1781676178131,
+            "nome": "Londrina",
+            "venc": "19/6/26",
+            "valor": 0,
+            "status": "aguardando",
+            "categoria": "",
+            "obs": "",
+            "categoriaId": "cat-1u3e2oudmq"
           }
         ],
-        "6": [],
+        "6": [
+          {
+            "id": 1781676462356.229,
+            "nome": "Aluguel",
+            "venc": "10/7/26",
+            "valor": 0,
+            "status": "aguardando",
+            "obs": "",
+            "categoriaId": "cat-z7pr22s4wd"
+          },
+          {
+            "id": 1781676462356.8474,
+            "nome": "Condomínio",
+            "venc": "10/7/26",
+            "valor": 0,
+            "status": "aguardando",
+            "obs": "00547212968",
+            "categoriaId": "cat-z7pr22s4wd"
+          },
+          {
+            "id": 1781676462356.1663,
+            "nome": "Compagás",
+            "venc": "10/7/26",
+            "valor": 0,
+            "status": "aguardando",
+            "obs": "",
+            "categoriaId": "cat-m7umq5lu78"
+          },
+          {
+            "id": 1781676462356.2898,
+            "nome": "Internet",
+            "venc": "2/7/26",
+            "valor": 92.02,
+            "status": "debito",
+            "obs": "",
+            "categoriaId": "cat-m7umq5lu78"
+          },
+          {
+            "id": 1781676462356.5034,
+            "nome": "Celular",
+            "venc": "20/7/26",
+            "valor": 0,
+            "status": "aguardando",
+            "obs": "",
+            "categoriaId": "cat-0cihdyll7p"
+          },
+          {
+            "id": 1781676462356.1636,
+            "nome": "Unimed",
+            "venc": "7/7/26",
+            "valor": 844.01,
+            "status": "nao-pago",
+            "obs": "",
+            "categoriaId": "cat-winmzzrenu"
+          },
+          {
+            "id": 1781676462356.0237,
+            "nome": "Londrina",
+            "venc": "19/7/26",
+            "valor": 0,
+            "status": "aguardando",
+            "obs": "",
+            "categoriaId": "cat-1u3e2oudmq"
+          }
+        ],
         "7": [],
         "8": [],
         "9": [],
@@ -2589,11 +2663,13 @@
         2,
         3,
         4,
-        5
+        5,
+        6
       ]
     },
     "openMonths": {
-      "5": true
+      "5": true,
+      "6": true
     },
     "currentYear": 2026,
     "chatHistory": {}
@@ -5427,7 +5503,7 @@
               "source": "memory",
               "parcela": "",
               "descricao": "IOF COMPRA INTERNACIONA",
-              "categoriaId": "cat-iachsi0ie7"
+              "categoriaId": "cat-1jv9cpaujf"
             },
             {
               "id": "mq8njslaf5wj9ayf41c",
@@ -5718,7 +5794,7 @@
             {
               "id": "mq8njslaoo973qoiyv",
               "data": "07/04/26",
-              "nota": "Comida",
+              "nota": "Burger King",
               "tipo": "despesa",
               "valor": 27.9,
               "source": "file",
@@ -8223,6 +8299,41 @@
               "descricao": "IOF de atraso",
               "categoriaId": "cat-m8lptmmn8b"
             }
+          ],
+          "5": [
+            {
+              "id": "mqhoc9utoae4s51wok",
+              "descricao": "IOF de atraso",
+              "data": "29/05/26",
+              "valor": 2.47,
+              "tipo": "despesa",
+              "categoriaId": "cat-m8lptmmn8b",
+              "nota": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mqhoc9utbudhl93wglg",
+              "descricao": "Multa de atraso",
+              "data": "29/05/26",
+              "valor": 11.96,
+              "tipo": "despesa",
+              "categoriaId": "cat-m8lptmmn8b",
+              "nota": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
+              "parcela": "",
+              "source": "memory"
+            },
+            {
+              "id": "mqhoc9ut0hnshbdsuczk",
+              "descricao": "Juros de atraso",
+              "data": "29/05/26",
+              "valor": 12.3,
+              "tipo": "despesa",
+              "categoriaId": "cat-m8lptmmn8b",
+              "nota": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
+              "parcela": "",
+              "source": "memory"
+            }
           ]
         }
       }
@@ -8249,6 +8360,14 @@
           "4": {
             "paid": true,
             "paidAt": "2026-06-05T02:06:15.485Z"
+          }
+        }
+      },
+      "card-nubank": {
+        "2026": {
+          "5": {
+            "paid": true,
+            "paidAt": "2026-06-17T06:13:29.053Z"
           }
         }
       }
@@ -8316,7 +8435,7 @@
       },
       {
         "id": "cat-m8lptmmn8b",
-        "name": "Fatura"
+        "name": "Juros"
       },
       {
         "id": "cat-z7pr22s4wd",
@@ -8341,6 +8460,10 @@
       {
         "id": "cat-o53k88i1e4",
         "name": "Rendimento"
+      },
+      {
+        "id": "cat-s74hyo6cb6",
+        "name": "Viagens"
       }
     ],
     "memory": [
@@ -9334,7 +9457,8 @@
           "cat-0cihdyll7p",
           "cat-1u3e2oudmq",
           "cat-77wa3taxwj",
-          "cat-o53k88i1e4"
+          "cat-o53k88i1e4",
+          "cat-s74hyo6cb6"
         ],
         "name": "Richard",
         "color": "#6366f1"
@@ -9368,7 +9492,7 @@
             {
               "id": "mqcvrdn1ybwa9uv3kc",
               "data": "28/01/26",
-              "nota": "Pagamento Integral pós-fechmaneto",
+              "nota": "Pagamento Integral pós-fechamento",
               "valor": 636.1,
               "descricao": "Pagamento Total"
             }
@@ -9386,7 +9510,7 @@
             {
               "id": "mqblft7kc3hh7vybokm",
               "data": "31/03/26",
-              "nota": "Pagamento integral pós-fechamento",
+              "nota": "Pagamento Integral pós-fechamento",
               "valor": 2933.97,
               "descricao": "Pagamento Total"
             }
@@ -9395,7 +9519,7 @@
             {
               "id": "mqbko045uxmru2aqqem",
               "data": "30/04/26",
-              "nota": "Pagamento integral pós-fechamento",
+              "nota": "Pagamento Integral pós-fechamento",
               "valor": 2506.74,
               "descricao": "Pagamento Total"
             }
@@ -9404,7 +9528,7 @@
             {
               "id": "mqbcycvd5nbwqbksx66",
               "data": "29/05/26",
-              "nota": "Pagamento Integral pós-fechmaneto",
+              "nota": "Pagamento Integral pós-fechamento",
               "valor": 2307.07,
               "descricao": "Pagamento Total"
             }
@@ -9471,7 +9595,7 @@
             {
               "id": "mqcxoi3hezai3wcwqfe",
               "data": "24/02/26",
-              "nota": "Pagamento Integral pós-fechmaneto",
+              "nota": "Pagamento Integral pós-fechamento",
               "valor": 14.79,
               "descricao": "Pagamento Total"
             }
@@ -9493,6 +9617,15 @@
               "valor": 595.66,
               "descricao": "Pagamento Total (Atrasado)"
             }
+          ],
+          "5": [
+            {
+              "id": "mqibw26r33dkx02ra6c",
+              "data": "16/06/26",
+              "valor": 26.73,
+              "descricao": "Pagamento Total",
+              "nota": "Pagamento Integral pós-fechamento"
+            }
           ]
         }
       }
@@ -9504,6 +9637,9 @@
         "JV CAMBE LOJA DE CONVE",
         "LanchesQDelicia",
         "CASA CHINA LONDRINA",
+        "IOF de atraso",
+        "Multa de atraso",
+        "Juros de atraso",
         "IOF COMPRA INTERNACIONA",
         "IFD*iFood",
         "DL   *UberRides",
@@ -9622,9 +9758,6 @@
         "EC          *SAMSU18/18",
         "IFD*OUTBACK STEAKHOUSE",
         "Compra internacional em CLICKUP",
-        "Juros de atraso",
-        "Multa de atraso",
-        "IOF de atraso",
         "Microsoft*Microsoft 365 F",
         "JK LONDRINA",
         "HABIBI PHONE",
@@ -9742,6 +9875,14 @@
         "Fatura Residual Dezembro"
       ],
       "ac_detalhes": [
+        "Tok & Stok",
+        "Seguro Cartão Itaú",
+        "Passagem Crianças",
+        "Galaxy A26 Danilo",
+        "Panificadora Nathalia",
+        "Muffato",
+        "Bar do Japa",
+        "Burger King",
         "Torquímetro Ice Toolz: R$ 316,00\nGarrafa Elite x2: R$ 139,98\nGraxa Park Tool: R$ 71,29\nChave Medidor Corrente: R$ 68,90\nJogo Chave Allen: R$ 49,50\nPaquímetro Manual: R$ 29,93\nEspátula Parktool: R$ 29,58\nAlicate Extrator PowerLink: R$ 19,00\nFrete (Residual): R$ 11,02",
         "Zé Delivery",
         "IOF Fatura Dezembro",
@@ -9767,7 +9908,6 @@
         "Devolução (possivelmente de comida)",
         "Alguma devolução",
         "Localiza",
-        "Burger King",
         "Anuidade Microsoft 365",
         "Licor de Maçã",
         "Farmácia",
@@ -9834,14 +9974,7 @@
         "Fita métrica Wonder 5M+2M para caixa de ferramentas bike",
         "Alguma correção",
         "Algum tipo de devolução. Obs: essa devolução aparentemente só surgiu depois do primeiro pagamento da fatura.",
-        "Correção (?)",
-        "Devolução Compra Paquímetro Manual",
-        "Canivete Extrator Corrente",
-        "Remédio",
-        "Arruelas alumínio",
-        "Corrente HG-701 11v",
-        "Caixa de Ferramentas",
-        "Reembolso Graxa Park Tool e Medidor de Desgaste de Corrente (compra de R$735,20 em 10x)"
+        "Correção (?)"
       ],
       "ac_pay-desc-card-mp": [
         "Pagamento Total",
@@ -9872,14 +10005,252 @@
         "Pagamento mínimo"
       ],
       "ac_pay-nota-card-nubank": [
+        "Pagamento Integral pós-fechmaneto",
+        "Pagamento Integral pós-fechamento",
         "Pagamento único",
         "Pagamento Antecipado",
         "Pagamento para fechar a fatura",
         "Antecipação: 1 dia antes do vencimento",
         "Pagamento antecipado para liberação de limite para locação de carro",
-        "Pagamento Integral pós-fechmaneto",
-        "Pagamento integral pós-fechamento",
         "Pagamento após vencimento - Irá gerar multa no próximo mês"
+      ],
+      "debit-desc-debit-mqh2es5f1r51l8vg6v7": [
+        "pagamento com qr pix zamp s.a.",
+        "pagamento google brasil pagamentos ltda.",
+        "rendimentos",
+        "pix enviado growth supplements",
+        "pagamento sao joao farmacia",
+        "pagamento rolamentos londrina",
+        "pagamento atitude papelaria",
+        "pagamento hm parafusos e ferramen",
+        "pix enviado",
+        "pagamento mercado libre",
+        "pagamento com qr pix ebanx ltda.",
+        "pagamento mercado livre",
+        "reembolso compra garantida",
+        "reembolso de compra mercado libre",
+        "pagamento de assinatura meli+",
+        "pagamento celso garcia",
+        "pagamento com qr pix antonio juncanssi",
+        "pagamento adelciocostapenha",
+        "pagamento meli+"
+      ],
+      "ac_debit-desc-debit-mqh2es5f1r51l8vg6v7": [
+        "Pagamento Adelciocostapenha",
+        "Pagamento Meli+",
+        "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+        "Rendimentos",
+        "Pagamento de assinatura Meli+",
+        "Pagamento com QR Pix ZAMP S.A.",
+        "Reembolso Compra garantida",
+        "Pagamento com QR Pix EBANX Ltda.",
+        "Pagamento Hm parafusos e ferramen",
+        "Pagamento com QR Pix ANTONIO JUNCANSSI",
+        "Pix enviado",
+        "Pagamento Mercado Livre",
+        "Pagamento Atitude papelaria",
+        "Pagamento Mercado Libre",
+        "Pagamento Rolamentos londrina",
+        "Pix enviado GROWTH SUPPLEMENTS",
+        "Pagamento Celso garcia",
+        "Pagamento Sao joao farmacia",
+        "Reembolso de compra Mercado Libre",
+        "Pix enviado Agua Leve Pura Ltda",
+        "Pagamento com QR Pix JETSHR LTDA",
+        "Pagamento com QR Pix PAGSEGURO TECNOLOGIA LTDA",
+        "Pagamento com QR Pix COMPANHIA PARANAENSE DE GAS COMPAGAS",
+        "Pagamento Duque",
+        "Pagamento Angeloni super loja 23",
+        "Pagamento com QR Pix RAIA DROGASIL SA",
+        "Pagamento Casa das embalage",
+        "Pagamento Raia4431",
+        "Pagamento Giuseppe restaura",
+        "Pagamento Condor joinville americ",
+        "Pagamento Lindt sprungli brazil",
+        "Pagamento Posto gt",
+        "Pagamento Condor nilo pecan",
+        "Pagamento Jk londrina",
+        "Pagamento Jv cambe loja de conve",
+        "Pagamento Vitamina da sergipe",
+        "Pagamento Tecno smart",
+        "Pagamento Av higienopolis londri",
+        "Pagamento Quintino",
+        "Pagamento com QR Pix IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.",
+        "Pagamento Bar seleto",
+        "Pagamento M e soares",
+        "Pagamento com QR Pix PAY2ALL INSTITUICAO DE PAGAMENTO LTDA.",
+        "Pagamento Burger king",
+        "Pagamento Kalunga shop*kalunga 0",
+        "Compra Mercado Libre",
+        "Pagamento de conta Itaú Unibanco S.A.",
+        "Pagamento Restaurante norte",
+        "Pagamento Auto posto imbau",
+        "Pagamento Mahle 10",
+        "Pagamento Posto farol do parque l",
+        "Pagamento Stiegler bolsas ltda",
+        "Pagamento Festval ozorio",
+        "Pagamento Restaurante makin ltda",
+        "Pagamento Shiny?s kitchen",
+        "Pagamento Menegatti",
+        "Pagamento Posto tio zico",
+        "Pagamento com QR Pix LOCALIZA RENT A CAR SA",
+        "Pagamento Supermercados viscardi",
+        "Compra Mercado Livre",
+        "Pagamento Casa china londrina",
+        "Pagamento Cbf ferramentas",
+        "Pagamento com QR Pix ESTOK COMERCIO E REPRESENTACOES S.A.",
+        "Pagamento Emporio sumatra",
+        "Pagamento Panvel farmacias",
+        "Compra de Plug Tomada Adaptador Para Mac Apple Macbook Pro Air Brazil",
+        "Pagamento com QR Pix EMPREENDIMENTOS PAGUE MENOS SA",
+        "Pagamento Kalunga shopping",
+        "LTDA",
+        "Pagamento com QR Pix NATURA CO PAY SERVICOS FINANCEIROS E TECNOLOGIA EM",
+        "Pagamento Mesconvenienciae",
+        "Pagamento Auto posto aben?o",
+        "Pagamento Tigr?o travel cen",
+        "Pagamento Carreteiro rev de petr",
+        "Pagamento Carrefour xas",
+        "Pagamento Ph exp shopping c",
+        "Pagamento Kalunga paulista",
+        "Pagamento Pac paulista casarao",
+        "Pagamento Z deli sanduiches",
+        "Pagamento Chaveiro farol da barr",
+        "Pagamento Bacio di latte- lj0016",
+        "Pagamento Rodosnack petrope",
+        "Pagamento Vila velha restaurante",
+        "Pagamento Pane di giovanni",
+        "Pagamento Jardim gastronomico co",
+        "Pagamento Copa cafe",
+        "Pagamento com QR Pix ARCA SOLUCOES TECNOLOGICAS SA",
+        "Pagamento Farmacia preco popular",
+        "Pagamento Auto posto ecos",
+        "Compra de Secador Ferrari V1 Volare 2000w - By Roger - Não Perca Mercado Livre",
+        "Pagamento Raia330",
+        "REPRESENTACOES S.A. Pagamento Quintino",
+        "CAMBIO LTDA Pagamento Jk londrina",
+        "Pagamento Cheers pub londrina",
+        "Richard Broder Wang Pagamento Parada do suco",
+        "Pagamento 61173122heloysa",
+        "Pagamento Bruxa do setenta e um bar",
+        "Pagamento com QR Pix BRUXA DO SETENTA E UM BAR E RESTAURANTE LTDA",
+        "Pagamento com QR Pix MAGALUPAY INSTITUICAO DE PAGAMENTO S.A.",
+        "Pagamento com QR Pix SMARTFIT ESCOLA DE GINASTICA E DANCA S.A.",
+        "Pagamento Mp*joao",
+        "URENTCAR LTDA",
+        "Pagamento Mamma dushi pizzaria",
+        "Transferência Pix enviada CIA LATINO AMERICANA DE MEDICAMENTOS",
+        "Pagamento com QR Pix URENTCAR LTDA",
+        "Pagamento Elton silva matsuda",
+        "Pagamento Restaurante minas de o",
+        "Richard Broder Wang Pagamento Jk londrina",
+        "Pagamento Raia323",
+        "Pagamento Lojas americanas"
+      ],
+      "ac_debit-nota-debit-mqh2es5f1r51l8vg6v7": [
+        "Caldo de Cana - Botânico",
+        "Meli+",
+        "Google AI Plus 200GB",
+        "Rendimentos",
+        "Meli+ Disney+ Premium",
+        "Burger King",
+        "Reembolso capa S23+",
+        "Amazon Prime Video",
+        "Genshin - Gnostic Hymn",
+        "Arruela parafuso canote",
+        "Bandeja p/ desengraxar",
+        "Natura Cosméticos",
+        "Missing Link KMC dourado (x2)",
+        "Fita Adesiva",
+        "Medidor Desgaste Corrente: R$67,89\nGraxa Park Tool: R$71.29",
+        "4 rolamentos novos para roda traseira Sava",
+        "Capa S23+",
+        "Paquímetro Digital CF",
+        "Whey",
+        "Desengraxante Bike Algoo Citrus 700ml",
+        "Muffato",
+        "Farmácia",
+        "Reembolso Kit de Limpeza de Corrente",
+        "Reembolso Desengraxante Bike Algoo Citrus 1L",
+        "SERASA Experian",
+        "YouTube Premium",
+        "Genshin - Welkin Moon",
+        "Água",
+        "JET",
+        "PUBG",
+        "Compagás",
+        "Passagens",
+        "Angeloni",
+        "Almoço",
+        "Condor",
+        "Chocolate Lindt",
+        "Abastecimento",
+        "Vitamina",
+        "Capa A26",
+        "iFood",
+        "Licensa Windows 11",
+        "Vitamina Fake",
+        "Vape",
+        "Adaptador Watercooler",
+        "Pagamento desconhecido - vou classificar como alimentação",
+        "Kalunga",
+        "Fita Velcro + Protetor Batente Silicone",
+        "Restaurante",
+        "Bebida",
+        "Mala Sara",
+        "Festval",
+        "Shiny Galeria",
+        "Localiza",
+        "Viscardi",
+        "Edifier R19BT",
+        "Zacapa - Deco",
+        "Gamesir T4 Nova Lite",
+        "Casa China",
+        "Ferramentas",
+        "Tok & Stok",
+        "Panvel",
+        "Adaptador Apple",
+        "Conveniência",
+        "Comida",
+        "Carrefour",
+        "Chaveiro SP",
+        "Comida - Paulista",
+        "Sorvete ",
+        "Restaurante Estrada",
+        "Refeição",
+        "Café",
+        "Passagem",
+        "Secador",
+        "Google AI",
+        "Suco",
+        "Cabo USB",
+        "Smart Fit",
+        "Bar do Japa",
+        "Lojas Americanas"
+      ],
+      "ac_debit-desc-debit-mqishlnu2ci81kqukvu": [
+        "PANIF NATHALIA",
+        "QUINTINO",
+        "CELSO GARCIA BR",
+        "JK LONDRINA",
+        "DUQUE BEBIDAS LTDA BR",
+        "ELTON SILVA MATSUDA",
+        "BAR DO JAPA"
+      ],
+      "ac_debit-nota-debit-mqishlnu2ci81kqukvu": [
+        "Panificadora Nathalia",
+        "Muffato",
+        "Bar do Japa"
+      ],
+      "ac_debit-desc-debit-mqiudwa4iat3iire9f8": [
+        "Seguro Cartão",
+        "Pix Marketplace",
+        "Embarca Ai"
+      ],
+      "ac_debit-nota-debit-mqiudwa4iat3iire9f8": [
+        "Seguro Cartão Itaú",
+        "Galaxy A26 Danilo",
+        "Passagem Crianças"
       ]
     },
     "notaMemory": {
@@ -9888,6 +10259,9 @@
       "JV CAMBE LOJA DE CONVE": "Abastecimento",
       "LanchesQDelicia": "Vape 40k",
       "CASA CHINA LONDRINA": "Fita métrica Wonder 5M+2M para caixa de ferramentas bike",
+      "IOF de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
+      "Multa de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
+      "Juros de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
       "IOF COMPRA INTERNACIONA": "IOF Claude",
       "IFD*iFood": "iFood",
       "DL   *UberRides": "Uber",
@@ -9957,9 +10331,6 @@
       "EC          *SAMSUNG": "Algum tipo de devolução. Obs: essa devolução aparentemente só surgiu depois do primeiro pagamento da fatura.",
       "IFD*OUTBACK STEAKHOUSE": "iFood",
       "Compra internacional em CLICKUP": "ClickUp",
-      "Juros de atraso": "Referente ao valor em aberto de R$ 282,58 de 27/04/2026 (Valor original: R$ 283,66)",
-      "Multa de atraso": "Referente ao valor em aberto de R$ 282,58 de 27/04/2026 (Valor original: R$ 283,66)",
-      "IOF de atraso": "Referente ao valor em aberto de R$ 282,58 de 27/04/2026 (Valor original: R$ 283,66)",
       "Microsoft*Microsoft 365 F": "Anuidade Microsoft 365",
       "JK LONDRINA": "Muffato",
       "HABIBI PHONE": "Compra de capa p/ notebook Acer",
@@ -9978,7 +10349,7 @@
       "JOINVILLE   -CT": "Abastecimento",
       "QUIMISHOP": "Antimofo",
       "CASA DAS EMBALAGENS": "Plástico Bolha p/ TV",
-      "BURGER KING JOINVILLE": "Comida",
+      "BURGER KING JOINVILLE": "Burger King",
       "AEA JOIN": "Presente Dodó",
       "DELTA IRASOL": "Abastecimento",
       "KALUNGA JOIN*Kalunga 0": "Mouse Sara",
@@ -10099,6 +10470,16 @@
         "id": "debit-mqh2es5f1r51l8vg6v7",
         "nome": "Mercado Pago",
         "cor": "#00bcff"
+      },
+      {
+        "id": "debit-mqishlnu2ci81kqukvu",
+        "nome": "XP",
+        "cor": "#323232"
+      },
+      {
+        "id": "debit-mqiudwa4iat3iire9f8",
+        "nome": "Itaú",
+        "cor": "#ec7000"
       }
     ],
     "transactions": {
@@ -10338,10 +10719,10 @@
           "data": "2026-05-15",
           "descricao": "Pagamento com QR Pix ZAMP S.A.",
           "valor": 20,
-          "categoriaId": "cat-77wa3taxwj",
+          "categoriaId": "cat-2metcc4gvh",
           "ignorarDashboard": false,
           "estorno": false,
-          "nota": "Genshin - Welkin Moon"
+          "nota": "Burger King"
         },
         {
           "id": "mqhgetxak09w6hrq7i",
@@ -10592,13 +10973,2877 @@
           "ignorarDashboard": false,
           "estorno": false,
           "nota": "Caldo de Cana - Botânico"
+        },
+        {
+          "id": "mqhowpio0795a3muxja7",
+          "data": "2026-04-01",
+          "descricao": "Rendimentos",
+          "valor": 2.5,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpioxo76ew8ry6",
+          "data": "2026-04-02",
+          "descricao": "Rendimentos",
+          "valor": 2.52,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpio0tend7ddtq6n",
+          "data": "2026-04-02",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 16.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "YouTube Premium"
+        },
+        {
+          "id": "mqhowpioy99uvnvn9d",
+          "data": "2026-04-03",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 168.83,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqhowpio7mod7znm2rh",
+          "data": "2026-04-03",
+          "descricao": "Pagamento Quintino",
+          "valor": 138.51,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqhowpiomrf3hot6hg",
+          "data": "2026-04-03",
+          "descricao": "Pagamento Av higienopolis londri",
+          "valor": 61.6,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqhowpio8oh451qgxos",
+          "data": "2026-04-04",
+          "descricao": "Pagamento Tecno smart",
+          "valor": 20,
+          "categoriaId": "cat-bo388xg881",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Capa A26"
+        },
+        {
+          "id": "mqhowpio08tbm3kf2o1w",
+          "data": "2026-04-04",
+          "descricao": "Pagamento Vitamina da sergipe",
+          "valor": 84.5,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Vitamina"
+        },
+        {
+          "id": "mqhowpioz6962tbea7f",
+          "data": "2026-04-06",
+          "descricao": "Rendimentos",
+          "valor": 2.5,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpioe706muhgfjt",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Jv cambe loja de conve",
+          "valor": 70.07,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqhowpiomylylijb1v",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 67.45,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqhowpio6wse8533odk",
+          "data": "2026-04-07",
+          "descricao": "Rendimentos",
+          "valor": 2.29,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiotir0we02i2",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Condor nilo pecan",
+          "valor": 26.88,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Condor"
+        },
+        {
+          "id": "mqhowpio2eklok194qv",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Posto gt",
+          "valor": 100,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqhowpiomzyn6dy9jf7",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Lindt sprungli brazil",
+          "valor": 156.99,
+          "categoriaId": "cat-bo388xg881",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Chocolate Lindt"
+        },
+        {
+          "id": "mqhowpio7yvngg4xa4d",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Condor joinville americ",
+          "valor": 64.99,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Condor"
+        },
+        {
+          "id": "mqhowpiotrlofytilhi",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Giuseppe restaura",
+          "valor": 133.63,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Almoço"
+        },
+        {
+          "id": "mqhowpiormahtecojt",
+          "data": "2026-04-07",
+          "descricao": "Pagamento Raia4431",
+          "valor": 25.89,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqhowpioj66gy7mpacf",
+          "data": "2026-04-07",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 23.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "SERASA Experian"
+        },
+        {
+          "id": "mqhowpio4pocjr56rnj",
+          "data": "2026-04-08",
+          "descricao": "Rendimentos",
+          "valor": 2.01,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpioxn7hl4gz8gb",
+          "data": "2026-04-08",
+          "descricao": "Pagamento Casa das embalage",
+          "valor": 5.8,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Fita Adesiva"
+        },
+        {
+          "id": "mqhowpiof2xljo4eg2",
+          "data": "2026-04-08",
+          "descricao": "Pagamento com QR Pix RAIA DROGASIL SA",
+          "valor": 71.79,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqhowpiok65015y6uzm",
+          "data": "2026-04-08",
+          "descricao": "Pagamento com QR Pix RAIA DROGASIL SA",
+          "valor": 62.79,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqhowpio67g70kv9bwo",
+          "data": "2026-04-08",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 51.65,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Gnostic Hymn"
+        },
+        {
+          "id": "mqhowpiobc3uvri6aye",
+          "data": "2026-04-08",
+          "descricao": "Pagamento Angeloni super loja 23",
+          "valor": 25.97,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Angeloni"
+        },
+        {
+          "id": "mqhowpioa2dc7hxpd48",
+          "data": "2026-04-09",
+          "descricao": "Rendimentos",
+          "valor": 1.91,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiopsgttettadi",
+          "data": "2026-04-09",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 38.8,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqhowpiot7yy0qg86ym",
+          "data": "2026-04-10",
+          "descricao": "Rendimentos",
+          "valor": 1.89,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpionvbs29znu19",
+          "data": "2026-04-10",
+          "descricao": "Pagamento Duque",
+          "valor": 341.49,
+          "categoriaId": "cat-ovg9hujjsz",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Passagens"
+        },
+        {
+          "id": "mqhowpiout8olylkoyp",
+          "data": "2026-04-13",
+          "descricao": "Rendimentos",
+          "valor": 1.75,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpio1oso527lbov",
+          "data": "2026-04-13",
+          "descricao": "Pagamento com QR Pix COMPANHIA PARANAENSE DE GAS COMPAGAS",
+          "valor": 58.68,
+          "categoriaId": "cat-m7umq5lu78",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Compagás"
+        },
+        {
+          "id": "mqhowpioh53b6klmpuh",
+          "data": "2026-04-14",
+          "descricao": "Rendimentos",
+          "valor": 1.7,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiobtpineyw26o",
+          "data": "2026-04-15",
+          "descricao": "Rendimentos",
+          "valor": 1.72,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpio0amw45vv2ya",
+          "data": "2026-04-16",
+          "descricao": "Rendimentos",
+          "valor": 1.72,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiouvuwz22fy1",
+          "data": "2026-04-16",
+          "descricao": "Pagamento com QR Pix PAGSEGURO TECNOLOGIA LTDA",
+          "valor": 249.52,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "PUBG"
+        },
+        {
+          "id": "mqhowpiovclhm4lcapc",
+          "data": "2026-04-16",
+          "descricao": "Pagamento com QR Pix PAGSEGURO TECNOLOGIA LTDA",
+          "valor": 10,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "PUBG"
+        },
+        {
+          "id": "mqhowpioqgkogn24x2g",
+          "data": "2026-04-16",
+          "descricao": "Pagamento com QR Pix JETSHR LTDA",
+          "valor": 33,
+          "categoriaId": "cat-9gx45purug",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "JET"
+        },
+        {
+          "id": "mqhowpio7wql4sg091",
+          "data": "2026-04-17",
+          "descricao": "Rendimentos",
+          "valor": 1.5,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiouj3a35ez9mk",
+          "data": "2026-04-20",
+          "descricao": "Rendimentos",
+          "valor": 1.38,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiooi47e43vk2c",
+          "data": "2026-04-21",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 19.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Amazon Prime Video"
+        },
+        {
+          "id": "mqhowpiod1b4b32l48",
+          "data": "2026-04-22",
+          "descricao": "Rendimentos",
+          "valor": 2.13,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiolh6hqh1jx1",
+          "data": "2026-04-22",
+          "descricao": "Pix enviado Agua Leve Pura Ltda",
+          "valor": 21,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Água"
+        },
+        {
+          "id": "mqhowpio4dm45vtivc6",
+          "data": "2026-04-23",
+          "descricao": "Rendimentos",
+          "valor": 1.36,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiof72ehabels",
+          "data": "2026-04-24",
+          "descricao": "Rendimentos",
+          "valor": 1.37,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiot8815tztja",
+          "data": "2026-04-26",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 26.81,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Welkin Moon"
+        },
+        {
+          "id": "mqhowpiooir7la19gok",
+          "data": "2026-04-27",
+          "descricao": "Rendimentos",
+          "valor": 1.37,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpioow39i9cj7h",
+          "data": "2026-04-27",
+          "descricao": "Pagamento de assinatura Meli+",
+          "valor": 10.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Meli+ Disney+ Premium"
+        },
+        {
+          "id": "mqhowpio1jbelsnwych",
+          "data": "2026-04-28",
+          "descricao": "Rendimentos",
+          "valor": 1.36,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpiohuinyy6jumc",
+          "data": "2026-04-29",
+          "descricao": "Rendimentos",
+          "valor": 1.23,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqhowpio96g72a962fw",
+          "data": "2026-04-29",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 12.5,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Google AI Plus 200GB"
+        },
+        {
+          "id": "mqhowpio13ue3f1jz6jd",
+          "data": "2026-04-30",
+          "descricao": "Rendimentos",
+          "valor": 1.25,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0hshlqwm95rn",
+          "data": "2026-03-01",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 12.5,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Google AI Plus 200GB"
+        },
+        {
+          "id": "mqib1cy0f4kkb8fnj65",
+          "data": "2026-03-02",
+          "descricao": "Rendimentos",
+          "valor": 1.79,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy09k95dit2l3",
+          "data": "2026-03-02",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 16.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "YouTube Premium"
+        },
+        {
+          "id": "mqib1cy0jfbrskfz2ql",
+          "data": "2026-03-02",
+          "descricao": "Pagamento Supermercados viscardi",
+          "valor": 20.56,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Viscardi"
+        },
+        {
+          "id": "mqib1cy0imgnsa1hp5",
+          "data": "2026-03-03",
+          "descricao": "Rendimentos",
+          "valor": 1.77,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0t4fpypieok",
+          "data": "2026-03-03",
+          "descricao": "Pagamento com QR Pix LOCALIZA RENT A CAR SA",
+          "valor": 786.67,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Localiza"
+        },
+        {
+          "id": "mqib1cy0mluja66dpv",
+          "data": "2026-03-03",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 56.47,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqib1cy0hkznq3tkqyh",
+          "data": "2026-03-04",
+          "descricao": "Rendimentos",
+          "valor": 1.76,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0e77aqdi7ce9",
+          "data": "2026-03-04",
+          "descricao": "Pagamento Posto tio zico",
+          "valor": 30,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqib1cy0z2c2sypb25m",
+          "data": "2026-03-04",
+          "descricao": "Pagamento Menegatti",
+          "valor": 150,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqib1cy0lrq5dml89cb",
+          "data": "2026-03-05",
+          "descricao": "Rendimentos",
+          "valor": 1.31,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0ex2cmho9fn6",
+          "data": "2026-03-05",
+          "descricao": "Pagamento Burger king",
+          "valor": 32,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqib1cy0phldanolm2j",
+          "data": "2026-03-06",
+          "descricao": "Rendimentos",
+          "valor": 1.29,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0w3jj9rv8que",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Shiny?s kitchen",
+          "valor": 69.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Shiny Galeria"
+        },
+        {
+          "id": "mqib1cy0bl373kjoe4",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Restaurante makin ltda",
+          "valor": 64.3,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Almoço"
+        },
+        {
+          "id": "mqib1cy06haajtq6jxw",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Festval ozorio",
+          "valor": 63.74,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Festval"
+        },
+        {
+          "id": "mqib1cy0y83yxuaph4s",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Stiegler bolsas ltda",
+          "valor": 259.8,
+          "categoriaId": "cat-bo388xg881",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Mala Sara"
+        },
+        {
+          "id": "mqib1cy0dnmsqbko6go",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Posto farol do parque l",
+          "valor": 78.05,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqib1cy0zwwgt1wlik9",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Mahle 10",
+          "valor": 4,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bebida"
+        },
+        {
+          "id": "mqib1cy0urxsuxmk2kk",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Auto posto imbau",
+          "valor": 48.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqib1cy0l6v27c83dt8",
+          "data": "2026-03-06",
+          "descricao": "Pagamento Jv cambe loja de conve",
+          "valor": 219.43,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqib1cy0y4a7d0i9nsh",
+          "data": "2026-03-07",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 23.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "SERASA Experian"
+        },
+        {
+          "id": "mqib1cy0o821h12y7o",
+          "data": "2026-03-08",
+          "descricao": "Pagamento Kalunga shop*kalunga 0",
+          "valor": 234.5,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Kalunga"
+        },
+        {
+          "id": "mqib1cy0zkjx2hb6l9k",
+          "data": "2026-03-08",
+          "descricao": "Pagamento Burger king",
+          "valor": 58.78,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqib1cy0ien2ymx17w",
+          "data": "2026-03-09",
+          "descricao": "Pagamento Restaurante norte",
+          "valor": 12,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Restaurante"
+        },
+        {
+          "id": "mqib1cy0bdv0y2q6f6a",
+          "data": "2026-03-09",
+          "descricao": "Rendimentos",
+          "valor": 1.04,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0ho8n5bytxbb",
+          "data": "2026-03-09",
+          "descricao": "Pagamento de conta Itaú Unibanco S.A.",
+          "valor": 27,
+          "categoriaId": "cat-m7umq5lu78",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Compagás"
+        },
+        {
+          "id": "mqib1cy0zsuhkznvi9o",
+          "data": "2026-03-09",
+          "descricao": "Compra Mercado Libre",
+          "valor": 77.51,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Fita Velcro + Protetor Batente Silicone"
+        },
+        {
+          "id": "mqib1cy0szrsnhpkil",
+          "data": "2026-03-09",
+          "descricao": "Pagamento Kalunga shop*kalunga 0",
+          "valor": 43.4,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Kalunga"
+        },
+        {
+          "id": "mqib1cy0bej7zof9dzw",
+          "data": "2026-03-09",
+          "descricao": "Pagamento Burger king",
+          "valor": 65.8,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqib1cy06ct55e07kli",
+          "data": "2026-03-10",
+          "descricao": "Rendimentos",
+          "valor": 0.74,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0tvtlkd7fve9",
+          "data": "2026-03-10",
+          "descricao": "Pagamento com QR Pix PAY2ALL INSTITUICAO DE PAGAMENTO LTDA.",
+          "valor": 17.99,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Pagamento desconhecido - vou classificar como alimentação"
+        },
+        {
+          "id": "mqib1cy0d6ovse66ty6",
+          "data": "2026-03-10",
+          "descricao": "Pagamento M e soares",
+          "valor": 70,
+          "categoriaId": "cat-qt8k9krhlw",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Vape"
+        },
+        {
+          "id": "mqib1cy0pzta4cmvath",
+          "data": "2026-03-10",
+          "descricao": "Pagamento Bar seleto",
+          "valor": 26,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Vitamina Fake"
+        },
+        {
+          "id": "mqib1cy0oml0bdtkn0k",
+          "data": "2026-03-11",
+          "descricao": "Rendimentos",
+          "valor": 0.63,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0i66wy3oj9h9",
+          "data": "2026-03-12",
+          "descricao": "Rendimentos",
+          "valor": 0.64,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0xmxk16e39",
+          "data": "2026-03-12",
+          "descricao": "Pagamento com QR Pix PAGSEGURO TECNOLOGIA LTDA",
+          "valor": 22.35,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "PUBG"
+        },
+        {
+          "id": "mqib1cy0jbq7qz4fvk",
+          "data": "2026-03-12",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 96.73,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqib1cy0kgab1osdot",
+          "data": "2026-03-13",
+          "descricao": "Rendimentos",
+          "valor": 0.62,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0ekzhyniyxjr",
+          "data": "2026-03-14",
+          "descricao": "Pagamento Mercado Livre",
+          "valor": 159.99,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Adaptador Watercooler"
+        },
+        {
+          "id": "mqib1cy0y8ebugn6ay",
+          "data": "2026-03-16",
+          "descricao": "Rendimentos",
+          "valor": 0.59,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0o8xf0p21yur",
+          "data": "2026-03-17",
+          "descricao": "Rendimentos",
+          "valor": 0.2,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy05uz80eozjd6",
+          "data": "2026-03-18",
+          "descricao": "Rendimentos",
+          "valor": 0.86,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0o0fw7djdpai",
+          "data": "2026-03-19",
+          "descricao": "Rendimentos",
+          "valor": 0.87,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0mp285bckx7s",
+          "data": "2026-03-19",
+          "descricao": "Pagamento Celso garcia",
+          "valor": 91.76,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqib1cy0nw3xre7gl1",
+          "data": "2026-03-19",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 148.75,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqib1cy0o88t3uilcks",
+          "data": "2026-03-19",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 15.69,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqib1cy04a9kpszpdbk",
+          "data": "2026-03-20",
+          "descricao": "Rendimentos",
+          "valor": 0.76,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy08udyxqpw97",
+          "data": "2026-03-21",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 19.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Amazon Prime Video"
+        },
+        {
+          "id": "mqib1cy0b32u07nfdt",
+          "data": "2026-03-21",
+          "descricao": "Pagamento M e soares",
+          "valor": 185,
+          "categoriaId": "cat-qt8k9krhlw",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Vape"
+        },
+        {
+          "id": "mqib1cy0e397ye1x6na",
+          "data": "2026-03-21",
+          "descricao": "Pagamento Bar seleto",
+          "valor": 26,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Vitamina Fake"
+        },
+        {
+          "id": "mqib1cy0126clg967me",
+          "data": "2026-03-23",
+          "descricao": "Rendimentos",
+          "valor": 0.67,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0b1j1f7d8ls7",
+          "data": "2026-03-24",
+          "descricao": "Rendimentos",
+          "valor": 0.64,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy00uwkiw6gwhlm",
+          "data": "2026-03-25",
+          "descricao": "Rendimentos",
+          "valor": 0.61,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy04rbmvyx2brq",
+          "data": "2026-03-25",
+          "descricao": "Pagamento Mercado Livre",
+          "valor": 69,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Licensa Windows 11"
+        },
+        {
+          "id": "mqib1cy09t1kt8d9sda",
+          "data": "2026-03-26",
+          "descricao": "Rendimentos",
+          "valor": 0.59,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy03t0cuphc5ke",
+          "data": "2026-03-27",
+          "descricao": "Rendimentos",
+          "valor": 1.92,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy0unx3ofcrryb",
+          "data": "2026-03-27",
+          "descricao": "Pagamento com QR Pix IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.",
+          "valor": 45.35,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "iFood"
+        },
+        {
+          "id": "mqib1cy0tifulhk4fen",
+          "data": "2026-03-27",
+          "descricao": "Pagamento com QR Pix IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.",
+          "valor": 131.69,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "iFood"
+        },
+        {
+          "id": "mqib1cy0l5olyca5far",
+          "data": "2026-03-28",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 26.81,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Welkin Moon"
+        },
+        {
+          "id": "mqib1cy0xrzz1mpqx1p",
+          "data": "2026-03-28",
+          "descricao": "Pagamento com QR Pix IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.",
+          "valor": 123.89,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "iFood"
+        },
+        {
+          "id": "mqib1cy07mk70fmwchm",
+          "data": "2026-03-28",
+          "descricao": "Pagamento de assinatura Meli+",
+          "valor": 10.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Meli+ Disney+ Premium"
+        },
+        {
+          "id": "mqib1cy0m5b0w5mnol",
+          "data": "2026-03-29",
+          "descricao": "Pagamento com QR Pix IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.",
+          "valor": 86.29,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "iFood"
+        },
+        {
+          "id": "mqib1cy0cwh5ay9ybeu",
+          "data": "2026-03-30",
+          "descricao": "Rendimentos",
+          "valor": 1.76,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqib1cy03g9qoctrzi9",
+          "data": "2026-03-30",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 12.5,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Google AI Plus 200GB"
+        },
+        {
+          "id": "mqib1cy0c8ihfenu576",
+          "data": "2026-03-31",
+          "descricao": "Rendimentos",
+          "valor": 1.6,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozhxg6ope3io9",
+          "data": "2026-02-02",
+          "descricao": "Rendimentos",
+          "valor": 5.27,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozgtcoe2nhjlc",
+          "data": "2026-02-02",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 78.64,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiqkqoz9ln5sfbc49a",
+          "data": "2026-02-02",
+          "descricao": "Compra de Secador Ferrari V1 Volare 2000w - By Roger - Não Perca Mercado Livre",
+          "valor": 735,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Secador"
+        },
+        {
+          "id": "mqiqkqoziuux988jw5p",
+          "data": "2026-02-02",
+          "descricao": "Pagamento Quintino",
+          "valor": 35.76,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiqkqozlvauqphxwmd",
+          "data": "2026-02-03",
+          "descricao": "Rendimentos",
+          "valor": 4.87,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozid5q3vlmmja",
+          "data": "2026-02-03",
+          "descricao": "Pagamento Quintino",
+          "valor": 39.97,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiqkqozq54faucnnwm",
+          "data": "2026-02-04",
+          "descricao": "Rendimentos",
+          "valor": 4.85,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozyvtbetpo8e",
+          "data": "2026-02-04",
+          "descricao": "Pagamento Auto posto ecos",
+          "valor": 30,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqiqkqoz8p69khaea6e",
+          "data": "2026-02-04",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 26.4,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiqkqozmsgecvvfqwf",
+          "data": "2026-02-04",
+          "descricao": "Pagamento Casa china londrina",
+          "valor": 60.95,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Casa China"
+        },
+        {
+          "id": "mqiqkqozpmj6q82h8rl",
+          "data": "2026-02-04",
+          "descricao": "Pagamento Quintino",
+          "valor": 39.19,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiqkqozd4ldgldddw",
+          "data": "2026-02-05",
+          "descricao": "Rendimentos",
+          "valor": 4.79,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqoz5r7ekvvh6te",
+          "data": "2026-02-05",
+          "descricao": "Pagamento Farmacia preco popular",
+          "valor": 87.2,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqiqkqozt95flphnh3a",
+          "data": "2026-02-05",
+          "descricao": "Pagamento com QR Pix ARCA SOLUCOES TECNOLOGICAS SA",
+          "valor": 273.15,
+          "categoriaId": "cat-s74hyo6cb6",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Passagem"
+        },
+        {
+          "id": "mqiqkqoz7woel048ovh",
+          "data": "2026-02-06",
+          "descricao": "Rendimentos",
+          "valor": 4.76,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqoz43mt9bt2kfg",
+          "data": "2026-02-06",
+          "descricao": "Pagamento Copa cafe",
+          "valor": 14,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Café"
+        },
+        {
+          "id": "mqiqkqozaa0hpnpb5h",
+          "data": "2026-02-06",
+          "descricao": "Pagamento Quintino",
+          "valor": 22.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiqkqozimczax917xe",
+          "data": "2026-02-07",
+          "descricao": "Pagamento Jardim gastronomico co",
+          "valor": 95.24,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Refeição"
+        },
+        {
+          "id": "mqiqkqozcgjuty4v5d8",
+          "data": "2026-02-07",
+          "descricao": "Pagamento Pane di giovanni",
+          "valor": 13.2,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozfv4jykqsjwv",
+          "data": "2026-02-07",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 23.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "SERASA Experian"
+        },
+        {
+          "id": "mqiqkqoz5sfuoy024bl",
+          "data": "2026-02-08",
+          "descricao": "Pagamento Vila velha restaurante",
+          "valor": 75.3,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Restaurante Estrada"
+        },
+        {
+          "id": "mqiqkqozretyxhqkgna",
+          "data": "2026-02-09",
+          "descricao": "Rendimentos",
+          "valor": 4.59,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqoz4cmc88zxjdo",
+          "data": "2026-02-09",
+          "descricao": "Pagamento Rodosnack petrope",
+          "valor": 37.8,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozj3tq948rp4",
+          "data": "2026-02-10",
+          "descricao": "Rendimentos",
+          "valor": 3.43,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozh1r3h8nl8wk",
+          "data": "2026-02-10",
+          "descricao": "Pagamento Bacio di latte- lj0016",
+          "valor": 24.95,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Sorvete "
+        },
+        {
+          "id": "mqiqkqozqzhnclx0cod",
+          "data": "2026-02-11",
+          "descricao": "Rendimentos",
+          "valor": 2.81,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozieqyesyvhy",
+          "data": "2026-02-11",
+          "descricao": "Pagamento Pac paulista casarao",
+          "valor": 59.7,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida - Paulista"
+        },
+        {
+          "id": "mqiqkqoz3sjwx7bb178",
+          "data": "2026-02-11",
+          "descricao": "Pagamento Chaveiro farol da barr",
+          "valor": 30,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Chaveiro SP"
+        },
+        {
+          "id": "mqiqkqoz9mlo5gey4l6",
+          "data": "2026-02-11",
+          "descricao": "Pagamento Z deli sanduiches",
+          "valor": 115.83,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozc8bwoos27bn",
+          "data": "2026-02-11",
+          "descricao": "Pagamento Carrefour xas",
+          "valor": 120.93,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Carrefour"
+        },
+        {
+          "id": "mqiqkqoz6tu8kswqja6",
+          "data": "2026-02-12",
+          "descricao": "Rendimentos",
+          "valor": 2.71,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozg21uv3rnoal",
+          "data": "2026-02-12",
+          "descricao": "Pagamento Kalunga paulista",
+          "valor": 206.3,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Kalunga"
+        },
+        {
+          "id": "mqiqkqoztayx6uhpnb",
+          "data": "2026-02-12",
+          "descricao": "Pagamento Carrefour xas",
+          "valor": 40.3,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Carrefour"
+        },
+        {
+          "id": "mqiqkqozed40g13raht",
+          "data": "2026-02-12",
+          "descricao": "Pagamento Pac paulista casarao",
+          "valor": 59.7,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozar9lmrn1tep",
+          "data": "2026-02-13",
+          "descricao": "Rendimentos",
+          "valor": 3.25,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozgn09aqmnmq",
+          "data": "2026-02-13",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 22.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiqkqozpq9htrh6ia",
+          "data": "2026-02-13",
+          "descricao": "Pagamento Burger king",
+          "valor": 7.99,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiqkqozp4mrfr6icln",
+          "data": "2026-02-13",
+          "descricao": "Pagamento Kalunga paulista",
+          "valor": 142,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Kalunga"
+        },
+        {
+          "id": "mqiqkqozdjlivk8exd",
+          "data": "2026-02-13",
+          "descricao": "Pagamento Kalunga paulista",
+          "valor": 12.9,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Kalunga"
+        },
+        {
+          "id": "mqiqkqoz444cmit5k2s",
+          "data": "2026-02-13",
+          "descricao": "Pagamento com QR Pix LOCALIZA RENT A CAR SA",
+          "valor": 1399.39,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Localiza"
+        },
+        {
+          "id": "mqiqkqoz2egy35m5pce",
+          "data": "2026-02-13",
+          "descricao": "Pagamento Ph exp shopping c",
+          "valor": 23.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozxxc7o4zprkn",
+          "data": "2026-02-13",
+          "descricao": "Pagamento Carrefour xas",
+          "valor": 141.87,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Carrefour"
+        },
+        {
+          "id": "mqiqkqoz82xfsesrtc",
+          "data": "2026-02-14",
+          "descricao": "Pagamento Carreteiro rev de petr",
+          "valor": 23.98,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozw6xx1k51fc9",
+          "data": "2026-02-14",
+          "descricao": "Pagamento Tigr?o travel cen",
+          "valor": 54.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Comida"
+        },
+        {
+          "id": "mqiqkqozaidaspi3wwr",
+          "data": "2026-02-14",
+          "descricao": "Pagamento Auto posto aben?o",
+          "valor": 172.03,
+          "categoriaId": "cat-lud3o8ruhh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Abastecimento"
+        },
+        {
+          "id": "mqiqkqoz1m7qo9mqjlq",
+          "data": "2026-02-14",
+          "descricao": "Pagamento Mesconvenienciae",
+          "valor": 107.53,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Conveniência"
+        },
+        {
+          "id": "mqiqkqozkntoqengsl",
+          "data": "2026-02-14",
+          "descricao": "Pagamento com QR Pix NATURA CO PAY SERVICOS FINANCEIROS E TECNOLOGIA EM",
+          "valor": 102.3,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Natura Cosméticos"
+        },
+        {
+          "id": "mqiqkqozctxtal3kyr8",
+          "data": "2026-02-15",
+          "descricao": "LTDA",
+          "valor": 115.46,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "PUBG"
+        },
+        {
+          "id": "mqiqkqoz9zef1ksln69",
+          "data": "2026-02-16",
+          "descricao": "Pagamento Kalunga shopping",
+          "valor": 234.7,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Kalunga"
+        },
+        {
+          "id": "mqiqkqozbufir8ijsnj",
+          "data": "2026-02-18",
+          "descricao": "Rendimentos",
+          "valor": 3.14,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozpz4e124sbw",
+          "data": "2026-02-18",
+          "descricao": "Pagamento com QR Pix EMPREENDIMENTOS PAGUE MENOS SA",
+          "valor": 115.89,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqiqkqoz3zo35cf4pnv",
+          "data": "2026-02-18",
+          "descricao": "Compra de Plug Tomada Adaptador Para Mac Apple Macbook Pro Air Brazil",
+          "valor": 33,
+          "categoriaId": "cat-ovg9hujjsz",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Adaptador Apple"
+        },
+        {
+          "id": "mqiqkqoz65q79ft7n9j",
+          "data": "2026-02-18",
+          "descricao": "Pagamento Casa china londrina",
+          "valor": 15.98,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Casa China"
+        },
+        {
+          "id": "mqiqkqoz7owcs8sib8k",
+          "data": "2026-02-19",
+          "descricao": "Rendimentos",
+          "valor": 2,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqoz90sut3vazbe",
+          "data": "2026-02-19",
+          "descricao": "Pix enviado Agua Leve Pura Ltda",
+          "valor": 21,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Água"
+        },
+        {
+          "id": "mqiqkqozvhzdi9ai6bq",
+          "data": "2026-02-19",
+          "descricao": "Pagamento Panvel farmacias",
+          "valor": 12.99,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Panvel"
+        },
+        {
+          "id": "mqiqkqozqo0b3jnx3bb",
+          "data": "2026-02-20",
+          "descricao": "Rendimentos",
+          "valor": 1.99,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqozfdesj42bvz",
+          "data": "2026-02-20",
+          "descricao": "Pagamento Emporio sumatra",
+          "valor": 48.95,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Almoço"
+        },
+        {
+          "id": "mqiqkqoz9iirunqofh",
+          "data": "2026-02-20",
+          "descricao": "Pagamento com QR Pix ESTOK COMERCIO E REPRESENTACOES S.A.",
+          "valor": 69.93,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Tok & Stok"
+        },
+        {
+          "id": "mqiqkqozmkemuit39fj",
+          "data": "2026-02-20",
+          "descricao": "Pagamento Cbf ferramentas",
+          "valor": 34.21,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Ferramentas"
+        },
+        {
+          "id": "mqiqkqozwupwpdkyfpk",
+          "data": "2026-02-21",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 19.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Amazon Prime Video"
+        },
+        {
+          "id": "mqiqkqoz0e7203i8vy3q",
+          "data": "2026-02-21",
+          "descricao": "Pagamento Casa china londrina",
+          "valor": 91.95,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Casa China"
+        },
+        {
+          "id": "mqiqkqp0m2yn4eda1w",
+          "data": "2026-02-21",
+          "descricao": "Pagamento com QR Pix JETSHR LTDA",
+          "valor": 33,
+          "categoriaId": "cat-9gx45purug",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "JET"
+        },
+        {
+          "id": "mqiqkqp0la04ajft7m",
+          "data": "2026-02-21",
+          "descricao": "Pagamento Bar seleto",
+          "valor": 26,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Vitamina Fake"
+        },
+        {
+          "id": "mqiqkqp08jwctp7o0il",
+          "data": "2026-02-23",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 116.99,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiqkqp0q5jzoizhfik",
+          "data": "2026-02-23",
+          "descricao": "Rendimentos",
+          "valor": 1.92,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqp0nqzrmlssmu8",
+          "data": "2026-02-23",
+          "descricao": "Compra Mercado Livre",
+          "valor": 189,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Gamesir T4 Nova Lite"
+        },
+        {
+          "id": "mqiqkqp0ity9d0pn0l",
+          "data": "2026-02-23",
+          "descricao": "Compra Mercado Libre",
+          "valor": 446.9,
+          "categoriaId": "cat-bo388xg881",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Zacapa - Deco"
+        },
+        {
+          "id": "mqiqkqp0z552469ihji",
+          "data": "2026-02-24",
+          "descricao": "Rendimentos",
+          "valor": 1.79,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqp0hx21a5nl9o",
+          "data": "2026-02-25",
+          "descricao": "Rendimentos",
+          "valor": 1.51,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqp0ph9ijxigqzk",
+          "data": "2026-02-25",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 26.81,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Welkin Moon"
+        },
+        {
+          "id": "mqiqkqp057a0vxeonxd",
+          "data": "2026-02-25",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 51.65,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Gnostic Hymn"
+        },
+        {
+          "id": "mqiqkqp0pk7junhgip",
+          "data": "2026-02-25",
+          "descricao": "Pagamento com QR Pix RAIA DROGASIL SA",
+          "valor": 52.87,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqiqkqp0t692j7pw0n",
+          "data": "2026-02-25",
+          "descricao": "Compra Mercado Livre",
+          "valor": 299,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Edifier R19BT"
+        },
+        {
+          "id": "mqiqkqp0g789s026j6k",
+          "data": "2026-02-26",
+          "descricao": "Rendimentos",
+          "valor": 1.44,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiqkqp0qpwp94skc7",
+          "data": "2026-02-27",
+          "descricao": "Rendimentos",
+          "valor": 1.31,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8huko6y0bvev",
+          "data": "2026-01-02",
+          "descricao": "Rendimentos",
+          "valor": 11.3,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8fitzjpgonyb",
+          "data": "2026-01-03",
+          "descricao": "Pagamento Celso garcia",
+          "valor": 132.8425328,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8587f2nznri",
+          "data": "2026-01-05",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 20.17,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8bb2mguzts4",
+          "data": "2026-01-05",
+          "descricao": "Rendimentos",
+          "valor": 11.2925293,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8sx25mbn3w2f",
+          "data": "2026-01-05",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 46.57,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8rzj0bwv2ow",
+          "data": "2026-01-06",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 22.35,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8syztrsalx69",
+          "data": "2026-01-06",
+          "descricao": "Pagamento Celso garcia",
+          "valor": 19.76,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd80onz90acd0r",
+          "data": "2026-01-06",
+          "descricao": "Pagamento Casa china londrina",
+          "valor": 134.97,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Casa China"
+        },
+        {
+          "id": "mqiruvd898eokcgjofv",
+          "data": "2026-01-06",
+          "descricao": "Pagamento Lojas americanas",
+          "valor": 19.47,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Lojas Americanas"
+        },
+        {
+          "id": "mqiruvd89x91kclvuel",
+          "data": "2026-01-06",
+          "descricao": "Rendimentos",
+          "valor": 10.64239,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8uyx32afvl4",
+          "data": "2026-01-07",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 23.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "SERASA Experian"
+        },
+        {
+          "id": "mqiruvd8nfujkaf6y1",
+          "data": "2026-01-07",
+          "descricao": "Pagamento Raia323",
+          "valor": 29.9,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqiruvd8ye1d4gb8aad",
+          "data": "2026-01-07",
+          "descricao": "Pagamento com QR Pix URENTCAR LTDA",
+          "valor": 33,
+          "categoriaId": "cat-9gx45purug",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "JET"
+        },
+        {
+          "id": "mqiruvd8ynlwnm13e0g",
+          "data": "2026-01-07",
+          "descricao": "Rendimentos",
+          "valor": 10.56,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8jx9vi1u6zpd",
+          "data": "2026-01-08",
+          "descricao": "Richard Broder Wang Pagamento Jk londrina",
+          "valor": 62.3220687,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8iajyx40h61",
+          "data": "2026-01-08",
+          "descricao": "Pagamento Restaurante minas de o",
+          "valor": 19.99,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Refeição"
+        },
+        {
+          "id": "mqiruvd85sw355om4se",
+          "data": "2026-01-08",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 68.95,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd81qr3i9xru7h",
+          "data": "2026-01-08",
+          "descricao": "Rendimentos",
+          "valor": 10.52,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8idv0nm6eukt",
+          "data": "2026-01-09",
+          "descricao": "Pagamento Elton silva matsuda",
+          "valor": 66,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bar do Japa"
+        },
+        {
+          "id": "mqiruvd8ulhfkkr9x88",
+          "data": "2026-01-09",
+          "descricao": "Pagamento com QR Pix URENTCAR LTDA",
+          "valor": 33,
+          "categoriaId": "cat-9gx45purug",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "JET"
+        },
+        {
+          "id": "mqiruvd8fncfa92yncg",
+          "data": "2026-01-09",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 31.4,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiruvd836webwkdadu",
+          "data": "2026-01-09",
+          "descricao": "Rendimentos",
+          "valor": 9.28,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8gpxeho0xoyd",
+          "data": "2026-01-12",
+          "descricao": "Rendimentos",
+          "valor": 8.56,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd86ruez6n3nt",
+          "data": "2026-01-13",
+          "descricao": "Transferência Pix enviada CIA LATINO AMERICANA DE MEDICAMENTOS",
+          "valor": 28.99,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqiruvd8fl5j56euo3q",
+          "data": "2026-01-13",
+          "descricao": "Rendimentos",
+          "valor": 8.52,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8rhj7rmekned",
+          "data": "2026-01-14",
+          "descricao": "Rendimentos",
+          "valor": 6.86,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8m05lzfu9ddb",
+          "data": "2026-01-15",
+          "descricao": "Pagamento Celso garcia",
+          "valor": 77.94,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8dzivsp1bxed",
+          "data": "2026-01-15",
+          "descricao": "Pagamento Mamma dushi pizzaria",
+          "valor": 25.99,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Refeição"
+        },
+        {
+          "id": "mqiruvd86nknv3igx7",
+          "data": "2026-01-15",
+          "descricao": "Rendimentos",
+          "valor": 6.87,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8l2d57pam4xb",
+          "data": "2026-01-16",
+          "descricao": "Pagamento Quintino",
+          "valor": 14.89,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8ry8jcsjnhkb",
+          "data": "2026-01-16",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 51.65,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Gnostic Hymn"
+        },
+        {
+          "id": "mqiruvd8qmc5mrpwn88",
+          "data": "2026-01-16",
+          "descricao": "URENTCAR LTDA",
+          "valor": 33,
+          "categoriaId": "cat-9gx45purug",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "JET"
+        },
+        {
+          "id": "mqiruvd8dzeu9raakjl",
+          "data": "2026-01-16",
+          "descricao": "Pagamento Celso garcia",
+          "valor": 25.24,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8nwv5ftp0lki",
+          "data": "2026-01-16",
+          "descricao": "Pagamento Mp*joao",
+          "valor": 24,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Refeição"
+        },
+        {
+          "id": "mqiruvd8bp9qeicaljj",
+          "data": "2026-01-16",
+          "descricao": "Rendimentos",
+          "valor": 6.83,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8zsqxqkak7x",
+          "data": "2026-01-17",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 26.4,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiruvd85fx8mvbfgod",
+          "data": "2026-01-18",
+          "descricao": "Pagamento Jk londrina",
+          "valor": 88.24,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8cdoupbcuaep",
+          "data": "2026-01-19",
+          "descricao": "Pagamento Quintino",
+          "valor": 35.18,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8vapkoqhgyu",
+          "data": "2026-01-19",
+          "descricao": "Rendimentos",
+          "valor": 6.09,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8r0jq31yfsl",
+          "data": "2026-01-20",
+          "descricao": "Pagamento Quintino",
+          "valor": 26.89,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8e844zr1iuj",
+          "data": "2026-01-20",
+          "descricao": "Pagamento com QR Pix SMARTFIT ESCOLA DE GINASTICA E DANCA S.A.",
+          "valor": 149.9,
+          "categoriaId": "cat-hlva536gw7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Smart Fit"
+        },
+        {
+          "id": "mqiruvd8ftojixyy1kj",
+          "data": "2026-01-20",
+          "descricao": "Rendimentos",
+          "valor": 6.05,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd87u5h9x5j4ga",
+          "data": "2026-01-21",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 19.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Amazon Prime Video"
+        },
+        {
+          "id": "mqiruvd83q14mdtqru8",
+          "data": "2026-01-21",
+          "descricao": "Pagamento com QR Pix MAGALUPAY INSTITUICAO DE PAGAMENTO S.A.",
+          "valor": 90.34,
+          "categoriaId": "cat-18u0qooj47",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Cabo USB"
+        },
+        {
+          "id": "mqiruvd8n8g0ati8ujc",
+          "data": "2026-01-21",
+          "descricao": "Rendimentos",
+          "valor": 5.35,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8iezznx2kcjk",
+          "data": "2026-01-22",
+          "descricao": "Pagamento Quintino",
+          "valor": 47.46,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8eoppot8ky4u",
+          "data": "2026-01-22",
+          "descricao": "Rendimentos",
+          "valor": 5.22,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8fi2fzvd83cw",
+          "data": "2026-01-23",
+          "descricao": "Pagamento com QR Pix BRUXA DO SETENTA E UM BAR E RESTAURANTE LTDA",
+          "valor": 14.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bebida"
+        },
+        {
+          "id": "mqiruvd8usshd3qhn5",
+          "data": "2026-01-23",
+          "descricao": "Pagamento Bruxa do setenta e um bar",
+          "valor": 13.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bebida"
+        },
+        {
+          "id": "mqiruvd8ond5p6ekt3",
+          "data": "2026-01-23",
+          "descricao": "Pagamento 61173122heloysa",
+          "valor": 11,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bebida"
+        },
+        {
+          "id": "mqiruvd8imk2yl6029s",
+          "data": "2026-01-23",
+          "descricao": "Richard Broder Wang Pagamento Parada do suco",
+          "valor": 5,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Suco"
+        },
+        {
+          "id": "mqiruvd8rrv6v7un5p",
+          "data": "2026-01-23",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 8.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiruvd86xcbyzs1xcs",
+          "data": "2026-01-23",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 26.4,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiruvd87tsraelzefo",
+          "data": "2026-01-23",
+          "descricao": "Rendimentos",
+          "valor": 5.24,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8vgjt5foahwk",
+          "data": "2026-01-24",
+          "descricao": "Pagamento Cheers pub londrina",
+          "valor": 22,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bebida"
+        },
+        {
+          "id": "mqiruvd899txoyn452k",
+          "data": "2026-01-25",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "valor": 609,
+          "categoriaId": "cat-1jv9cpaujf",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Google AI"
+        },
+        {
+          "id": "mqiruvd893s3odw6z87",
+          "data": "2026-01-25",
+          "descricao": "CAMBIO LTDA Pagamento Jk londrina",
+          "valor": 60.57,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8p5mlcj3x1ke",
+          "data": "2026-01-26",
+          "descricao": "Pagamento com QR Pix JETSHR LTDA",
+          "valor": 33,
+          "categoriaId": "cat-9gx45purug",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "JET"
+        },
+        {
+          "id": "mqiruvd8j5dnuyv38hn",
+          "data": "2026-01-26",
+          "descricao": "REPRESENTACOES S.A. Pagamento Quintino",
+          "valor": 39.39,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd83uzy51kin42",
+          "data": "2026-01-27",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 8.9,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiruvd8u7n70y2nmz",
+          "data": "2026-01-27",
+          "descricao": "Pagamento com QR Pix ZAMP S.A.",
+          "valor": 26.4,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Burger King"
+        },
+        {
+          "id": "mqiruvd8jdtkqgfcxm",
+          "data": "2026-01-27",
+          "descricao": "Pagamento Raia330",
+          "valor": 76.69,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Farmácia"
+        },
+        {
+          "id": "mqiruvd8r660iqhium",
+          "data": "2026-01-27",
+          "descricao": "Rendimentos",
+          "valor": 2.96,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8fgt5mci5968",
+          "data": "2026-01-28",
+          "descricao": "Pagamento Quintino",
+          "valor": 72.74,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8dx1e0qil5lm",
+          "data": "2026-01-28",
+          "descricao": "Pagamento de conta Itaú Unibanco S.A.",
+          "valor": 70.43,
+          "categoriaId": "cat-m7umq5lu78",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Compagás"
+        },
+        {
+          "id": "mqiruvd8a2duw8k5gg",
+          "data": "2026-01-28",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "valor": 26.81,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Genshin - Welkin Moon"
+        },
+        {
+          "id": "mqiruvd82r01786t813",
+          "data": "2026-01-28",
+          "descricao": "Rendimentos",
+          "valor": 1.88,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8l4nb30nmk88",
+          "data": "2026-01-29",
+          "descricao": "Pagamento Quintino",
+          "valor": 31.07,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd884g90nh1hi",
+          "data": "2026-01-29",
+          "descricao": "Pagamento com QR Pix ESTOK COMERCIO E REPRESENTACOES S.A.",
+          "valor": 547.68,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Tok & Stok - Cadeira"
+        },
+        {
+          "id": "mqiruvd8q5e4vda7ru",
+          "data": "2026-01-29",
+          "descricao": "Pagamento Panvel farmacias",
+          "valor": 39.98,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Panvel"
+        },
+        {
+          "id": "mqiruvd85shjk9rx1au",
+          "data": "2026-01-29",
+          "descricao": "Pagamento Emporio sumatra",
+          "valor": 37.96,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Almoço"
+        },
+        {
+          "id": "mqiruvd8n9cfr28rvim",
+          "data": "2026-01-29",
+          "descricao": "Rendimentos",
+          "valor": 1.55,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8q1efzyth1v",
+          "data": "2026-01-30",
+          "descricao": "Pagamento Quintino",
+          "valor": 57.76,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Muffato"
+        },
+        {
+          "id": "mqiruvd8qnmfriw0tjm",
+          "data": "2026-01-30",
+          "descricao": "Pagamento Emporio sumatra",
+          "valor": 36.36,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Almoço"
+        },
+        {
+          "id": "mqiruvd8lwu3exmvz9j",
+          "data": "2026-01-30",
+          "descricao": "Rendimentos",
+          "valor": 5.53,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        },
+        {
+          "id": "mqiruvd8dvzlj31tqsp",
+          "data": "2026-01-31",
+          "descricao": "Pagamento Emporio sumatra",
+          "valor": 50.88,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Almoço"
+        },
+        {
+          "id": "mqivcj8xcy0thy14mwa",
+          "data": "2026-01-26",
+          "descricao": "Pagamento com QR Pix ESTOK COMERCIO E REPRESENTACOES S.A.",
+          "nota": "Tok & Stok - 2 Mesas + 1 Gaveteiro",
+          "valor": 2243.04,
+          "categoriaId": "cat-3jf6zlep3r",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqiruvd8wzt0kyfsba",
+          "data": "2026-01-26",
+          "descricao": "Rendimentos",
+          "valor": 5.2,
+          "categoriaId": "cat-o53k88i1e4",
+          "ignorarDashboard": false,
+          "estorno": true,
+          "nota": "Rendimentos"
+        }
+      ],
+      "debit-mqishlnu2ci81kqukvu": [
+        {
+          "id": "mqit2x7jmve2mnvq6mk",
+          "data": "2026-01-09",
+          "descricao": "BAR DO JAPA",
+          "valor": 18,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bar do Japa"
+        },
+        {
+          "id": "mqitco7ecdgjfqa0h1",
+          "data": "2026-01-09",
+          "descricao": "ELTON SILVA MATSUDA",
+          "valor": 2,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false,
+          "nota": "Bar do Japa"
+        },
+        {
+          "id": "mqitmqzc1i7tfeo4dwc",
+          "data": "2026-01-09",
+          "descricao": "ELTON SILVA MATSUDA",
+          "nota": "Bar do Japa",
+          "valor": 20,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqitopqm0pe6mkwmg6pi",
+          "data": "2026-01-10",
+          "descricao": "DUQUE BEBIDAS LTDA BR",
+          "nota": "Bar do Japa",
+          "valor": 18,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqitp7ejjqcaey3vytc",
+          "data": "2026-01-11",
+          "descricao": "JK LONDRINA",
+          "nota": "Muffato",
+          "valor": 79.02,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqitps7l5g9557tq3yo",
+          "data": "2026-01-13",
+          "descricao": "JK LONDRINA",
+          "nota": "Muffato",
+          "valor": 85.48,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqitsbdj2inr3ok16vl",
+          "data": "2026-01-13",
+          "descricao": "CELSO GARCIA BR",
+          "nota": "Muffato",
+          "valor": 35.02,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqittagc5gv8umy0ad7",
+          "data": "2026-01-14",
+          "descricao": "QUINTINO",
+          "nota": "Muffato",
+          "valor": 51.15,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqittxomomo9ly2ruhr",
+          "data": "2026-01-20",
+          "descricao": "PANIF NATHALIA",
+          "nota": "Panificadora Nathalia",
+          "valor": 30.41,
+          "categoriaId": "cat-2metcc4gvh",
+          "ignorarDashboard": false,
+          "estorno": false
+        }
+      ],
+      "debit-mqiudwa4iat3iire9f8": [
+        {
+          "id": "mqiuf383vz7zjgr5t9m",
+          "data": "2026-04-01",
+          "descricao": "Pix Marketplace",
+          "nota": "Galaxy A26 Danilo",
+          "valor": 1342.15,
+          "categoriaId": "cat-ovg9hujjsz",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqiugh2in7xan3uqg2",
+          "data": "2026-03-31",
+          "descricao": "Embarca Ai",
+          "nota": "Passagem Crianças",
+          "valor": 438.72,
+          "categoriaId": "cat-ovg9hujjsz",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqiuj2y9f2oldfd4b5h",
+          "data": "2026-03-11",
+          "descricao": "Seguro Cartão",
+          "nota": "Seguro Cartão Itaú",
+          "valor": 42,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqiujwzud0zqfgen8ll",
+          "data": "2026-04-13",
+          "descricao": "Seguro Cartão",
+          "nota": "Seguro Cartão Itaú",
+          "valor": 42,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqiukl2gdy0bw1ds6qu",
+          "data": "2026-05-11",
+          "descricao": "Seguro Cartão",
+          "nota": "Seguro Cartão Itaú",
+          "valor": 42,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqiultax1iuye21yihn",
+          "data": "2026-06-11",
+          "descricao": "Seguro Cartão",
+          "nota": "Seguro Cartão Itaú",
+          "valor": 42,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
         }
       ]
     },
     "memory": [],
     "acMemory": {
       "pagamento com qr pix zamp s.a.": "cat-2metcc4gvh",
-      "pagamento google brasil pagamentos ltda.": "cat-iachsi0ie7",
+      "pagamento google brasil pagamentos ltda.": "cat-1jv9cpaujf",
       "rendimentos": "cat-o53k88i1e4",
       "pix enviado growth supplements": "cat-hlva536gw7",
       "pagamento sao joao farmacia": "cat-winmzzrenu",
@@ -10608,26 +13853,130 @@
       "pix enviado": "cat-winmzzrenu",
       "pagamento mercado libre": "cat-ulhkok9chc",
       "pagamento com qr pix ebanx ltda.": "cat-77wa3taxwj",
-      "pagamento mercado livre": "cat-ulhkok9chc",
+      "pagamento mercado livre": "cat-18u0qooj47",
       "reembolso compra garantida": "cat-18u0qooj47",
       "reembolso de compra mercado libre": "cat-ulhkok9chc",
       "pagamento de assinatura meli+": "cat-iachsi0ie7",
       "pagamento celso garcia": "cat-2metcc4gvh",
       "pagamento com qr pix antonio juncanssi": "cat-ulhkok9chc",
       "pagamento adelciocostapenha": "cat-2metcc4gvh",
-      "pagamento meli+": "cat-iachsi0ie7"
+      "pagamento meli+": "cat-iachsi0ie7",
+      "pagamento jk londrina": "cat-2metcc4gvh",
+      "pagamento quintino": "cat-2metcc4gvh",
+      "pagamento av higienopolis londri": "cat-2metcc4gvh",
+      "pagamento tecno smart": "cat-bo388xg881",
+      "pagamento vitamina da sergipe": "cat-2metcc4gvh",
+      "pix enviado agua leve pura ltda": "cat-2metcc4gvh",
+      "pagamento com qr pix jetshr ltda": "cat-9gx45purug",
+      "pagamento lindt sprungli brazil": "cat-bo388xg881",
+      "pagamento posto gt": "cat-lud3o8ruhh",
+      "pagamento condor nilo pecan": "cat-2metcc4gvh",
+      "pagamento jv cambe loja de conve": "cat-lud3o8ruhh",
+      "pagamento condor joinville americ": "cat-2metcc4gvh",
+      "pagamento giuseppe restaura": "cat-2metcc4gvh",
+      "pagamento raia4431": "cat-winmzzrenu",
+      "pagamento casa das embalage": "cat-3jf6zlep3r",
+      "pagamento com qr pix raia drogasil sa": "cat-winmzzrenu",
+      "pagamento angeloni super loja 23": "cat-2metcc4gvh",
+      "pagamento duque": "cat-ovg9hujjsz",
+      "pagamento com qr pix companhia paranaense de gas compagas": "cat-m7umq5lu78",
+      "pagamento com qr pix pagseguro tecnologia ltda": "cat-77wa3taxwj",
+      "compra mercado libre": "cat-bo388xg881",
+      "pix enviado richard broder wang": "cat-winmzzrenu",
+      "pagamento com qr pix ifood.com agencia de restaurantes online s.a.": "cat-2metcc4gvh",
+      "pagamento bar seleto": "cat-2metcc4gvh",
+      "pagamento m e soares": "cat-qt8k9krhlw",
+      "pagamento burger king": "cat-2metcc4gvh",
+      "pagamento supermercados viscardi": "cat-2metcc4gvh",
+      "pagamento com qr pix localiza rent a car sa": "cat-lud3o8ruhh",
+      "pagamento posto tio zico": "cat-lud3o8ruhh",
+      "pagamento shiny?s kitchen": "cat-2metcc4gvh",
+      "pagamento festval ozorio": "cat-2metcc4gvh",
+      "pagamento restaurante makin ltda": "cat-2metcc4gvh",
+      "pagamento stiegler bolsas ltda": "cat-bo388xg881",
+      "pagamento posto farol do parque l": "cat-lud3o8ruhh",
+      "pagamento mahle 10": "cat-2metcc4gvh",
+      "pagamento auto posto imbau": "cat-2metcc4gvh",
+      "pagamento kalunga shop*kalunga 0": "cat-18u0qooj47",
+      "pagamento restaurante norte": "cat-2metcc4gvh",
+      "pagamento menegatti": "cat-lud3o8ruhh",
+      "pagamento de conta itaú unibanco s.a.": "cat-m7umq5lu78",
+      "pagamento com qr pix pay2all instituicao de pagamento ltda.": "cat-2metcc4gvh",
+      "compra de secador ferrari v1 volare 2000w - by roger - não perca mercado livre": "cat-3jf6zlep3r",
+      "pagamento auto posto ecos": "cat-lud3o8ruhh",
+      "pagamento casa china londrina": "cat-3jf6zlep3r",
+      "pagamento farmacia preco popular": "cat-winmzzrenu",
+      "pagamento com qr pix arca solucoes tecnologicas sa": "cat-s74hyo6cb6",
+      "pagamento copa cafe": "cat-2metcc4gvh",
+      "pagamento jardim gastronomico co": "cat-2metcc4gvh",
+      "pagamento pane di giovanni": "cat-2metcc4gvh",
+      "pagamento vila velha restaurante": "cat-2metcc4gvh",
+      "pagamento rodosnack petrope": "cat-2metcc4gvh",
+      "pagamento bacio di latte- lj0016": "cat-2metcc4gvh",
+      "pagamento pac paulista casarao": "cat-2metcc4gvh",
+      "pagamento chaveiro farol da barr": "cat-3jf6zlep3r",
+      "pagamento z deli sanduiches": "cat-2metcc4gvh",
+      "pagamento carrefour xas": "cat-2metcc4gvh",
+      "pagamento kalunga paulista": "cat-18u0qooj47",
+      "pagamento ph exp shopping c": "cat-2metcc4gvh",
+      "pagamento carreteiro rev de petr": "cat-2metcc4gvh",
+      "pagamento tigr?o travel cen": "cat-2metcc4gvh",
+      "pagamento auto posto aben?o": "cat-lud3o8ruhh",
+      "pagamento mesconvenienciae": "cat-2metcc4gvh",
+      "pagamento com qr pix natura co pay servicos financeiros e tecnologia em": "cat-winmzzrenu",
+      "ltda": "cat-77wa3taxwj",
+      "pagamento kalunga shopping": "cat-18u0qooj47",
+      "pagamento com qr pix empreendimentos pague menos sa": "cat-winmzzrenu",
+      "compra de plug tomada adaptador para mac apple macbook pro air brazil": "cat-ovg9hujjsz",
+      "pagamento panvel farmacias": "cat-winmzzrenu",
+      "pagamento emporio sumatra": "cat-2metcc4gvh",
+      "pagamento com qr pix estok comercio e representacoes s.a.": "cat-3jf6zlep3r",
+      "pagamento cbf ferramentas": "cat-3jf6zlep3r",
+      "compra mercado livre": "cat-18u0qooj47",
+      "pagamento lojas americanas": "cat-3jf6zlep3r",
+      "pagamento com qr pix urentcar ltda": "cat-9gx45purug",
+      "pagamento raia323": "cat-winmzzrenu",
+      "pagamento restaurante minas de o": "cat-2metcc4gvh",
+      "richard broder wang pagamento jk londrina": "cat-2metcc4gvh",
+      "pagamento elton silva matsuda": "cat-2metcc4gvh",
+      "transferência pix enviada cia latino americana de medicamentos": "cat-winmzzrenu",
+      "pagamento mamma dushi pizzaria": "cat-2metcc4gvh",
+      "pagamento mp*joao": "cat-2metcc4gvh",
+      "urentcar ltda": "cat-9gx45purug",
+      "pagamento com qr pix smartfit escola de ginastica e danca s.a.": "cat-hlva536gw7",
+      "pagamento com qr pix magalupay instituicao de pagamento s.a.": "cat-18u0qooj47",
+      "richard broder wang pagamento parada do suco": "cat-2metcc4gvh",
+      "pagamento 61173122heloysa": "cat-2metcc4gvh",
+      "pagamento bruxa do setenta e um bar": "cat-2metcc4gvh",
+      "pagamento com qr pix bruxa do setenta e um bar e restaurante ltda": "cat-2metcc4gvh",
+      "pagamento cheers pub londrina": "cat-2metcc4gvh",
+      "cambio ltda pagamento jk londrina": "cat-2metcc4gvh",
+      "representacoes s.a. pagamento quintino": "cat-2metcc4gvh",
+      "pagamento raia330": "cat-winmzzrenu",
+      "bar do japa": "cat-2metcc4gvh",
+      "elton silva matsuda br": "cat-2metcc4gvh",
+      "elton silva matsuda": "cat-2metcc4gvh",
+      "duque bebidas ltda br": "cat-2metcc4gvh",
+      "jk londrina": "cat-2metcc4gvh",
+      "celso garcia br": "cat-2metcc4gvh",
+      "quintino": "cat-2metcc4gvh",
+      "panif nathalia": "cat-2metcc4gvh",
+      "pix marketplace": "cat-ovg9hujjsz",
+      "embarca ai": "cat-ovg9hujjsz",
+      "seguro cartão": "cat-iachsi0ie7"
     },
     "ignoreKeywords": [
       "PIX RICHARD",
       "TRANSF PROPRIA",
       "TED PROPRIA"
     ],
-    "recurringCategories": []
+    "recurringCategories": [],
+    "viewMode": "list"
   },
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "card",
+    "activeTab": "dashboard",
     "tabLabels": {
       "ai": "IA",
       "card": "Cartão",

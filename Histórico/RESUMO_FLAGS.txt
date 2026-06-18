@@ -1,0 +1,115 @@
+RESUMO — PROBLEMAS SINALIZADOS NO CONTEXTO_AGENDA_6.md
+E O QUE FOI ALTERADO NO NOVO CONTEXTO
+========================================================
+
+Legenda de severidade: [ALTA] estrutural · [MÉDIA] manutenção · [BAIXA] higiene
+
+--------------------------------------------------------
+1. [ALTA] REGRA DE ACUMULAÇÃO = CRESCIMENTO ILIMITADO
+--------------------------------------------------------
+Problema:
+  A "REGRA CRÍTICA" exigia carregar TODO o conteúdo de todas as
+  sessões anteriores, para sempre. Com isso o arquivo só cresce
+  (já ~524 linhas em v0.4.23). Como ele é enviado ao Claude a cada
+  sessão junto com index.html e sw.js, você gasta tokens relendo
+  trivialidades obsoletas (ex.: "v0.0.90 — largura 90→100px") que
+  competem com o código real pela atenção do modelo.
+O que mudou:
+  A nova regra é "estado atual apenas". O documento descreve onde
+  o projeto ESTÁ, não o caminho até aqui. Não é mais acumulativo.
+
+--------------------------------------------------------
+2. [ALTA] CHANGELOG MISTURADO COM PRIMER DE CONTEXTO
+--------------------------------------------------------
+Problema:
+  O "HISTÓRICO COMPLETO DE VERSÕES" (linhas 27–281) é um log de
+  commits escrito à mão. Se o app vive em broder33.github.io/Agenda,
+  esse histórico já existe no Git. Manter um changelog paralelo no
+  contexto é trabalho duplicado e fonte de erro.
+O que mudou:
+  Histórico granular removido do contexto. Vai para o Git / um
+  CHANGELOG.md separado. O contexto só guarda o estado vigente.
+
+--------------------------------------------------------
+3. [ALTA] SEM FONTE ÚNICA DA VERDADE (DRIFT GARANTIDO)
+--------------------------------------------------------
+Problema:
+  Os mesmos fatos apareciam 2–3x: na narrativa histórica, nas seções
+  "ARQUITETURA" e em "CONVENÇÕES CRÍTICAS" (ex.: calcPaymentCoverage,
+  migrateCategorias, renderCardPreserve, saveFinField-sem-efeitos,
+  tratamento de estornos). Qualquer correção exigia editar 3 lugares;
+  os não atualizados passam a se contradizer silenciosamente.
+O que mudou:
+  Cada fato é declarado UMA vez, na seção de arquitetura
+  correspondente. Convenções viram checklist de invariantes, sem
+  reexplicar a arquitetura.
+
+--------------------------------------------------------
+4. [MÉDIA] ESTADO VOLÁTIL MISTURADO COM ESTADO DURÁVEL
+--------------------------------------------------------
+Problema:
+  VERSÃO ATUAL, BACKUP ATUAL, caminhos de arquivo e PRÓXIMAS ETAPAS
+  (mudam toda sessão) estavam intercalados com arquitetura e
+  convenções (duráveis). Isso faz o documento inteiro parecer que
+  precisa de reescrita constante.
+O que mudou:
+  Todo o estado volátil foi isolado num bloco YAML (frontmatter) no
+  topo. É o único ponto que muda na maioria das sessões. O corpo
+  permanece estável por muitas sessões.
+
+--------------------------------------------------------
+5. [MÉDIA] ORDEM INVERTIDA (ONBOARDING RUIM)
+--------------------------------------------------------
+Problema:
+  O conteúdo mais útil para a próxima sessão — PRÓXIMAS ETAPAS — estava
+  na última linha, depois de 515 linhas de arquivo. Não havia um
+  "estado atual / por onde começar" no topo.
+O que mudou:
+  "Próximas etapas" subiu para o topo (logo após a regra de uso).
+  Frontmatter dá o snapshot imediato.
+
+--------------------------------------------------------
+6. [MÉDIA] CÓDIGO EMBUTIDO VAI DESINCRONIZAR DA FONTE
+--------------------------------------------------------
+Problema:
+  Corpo de renderCardPreserve(), CSS das listas e bloco de estado do
+  Dashboard duplicavam o código-fonte real. Quando os arquivos mudam,
+  essas cópias ficam erradas em silêncio.
+O que mudou:
+  Substituído por contratos/intenção em texto. Gotchas não óbvios
+  (ex.: display:list-item !important nas listas; _savedOpenBids
+  sempre setado) viram invariantes descritas, sem copiar a fonte.
+
+--------------------------------------------------------
+7. [BAIXA] IDENTIFICADORES DE INFRA EM TEXTO PLANO
+--------------------------------------------------------
+Problema:
+  Ref do projeto Supabase e Client ID do Google OAuth no corpo. Não
+  são segredos de alta severidade (Client ID é semipúblico; Supabase
+  é protegido por RLS), mas um doc que circula entre sessões é lugar
+  ruim para identificadores de infra — e abre precedente para alguém
+  colar uma chave anon/service aqui no futuro.
+O que mudou:
+  Mantidos numa seção "Infra" única (você precisa deles), com aviso
+  explícito: NUNCA adicionar chaves/segredos reais a este arquivo.
+
+--------------------------------------------------------
+8. [BAIXA] VERIFICAR — STRING DE MODELO PODE ESTAR DESATUALIZADA
+--------------------------------------------------------
+Problema:
+  Linha 12 fixa claude-sonnet-4-20250514. Pode estar correto para o
+  app, mas é o tipo de valor que envelhece em silêncio.
+O que mudou:
+  Mantido, mas marcado com "(verificar)" na seção Infra para revisão
+  deliberada — não confirmei se é a string vigente.
+
+--------------------------------------------------------
+RESULTADO
+--------------------------------------------------------
+- De ~524 linhas para o essencial carregável.
+- Estado volátil em 1 bloco YAML; corpo durável em Markdown.
+- Sem changelog, sem duplicação, sem código copiado.
+- Formato: Markdown + frontmatter YAML (mais eficiente para o Claude
+  que JSON puro — ver explicação no chat).
+
+Arquivo novo: CONTEXTO_AGENDA.md

@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.4.82</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.12</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1537,7 +1537,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.4.82 — agenda-v0482</p>
+    <p class="version-tag">Agenda v0.5.12 — agenda-v0512</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1820,6 +1820,7 @@ function undo() {
   state.tasks = snap.tasks;
   state.finance = snap.finance;
   if (snap.card) state.card = snap.card;
+  if (snap.debit) state.debit = snap.debit;
   updateUndoRedoBtns();
   _skipUndo = true;
   saveState();
@@ -1837,6 +1838,7 @@ function redo() {
   state.tasks = snap.tasks;
   state.finance = snap.finance;
   if (snap.card) state.card = snap.card;
+  if (snap.debit) state.debit = snap.debit;
   updateUndoRedoBtns();
   _skipUndo = true;
   saveState();
@@ -5181,7 +5183,7 @@ function addNextMonth(y){
   const active=state.finance.activeMonths[y]||[];const last=active[active.length-1];if(last>=11)return;
   const next=last+1;const prevRows=(state.finance.bills[y]&&state.finance.bills[y][last])?state.finance.bills[y][last]:[];
   if(!state.finance.bills[y])state.finance.bills[y]={};
-  state.finance.bills[y][next]=prevRows.map(function(r){let newVenc=r.venc;const parts=r.venc?r.venc.split('/'):null;if(parts&&parts.length>=2){const day=parts[0],yr=parts[2]||String(y).slice(-2);newVenc=day+'/'+(next+1)+'/'+yr;}return{id:Date.now()+Math.random(),nome:r.nome,venc:newVenc,valor:0,status:'nao-pago',obs:r.obs||''};});
+  state.finance.bills[y][next]=prevRows.map(function(r){let newVenc=r.venc;const parts=r.venc?r.venc.split('/'):null;if(parts&&parts.length>=2){const day=parts[0],yr=parts[2]||String(y).slice(-2);newVenc=day+'/'+(next+1)+'/'+yr;}return{id:Date.now()+Math.random(),nome:r.nome,venc:newVenc,valor:0,status:'nao-pago',obs:r.obs||'',categoriaId:r.categoriaId||''};});
   state.finance.activeMonths[y].push(next);state.finance.openMonths[next]=true;saveState();renderFinance();
 }
 
@@ -6136,6 +6138,7 @@ function getDashboardExpenses(y, m, label, payFilter) {
 var _debitActiveAccount = null;
 var _debitSortLevels = [{ col: 'data', dir: 'desc' }];
 var _debitViewMode = 'carousel';
+var _debitOpenMonths = {}; // accId -> {ym -> bool}
 var _debitActiveMonthIdx = {}; // accountId -> monthIdx
 
 function getDebitCats() { return state.card.categorias || []; }
@@ -6164,54 +6167,44 @@ function renderDebit() {
   var root = document.getElementById('debit-root');
   if (!root) return;
   root.innerHTML = '';
+  // Restore view mode from state
+  if (state.debit.viewMode) _debitViewMode = state.debit.viewMode;
 
   var accounts = state.debit.accounts || [];
 
-  // Header
-  var header = document.createElement('div');
-  header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:20px';
-  var title = document.createElement('div');
-  title.className = 'section-title';
-  title.textContent = 'Débito';
-  var headerBtns = document.createElement('div');
-  headerBtns.style.cssText = 'display:flex;gap:8px';
-  var addAccBtn = document.createElement('button');
-  addAccBtn.className = 'btn-sm';
-  addAccBtn.textContent = 'Nova conta';
-  addAccBtn.onclick = openAddDebitAccountModal;
-  headerBtns.appendChild(addAccBtn);
-  header.appendChild(title);
-  header.appendChild(headerBtns);
-  root.appendChild(header);
-
   if (!accounts.length) {
+    var hd0 = document.createElement('div'); hd0.className='section-hd';
+    var hdL0 = document.createElement('div');
+    hdL0.innerHTML = '<div class="section-title">Débito</div><div class="section-sub">Selecione uma conta para ver as transações</div>';
+    var addAccBtn0 = document.createElement('button'); addAccBtn0.className='btn-sm accent'; addAccBtn0.textContent='+ Conta'; addAccBtn0.onclick=openAddDebitAccountModal;
+    hd0.appendChild(hdL0); hd0.appendChild(addAccBtn0); root.appendChild(hd0);
     var empty = document.createElement('div');
     empty.style.cssText = 'text-align:center;color:var(--muted);font-family:DM Mono,monospace;font-size:13px;padding:60px 0';
-    empty.textContent = 'Nenhuma conta cadastrada. Clique em "Nova conta" para começar.';
+    empty.textContent = 'Nenhuma conta cadastrada. Clique em "+ Conta" para começar.';
     root.appendChild(empty);
     return;
   }
 
-  // Account tabs
-  var tabsWrap = document.createElement('div');
-  tabsWrap.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px';
-
-  accounts.forEach(function(acc) {
-    var btn = document.createElement('button');
-    var isActive = _debitActiveAccount === acc.id;
-    btn.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;padding:6px 14px;border-radius:6px;border:2px solid '+(isActive?acc.cor:'var(--border)')+';background:'+(isActive?acc.cor+'22':'var(--surface2)')+';color:'+(isActive?acc.cor:'var(--muted)')+';cursor:pointer;font-weight:'+(isActive?'600':'400');
-    btn.textContent = acc.nome;
-    btn.onclick = function() {
-      _debitActiveAccount = isActive ? null : acc.id;
-      renderDebit();
-    };
-    tabsWrap.appendChild(btn);
-  });
-  root.appendChild(tabsWrap);
-
   if (!_debitActiveAccount) {
     renderDebitOverview(root, accounts);
   } else {
+    // Account tabs (only when inside a account)
+    var tabsWrap = document.createElement('div');
+    tabsWrap.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px';
+    var backBtn = document.createElement('button');
+    backBtn.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer';
+    backBtn.textContent = '← Contas';
+    backBtn.onclick = function(){ _debitActiveAccount = null; renderDebit(); };
+    tabsWrap.appendChild(backBtn);
+    accounts.forEach(function(acc) {
+      var btn = document.createElement('button');
+      var isActive = _debitActiveAccount === acc.id;
+      btn.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;padding:6px 14px;border-radius:6px;border:2px solid '+(isActive?acc.cor:'var(--border)')+';background:'+(isActive?acc.cor+'22':'var(--surface2)')+';color:'+(isActive?acc.cor:'var(--muted)')+';cursor:pointer;font-weight:'+(isActive?'600':'400');
+      btn.textContent = acc.nome;
+      btn.onclick = function(){ _debitActiveAccount = acc.id; renderDebit(); };
+      tabsWrap.appendChild(btn);
+    });
+    root.appendChild(tabsWrap);
     var acc = accounts.find(function(a){ return a.id === _debitActiveAccount; });
     if (acc) renderDebitAccount(root, acc);
   }
@@ -6221,37 +6214,54 @@ function renderDebitOverview(root, accounts) {
   var now = new Date();
   var ym = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
 
-  accounts.forEach(function(acc) {
-    var txs = getDebitMonthTxs(acc.id, ym).filter(function(t){ return !t.recorrente && !t.ignorarDashboard; });
-    var total = txs.reduce(function(s,t){ return s + (t.estorno ? -(t.valor||0) : (t.valor||0)); }, 0);
+  // Header
+  var hd = document.createElement('div');
+  hd.className = 'section-hd';
+  var hdLeft = document.createElement('div');
+  hdLeft.innerHTML = '<div class="section-title">Débito</div><div class="section-sub">Selecione uma conta para ver as transações</div>';
+  var addBtn = document.createElement('button');
+  addBtn.className = 'btn-sm accent';
+  addBtn.textContent = '+ Conta';
+  addBtn.onclick = openAddDebitAccountModal;
+  hd.appendChild(hdLeft);
+  hd.appendChild(addBtn);
+  root.appendChild(hd);
 
-    var card = document.createElement('div');
-    card.style.cssText = 'border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--surface2)';
-    card.onmouseenter = function(){ card.style.borderColor = acc.cor; };
-    card.onmouseleave = function(){ card.style.borderColor = 'var(--border)'; };
-    card.onclick = function(){ _debitActiveAccount = acc.id; renderDebit(); };
+  // Grid
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;margin-top:8px';
 
-    var left = document.createElement('div');
-    var dot = document.createElement('span');
-    dot.style.cssText = 'display:inline-block;width:10px;height:10px;border-radius:50%;background:'+acc.cor+';margin-right:10px';
-    var name = document.createElement('span');
-    name.style.cssText = 'font-family:DM Mono,monospace;font-size:14px;font-weight:600;color:var(--text)';
-    name.textContent = acc.nome;
-    left.appendChild(dot); left.appendChild(name);
+  if (!accounts.length) {
+    grid.innerHTML = '<div style="color:var(--muted);padding:20px">Nenhuma conta cadastrada.</div>';
+  } else {
+    accounts.forEach(function(acc) {
+      var txs = getDebitMonthTxs(acc.id, ym).filter(function(t){ return !t.recorrente && !t.ignorarDashboard; });
+      var total = txs.reduce(function(s,t){ return s + (t.estorno ? -(t.valor||0) : (t.valor||0)); }, 0);
 
-    var right = document.createElement('div');
-    right.style.cssText = 'text-align:right';
-    var val = document.createElement('div');
-    val.style.cssText = 'font-family:DM Mono,monospace;font-size:16px;font-weight:600;color:var(--text)';
-    val.textContent = 'R$ '+total.toFixed(2).replace('.',',');
-    var sub = document.createElement('div');
-    sub.style.cssText = 'font-size:10px;color:var(--muted);font-family:DM Mono,monospace';
-    sub.textContent = txs.length+' transaç'+(txs.length===1?'ão':'ões')+' este mês';
-    right.appendChild(val); right.appendChild(sub);
+      var card = document.createElement('div');
+      card.style.cssText = 'cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;min-width:180px;flex:1;max-width:240px;position:relative;border-top:4px solid '+acc.cor;
+      card.onclick = function(){ _debitActiveAccount = acc.id; renderDebit(); };
 
-    card.appendChild(left); card.appendChild(right);
-    root.appendChild(card);
-  });
+      var nome = document.createElement('div');
+      nome.style.cssText = 'font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px';
+      nome.textContent = acc.nome;
+
+      var info = document.createElement('div');
+      info.style.cssText = 'font-size:11px;color:var(--muted)';
+      info.textContent = txs.length+' transaç'+(txs.length===1?'ão':'ões')+' este mês · '+fmtBRL(total);
+
+      var editBtn = document.createElement('button');
+      editBtn.style.cssText = 'position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px';
+      editBtn.textContent = '✎';
+      editBtn.onclick = function(e){ e.stopPropagation(); openEditDebitAccountModal(acc.id); };
+
+      card.appendChild(nome);
+      card.appendChild(info);
+      card.appendChild(editBtn);
+      grid.appendChild(card);
+    });
+  }
+  root.appendChild(grid);
 }
 
 function renderDebitAccount(root, acc) {
@@ -6280,11 +6290,11 @@ function renderDebitAccount(root, acc) {
   var listBtn = document.createElement('button');
   listBtn.style.cssText='padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_debitViewMode==='list'?'var(--accent)':'var(--surface2)')+';color:'+(_debitViewMode==='list'?'#000':'var(--muted)');
   listBtn.textContent='≡ Lista';
-  listBtn.onclick=function(){ _debitViewMode='list'; renderDebit(); };
+  listBtn.onclick=function(){ _debitViewMode='list'; state.debit.viewMode='list'; saveState(); renderDebit(); };
   var carBtn = document.createElement('button');
   carBtn.style.cssText='padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_debitViewMode==='carousel'?'var(--accent)':'var(--surface2)')+';color:'+(_debitViewMode==='carousel'?'#000':'var(--muted)');
   carBtn.textContent='◫ Carousel';
-  carBtn.onclick=function(){ _debitViewMode='carousel'; renderDebit(); };
+  carBtn.onclick=function(){ _debitViewMode='carousel'; state.debit.viewMode='carousel'; saveState(); renderDebit(); };
   viewToggle.appendChild(listBtn); viewToggle.appendChild(carBtn);
   hd.appendChild(dot); hd.appendChild(hdInfo); hd.appendChild(editBtn); hd.appendChild(groupsBtn); hd.appendChild(viewToggle); hd.appendChild(addTxBtn); hd.appendChild(importBtn);
   root.appendChild(hd);
@@ -6298,20 +6308,36 @@ function renderDebitAccount(root, acc) {
       if (!byMonth[m]) byMonth[m] = [];
       byMonth[m].push(tx);
     });
+    if (!_debitOpenMonths[acc.id]) _debitOpenMonths[acc.id] = {};
     Object.keys(byMonth).sort().reverse().forEach(function(ym2){
       var pts = ym2.split('-');
       var MONTHS_PT2 = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
       var label = pts.length===2 ? MONTHS_PT2[parseInt(pts[1])-1]+' '+pts[0] : ym2;
       var mTxs = byMonth[ym2];
       var mTotal = mTxs.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
+      // Default: closed unless user opened it
+      var isOpen = _debitOpenMonths[acc.id][ym2] === true;
 
       var mHdr = document.createElement('div');
-      mHdr.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px 8px 0 0;margin-top:12px;cursor:pointer';
+      mHdr.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:'+(isOpen?'8px 8px 0 0':'8px')+';margin-top:10px;cursor:pointer;user-select:none';
+      var mLeft = document.createElement('div'); mLeft.style.cssText='display:flex;align-items:center;gap:8px';
+      var chevron = document.createElement('span');
+      chevron.style.cssText='font-size:11px;color:var(--muted);transition:transform .2s;display:inline-block;transform:'+(isOpen?'rotate(90deg)':'rotate(0deg)');
+      chevron.textContent='›';
       var mLbl = document.createElement('span'); mLbl.style.cssText='font-size:13px;font-weight:600;color:var(--text);font-family:DM Mono,monospace'; mLbl.textContent=label;
-      var mVal = document.createElement('span'); mVal.style.cssText='font-size:13px;font-family:DM Mono,monospace;color:var(--text)'; mVal.textContent='R$ '+Math.abs(mTotal).toFixed(2).replace('.',',');
+      var mCount = document.createElement('span'); mCount.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace'; mCount.textContent=mTxs.length+' transaç'+(mTxs.length===1?'ão':'ões');
+      mLeft.appendChild(chevron); mLeft.appendChild(mLbl); mLeft.appendChild(mCount);
+      var mVal = document.createElement('span'); mVal.style.cssText='font-size:13px;font-family:DM Mono,monospace;font-weight:600;color:var(--text)'; mVal.textContent=fmtBRL(mTotal);
       var mBody = document.createElement('div'); mBody.style.cssText='border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow:hidden';
-      mHdr.appendChild(mLbl); mHdr.appendChild(mVal);
-      mHdr.onclick=function(){ mBody.style.display=mBody.style.display==='none'?'block':'none'; };
+      mBody.style.display = isOpen ? 'block' : 'none';
+      mHdr.appendChild(mLeft); mHdr.appendChild(mVal);
+      mHdr.onclick=function(){
+        var open = mBody.style.display==='none';
+        _debitOpenMonths[acc.id][ym2] = open;
+        mBody.style.display = open ? 'block' : 'none';
+        chevron.style.transform = open ? 'rotate(90deg)' : 'rotate(0deg)';
+        mHdr.style.borderRadius = open ? '8px 8px 0 0' : '8px';
+      };
       mBody.innerHTML = buildDebitTxTable(acc.id, ym2, mTxs);
       root.appendChild(mHdr); root.appendChild(mBody);
       wireDebitDragDrop(mBody, acc.id, ym2);
@@ -6335,7 +6361,7 @@ function renderDebitAccount(root, acc) {
   if (ym) { var pts=ym.split('-'); monthLbl.textContent=MONTHS_PT[parseInt(pts[1])-1]+' '+pts[0]; }
   var dotsDiv = document.createElement('div'); dotsDiv.style.cssText='display:flex;gap:3px;align-items:center';
   var visStart=Math.max(0,storedIdx-4), visEnd=Math.min(allMonths.length-1,storedIdx+4);
-  for (var di=visStart; di<=visEnd; di++) {
+  for (var di=visEnd; di>=visStart; di--) {
     var dotEl=document.createElement('div'); var isAct=di===storedIdx;
     dotEl.style.cssText='width:'+(isAct?'18px':'6px')+';height:6px;border-radius:3px;background:'+(isAct?'var(--accent)':'var(--border)')+';cursor:pointer;transition:all .2s';
     (function(idx){ dotEl.onclick=function(){ _debitActiveMonthIdx[acc.id]=idx; renderDebit(); }; })(di);
@@ -6386,17 +6412,20 @@ function debitSortClick(col) {
 
 function sortDebitTxs(txs) {
   if (!_debitSortLevels.length) return txs;
-  return txs.slice().sort(function(a,b){
+  // Tag with original index to preserve array order as tiebreaker
+  var tagged = txs.map(function(t,i){ return {t:t,i:i}; });
+  tagged.sort(function(a,b){
     for (var i=0;i<_debitSortLevels.length;i++){
       var s=_debitSortLevels[i], av, bv;
-      if (s.col==='valor'){ av=a.valor||0; bv=b.valor||0; }
-      else if (s.col==='data'){ av=a.data||''; bv=b.data||''; }
-      else { av=(a[s.col]||'').toLowerCase(); bv=(b[s.col]||'').toLowerCase(); }
+      if (s.col==='valor'){ av=a.t.valor||0; bv=b.t.valor||0; }
+      else if (s.col==='data'){ av=a.t.data||''; bv=b.t.data||''; }
+      else { av=(a.t[s.col]||'').toLowerCase(); bv=(b.t[s.col]||'').toLowerCase(); }
       var cmp=av<bv?-1:av>bv?1:0;
       if (cmp!==0) return s.dir==='asc'?cmp:-cmp;
     }
-    return 0;
+    return a.i - b.i; // preserve array order as tiebreaker
   });
+  return tagged.map(function(x){ return x.t; });
 }
 
 function buildDebitTxTable(accountId, ym, txs) {
@@ -6480,6 +6509,7 @@ function inlineEditDebitTx(cell) {
   var txs = state.debit.transactions[accountId]||[];
   var tx = txs.find(function(t){ return t.id===txid; });
   if (!tx) return;
+  pushUndo();
 
   if (field === 'categoriaId') {
     var sel = document.createElement('select');
@@ -6513,15 +6543,78 @@ function inlineEditDebitTx(cell) {
     // Populate ac memory key with debit descriptions
     var debitDescs = Object.keys(state.debit.acMemory||{});
     if (!_acMemory['debit-desc-'+accountId] || !_acMemory['debit-desc-'+accountId].length) {
-      _acMemory['debit-desc-'+accountId] = debitDescs.map(function(k){ return k; });
+      _acMemory[acGetKey('debit-desc-'+accountId)] = debitDescs.map(function(k){ return k; });
     }
     function commitDesc() { tx.descricao=input.value.trim(); if(tx.categoriaId) state.debit.acMemory[tx.descricao.toLowerCase()]=tx.categoriaId; saveState(); renderDebit(); }
     input.onblur=function(){ setTimeout(commitDesc, 200); };
     input.onkeydown=function(e){ if(e.key==='Enter') commitDesc(); if(e.key==='Escape') renderDebit(); };
     return;
   }
+  if (field === 'data') {
+    var selectedISO = tx.data || '';
+    var isoP = selectedISO.split('-');
+    var viewYear2 = parseInt(isoP[0])||new Date().getFullYear();
+    var viewMonth2 = isoP[1] ? parseInt(isoP[1])-1 : new Date().getMonth();
+    var dataInp2 = document.createElement('input');
+    dataInp2.type='text'; dataInp2.readOnly=true;
+    dataInp2.value = isoP.length===3 ? isoP[2]+'/'+isoP[1]+'/'+isoP[0].slice(2) : '';
+    dataInp2.style.cssText='font-family:DM Mono,monospace;font-size:12px;width:90px;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:2px 4px;cursor:pointer';
+    cell.innerHTML=''; cell.appendChild(dataInp2);
+    var calDd2=null;
+    function closeCal2(){ if(calDd2){ calDd2.remove(); calDd2=null; } }
+    function renderCal2(){
+      var MO=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      var DO=['D','S','T','Q','Q','S','S'];
+      var _t=new Date(); var tStr=_t.getFullYear()+'-'+String(_t.getMonth()+1).padStart(2,'0')+'-'+String(_t.getDate()).padStart(2,'0');
+      var h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+        +'<button id="ie-cal-prev" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px">‹</button>'
+        +'<span style="font-size:13px;font-weight:600;color:var(--text)">'+MO[viewMonth2]+' '+viewYear2+'</span>'
+        +'<button id="ie-cal-next" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px">›</button>'
+        +'</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">';
+      DO.forEach(function(d){ h+='<div style="text-align:center;font-size:10px;color:var(--muted);padding:2px">'+d+'</div>'; });
+      h+='</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">';
+      var first=new Date(viewYear2,viewMonth2,1).getDay();
+      var days=new Date(viewYear2,viewMonth2+1,0).getDate();
+      for(var i=0;i<first;i++) h+='<div></div>';
+      for(var d=1;d<=days;d++){
+        var iso=viewYear2+'-'+String(viewMonth2+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        var isSel=iso===selectedISO, isTod=iso===tStr;
+        var bg=isSel?'var(--accent)':isTod?'var(--surface2)':'transparent';
+        var col=isSel?'#000':isTod?'var(--accent)':'var(--text)';
+        h+='<div data-iso="'+iso+'" style="text-align:center;padding:4px 2px;border-radius:6px;cursor:pointer;font-size:12px;background:'+bg+';color:'+col+'">'+d+'</div>';
+      }
+      h+='</div>';
+      calDd2.innerHTML=h;
+      calDd2.querySelectorAll('[data-iso]').forEach(function(el2){
+        el2.addEventListener('click',function(){
+          selectedISO=el2.getAttribute('data-iso');
+          tx.data=selectedISO;
+          saveState(); closeCal2(); renderDebit();
+        });
+      });
+      calDd2.querySelector('#ie-cal-prev').addEventListener('click',function(){ viewMonth2--; if(viewMonth2<0){viewMonth2=11;viewYear2--;} renderCal2(); });
+      calDd2.querySelector('#ie-cal-next').addEventListener('click',function(){ viewMonth2++; if(viewMonth2>11){viewMonth2=0;viewYear2++;} renderCal2(); });
+    }
+    dataInp2.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(calDd2){ closeCal2(); return; }
+      var rect=dataInp2.getBoundingClientRect();
+      calDd2=document.createElement('div');
+      calDd2.style.cssText='position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);padding:12px;width:260px;user-select:none';
+      var top=rect.bottom+4; if(top+290>window.innerHeight) top=rect.top-294;
+      var left=Math.min(rect.left,window.innerWidth-272); if(left<4) left=4;
+      calDd2.style.top=top+'px'; calDd2.style.left=left+'px';
+      calDd2.addEventListener('mousedown',function(e2){e2.stopPropagation();});
+      document.body.appendChild(calDd2);
+      renderCal2();
+    });
+    document.addEventListener('mousedown',function hdl(e){
+      if(calDd2 && !calDd2.contains(e.target) && e.target!==dataInp2){ closeCal2(); document.removeEventListener('mousedown',hdl); }
+    });
+    return;
+  }
   var input = document.createElement('input');
-  input.type = field==='valor'?'number':field==='data'?'date':'text';
+  input.type = field==='valor'?'number':'text';
   input.value = orig;
   input.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;width:100%;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:2px 4px;box-sizing:border-box';
   cell.innerHTML=''; cell.appendChild(input); input.focus(); input.select();
@@ -6592,7 +6685,7 @@ function wireDebitDragDrop(container, accountId, ym) {
       var tgtIdx=txArr.findIndex(function(t){ return t.id===row.dataset.txid; });
       if (srcIdx===-1||tgtIdx===-1) return;
       var rect2=row.getBoundingClientRect();
-      var after=e.clientY>=rect2.top+rect2.height/2;
+      var after=e.clientY<rect2.top+rect2.height/2;
       var item=txArr.splice(srcIdx,1)[0];
       var newTgt=txArr.findIndex(function(t){ return t.id===row.dataset.txid; });
       txArr.splice(after?newTgt+1:newTgt,0,item);
@@ -6603,60 +6696,156 @@ function wireDebitDragDrop(container, accountId, ym) {
 
 
 function openAddDebitTxModal(accountId, ym) {
-  var ymParts = (ym||'').split('-');
-  var defaultDate = ym ? ym+'-'+new Date().getDate().toString().padStart(2,'0') : new Date().toISOString().slice(0,10);
+  var now = new Date();
+  var todayISO = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  var defaultISO = todayISO;
+  if (ym) {
+    var ymTxs = (state.debit.transactions[accountId]||[]).filter(function(t){ return t.data && t.data.slice(0,7)===ym; });
+    if (ymTxs.length) {
+      defaultISO = ymTxs.reduce(function(best,t){ return t.data > best ? t.data : best; }, ymTxs[0].data);
+    } else {
+      defaultISO = ym+'-01';
+    }
+  }
+  var selectedISO = defaultISO;
+
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;display:flex;align-items:center;justify-content:center';
+  overlay.className = 'modal-overlay';
   var modal = document.createElement('div');
-  modal.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:360px;max-width:95vw';
+  modal.className = 'modal-box';
+  modal.style.maxWidth = '400px';
 
-  var title = document.createElement('h3');
-  title.style.cssText = 'margin:0 0 16px;font-family:DM Mono,monospace;font-size:14px;color:var(--text)';
-  title.textContent = 'Nova transação';
+  var hdr = document.createElement('div'); hdr.className='modal-header';
+  var hdrTitle = document.createElement('span'); hdrTitle.textContent='Nova transação';
+  var hdrClose = document.createElement('button'); hdrClose.className='modal-close'; hdrClose.textContent='×'; hdrClose.onclick=function(){ closeCal(); overlay.remove(); };
+  hdr.appendChild(hdrTitle); hdr.appendChild(hdrClose);
+  modal.appendChild(hdr);
 
-  function field(label, type, id, val) {
+  function makeField(labelTxt) {
     var wrap = document.createElement('div'); wrap.style.cssText='margin-bottom:12px';
-    var lbl = document.createElement('label'); lbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; lbl.textContent=label;
+    var lbl = document.createElement('label'); lbl.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px'; lbl.textContent=labelTxt;
+    wrap.appendChild(lbl); return wrap;
+  }
+  function makeInput(id, type, val) {
     var inp = document.createElement(type==='select'?'select':'input');
     if (type!=='select') inp.type=type;
     inp.id=id; inp.style.cssText='width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:DM Mono,monospace;font-size:12px;color:var(--text)';
-    if (val!=null) inp.value=val;
-    wrap.appendChild(lbl); wrap.appendChild(inp); return wrap;
+    if (val!=null) inp.value=val; return inp;
   }
 
-  var fData = field('Data','date','dbt-data', defaultDate);
-  var fDesc = field('Descrição','text','dbt-desc','');
-  var fVal = field('Valor (R$)','number','dbt-val','');
-  var fCat = field('Categoria','select','dbt-cat','');
-  var catSel = fCat.querySelector('select');
-  var noneOpt = document.createElement('option'); noneOpt.value=''; noneOpt.textContent='— Sem categoria'; catSel.appendChild(noneOpt);
+  // Date field with custom picker
+  var fData = makeField('Data');
+  var dataInp = makeInput('dbt-data','text', (function(){ var p=defaultISO.split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(2); })());
+  dataInp.readOnly = true; dataInp.style.cursor='pointer';
+  fData.appendChild(dataInp);
+
+  // Custom date picker
+  var viewYear = now.getFullYear(), viewMonth = now.getMonth();
+  if (ym) { var ymP=ym.split('-'); viewYear=parseInt(ymP[0]); viewMonth=parseInt(ymP[1])-1; }
+  var calDd = null;
+  function closeCal(){ if(calDd){ calDd.remove(); calDd=null; } }
+  function renderPickerCal() {
+    var MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var DAYS_PT=['D','S','T','Q','Q','S','S'];
+    var _t=new Date(); var todayStr=_t.getFullYear()+'-'+String(_t.getMonth()+1).padStart(2,'0')+'-'+String(_t.getDate()).padStart(2,'0');
+    var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      +'<button id="dbt-cal-prev" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px">‹</button>'
+      +'<span style="font-size:13px;font-weight:600;color:var(--text)">'+MONTHS_PT[viewMonth]+' '+viewYear+'</span>'
+      +'<button id="dbt-cal-next" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px">›</button>'
+      +'</div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">';
+    DAYS_PT.forEach(function(d){ html+='<div style="text-align:center;font-size:10px;color:var(--muted);padding:2px">'+d+'</div>'; });
+    html+='</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">';
+    var first=new Date(viewYear,viewMonth,1).getDay();
+    var days=new Date(viewYear,viewMonth+1,0).getDate();
+    for(var i=0;i<first;i++) html+='<div></div>';
+    for(var d=1;d<=days;d++){
+      var iso=viewYear+'-'+String(viewMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      var isSel=iso===selectedISO, isTod=iso===todayStr;
+      var bg=isSel?'var(--accent)':isTod?'var(--surface2)':'transparent';
+      var col=isSel?'#000':isTod?'var(--accent)':'var(--text)';
+      html+='<div data-iso="'+iso+'" style="text-align:center;padding:4px 2px;border-radius:6px;cursor:pointer;font-size:12px;background:'+bg+';color:'+col+'">'+d+'</div>';
+    }
+    html+='</div><div style="margin-top:8px;display:flex;justify-content:center;gap:8px">'
+      +'<button id="dbt-cal-today" style="background:none;border:1px solid var(--accent);border-radius:6px;color:var(--accent);cursor:pointer;font-size:11px;padding:3px 12px">Hoje</button>'
+      +'</div>';
+    calDd.innerHTML=html;
+    calDd.querySelectorAll('[data-iso]').forEach(function(el){
+      el.addEventListener('click',function(){
+        selectedISO=el.getAttribute('data-iso');
+        var p=selectedISO.split('-');
+        dataInp.value=p[2]+'/'+p[1]+'/'+p[0].slice(2);
+        closeCal();
+      });
+    });
+    calDd.querySelector('#dbt-cal-prev').addEventListener('click',function(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderPickerCal(); });
+    calDd.querySelector('#dbt-cal-next').addEventListener('click',function(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderPickerCal(); });
+    calDd.querySelector('#dbt-cal-today').addEventListener('click',function(){
+      var t=new Date(); selectedISO=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+      var p=selectedISO.split('-'); dataInp.value=p[2]+'/'+p[1]+'/'+p[0].slice(2); closeCal();
+    });
+  }
+  dataInp.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(calDd){ closeCal(); return; }
+    var rect=dataInp.getBoundingClientRect();
+    calDd=document.createElement('div');
+    calDd.style.cssText='position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);padding:12px;width:260px;user-select:none';
+    var top=rect.bottom+4; if(top+290>window.innerHeight) top=rect.top-294;
+    var left=Math.min(rect.left,window.innerWidth-272); if(left<4) left=4;
+    calDd.style.top=top+'px'; calDd.style.left=left+'px';
+    calDd.addEventListener('mousedown',function(e2){e2.stopPropagation();});
+    document.body.appendChild(calDd);
+    renderPickerCal();
+  });
+  document.addEventListener('mousedown',function handler(e){
+    if(calDd && !calDd.contains(e.target) && e.target!==dataInp){ closeCal(); }
+  });
+
+  // Other fields
+  var fDesc = makeField('Descrição'); var descInp=makeInput('dbt-desc','text',''); fDesc.appendChild(descInp);
+  acLoadMemory();
+  var fNota = makeField('Detalhes'); var notaInp=makeInput('dbt-nota','text',''); fNota.appendChild(notaInp);
+  acAttach(notaInp, 'debit-nota-'+accountId, null);
+  var fVal = makeField('Valor (R$)'); var valInp=makeInput('dbt-val','number',''); fVal.appendChild(valInp);
+  var fCat = makeField('Categoria'); var catSel=makeInput('dbt-cat','select',null); fCat.appendChild(catSel);
+  var noneOpt=document.createElement('option'); noneOpt.value=''; noneOpt.textContent='— Sem categoria'; catSel.appendChild(noneOpt);
   getDebitCats().forEach(function(c){ var o=document.createElement('option'); o.value=c.id; o.textContent=c.name||c.nome; catSel.appendChild(o); });
+  acAttach(descInp, 'debit-desc-'+accountId, function(val){
+    descInp.value = val;
+    var memCat = state.debit.acMemory && state.debit.acMemory[val.trim().toLowerCase()];
+    if (memCat) catSel.value = memCat;
+    // Pre-fill nota with most recent for this description
+    var lower = val.trim().toLowerCase();
+    var txs = (state.debit.transactions[accountId]||[]).filter(function(t){ return t.nota && t.descricao && t.descricao.trim().toLowerCase()===lower; });
+    if (txs.length) {
+      var latest = txs.reduce(function(best,t){ return t.data > best.data ? t : best; }, txs[0]);
+      notaInp.value = latest.nota;
+    }
+  });
 
   var btnRow = document.createElement('div');
   btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:16px';
-  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ overlay.remove(); };
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-modal-cancel'; cancelBtn.textContent='Cancelar'; cancelBtn.onclick=function(){ closeCal(); overlay.remove(); };
   var saveBtn = document.createElement('button'); saveBtn.className='btn-sm accent'; saveBtn.textContent='Salvar';
   saveBtn.onclick = function() {
-    var data = document.getElementById('dbt-data').value;
-    var desc = document.getElementById('dbt-desc').value.trim();
-    var val = parseFloat(document.getElementById('dbt-val').value)||0;
-    var catId = document.getElementById('dbt-cat').value;
-    if (!data || !desc || !val) return;
-    var tx = { id: uuid(), data: data, descricao: desc, valor: val, categoriaId: catId,
-      ignorarDashboard: false, estorno: false };
+    if (!selectedISO || !descInp.value.trim() || !parseFloat(valInp.value)) return;
+    var desc = descInp.value.trim();
+    var tx = { id: uuid(), data: selectedISO, descricao: desc, nota: notaInp.value.trim(), valor: parseFloat(valInp.value)||0, categoriaId: catSel.value, ignorarDashboard: false, estorno: false };
     if (!state.debit.transactions[accountId]) state.debit.transactions[accountId]=[];
     state.debit.transactions[accountId].push(tx);
-    if (catId) state.debit.acMemory[desc.toLowerCase()] = catId;
-    saveState(); overlay.remove(); renderDebit();
+    if (catSel.value) state.debit.acMemory[desc.toLowerCase()] = catSel.value;
+    if (notaInp.value.trim()) acRemember('detalhes', notaInp.value.trim());
+    saveState(); closeCal(); overlay.remove(); renderDebit();
   };
   btnRow.appendChild(cancelBtn); btnRow.appendChild(saveBtn);
 
-  modal.appendChild(title); modal.appendChild(fData); modal.appendChild(fDesc);
+  modal.appendChild(fData); modal.appendChild(fDesc); modal.appendChild(fNota);
   modal.appendChild(fVal); modal.appendChild(fCat); modal.appendChild(btnRow);
   overlay.appendChild(modal);
-  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
-  document.body.appendChild(overlay);
-  setTimeout(function(){ document.getElementById('dbt-desc').focus(); },50);
+  overlay.onclick = function(e){ if(e.target===overlay){ closeCal(); overlay.remove(); } };
+  showModal(overlay);
+  setTimeout(function(){ descInp.focus(); },50);
 }
 
 function openAddDebitAccountModal() {
@@ -6996,22 +7185,65 @@ function parseDebitMercadoPagoPDF(items, ignoreKeywords, recurringCatIds) {
   return txs;
 }
 
+function debitDescMatch(a, b) {
+  // Exact match
+  if (a === b) return true;
+  // One must contain the other (original partial match condition)
+  if (!a.includes(b) && !b.includes(a)) return false;
+  // Filter out generic words that appear in many payment descriptions
+  var stopWords = ['pagamento','com','qr','pix','s.a','s.a.','ltda','ltda.','eireli','me','epp','sa','de','do','da','dos','das','e','em','para','via','por','the'];
+  function sigWords(str) {
+    return str.split(/[\s.,\-\/]+/).map(function(w){ return w.toLowerCase().replace(/[^a-z0-9]/g,''); }).filter(function(w){ return w.length > 2 && stopWords.indexOf(w) === -1; });
+  }
+  var wa = sigWords(a);
+  var wb = sigWords(b);
+  if (!wa.length || !wb.length) return true; // no significant words, allow match
+  // Check if any significant word is shared
+  return wa.some(function(w){ return wb.indexOf(w) !== -1; });
+}
+
+function getDebitNotaFromHistory(accountId, desc, valor) {
+  var all = state.debit.transactions[accountId] || [];
+  var lower = desc.trim().toLowerCase();
+  var candidates = all.filter(function(t){ return t.nota && t.descricao && t.descricao.trim().toLowerCase() === lower; });
+  if (!candidates.length) {
+    candidates = all.filter(function(t){ if (!t.nota || !t.descricao) return false; var kl = t.descricao.trim().toLowerCase(); return debitDescMatch(lower, kl); });
+  }
+  if (!candidates.length) return '';
+  var notas = candidates.map(function(t){ return t.nota; });
+  var allSame = notas.every(function(n){ return n === notas[0]; });
+  if (allSame) return notas[0];
+  if (valor !== undefined && valor !== null) {
+    var byVal = candidates.find(function(t){ return Math.abs(t.valor - valor) < 0.01; });
+    if (byVal) return byVal.nota;
+  }
+  // Fallback: nota majoritária
+  var freq = {};
+  notas.forEach(function(n){ freq[n] = (freq[n] || 0) + 1; });
+  var majority = Object.keys(freq).reduce(function(a, b){ return freq[a] >= freq[b] ? a : b; });
+  if (freq[majority] > notas.length / 2) return majority;
+  return '';
+}
+
 function classifyAndReviewDebit(accountId, txs, overlay, selectedYM) {
   var mem = state.debit.acMemory || {};
   var cats = state.card.categorias || [];
   var recurringCatIds = state.debit.recurringCategories || [];
 
-  // Apply memory classification
+  // Apply memory classification and nota from history
   txs.forEach(function(tx) {
     var key = tx.descricao.trim().toLowerCase();
-    if (mem[key]) { tx.categoriaId = mem[key]; tx.source = 'memory'; return; }
-    // Partial match
-    var keys = Object.keys(mem);
-    for (var i=0; i<keys.length; i++) {
-      if (key.includes(keys[i]) || keys[i].includes(key)) {
-        tx.categoriaId = mem[keys[i]]; tx.source = 'memory'; break;
+    if (mem[key]) { tx.categoriaId = mem[key]; tx.source = 'memory'; }
+    else {
+      // Partial match
+      var keys = Object.keys(mem);
+      for (var i=0; i<keys.length; i++) {
+        if (debitDescMatch(key, keys[i])) {
+          tx.categoriaId = mem[keys[i]]; tx.source = 'memory'; break;
+        }
       }
     }
+    if (!tx.nota) { var n = getDebitNotaFromHistory(accountId, tx.descricao, tx.valor); if (n) tx.nota = n; }
   });
 
   // Mark recurring categories as ignorarDashboard
@@ -7470,7 +7702,7 @@ function renderDashboard() {
   });
   // Remove zero entries only; negatives (rendimentos/estornos) are kept
   Object.keys(catMap).forEach(function(k){ if(catMap[k]===0) delete catMap[k]; });
-  var totalPositive = Math.round(Object.values(catMap).reduce(function(s,v){return s+v;},0) * 100) / 100;
+  var totalPositive = Math.round(Object.values(catMap).filter(function(v){return v>0;}).reduce(function(s,v){return s+v;},0) * 100) / 100;
 
   // View mode toggle
   var toggleDiv = document.createElement('div');
@@ -7544,7 +7776,7 @@ function renderDashboard() {
 
   var summaryDiv = document.createElement('div');
   summaryDiv.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px';
-  [['Total do mês',totalMes,'var(--text)','all'],['Pago',totalPago,'#22c55e','paid'],['Em aberto',totalAberto,'var(--danger)','open']].forEach(function(item){
+  [['Total do '+(_dashAccum?'ano':'mês'),totalMes,'var(--text)','all'],['Pago',totalPago,'#22c55e','paid'],['Em aberto',totalAberto,'var(--danger)','open']].forEach(function(item){
     var c=document.createElement('div');
     var isActive = _dashPayFilter === item[3];
     c.style.cssText='background:var(--surface2);border-radius:8px;padding:12px 16px;flex:1;min-width:120px;cursor:pointer;transition:all .15s;border:2px solid '+(isActive?item[2]:'transparent');
@@ -7584,7 +7816,8 @@ function renderDashboard() {
   var cx=110,cy=110,r=85,ri=55,circumference=2*Math.PI*r;
   var svgSlices=''; var cumPct=0;
   displayCats.forEach(function(cat,i){
-    var pct=cat.val/(_dashPayFilter==='all'?totalMes:totalPositive||1);
+    if (cat.val <= 0) return;
+    var pct=cat.val/(totalPositive||1);
     var color=cat.color||DASH_COLORS[i%DASH_COLORS.length];
     var dashLen=pct*circumference; var gapLen=circumference-dashLen;
     var rotation=cumPct*360-90;
@@ -8786,7 +9019,7 @@ function wireCardDragDrop(container, cardId) {
           var tgtIdx = pays.findIndex(function(p){ return p.id === row.dataset.payid; });
           if (srcIdx === -1) return;
           var rect2 = row.getBoundingClientRect();
-          var after = e.clientY >= rect2.top + rect2.height/2;
+          var after = e.clientY < rect2.top + rect2.height/2;
           var item = pays.splice(srcIdx, 1)[0];
           if (tgtIdx === -1) { pays.push(item); }
           else {
@@ -9221,22 +9454,24 @@ function cardDateToNum(d) {
 
 function sortCardTxs(txs) {
   if (!_cardSortLevels.length) return txs;
-  return txs.slice().sort(function(a, b) {
+  var tagged = txs.map(function(t,i){ return {t:t,i:i}; });
+  tagged.sort(function(a, b) {
     for (var i = 0; i < _cardSortLevels.length; i++) {
       var s = _cardSortLevels[i];
       var av, bv;
       if (s.col === 'valor') {
-        av = parseFloat(a.valor)||0; bv = parseFloat(b.valor)||0;
+        av = parseFloat(a.t.valor)||0; bv = parseFloat(b.t.valor)||0;
       } else if (s.col === 'data') {
-        av = cardDateToNum(a.data); bv = cardDateToNum(b.data);
+        av = cardDateToNum(a.t.data); bv = cardDateToNum(b.t.data);
       } else {
-        av = (a[s.col] || '').toLowerCase(); bv = (b[s.col] || '').toLowerCase();
+        av = (a.t[s.col] || '').toLowerCase(); bv = (b.t[s.col] || '').toLowerCase();
       }
       var cmp = av < bv ? -1 : av > bv ? 1 : 0;
       if (cmp !== 0) return s.dir === 'asc' ? cmp : -cmp;
     }
-    return 0;
+    return a.i - b.i;
   });
+  return tagged.map(function(x){ return x.t; });
 }
 
 function cardSortBadge(col) {
@@ -9269,10 +9504,16 @@ function acRemember(field, value) {
 function acLoadMemory() {
   if (state.card && state.card.acMemory) _acMemory = state.card.acMemory;
   // Populate debit description keys from acMemory
-  if (state.debit && state.debit.acMemory) {
-    var debitDescs = Object.keys(state.debit.acMemory);
+  if (state.debit && state.debit.accounts) {
     (state.debit.accounts||[]).forEach(function(acc){
-      _acMemory['debit-desc-'+acc.id] = debitDescs;
+      var seenD = {}, descs = [], seenN = {}, notas = [];
+      var txs = (state.debit.transactions[acc.id]||[]).slice().sort(function(a,b){ return a.data<b.data?1:-1; });
+      txs.forEach(function(t){
+        if (t.descricao && !seenD[t.descricao.toLowerCase()]){ seenD[t.descricao.toLowerCase()]=1; descs.push(t.descricao); }
+        if (t.nota && !seenN[t.nota.toLowerCase()]){ seenN[t.nota.toLowerCase()]=1; notas.push(t.nota); }
+      });
+      _acMemory[acGetKey('debit-desc-'+acc.id)] = descs;
+      _acMemory[acGetKey('debit-nota-'+acc.id)] = notas;
     });
   }
   // Pre-populate tx-desc from existing transaction descriptions
@@ -9683,33 +9924,79 @@ function openPayHistoryManager(cardId) {
   document.getElementById('payHistoryModal').classList.add('show');
 }
 
-function renderPayHistoryManager(cardId) {
-  // Build current lists from _acMemory
-  var descKey = acGetKey('pay-desc-' + cardId);
-  var notaKey = acGetKey('pay-nota-' + cardId);
-  var descs = (_acMemory[descKey] || []).slice();
-  var notas = (_acMemory[notaKey] || []).slice();
+function renamePayField(cardId, oldVal, newVal, field) {
+  if (!newVal || newVal === oldVal) return;
+  var allPays = state.card.payments || {};
+  Object.keys(allPays).forEach(function(cid) {
+    Object.keys(allPays[cid]||{}).forEach(function(py) {
+      Object.keys(allPays[cid][py]||{}).forEach(function(pm) {
+        (allPays[cid][py][pm]||[]).forEach(function(p) {
+          if (p[field] === oldVal) p[field] = newVal;
+        });
+      });
+    });
+  });
+  saveState();
+  renderPayHistoryManager(cardId);
+}
 
-  function renderList(containerId, items, key) {
+function renderPayHistoryManager(cardId) {
+  // Build lists from existing payments (source of truth)
+  var allPays = state.card.payments || {};
+  var payDescDescs = [];
+  var payNotaDescs = [];
+  Object.keys(allPays).forEach(function(cid) {
+    Object.keys(allPays[cid]||{}).forEach(function(py) {
+      Object.keys(allPays[cid][py]||{}).forEach(function(pm) {
+        (allPays[cid][py][pm]||[]).forEach(function(p) {
+          if (p.descricao && !payDescDescs.includes(p.descricao)) payDescDescs.push(p.descricao);
+          if (p.nota && !payNotaDescs.includes(p.nota)) payNotaDescs.push(p.nota);
+        });
+      });
+    });
+  });
+
+
+  function renderList(containerId, items, field) {
     var el = document.getElementById(containerId);
     if (!el) return;
     if (!items.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:4px">Nenhuma entrada.</div>'; return; }
     el.innerHTML = '';
-    items.forEach(function(item, i) {
+    items.forEach(function(item) {
       var row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--surface2);border-radius:4px';
-      row.innerHTML = '<span style="flex:1;font-size:12px;color:var(--text)">' + escHtml(item) + '</span>'
-        + '<button class="status-del-btn" style="flex-shrink:0">✕</button>';
-      row.querySelector('button').onclick = function() {
-        _acMemory[key] = (_acMemory[key] || []).filter(function(v){ return v !== item; });
-        renderPayHistoryManager(cardId);
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--surface2);border-radius:4px;margin-bottom:2px';
+      var span = document.createElement('span');
+      span.style.cssText = 'flex:1;font-size:12px;color:var(--text)';
+      span.textContent = item;
+      var editBtn = document.createElement('button');
+      editBtn.className = 'status-del-btn';
+      editBtn.style.flexShrink = '0';
+      editBtn.textContent = '✏';
+      editBtn.title = 'Renomear';
+      editBtn.onclick = function() {
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.value = item;
+        input.style.cssText = 'flex:1;font-size:12px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);min-width:0';
+        var ok = document.createElement('button');
+        ok.className = 'btn-sm accent';
+        ok.textContent = '✓';
+        ok.style.cssText = 'flex-shrink:0;padding:2px 8px';
+        ok.onclick = function() { renamePayField(cardId, item, input.value.trim(), field); };
+        input.onkeydown = function(e) { if (e.key==='Enter') ok.click(); if (e.key==='Escape') renderPayHistoryManager(cardId); };
+        row.innerHTML = '';
+        row.appendChild(input);
+        row.appendChild(ok);
+        input.focus(); input.select();
       };
+      row.appendChild(span);
+      row.appendChild(editBtn);
       el.appendChild(row);
     });
   }
 
-  renderList('payHistDescList', descs, descKey);
-  renderList('payHistNotaList', notas, notaKey);
+  renderList('payHistDescList', payDescDescs, 'descricao');
+  renderList('payHistNotaList', payNotaDescs, 'nota');
 }
 
 function inlineEditPayment(cell) {
