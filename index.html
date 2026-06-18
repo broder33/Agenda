@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.14</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.15</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1537,7 +1537,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.14 — agenda-v0514</p>
+    <p class="version-tag">Agenda v0.5.15 — agenda-v0515</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -9203,8 +9203,8 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise'; analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
   var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = 'Grupos'; groupsBtn.onclick = openCatGroupsModal;
   var vt = document.createElement('div'); vt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
-  var lb = document.createElement('button'); lb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)'; lb.textContent = '≡ Lista'; lb.onclick = function(){ _cardViewMode='list'; el.dataset.monthIdx=''; renderCard(); };
-  var mb = document.createElement('button'); mb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000'; mb.textContent = '◫ Carousel';
+  var lb = document.createElement('button'); lb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='list'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='list'?'#000':'var(--muted)'); lb.textContent = '≡ Lista'; lb.onclick = function(){ _cardViewMode='list'; state.card.viewMode='list'; saveState(); el.dataset.monthIdx=''; renderCard(); };
+  var mb = document.createElement('button'); mb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='month'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='month'?'#000':'var(--muted)'); mb.textContent = '◫ Carousel';
   vt.appendChild(lb); vt.appendChild(mb);
   var lt = document.createElement('div'); lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
   var db = document.createElement('button'); db.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:' + (_cardMonthLabel==='fechamento'?'var(--accent)':'var(--surface2)') + ';color:' + (_cardMonthLabel==='fechamento'?'#000':'var(--muted)'); db.textContent='Fechamento'; db.onclick=function(){ _cardMonthLabel='fechamento'; renderCardPreserve(); };
@@ -9332,11 +9332,11 @@ function renderCardBills(el, cardId) {
   var viewToggle = document.createElement('div');
   viewToggle.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
   var listViewBtn = document.createElement('button');
-  listViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000';
+  listViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='list'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='list'?'#000':'var(--muted)');
   listViewBtn.textContent = '≡ Lista';
   listViewBtn.onclick = function(){ _cardViewMode='list'; state.card.viewMode='list'; saveState(); renderCardPreserve(); };
   var monthViewBtn = document.createElement('button');
-  monthViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)';
+  monthViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='month'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='month'?'#000':'var(--muted)');
   monthViewBtn.textContent = '◫ Carousel';
   monthViewBtn.onclick = function(){ _cardViewMode='month'; state.card.viewMode='month'; saveState(); renderCardPreserve(); };
   viewToggle.appendChild(listViewBtn); viewToggle.appendChild(monthViewBtn);
