@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-06-18T03:51:07.611Z",
+  "_updatedAt": "2026-06-18T20:50:24.219Z",
   "tasks": {
     "items": [
       {
@@ -1157,13 +1157,13 @@
         "notes": "",
         "title": "Criar app de conversão de icons",
         "status": "pendente",
-        "dueDate": "2026-06-16",
+        "dueDate": "2026-06-18",
         "children": [],
         "comments": [],
         "expanded": false,
         "priority": "baixa",
         "createdAt": "2026-06-09T20:47:04.432Z",
-        "updatedAt": "2026-06-16T17:20:51.339Z",
+        "updatedAt": "2026-06-18T19:49:18.595Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1174,15 +1174,22 @@
         "id": "mq718zeun0v5qm6iggd",
         "tags": [],
         "notes": "",
-        "title": "Limpar PC",
-        "status": "acao-necessaria",
-        "dueDate": "2026-06-19",
+        "title": "Limpar Quarto/PC",
+        "status": "aguardando",
+        "dueDate": "2026-07-02",
         "children": [],
-        "comments": [],
+        "comments": [
+          {
+            "id": "c-1781815608494",
+            "author": "Usuário",
+            "text": "Limpeza realizada 18/06/26. Próxima limpeza daqui a 2 semanas.",
+            "createdAt": "2026-06-18T20:46:48.494Z"
+          }
+        ],
         "expanded": false,
         "priority": "media",
         "createdAt": "2026-06-09T19:28:32.838Z",
-        "updatedAt": "2026-06-16T17:22:47.510Z",
+        "updatedAt": "2026-06-18T20:46:59.341Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1466,7 +1473,7 @@
         "notes": "",
         "title": "Batizado Isabela",
         "status": "acao-necessaria",
-        "dueDate": "2026-06-16",
+        "dueDate": "2026-06-19",
         "timeEnd": "",
         "children": [],
         "comments": [
@@ -1487,7 +1494,7 @@
         "priority": "alta",
         "createdAt": "2026-05-29T21:31:52.423Z",
         "timeStart": "",
-        "updatedAt": "2026-06-16T17:21:03.750Z",
+        "updatedAt": "2026-06-18T17:57:16.093Z",
         "description": "Batizado confirmado dia 11/07/2026",
         "linkedItems": [],
         "customFields": {
@@ -2563,8 +2570,8 @@
             "id": 1781676178131,
             "nome": "Londrina",
             "venc": "19/6/26",
-            "valor": 0,
-            "status": "aguardando",
+            "valor": 1910.15,
+            "status": "pago",
             "categoria": "",
             "obs": "",
             "categoriaId": "cat-1u3e2oudmq"
@@ -9532,6 +9539,10 @@
       {
         "pattern": "MP *ALIEXPRESS",
         "categoriaId": "cat-ulhkok9chc"
+      },
+      {
+        "pattern": "ANTHROPIC* CLAUDE SUB",
+        "categoriaId": "cat-1jv9cpaujf"
       }
     ],
     "catGroups": [
@@ -9730,17 +9741,13 @@
     },
     "acMemory": {
       "ac_tx-desc": [
-        "ANTHROPIC* CLAUDE SUB",
-        "MERCADOLIVRE*MERCADOL",
-        "MP *ALIEXPRESS",
-        "DL *AliExpress BR Alip",
         "IOF COMPRA INTERNACIONA",
-        "ANTHROPIC",
+        "ANTHROPIC* CLAUDE SUB",
         "GAMMA.APP",
         "FLIGHTRADAR24 AB",
         "TUDOOFERTAS.COM",
-        "Localiza",
         "JV CAMBE LOJA DE CONVE",
+        "Localiza",
         "LanchesQDelicia",
         "CASA CHINA LONDRINA",
         "IOF de atraso",
@@ -9755,6 +9762,7 @@
         "IFD*S P DA SILVA LTDA",
         "AtaideSoaresTrind",
         "CELSO GARCIA",
+        "MERCADOLIVRE*MERCADOL",
         "DUQUE BIKES LTDA",
         "QUINTINO",
         "S2RJ ACADEMIA DE",
@@ -9763,6 +9771,7 @@
         "DL*UberRides",
         "PPRO   *MICROSOFT",
         "IFD*B B EMPREENDIMENTOS",
+        "DL *AliExpress BR Alip",
         "EBN*SPOTIFY",
         "IFD*ZAMP S.A.",
         "MERCADOLIVRE*MERCA01/02",
@@ -9772,6 +9781,7 @@
         "PG *99 RIDE",
         "MP *ALIEXPRESS    01/03",
         "DL *AliExpress BR 01/03",
+        "MP *ALIEXPRESS",
         "DL *AliExpress BR 02/03",
         "MP *ALIEXPRESS    02/03",
         "MP *ALIEXPRESS    03/03",
@@ -9797,6 +9807,7 @@
         "INDITEX BRAS-CT TDA",
         "AtaideSoares",
         "SUPERMERCADOS VISCARDI",
+        "ANTHROPIC",
         "VIVARA            01/10",
         "VIVARA            02/10",
         "VIVARA            03/10",
@@ -9969,7 +9980,11 @@
         "IOF do rotativo",
         "Juros do rotativo",
         "iFood",
-        "IFD*LANCHONETE REI DO"
+        "IFD*LANCHONETE REI DO",
+        "JUSBRASIL",
+        "MP*LOTERIASONLINEO2A8",
+        "IFD*LEMOS PIZZARIA LTD",
+        "Fatura Residual Dezembro"
       ],
       "ac_detalhes": [
         "Algum tipo de devolução",
@@ -10133,14 +10148,15 @@
         "pagamento meli+"
       ],
       "ac_debit-desc-debit-mqh2es5f1r51l8vg6v7": [
+        "Pagamento de assinatura Meli+",
+        "Pix enviado GROWTH SUPPLEMENTS",
+        "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+        "Pagamento com QR Pix EBANX Ltda.",
         "Pagamento Adelciocostapenha",
         "Pagamento Meli+",
-        "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
         "Rendimentos",
-        "Pagamento de assinatura Meli+",
         "Pagamento com QR Pix ZAMP S.A.",
         "Reembolso Compra garantida",
-        "Pagamento com QR Pix EBANX Ltda.",
         "Pagamento Hm parafusos e ferramen",
         "Pagamento com QR Pix ANTONIO JUNCANSSI",
         "Pix enviado",
@@ -10148,7 +10164,6 @@
         "Pagamento Atitude papelaria",
         "Pagamento Mercado Libre",
         "Pagamento Rolamentos londrina",
-        "Pix enviado GROWTH SUPPLEMENTS",
         "Pagamento Celso garcia",
         "Pagamento Sao joao farmacia",
         "Reembolso de compra Mercado Libre",
@@ -10245,11 +10260,15 @@
         "Pagamento Lojas americanas"
       ],
       "ac_debit-nota-debit-mqh2es5f1r51l8vg6v7": [
+        "Meli+ Disney+ Premium",
+        "Whey",
+        "SERASA Experian",
+        "Genshin - Welkin Moon",
+        "YouTube Premium",
         "Caldo de Cana - Botânico",
         "Meli+",
         "Google AI Plus 200GB",
         "Rendimentos",
-        "Meli+ Disney+ Premium",
         "Burger King",
         "Reembolso capa S23+",
         "Amazon Prime Video",
@@ -10263,15 +10282,11 @@
         "4 rolamentos novos para roda traseira Sava",
         "Capa S23+",
         "Paquímetro Digital CF",
-        "Whey",
         "Desengraxante Bike Algoo Citrus 700ml",
         "Muffato",
         "Farmácia",
         "Reembolso Kit de Limpeza de Corrente",
         "Reembolso Desengraxante Bike Algoo Citrus 1L",
-        "SERASA Experian",
-        "YouTube Premium",
-        "Genshin - Welkin Moon",
         "Água",
         "JET",
         "PUBG",
@@ -10373,12 +10388,12 @@
     },
     "notaMemory": {
       "IOF COMPRA INTERNACIONA": "IOF Claude",
-      "ANTHROPIC": "Claude Paul",
+      "ANTHROPIC* CLAUDE SUB": "Claude Paul",
       "GAMMA.APP": "Gamma Paul",
       "FLIGHTRADAR24 AB": "Flight Radar - Paul Stuff",
       "TUDOOFERTAS.COM": "Vape 30k",
-      "Localiza": "Fechamento da locação - pagamento da hora extra.",
       "JV CAMBE LOJA DE CONVE": "Abastecimento",
+      "Localiza": "Fechamento da locação - pagamento da hora extra.",
       "LanchesQDelicia": "Vape 40k",
       "CASA CHINA LONDRINA": "Fita métrica Wonder 5M+2M para caixa de ferramentas bike",
       "IOF de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
@@ -10393,7 +10408,7 @@
       "IFD*S P DA SILVA LTDA": "iFood",
       "AtaideSoaresTrind": "Tata Lanches",
       "CELSO GARCIA": "Muffato",
-      "MERCADOLIVRE*MERCADOL": "Algum tipo de devolução",
+      "MERCADOLIVRE*MERCADOL": "Devolução Compra Paquímetro Manual",
       "DUQUE BIKES LTDA": "Canivete Extrator Corrente",
       "QUINTINO": "Muffato",
       "S2RJ ACADEMIA DE": "SmartFit",
@@ -10411,6 +10426,7 @@
       "PG *99 RIDE": "99",
       "MP *ALIEXPRESS    01/03": "Ravemen TR500",
       "DL *AliExpress BR 01/03": "Ravemen FR1100",
+      "MP *ALIEXPRESS": "Algum tipo de devolução",
       "IFD*55215665 GLEICE KE": "iFood",
       "MP*CARDIFDOBRASILSEGUROSE": "Seguro Cartão",
       "VITAMINA DA SERGIPE": "Vitamina",
@@ -10423,6 +10439,7 @@
       "INDITEX BRAS-CT TDA": "Terno Paul",
       "AtaideSoares": "Tata Lanches",
       "SUPERMERCADOS VISCARDI": "Viscardi",
+      "ANTHROPIC": "Claude Paul",
       "VIVARA            01/10": "Aliança",
       "MERCADO*MERCADOLIV01/03": "Blocagem Titânio Enlee",
       "MERCADOLIVRE*FIREBIKE": "Desengraxante Bike: R$34,82\nKit Limpeza Corrente: R$28,00\nObs: Compra Cancelada - o valor foi reembolsado diretamente na conta corrente MP",
@@ -10533,8 +10550,7 @@
       "JUSBRASIL": "JusBrasil",
       "MP*LOTERIASONLINEO2A8": "Mega-Sena",
       "IFD*LEMOS PIZZARIA LTD": "iFood",
-      "Fatura Residual Dezembro": "Fatura Residual de Dezembro",
-      "MP *ALIEXPRESS": "Algum tipo de devolução"
+      "Fatura Residual Dezembro": "Fatura Residual de Dezembro"
     },
     "rules": [
       {
@@ -14147,7 +14163,7 @@
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "dashboard",
+    "activeTab": "tasks",
     "tabLabels": {
       "ai": "IA",
       "card": "Cartão",

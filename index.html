@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.15</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.18</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1537,7 +1537,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.15 — agenda-v0515</p>
+    <p class="version-tag">Agenda v0.5.18 — agenda-v0518</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -3334,20 +3334,21 @@ function openDateDropdown(anchorEl, taskId) {
     for (var d=1; d<=days; d++) {
       var iso = viewYear+'-'+String(viewMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
       var isSel = iso===selectedVal, isTod = iso===today;
-      var bg = isSel?'var(--accent)':isTod?'var(--surface2)':'transparent';
-      var col = isSel?'#000':'var(--text)';
-      html += '<div class="cal-day" data-iso="'+iso+'" style="text-align:center;padding:5px 2px;border-radius:4px;cursor:pointer;font-size:12px;background:'+bg+';color:'+col+';font-weight:'+(isSel||isTod?'600':'400')+'">'+d+'</div>';
+      var bg = isSel?'var(--accent)':'transparent';
+      var col = isSel?'#000':isTod?'var(--accent)':'var(--text)';
+      var todayStyle = (!isSel&&isTod)?'box-shadow:0 0 0 2px var(--accent) inset;':'';
+      html += '<div class="cal-day" data-iso="'+iso+'" style="text-align:center;padding:5px 2px;border-radius:4px;cursor:pointer;font-size:12px;background:'+bg+';color:'+col+';font-weight:'+(isSel||isTod?'600':'400')+';'+todayStyle+'">'+d+'</div>';
     }
     html += '</div><div style="display:flex;gap:6px;justify-content:flex-end;margin-top:10px;border-top:1px solid var(--border);padding-top:8px">'
       +'<button id="cal-clear" style="background:none;border:1px solid var(--border);border-radius:5px;color:var(--muted);font-size:11px;padding:4px 10px;cursor:pointer">Limpar</button>'
-      +'<button id="cal-today" style="background:none;border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:11px;padding:4px 10px;cursor:pointer">Hoje</button>'
+      +'<button id="cal-today" style="background:none;border:1px solid var(--accent);border-radius:5px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer">Hoje</button>'
       +'</div>';
 
     dd.innerHTML = html;
     dd.querySelector('#cal-prev').onclick = function(e){ e.stopPropagation(); viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCal(); };
     dd.querySelector('#cal-next').onclick = function(e){ e.stopPropagation(); viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderCal(); };
     dd.querySelector('#cal-clear').onclick = function(e){ e.stopPropagation(); setTaskDate(taskId,''); closeDateDropdown(); renderTasks(); };
-    dd.querySelector('#cal-today').onclick = function(e){ e.stopPropagation(); var n=new Date(); viewYear=n.getFullYear(); viewMonth=n.getMonth(); renderCal(); };
+    dd.querySelector('#cal-today').onclick = function(e){ e.stopPropagation(); var n=new Date(); var iso=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0'); viewYear=n.getFullYear(); viewMonth=n.getMonth(); setTaskDate(taskId,iso); selectedVal=iso; renderCal(); };
     dd.querySelectorAll('.cal-day').forEach(function(el){
       el.onmouseenter = function(){ if(el.dataset.iso!==selectedVal) el.style.background='var(--surface2)'; };
       el.onmouseleave = function(){ if(el.dataset.iso!==selectedVal) el.style.background='transparent'; };
