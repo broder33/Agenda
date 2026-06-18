@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-06-18T02:31:10.279Z",
+  "_updatedAt": "2026-06-18T03:51:07.611Z",
   "tasks": {
     "items": [
       {
@@ -6681,36 +6681,6 @@
               "installmentGroupId": "grp-migrated-mq0aioub4a69"
             },
             {
-              "id": "4707463f9e8c4dfba9e0",
-              "data": "13/05/26",
-              "nota": "",
-              "tipo": "despesa",
-              "valor": 166.39,
-              "parcela": "2/3",
-              "descricao": "DL *AliExpress BR 02/03",
-              "categoriaId": "cat-ulhkok9chc",
-              "installmentTotal": 3,
-              "installmentStartM": 4,
-              "installmentStartY": 2026,
-              "installmentCurrent": 2,
-              "installmentGroupId": "grp-migrated-mq0aioubynuw"
-            },
-            {
-              "id": "3feae5e337684c95aecc",
-              "data": "13/05/26",
-              "nota": "",
-              "tipo": "despesa",
-              "valor": 97.42,
-              "parcela": "2/3",
-              "descricao": "MP *ALIEXPRESS    02/03",
-              "categoriaId": "cat-ulhkok9chc",
-              "installmentTotal": 3,
-              "installmentStartM": 4,
-              "installmentStartY": 2026,
-              "installmentCurrent": 2,
-              "installmentGroupId": "grp-migrated-mq0aioubqrxl"
-            },
-            {
               "id": "6d69bd3b0f954f529216",
               "data": "04/05/26",
               "nota": "",
@@ -6870,6 +6840,15 @@
               "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
+              "id": "mqiy77z270w58sdwwml",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "07/05/26",
+              "valor": -0.09,
+              "parcela": "",
+              "categoriaId": "cat-18u0qooj47",
+              "nota": "Algum tipo de devolução"
+            },
+            {
               "id": "cb173d35a8474ad1bae9",
               "data": "07/05/26",
               "nota": "",
@@ -6930,21 +6909,21 @@
               "categoriaId": "cat-lud3o8ruhh"
             },
             {
-              "id": "mq8m2pn4voz4k5cjg4",
-              "data": "09/06/26",
-              "nota": "Fechamento da locação - pagamento da hora extra.",
-              "valor": 132.09,
-              "parcela": "",
-              "descricao": "Localiza",
-              "categoriaId": "cat-lud3o8ruhh"
-            },
-            {
               "id": "mq8m61jhfzrlhb49q5a",
               "data": "09/06/26",
               "nota": "Abastecimento",
               "valor": 45.95,
               "parcela": "",
               "descricao": "JV CAMBE LOJA DE CONVE",
+              "categoriaId": "cat-lud3o8ruhh"
+            },
+            {
+              "id": "mq8m2pn4voz4k5cjg4",
+              "data": "09/06/26",
+              "nota": "Fechamento da locação - pagamento da hora extra.",
+              "valor": 132.09,
+              "parcela": "",
+              "descricao": "Localiza",
               "categoriaId": "cat-lud3o8ruhh"
             },
             {
@@ -6957,6 +6936,15 @@
               "categoriaId": "cat-lud3o8ruhh"
             },
             {
+              "id": "mq8m6w6bsw19magzli",
+              "data": "10/06/26",
+              "nota": "Vape 30k",
+              "valor": 120,
+              "parcela": "",
+              "descricao": "TUDOOFERTAS.COM",
+              "categoriaId": "cat-qt8k9krhlw"
+            },
+            {
               "id": "mq8m75w0fy5do1jc908",
               "data": "10/06/26",
               "nota": "Vape 30k",
@@ -6966,13 +6954,115 @@
               "categoriaId": "cat-qt8k9krhlw"
             },
             {
-              "id": "mq8m6w6bsw19magzli",
-              "data": "10/06/26",
-              "nota": "Vape 30k",
-              "valor": 120,
+              "id": "mqixutqpqkyhieum04",
+              "descricao": "FLIGHTRADAR24 AB",
+              "data": "13/06/26",
+              "valor": 48.69,
               "parcela": "",
-              "descricao": "TUDOOFERTAS.COM",
-              "categoriaId": "cat-qt8k9krhlw"
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "Flight Radar - Paul Stuff"
+            },
+            {
+              "id": "mqixwecj3789e8ja3qu",
+              "descricao": "GAMMA.APP",
+              "data": "14/06/26",
+              "valor": 89.7,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "Gamma Paul"
+            },
+            {
+              "id": "mqixx4e1z9kba3xrb6p",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "14/06/26",
+              "valor": 1.73,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "IOF Flight Radar"
+            },
+            {
+              "id": "mqixz62w5ff15jrcu57",
+              "descricao": "ANTHROPIC* CLAUDE SUB",
+              "data": "15/06/26",
+              "valor": 1149.38,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "Claude Paul"
+            },
+            {
+              "id": "mqixxwyttdcajwn1xa",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "15/06/26",
+              "valor": 3.14,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "IOF Gamma"
+            },
+            {
+              "id": "mqiy4t60ahuta2ludba",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "16/06/26",
+              "valor": 40.21,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "IOF Claude"
+            },
+            {
+              "id": "mqiymc0qv9v7ngz19fk",
+              "descricao": "MP *ALIEXPRESS",
+              "data": "13/05/26",
+              "valor": -0.04,
+              "parcela": "",
+              "categoriaId": "cat-ulhkok9chc",
+              "nota": "Algum tipo de devolução"
+            },
+            {
+              "id": "mqiykwqgangic06za4a",
+              "descricao": "DL *AliExpress BR Alip",
+              "data": "13/05/26",
+              "valor": -0.02,
+              "parcela": "",
+              "categoriaId": "cat-ulhkok9chc",
+              "nota": "Algum tipo de devolução"
+            },
+            {
+              "id": "4707463f9e8c4dfba9e0",
+              "data": "13/05/26",
+              "nota": "",
+              "tipo": "despesa",
+              "valor": 166.39,
+              "parcela": "2/3",
+              "descricao": "DL *AliExpress BR 02/03",
+              "categoriaId": "cat-ulhkok9chc",
+              "installmentTotal": 3,
+              "installmentStartM": 4,
+              "installmentStartY": 2026,
+              "installmentCurrent": 2,
+              "installmentGroupId": "grp-migrated-mq0aioubynuw"
+            },
+            {
+              "id": "3feae5e337684c95aecc",
+              "data": "13/05/26",
+              "nota": "",
+              "tipo": "despesa",
+              "valor": 97.42,
+              "parcela": "2/3",
+              "descricao": "MP *ALIEXPRESS    02/03",
+              "categoriaId": "cat-ulhkok9chc",
+              "installmentTotal": 3,
+              "installmentStartM": 4,
+              "installmentStartY": 2026,
+              "installmentCurrent": 2,
+              "installmentGroupId": "grp-migrated-mq0aioubqrxl"
+            },
+            {
+              "id": "mqiyniuxcakbr99oclp",
+              "descricao": "MERCADOLIVRE*MERCADOL",
+              "data": "15/05/26",
+              "valor": -0.01,
+              "parcela": "",
+              "categoriaId": "cat-18u0qooj47",
+              "nota": "Algum tipo de devolução"
             }
           ],
           "6": [
@@ -8541,7 +8631,7 @@
       },
       {
         "pattern": "ANTHROPIC",
-        "categoriaId": "cat-ck0lcei8oi"
+        "categoriaId": "cat-1jv9cpaujf"
       },
       {
         "pattern": "VIVARA            01/10",
@@ -9434,6 +9524,14 @@
       {
         "pattern": "IOF de atraso",
         "categoriaId": "cat-m8lptmmn8b"
+      },
+      {
+        "pattern": "FLIGHTRADAR24 AB",
+        "categoriaId": "cat-1jv9cpaujf"
+      },
+      {
+        "pattern": "MP *ALIEXPRESS",
+        "categoriaId": "cat-ulhkok9chc"
       }
     ],
     "catGroups": [
@@ -9632,6 +9730,14 @@
     },
     "acMemory": {
       "ac_tx-desc": [
+        "ANTHROPIC* CLAUDE SUB",
+        "MERCADOLIVRE*MERCADOL",
+        "MP *ALIEXPRESS",
+        "DL *AliExpress BR Alip",
+        "IOF COMPRA INTERNACIONA",
+        "ANTHROPIC",
+        "GAMMA.APP",
+        "FLIGHTRADAR24 AB",
         "TUDOOFERTAS.COM",
         "Localiza",
         "JV CAMBE LOJA DE CONVE",
@@ -9640,7 +9746,6 @@
         "IOF de atraso",
         "Multa de atraso",
         "Juros de atraso",
-        "IOF COMPRA INTERNACIONA",
         "IFD*iFood",
         "DL   *UberRides",
         "URENTCAR",
@@ -9650,7 +9755,6 @@
         "IFD*S P DA SILVA LTDA",
         "AtaideSoaresTrind",
         "CELSO GARCIA",
-        "MERCADOLIVRE*MERCADOL",
         "DUQUE BIKES LTDA",
         "QUINTINO",
         "S2RJ ACADEMIA DE",
@@ -9659,7 +9763,6 @@
         "DL*UberRides",
         "PPRO   *MICROSOFT",
         "IFD*B B EMPREENDIMENTOS",
-        "DL *AliExpress BR Alip",
         "EBN*SPOTIFY",
         "IFD*ZAMP S.A.",
         "MERCADOLIVRE*MERCA01/02",
@@ -9694,7 +9797,6 @@
         "INDITEX BRAS-CT TDA",
         "AtaideSoares",
         "SUPERMERCADOS VISCARDI",
-        "ANTHROPIC",
         "VIVARA            01/10",
         "VIVARA            02/10",
         "VIVARA            03/10",
@@ -9831,7 +9933,6 @@
         "MLP    *KaBuM-KaBu10/10",
         "IFD*CB LONDRINA COMERCIO",
         "EC     *PICHAUINFO01/12",
-        "GAMMA.APP",
         "MERCADOLIVRE*LUKETSVE",
         "EC     *PICHAUINFO02/12",
         "EC     *PICHAUINFORMA",
@@ -9868,13 +9969,15 @@
         "IOF do rotativo",
         "Juros do rotativo",
         "iFood",
-        "IFD*LANCHONETE REI DO",
-        "JUSBRASIL",
-        "MP*LOTERIASONLINEO2A8",
-        "IFD*LEMOS PIZZARIA LTD",
-        "Fatura Residual Dezembro"
+        "IFD*LANCHONETE REI DO"
       ],
       "ac_detalhes": [
+        "Algum tipo de devolução",
+        "Meli+ Disney+ Premium",
+        "Whey",
+        "SERASA Experian",
+        "Genshin - Welkin Moon",
+        "YouTube Premium",
         "Tok & Stok",
         "Seguro Cartão Itaú",
         "Passagem Crianças",
@@ -9968,13 +10071,7 @@
         "Locação - Renegade (busca TV LG OLED)",
         "Hotel Nayana",
         "Compra fonte 750W + Gabinete Danilo",
-        "IOF compra de tokens",
-        "Algum tipo de devolução",
-        "Locação de carro para Mercado. Uma diária.",
-        "Fita métrica Wonder 5M+2M para caixa de ferramentas bike",
-        "Alguma correção",
-        "Algum tipo de devolução. Obs: essa devolução aparentemente só surgiu depois do primeiro pagamento da fatura.",
-        "Correção (?)"
+        "IOF compra de tokens"
       ],
       "ac_pay-desc-card-mp": [
         "Pagamento Total",
@@ -10221,6 +10318,8 @@
         "Café",
         "Passagem",
         "Secador",
+        "Tok & Stok - Cadeira",
+        "Tok & Stok - 2 Mesas + 1 Gaveteiro",
         "Google AI",
         "Suco",
         "Cabo USB",
@@ -10251,9 +10350,32 @@
         "Seguro Cartão Itaú",
         "Galaxy A26 Danilo",
         "Passagem Crianças"
+      ],
+      "ac_pay-desc-card-itau": [
+        "Pagamento Total",
+        "Pagamento (Antecipado)",
+        "Pagamento (Fechamento)",
+        "Pagamento Total (Atrasado)",
+        "Pagamento total",
+        "Pagamento antecipado",
+        "Pagamento parcial",
+        "Pagamento mínimo"
+      ],
+      "ac_pay-nota-card-itau": [
+        "Pagamento Integral pós-fechamento",
+        "Pagamento único",
+        "Pagamento Antecipado",
+        "Pagamento para fechar a fatura",
+        "Antecipação: 1 dia antes do vencimento",
+        "Pagamento antecipado para liberação de limite para locação de carro",
+        "Pagamento após vencimento - Irá gerar multa no próximo mês"
       ]
     },
     "notaMemory": {
+      "IOF COMPRA INTERNACIONA": "IOF Claude",
+      "ANTHROPIC": "Claude Paul",
+      "GAMMA.APP": "Gamma Paul",
+      "FLIGHTRADAR24 AB": "Flight Radar - Paul Stuff",
       "TUDOOFERTAS.COM": "Vape 30k",
       "Localiza": "Fechamento da locação - pagamento da hora extra.",
       "JV CAMBE LOJA DE CONVE": "Abastecimento",
@@ -10262,7 +10384,6 @@
       "IOF de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
       "Multa de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
       "Juros de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
-      "IOF COMPRA INTERNACIONA": "IOF Claude",
       "IFD*iFood": "iFood",
       "DL   *UberRides": "Uber",
       "URENTCAR": "JET",
@@ -10272,7 +10393,7 @@
       "IFD*S P DA SILVA LTDA": "iFood",
       "AtaideSoaresTrind": "Tata Lanches",
       "CELSO GARCIA": "Muffato",
-      "MERCADOLIVRE*MERCADOL": "Devolução Compra Paquímetro Manual",
+      "MERCADOLIVRE*MERCADOL": "Algum tipo de devolução",
       "DUQUE BIKES LTDA": "Canivete Extrator Corrente",
       "QUINTINO": "Muffato",
       "S2RJ ACADEMIA DE": "SmartFit",
@@ -10302,7 +10423,6 @@
       "INDITEX BRAS-CT TDA": "Terno Paul",
       "AtaideSoares": "Tata Lanches",
       "SUPERMERCADOS VISCARDI": "Viscardi",
-      "ANTHROPIC": "Claude Paul",
       "VIVARA            01/10": "Aliança",
       "MERCADO*MERCADOLIV01/03": "Blocagem Titânio Enlee",
       "MERCADOLIVRE*FIREBIKE": "Desengraxante Bike: R$34,82\nKit Limpeza Corrente: R$28,00\nObs: Compra Cancelada - o valor foi reembolsado diretamente na conta corrente MP",
@@ -10383,7 +10503,6 @@
       "MLP    *KaBuM-KaBuM": "Algum tipo de devolução",
       "MLP    *KaBuM-KaBu03/10": "CPU 9800X3D",
       "IFD*CB LONDRINA COMERCIO": "iFood",
-      "GAMMA.APP": "Gamma Paul",
       "MERCADOLIVRE*LUKETSVE": "32GB DDR5",
       "EC     *PICHAUINFORMA": "Algum tipo de devolução",
       "EC     *PICHAUINFO03/12": "Placa-mãe B850",
@@ -10414,7 +10533,8 @@
       "JUSBRASIL": "JusBrasil",
       "MP*LOTERIASONLINEO2A8": "Mega-Sena",
       "IFD*LEMOS PIZZARIA LTD": "iFood",
-      "Fatura Residual Dezembro": "Fatura Residual de Dezembro"
+      "Fatura Residual Dezembro": "Fatura Residual de Dezembro",
+      "MP *ALIEXPRESS": "Algum tipo de devolução"
     },
     "rules": [
       {
@@ -10462,7 +10582,8 @@
         "pattern": "JK LONDRINA",
         "categoriaId": "cat-2metcc4gvh"
       }
-    ]
+    ],
+    "viewMode": "month"
   },
   "debit": {
     "accounts": [
@@ -13683,6 +13804,56 @@
           "ignorarDashboard": false,
           "estorno": true,
           "nota": "Rendimentos"
+        },
+        {
+          "id": "mqixep5cv1n12z02hrq",
+          "data": "2026-06-02",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "nota": "YouTube Premium",
+          "valor": 16.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqixkvzzxcd426wvylm",
+          "data": "2026-06-05",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "nota": "Genshin - Welkin Moon",
+          "valor": 26.81,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqixnzz0s25y7vwwou",
+          "data": "2026-06-07",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "nota": "SERASA Experian",
+          "valor": 23.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqixpqlg3e94yc0eoly",
+          "data": "2026-06-07",
+          "descricao": "Pix enviado GROWTH SUPPLEMENTS",
+          "nota": "Whey",
+          "valor": 235.99,
+          "categoriaId": "cat-hlva536gw7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "mqixqmm9brp7xzbdunl",
+          "data": "2026-06-26",
+          "descricao": "Pagamento de assinatura Meli+",
+          "nota": "Meli+ Disney+ Premium",
+          "valor": 19.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
         }
       ],
       "debit-mqishlnu2ci81kqukvu": [
@@ -13843,7 +14014,7 @@
     "memory": [],
     "acMemory": {
       "pagamento com qr pix zamp s.a.": "cat-2metcc4gvh",
-      "pagamento google brasil pagamentos ltda.": "cat-1jv9cpaujf",
+      "pagamento google brasil pagamentos ltda.": "cat-iachsi0ie7",
       "rendimentos": "cat-o53k88i1e4",
       "pix enviado growth supplements": "cat-hlva536gw7",
       "pagamento sao joao farmacia": "cat-winmzzrenu",
@@ -13971,7 +14142,7 @@
       "TED PROPRIA"
     ],
     "recurringCategories": [],
-    "viewMode": "list"
+    "viewMode": "carousel"
   },
   "config": {
     "apiKey": "",

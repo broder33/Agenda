@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.12</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.14</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1537,7 +1537,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.12 — agenda-v0512</p>
+    <p class="version-tag">Agenda v0.5.14 — agenda-v0514</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -8685,6 +8685,8 @@ function renderCardPreserve() {
 function renderCard() {
   var el = document.getElementById('card-panel-content');
   if (!el) return;
+  // Restore view mode from state
+  if (state.card.viewMode) _cardViewMode = state.card.viewMode;
   var view = el.dataset.view || 'cards';
   var activeCardId = el.dataset.cardId || '';
 
@@ -9332,11 +9334,11 @@ function renderCardBills(el, cardId) {
   var listViewBtn = document.createElement('button');
   listViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--accent);color:#000';
   listViewBtn.textContent = '≡ Lista';
-  listViewBtn.onclick = function(){ _cardViewMode='list'; renderCardPreserve(); };
+  listViewBtn.onclick = function(){ _cardViewMode='list'; state.card.viewMode='list'; saveState(); renderCardPreserve(); };
   var monthViewBtn = document.createElement('button');
   monthViewBtn.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:var(--surface2);color:var(--muted)';
   monthViewBtn.textContent = '◫ Carousel';
-  monthViewBtn.onclick = function(){ _cardViewMode='month'; renderCardPreserve(); };
+  monthViewBtn.onclick = function(){ _cardViewMode='month'; state.card.viewMode='month'; saveState(); renderCardPreserve(); };
   viewToggle.appendChild(listViewBtn); viewToggle.appendChild(monthViewBtn);
   var labelToggle = document.createElement('div');
   labelToggle.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
@@ -9703,7 +9705,21 @@ function inlineEditCardTx(cell) {
     input.addEventListener('blur', function() {
       var val = input.value.trim();
       if (val) { tx.data = val; saveState(); }
-      cell.textContent = tx.data || '—';
+      var monthBody = cell.closest('.month-body');
+      if (monthBody) {
+        var bid = monthBody.id;
+        var lastDash = bid.lastIndexOf('-');
+        var mm = parseInt(bid.slice(lastDash + 1));
+        var rest = bid.slice(0, lastDash);
+        var lastDash2 = rest.lastIndexOf('-');
+        var my = parseInt(rest.slice(lastDash2 + 1));
+        var cid = rest.slice(3, lastDash2);
+        var freshTxs = (state.card.bills[cid] && state.card.bills[cid][my] && state.card.bills[cid][my][mm]) || [];
+        monthBody.innerHTML = buildCardTxTable(cid, my, mm, freshTxs);
+        wireCardDragDrop(monthBody, cid);
+      } else {
+        cell.textContent = tx.data || '—';
+      }
     });
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') input.blur();
@@ -10550,6 +10566,8 @@ function openTxDatePicker(inputEl) {
         var p = el.getAttribute('data-iso').split('-');
         inputEl.value = p[2] + '/' + p[1] + '/' + p[0].slice(2);
         closeDateDropdown();
+        inputEl.dispatchEvent(new Event('change'));
+        inputEl.dispatchEvent(new Event('blur'));
       });
     });
     dd.querySelector('#cal-prev').addEventListener('click', function(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCal(); });
@@ -10562,6 +10580,8 @@ function openTxDatePicker(inputEl) {
       var yy = String(t.getFullYear()).slice(2);
       inputEl.value = dd2 + '/' + mm + '/' + yy;
       closeDateDropdown();
+      inputEl.dispatchEvent(new Event('change'));
+      inputEl.dispatchEvent(new Event('blur'));
     });
   }
 

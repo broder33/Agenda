@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agenda-v0482';
+const CACHE_NAME = 'agenda-v0514';
 
 self.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'SKIP_WAITING') {
