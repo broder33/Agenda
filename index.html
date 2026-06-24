@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.18</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.32</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1537,9 +1537,12 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.18 — agenda-v0518</p>
+    <p class="version-tag">Agenda v0.5.32 — agenda-v0532</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
+</div>
+<div class="tab-panel" id="panel-apps">
+  <div id="apps-root"></div>
 </div>
 
 </div><!-- /#appContent -->
@@ -2049,8 +2052,8 @@ function applySeeds() {
 /* ═══════════════════════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════════════════════ */
-const TAB_IDS = ['tasks', 'finance', 'card', 'debit', 'dashboard', 'ai', 'settings'];
-const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', dashboard: 'Dashboard', ai: 'IA', settings: 'Config' };
+const TAB_IDS = ['tasks', 'finance', 'card', 'debit', 'dashboard', 'ai', 'settings', 'apps'];
+const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', dashboard: 'Dashboard', ai: 'IA', settings: 'Config', apps: 'Apps' };
 
 function getTabLabel(tabId) {
   return (state.config.tabLabels && state.config.tabLabels[tabId]) || TAB_DEFAULTS[tabId] || tabId;
@@ -2110,6 +2113,7 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tabId));
   if (tabId === 'dashboard') renderDashboard();
   if (tabId === 'debit') renderDebit();
+  if (tabId === 'apps') renderApps();
   saveState();
 }
 
@@ -2122,6 +2126,7 @@ function renderAll() {
   const activeTab = state.config.activeTab || 'tasks';
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + activeTab));
   if (activeTab === 'dashboard') renderDashboard();
+  if (activeTab === 'apps') renderApps();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -11081,6 +11086,314 @@ if ('serviceWorker' in navigator) {
 /* ═══════════════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   APPS MODULE
+═══════════════════════════════════════════════════════════ */
+
+var _appsActiveApp = null;
+
+var APPS_REGISTRY = [
+  { id: 'logo-inverter', nome: 'Inversor de Logo', desc: 'Converte logo branco sobre fundo colorido em logo preto, preservando o gradiente com anti-aliasing perfeito.' }
+];
+
+function renderApps() {
+  var root = document.getElementById('apps-root');
+  if (!root) return;
+  root.innerHTML = '';
+  if (_appsActiveApp === 'logo-inverter') { renderLogoInverter(root); return; }
+  var hd = document.createElement('div'); hd.className = 'section-hd';
+  var hdL = document.createElement('div');
+  hdL.innerHTML = '<div class="section-title">Apps</div><div class="section-sub">Utilitários e ferramentas</div>';
+  hd.appendChild(hdL); root.appendChild(hd);
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:20px;';
+  root.appendChild(grid);
+  APPS_REGISTRY.forEach(function(app) {
+    var card = document.createElement('div');
+    card.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:border-color .15s;';
+    card.onmouseenter = function(){ card.style.borderColor='var(--accent)'; };
+    card.onmouseleave = function(){ card.style.borderColor='var(--border)'; };
+    card.onclick = function(){ _appsActiveApp = app.id; renderApps(); };
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;';
+    title.textContent = app.nome;
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:12px;color:var(--muted);line-height:1.5;';
+    desc.textContent = app.desc;
+    card.appendChild(title); card.appendChild(desc); grid.appendChild(card);
+  });
+}
+
+function renderLogoInverter(root) {
+  var li = { imgName: null, samples: [] };
+  var _srcCanvas = null;
+  var _origImageData = null; // clean copy of displayCanvas pixels for redraw
+
+  // ── Header ──
+  var hd = document.createElement('div'); hd.className = 'section-hd';
+  var hdL = document.createElement('div'); hdL.style.cssText = 'display:flex;align-items:center;';
+  var backBtn = document.createElement('button');
+  backBtn.style.cssText = 'background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;margin-right:8px;';
+  backBtn.textContent = '\u2190 Apps';
+  backBtn.onclick = function(){ _appsActiveApp = null; renderApps(); };
+  var titleDiv = document.createElement('div');
+  titleDiv.innerHTML = '<div class="section-title">Inversor de Logo</div>';
+  hdL.appendChild(backBtn); hdL.appendChild(titleDiv);
+  hd.appendChild(hdL); root.appendChild(hd);
+
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'max-width:760px;margin:24px auto 0;display:flex;flex-direction:column;gap:20px;';
+  root.appendChild(wrap);
+
+  // ── Instrução ──
+  var instr = document.createElement('div');
+  instr.style.cssText = 'font-size:12px;color:var(--muted);line-height:1.6;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;';
+  instr.innerHTML = '<b style="color:var(--text)">Como usar:</b> Faça upload da imagem com o logo claro. Depois clique em <b style="color:var(--text)">1 a 3 pontos do fundo</b> (áreas sem logo) para amostrar as cores. O app calcula a matriz e inverte o logo automaticamente.';
+  wrap.appendChild(instr);
+
+  // ── Upload ──
+  var uploadArea = document.createElement('div');
+  uploadArea.style.cssText = 'border:2px dashed var(--border);border-radius:10px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .15s;background:var(--surface2);';
+  uploadArea.onmouseenter = function(){ uploadArea.style.borderColor='var(--accent)'; };
+  uploadArea.onmouseleave = function(){ if(!_srcCanvas) uploadArea.style.borderColor='var(--border)'; };
+  var uploadLabel = document.createElement('div');
+  uploadLabel.style.cssText = 'color:var(--muted);font-size:13px;';
+  uploadLabel.innerHTML = '<div style="font-size:28px;margin-bottom:8px;">&#128444;</div>Clique ou arraste uma imagem aqui';
+  uploadArea.appendChild(uploadLabel);
+  var fileInput = document.createElement('input');
+  fileInput.type='file'; fileInput.accept='image/png,image/jpeg,image/webp';
+  fileInput.style.display='none';
+  fileInput.onchange = function(e){ if(e.target.files[0]) loadImg(e.target.files[0]); };
+  uploadArea.appendChild(fileInput);
+  uploadArea.onclick = function(){ fileInput.click(); };
+  uploadArea.ondragover = function(e){ e.preventDefault(); uploadArea.style.borderColor='var(--accent)'; };
+  uploadArea.ondragleave = function(){ uploadArea.style.borderColor='var(--border)'; };
+  uploadArea.ondrop = function(e){ e.preventDefault(); if(e.dataTransfer.files[0]) loadImg(e.dataTransfer.files[0]); };
+  wrap.appendChild(uploadArea);
+
+  // ── Sampling area ──
+  var samplingSection = document.createElement('div');
+  samplingSection.style.display = 'none';
+  wrap.appendChild(samplingSection);
+
+  var samplingLabel = document.createElement('div');
+  samplingLabel.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:8px;';
+  samplingSection.appendChild(samplingLabel);
+
+  // Single canvas — draw image + markers on same canvas
+  var displayCanvas = document.createElement('canvas');
+  displayCanvas.style.cssText = 'display:block;max-width:100%;border:1px solid var(--border);border-radius:8px;cursor:crosshair;';
+  samplingSection.appendChild(displayCanvas);
+
+  // Sample chips row
+  var chipsRow = document.createElement('div');
+  chipsRow.style.cssText = 'display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;';
+  samplingSection.appendChild(chipsRow);
+
+  var clearBtn = document.createElement('button');
+  clearBtn.className = 'btn-sm';
+  clearBtn.textContent = 'Limpar amostras';
+  clearBtn.style.marginTop = '4px';
+  clearBtn.onclick = function(){ li.samples=[]; drawMarkers(); updateChips(); updatePreview(); };
+  samplingSection.appendChild(clearBtn);
+
+  // ── Preview ──
+  var previewArea = document.createElement('div');
+  previewArea.style.cssText = 'display:none;grid-template-columns:1fr 1fr;gap:16px;';
+  wrap.appendChild(previewArea);
+
+  // ── Download ──
+  var dlBtn = document.createElement('button');
+  dlBtn.className = 'btn-sm accent';
+  dlBtn.textContent = '\u2B07 Baixar resultado';
+  dlBtn.style.display = 'none';
+  wrap.appendChild(dlBtn);
+
+  // ── Math ──
+  function lstsq(rows, rhs) {
+    var A = rows, b = rhs, m = A.length, n = A[0].length;
+    var AtA = [], Atb = [];
+    for (var i=0;i<n;i++){ AtA.push([]); Atb.push(0); for (var j=0;j<n;j++) AtA[i].push(0); }
+    for (var k=0;k<m;k++){ for (var i=0;i<n;i++){ Atb[i]+=A[k][i]*b[k]; for (var j=0;j<n;j++) AtA[i][j]+=A[k][i]*A[k][j]; } }
+    var M = AtA.map(function(row,i){ return row.slice().concat([Atb[i]]); });
+    for (var col=0;col<n;col++){
+      var maxRow=col;
+      for (var row=col+1;row<n;row++) if(Math.abs(M[row][col])>Math.abs(M[maxRow][col])) maxRow=row;
+      var tmp=M[col]; M[col]=M[maxRow]; M[maxRow]=tmp;
+      if(Math.abs(M[col][col])<1e-12) return null;
+      for (var row=col+1;row<n;row++){ var f=M[row][col]/M[col][col]; for (var k=col;k<=n;k++) M[row][k]-=f*M[col][k]; }
+    }
+    var x=new Array(n);
+    for (var i=n-1;i>=0;i--){ x[i]=M[i][n]; for (var j=i+1;j<n;j++) x[i]-=M[i][j]*x[j]; x[i]/=M[i][i]; }
+    return x;
+  }
+
+  function calcMatrix(samples) {
+    var rowsA = [[1,1,1]];
+    var rhsR=[-1], rhsG=[0], rhsB=[0];
+    for (var i=0;i<samples.length;i++){
+      var s=samples[i];
+      rowsA.push([s.g, s.b, 1]);
+      rhsR.push(0); rhsG.push(s.g); rhsB.push(s.b);
+    }
+    var solR=lstsq(rowsA,rhsR), solG=lstsq(rowsA,rhsG), solB=lstsq(rowsA,rhsB);
+    if(!solR||!solG||!solB) return null;
+    return { R:[1,solR[0],solR[1],solR[2]], G:[0,solG[0],solG[1],solG[2]], B:[0,solB[0],solB[1],solB[2]] };
+  }
+
+  function applyMatrix(src, m) {
+    var w=src.width, h=src.height;
+    var out=document.createElement('canvas'); out.width=w; out.height=h;
+    var sd=src.getContext('2d').getImageData(0,0,w,h).data;
+    var oc=out.getContext('2d'), oi=oc.createImageData(w,h), od=oi.data;
+    var R=m.R, G=m.G, B=m.B;
+    for (var i=0;i<sd.length;i+=4){
+      var r=sd[i]/255, g=sd[i+1]/255, b=sd[i+2]/255;
+      od[i]  =Math.round(Math.max(0,Math.min(1,R[0]*r+R[1]*g+R[2]*b+R[3]))*255);
+      od[i+1]=Math.round(Math.max(0,Math.min(1,G[0]*r+G[1]*g+G[2]*b+G[3]))*255);
+      od[i+2]=Math.round(Math.max(0,Math.min(1,B[0]*r+B[1]*g+B[2]*b+B[3]))*255);
+      od[i+3]=sd[i+3];
+    }
+    oc.putImageData(oi,0,0); return out;
+  }
+
+  // ── Draw markers on displayCanvas (restore image first) ──
+  function drawMarkers() {
+    if (!_origImageData) return;
+    var ctx = displayCanvas.getContext('2d');
+    ctx.putImageData(_origImageData, 0, 0);
+    var colors = ['#FF4444','#44AAFF','#44FF88'];
+    li.samples.forEach(function(s, i) {
+      var mx = s.cx, my = s.cy;
+      ctx.beginPath(); ctx.arc(mx, my, 8, 0, 2*Math.PI);
+      ctx.strokeStyle=colors[i]; ctx.lineWidth=2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(mx, my, 3, 0, 2*Math.PI);
+      ctx.fillStyle=colors[i]; ctx.fill();
+      ctx.fillStyle=colors[i]; ctx.font='bold 12px DM Mono,monospace';
+      ctx.fillText(i+1, mx+11, my+4);
+    });
+  }
+
+  // ── Load image ──
+  function loadImg(file) {
+    li.imgName = file.name;
+    li.samples = [];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        // Set canvas to natural image size (up to 700px wide)
+        var maxW = Math.min(700, img.width);
+        var scale = maxW / img.width;
+        displayCanvas.width = Math.round(img.width * scale);
+        displayCanvas.height = Math.round(img.height * scale);
+        var ctx = displayCanvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, displayCanvas.width, displayCanvas.height);
+        // Save clean image data for marker redraw
+        _origImageData = ctx.getImageData(0, 0, displayCanvas.width, displayCanvas.height);
+        // Source canvas at full resolution for accurate sampling
+        _srcCanvas = document.createElement('canvas');
+        _srcCanvas.width=img.width; _srcCanvas.height=img.height;
+        _srcCanvas.getContext('2d').drawImage(img,0,0);
+        uploadLabel.innerHTML = '<div style="font-size:20px;margin-bottom:4px;">&#10003;</div><div style="font-size:12px;color:var(--accent);">'+file.name+'</div>';
+        uploadArea.style.borderColor='var(--accent)';
+        samplingSection.style.display='block';
+        uploadArea.onclick = null; // prevent fileInput from opening on re-click
+        updateChips(); updatePreview();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Click to sample — coords in canvas pixel space ──
+  displayCanvas.addEventListener('click', function(e) {
+    if (li.samples.length >= 3) return;
+    var rect = displayCanvas.getBoundingClientRect();
+    // Map click to canvas internal pixel coords
+    var cx = Math.round((e.clientX - rect.left) * (displayCanvas.width / rect.width));
+    var cy = Math.round((e.clientY - rect.top) * (displayCanvas.height / rect.height));
+    cx = Math.max(0, Math.min(displayCanvas.width-1, cx));
+    cy = Math.max(0, Math.min(displayCanvas.height-1, cy));
+    // Sample from _origImageData (clean, no markers)
+    var idx = (cy * displayCanvas.width + cx) * 4;
+    var d = _origImageData.data;
+    li.samples.push({ r:d[idx]/255, g:d[idx+1]/255, b:d[idx+2]/255, cx:cx, cy:cy });
+    e.stopPropagation();
+    drawMarkers();
+    updateChips();
+    setTimeout(function(){ updatePreview(); }, 0);
+  });
+
+  // ── Chips ──
+  function updateChips() {
+    chipsRow.innerHTML = '';
+    var colors = ['#FF4444','#44AAFF','#44FF88'];
+    var remaining = 3 - li.samples.length;
+    if (li.samples.length === 0) {
+      var hint = document.createElement('span');
+      hint.style.cssText = 'font-size:12px;color:var(--muted);';
+      hint.textContent = 'Clique na imagem para amostrar até 3 pontos do fundo';
+      chipsRow.appendChild(hint);
+      samplingLabel.textContent = 'Clique na imagem para amostrar até 3 pontos do fundo:';
+      return;
+    }
+    li.samples.forEach(function(s, i) {
+      var chip = document.createElement('div');
+      chip.style.cssText = 'display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;font-family:DM Mono,monospace;';
+      var dot = document.createElement('div');
+      dot.style.cssText = 'width:10px;height:10px;border-radius:50%;background:'+colors[i]+';flex-shrink:0;';
+      var hex = '#'+[s.r,s.g,s.b].map(function(v){return Math.round(v*255).toString(16).padStart(2,'0');}).join('');
+      var swatch = document.createElement('div');
+      swatch.style.cssText = 'width:14px;height:14px;border-radius:3px;background:'+hex+';border:1px solid var(--border);flex-shrink:0;';
+      var label = document.createElement('span'); label.style.color='var(--muted)'; label.textContent=hex.toUpperCase();
+      chip.appendChild(dot); chip.appendChild(swatch); chip.appendChild(label);
+      chipsRow.appendChild(chip);
+    });
+    if (remaining > 0) {
+      var hint = document.createElement('span');
+      hint.style.cssText = 'font-size:11px;color:var(--muted);';
+      hint.textContent = '+ '+remaining+' ponto'+(remaining>1?'s':'')+' disponível'+(remaining>1?'s':'');
+      chipsRow.appendChild(hint);
+    }
+    samplingLabel.textContent = li.samples.length===3
+      ? 'Amostras completas — resultado calculado com 3 cores de fundo:'
+      : 'Clique na imagem para adicionar mais '+remaining+' amostra'+(remaining>1?'s':'')+':';
+  }
+
+  // ── Preview ──
+  function updatePreview() {
+    if (!_srcCanvas || li.samples.length===0) {
+      previewArea.style.display='none'; dlBtn.style.display='none'; return;
+    }
+    var m = calcMatrix(li.samples);
+    if (!m) { previewArea.style.display='none'; return; }
+    var outCanvas = applyMatrix(_srcCanvas, m);
+    previewArea.style.display='grid'; previewArea.innerHTML='';
+    function makeBox(label, canvas) {
+      var box=document.createElement('div');
+      box.style.cssText='background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;';
+      var lbl=document.createElement('div');
+      lbl.style.cssText='padding:8px 12px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);font-family:DM Mono,monospace;';
+      lbl.textContent=label;
+      var iw=document.createElement('div'); iw.style.cssText='padding:12px;display:flex;justify-content:center;';
+      canvas.style.cssText='max-width:100%;max-height:220px;border-radius:4px;';
+      iw.appendChild(canvas); box.appendChild(lbl); box.appendChild(iw); return box;
+    }
+    var orig=document.createElement('canvas'); orig.width=_srcCanvas.width; orig.height=_srcCanvas.height;
+    orig.getContext('2d').drawImage(_srcCanvas,0,0);
+    previewArea.appendChild(makeBox('Original',orig));
+    previewArea.appendChild(makeBox('Resultado',outCanvas));
+    dlBtn.style.display='block';
+    dlBtn.onclick=function(){
+      var a=document.createElement('a');
+      a.download=(li.imgName||'logo').replace(/\.[^.]+$/,'')+'_invertido.png';
+      a.href=outCanvas.toDataURL('image/png');
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    };
+  }
+}
+
 (async function init() {
   _skipUndo = true; // don't capture undo snapshots during init
   try {

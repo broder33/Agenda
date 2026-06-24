@@ -1,7 +1,33 @@
 {
-  "_updatedAt": "2026-06-18T20:50:24.219Z",
+  "_updatedAt": "2026-06-19T20:05:15.906Z",
   "tasks": {
     "items": [
+      {
+        "id": "mqlcxgwc39vzn3lcoad",
+        "title": "Cancelar Assinatura Google One",
+        "description": "",
+        "dueDate": "2027-06-19",
+        "priority": "baixa",
+        "status": "aguardando",
+        "children": [],
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [
+          {
+            "id": "c-1781899515906",
+            "author": "Usuário",
+            "text": "Promoção Itaú - 1 ano grátis de Google One - Válido até 19/06/27",
+            "createdAt": "2026-06-19T20:05:15.906Z"
+          }
+        ],
+        "customFields": {
+          "col-mpncx3x8esctq8roca": "opt-1779843767343"
+        },
+        "createdAt": "2026-06-19T20:04:17.484Z",
+        "updatedAt": "2026-06-19T20:05:15.906Z"
+      },
       {
         "id": "ts-01",
         "title": "Cancelar HBO Anuidade",
@@ -1109,6 +1135,25 @@
         "group": "default"
       },
       {
+        "id": "mqjziwccporpxdgwyge",
+        "title": "Forza c/ Dodó",
+        "description": "",
+        "dueDate": "2026-06-20",
+        "priority": "baixa",
+        "status": "aguardando",
+        "children": [],
+        "linkedItems": [],
+        "notes": "",
+        "tags": [],
+        "expanded": false,
+        "comments": [],
+        "customFields": {
+          "col-mpncx3x8esctq8roca": "opt-1780090872018"
+        },
+        "createdAt": "2026-06-18T21:01:16.476Z",
+        "updatedAt": "2026-06-18T21:01:31.892Z"
+      },
+      {
         "id": "mqfgubdrqxtvsr5fje",
         "tags": [],
         "notes": "",
@@ -1120,10 +1165,12 @@
         "expanded": false,
         "priority": "baixa",
         "createdAt": "2026-06-15T17:07:11.775Z",
-        "updatedAt": "2026-06-15T17:07:26.503Z",
+        "updatedAt": "2026-06-18T21:01:35.539Z",
         "description": "",
         "linkedItems": [],
-        "customFields": {}
+        "customFields": {
+          "col-mpncx3x8esctq8roca": "opt-1779843980510"
+        }
       },
       {
         "id": "mq9vrgl1jh1ioc1beic",
@@ -1139,12 +1186,18 @@
             "text": "Pegar o contato da Dermatologista com a Priscila.",
             "author": "Usuário",
             "createdAt": "2026-06-12T17:52:27.556Z"
+          },
+          {
+            "id": "c-1781896641355",
+            "author": "Usuário",
+            "text": "Consulta com a Dra Laura disponível apenas em Setembro. Deixei a consulta marcada, mas preciso procurar por outro especialista que possa atender antes.",
+            "createdAt": "2026-06-19T19:17:21.355Z"
           }
         ],
         "expanded": false,
         "priority": "alta",
         "createdAt": "2026-06-11T19:18:15.733Z",
-        "updatedAt": "2026-06-16T17:20:55.457Z",
+        "updatedAt": "2026-06-19T19:17:21.355Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1405,7 +1458,7 @@
         "notes": "",
         "title": "Processo POA",
         "status": "aguardando",
-        "dueDate": "2026-06-19",
+        "dueDate": "2026-06-26",
         "children": [],
         "comments": [
           {
@@ -1458,9 +1511,9 @@
           }
         ],
         "expanded": false,
-        "priority": "urgente",
+        "priority": "alta",
         "createdAt": "2026-05-29T21:41:43.718Z",
-        "updatedAt": "2026-06-16T17:22:31.174Z",
+        "updatedAt": "2026-06-19T16:19:55.625Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
