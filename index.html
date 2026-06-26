@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.32</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.60</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1485,24 +1485,6 @@ tr.dragging { opacity: 0.4; }
   <div id="dashboardContent" style="padding:0 0 24px 0"></div>
 </div>
 
-<!-- ════════ TAB: IA ════════ -->
-<div class="tab-panel" id="panel-ai">
-  <div class="section-hd">
-    <div>
-      <div class="section-title">Assistente IA</div>
-      <div class="section-sub">Chat central — pergunte sobre tarefas, finanças, organizações</div>
-    </div>
-    <button class="btn-sm danger" onclick="clearMainChat()">Limpar chat</button>
-  </div>
-  <div class="chat-wrap" style="height:calc(100vh - 200px);min-height:400px">
-    <div class="chat-messages" id="mainChatMessages" style="max-height:none;flex:1"></div>
-    <div class="chat-input-row">
-      <textarea class="chat-input" id="mainChatInput" placeholder="Pergunte sobre suas tarefas ou finanças..." rows="2" onkeydown="mainChatKey(event)"></textarea>
-      <button class="chat-send-btn" onclick="sendMainChat()" id="mainChatSendBtn">Enviar</button>
-    </div>
-  </div>
-</div>
-
 <!-- ════════ TAB: CONFIG ════════ -->
 <div class="tab-panel" id="panel-settings">
   <div class="section-hd"><div class="section-title">Configurações</div></div>
@@ -1537,9 +1519,12 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.32 — agenda-v0532</p>
+    <p class="version-tag">Agenda v0.5.60 — agenda-v0560</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
+</div>
+<div class="tab-panel" id="panel-lists">
+  <div id="lists-root"></div>
 </div>
 <div class="tab-panel" id="panel-apps">
   <div id="apps-root"></div>
@@ -1615,6 +1600,8 @@ async function onLogin() {
   showApp(true);
   applySeeds();
   applyTaskSeeds();
+  applyListSeeds();
+  dedupListItems();
   renderAll();
   _supabaseLoadComplete = true;
 }
@@ -1683,11 +1670,7 @@ let state = {
     chatHistory: {}
   },
   card: {
-    cards: [
-      { id: 'card-itau',   nome: 'Itaú',         cor: '#EC7000', fechamento: 30, vencimento: 8  },
-      { id: 'card-mp',     nome: 'Mercado Pago',  cor: '#00BCFF', fechamento: 26, vencimento: 5  },
-      { id: 'card-nubank', nome: 'Nubank',        cor: '#820AD1', fechamento: 3,  vencimento: 13 }
-    ],
+    cards: [],
     bills: {},
     billStatus: {},
     categorias: [],
@@ -1702,11 +1685,12 @@ let state = {
     ignoreKeywords: ['PIX RICHARD','TRANSF PROPRIA','TED PROPRIA'],
     recurringCategories: []
   },
+  lists: { lists: [] },
   config: {
     apiKey: '',
     theme: 'dark',
     activeTab: 'tasks',
-    tabLabels: { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', ai: 'IA', settings: 'Config' }
+    tabLabels: { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', settings: 'Config' }
   }
 };
 
@@ -1718,10 +1702,27 @@ async function loadFromSupabase() {
   } catch(e) { /* primeira vez */ }
 }
 
+function dedupListItems() {
+  (state.lists && state.lists.lists || []).forEach(function(list) {
+    (list.sections||[]).forEach(function(sec) {
+      var seen = {};
+      sec.items = (sec.items||[]).filter(function(item) {
+        var key = (item.nome||'').toLowerCase().trim();
+        if (seen[key]) return false;
+        seen[key] = true; return true;
+      });
+    });
+  });
+}
+
 function mergeState(saved) {
   if (!saved) return;
   if (saved._updatedAt && state._updatedAt && saved._updatedAt <= state._updatedAt) return;
   if (saved.finance) state.finance = { ...state.finance, ...saved.finance };
+  if (saved.lists) {
+    state.lists = { ...state.lists, ...saved.lists };
+    dedupListItems();
+  }
   if (saved.card) {
     state.card = { ...state.card, ...saved.card };
     // Migrate old structure
@@ -1730,13 +1731,7 @@ function mergeState(saved) {
       state.card.faturas = undefined;
       state.card.transactions = undefined;
     }
-    if (!state.card.cards || !state.card.cards.length) {
-      state.card.cards = [
-        { id: 'card-itau',   nome: 'Itaú',         cor: '#EC7000', fechamento: 30, vencimento: 8  },
-        { id: 'card-mp',     nome: 'Mercado Pago',  cor: '#00BCFF', fechamento: 26, vencimento: 5  },
-        { id: 'card-nubank', nome: 'Nubank',        cor: '#820AD1', fechamento: 3,  vencimento: 13 }
-      ];
-    }
+    if (!state.card.cards) state.card.cards = [];
     if (!state.card.bills) state.card.bills = {};
     if (!state.card.memory) state.card.memory = [];
     if (!state.card.catGroups) state.card.catGroups = [];
@@ -1871,6 +1866,7 @@ async function saveState() {
   if (!_skipUndo) {
     updateUndoRedoBtns();
   }
+  dedupListItems(); // always dedup before saving
   state._updatedAt = new Date().toISOString();
   if (!_sb || !currentUser) {
     try { localStorage.setItem('agenda_local', JSON.stringify(state)); } catch(e) {}
@@ -2052,8 +2048,8 @@ function applySeeds() {
 /* ═══════════════════════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════════════════════ */
-const TAB_IDS = ['tasks', 'finance', 'card', 'debit', 'dashboard', 'ai', 'settings', 'apps'];
-const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', dashboard: 'Dashboard', ai: 'IA', settings: 'Config', apps: 'Apps' };
+const TAB_IDS = ['tasks', 'finance', 'card', 'debit', 'dashboard', 'settings', 'apps', 'lists'];
+const TAB_DEFAULTS = { tasks: 'Tarefas', finance: 'Contas', card: 'Cartão', debit: 'Débito', dashboard: 'Dashboard', settings: 'Config', apps: 'Apps', lists: 'Listas' };
 
 function getTabLabel(tabId) {
   return (state.config.tabLabels && state.config.tabLabels[tabId]) || TAB_DEFAULTS[tabId] || tabId;
@@ -2114,6 +2110,7 @@ function switchTab(tabId) {
   if (tabId === 'dashboard') renderDashboard();
   if (tabId === 'debit') renderDebit();
   if (tabId === 'apps') renderApps();
+  if (tabId === 'lists') renderLists();
   saveState();
 }
 
@@ -2127,6 +2124,7 @@ function renderAll() {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + activeTab));
   if (activeTab === 'dashboard') renderDashboard();
   if (activeTab === 'apps') renderApps();
+  if (activeTab === 'lists') renderLists();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -6095,6 +6093,7 @@ function getDashboardExpenses(y, m, label, payFilter) {
         var payTotal = pays.reduce(function(s,p){return s+(parseFloat(p.valor)||0);},0);
         // Use coverage logic for paid/open filtering
         var coverage = (payFilter !== 'all') ? calcPaymentCoverage(card.id, billY, billM) : null;
+
         (bills[by][bm]||[]).forEach(function(tx) {
           if (tx.tipo==='pagamento') return;
           var valor = parseFloat(tx.valor)||0;
@@ -6166,7 +6165,7 @@ function getDebitMonths(accountId) {
 function getDebitMonthTxs(accountId, ym) {
   return (state.debit.transactions[accountId] || []).filter(function(t){
     return t.data && t.data.slice(0,7) === ym;
-  }).sort(function(a,b){ return a.data < b.data ? 1 : -1; });
+  }).sort(function(a,b){ return dateStrToNum(b.data)-dateStrToNum(a.data); });
 }
 
 function renderDebit() {
@@ -6307,7 +6306,7 @@ function renderDebitAccount(root, acc) {
 
   // List view — all months expanded
   if (_debitViewMode === 'list') {
-    var allTxs = (state.debit.transactions[acc.id]||[]).slice().sort(function(a,b){ return a.data<b.data?1:-1; });
+    var allTxs = (state.debit.transactions[acc.id]||[]).slice().sort(function(a,b){ return dateStrToNum(b.data)-dateStrToNum(a.data); });
     var byMonth = {};
     allTxs.forEach(function(tx){
       var m = tx.data ? tx.data.slice(0,7) : 'unknown';
@@ -7727,41 +7726,14 @@ function renderDashboard() {
   var totalMes = Math.round(allFiltered.reduce(function(s,e){return s+e.valor;},0) * 100) / 100;
   var totalPago = 0;
   if (_dashAccum) {
-    // Accum: calculate pay ratio per card from raw bills, apply to filtered totals
-    var cardPayRatios = {};
-    (state.card.cards||[]).forEach(function(card) {
-      if (_dashActiveSources && !_dashActiveSources.has(card.id)) return;
-      var bills = state.card.bills[card.id] || {};
-      var rawBillTotal = 0, rawPayTotal = 0;
-      Object.keys(bills).forEach(function(by) {
-        if (parseInt(by) !== _dashY) return;
-        Object.keys(bills[by]).forEach(function(bm) {
-          var txs = bills[by][bm] || [];
-          rawBillTotal += txs.filter(function(t){ return t.tipo !== 'pagamento'; })
-            .reduce(function(s,t){ return s+(parseFloat(t.valor)||0); }, 0);
-          var pays = (state.card.payments&&state.card.payments[card.id]&&state.card.payments[card.id][by]&&state.card.payments[card.id][by][bm])||[];
-          rawPayTotal += pays.reduce(function(s,p){ return s+(parseFloat(p.valor)||0); }, 0);
-        });
-      });
-      cardPayRatios[card.id] = rawBillTotal > 0 ? Math.min(1, rawPayTotal / rawBillTotal) : 1;
-    });
-    // Apply ratio to filtered expenses per source
-    var filteredBySource = {};
-    allFiltered.forEach(function(e) {
-      if (!filteredBySource[e.source]) filteredBySource[e.source] = 0;
-      filteredBySource[e.source] += e.valor;
-    });
-    Object.keys(filteredBySource).forEach(function(src) {
-      if (src === 'contas') {
-        var paidContas = allFiltered.filter(function(e){ return e.source==='contas' && e.pago; });
-        totalPago += paidContas.reduce(function(s,e){ return s+e.valor; }, 0);
-        return;
-      }
-      var isDebit = (state.debit.accounts||[]).some(function(a){ return a.id===src; });
-      if (isDebit) { totalPago += filteredBySource[src]; return; }
-      var ratio = cardPayRatios[src] !== undefined ? cardPayRatios[src] : 1;
-      totalPago += filteredBySource[src] * ratio;
-    });
+    // Accum: sum paid expenses directly using payFilter='paid' — same basis as donut
+    var paidAccum = [];
+    for (var _pmo = 0; _pmo <= 11; _pmo++) {
+      paidAccum = paidAccum.concat(getDashboardExpenses(_dashY, _pmo, _dashLabel, 'paid'));
+    }
+    totalPago = Math.round(paidAccum
+      .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); })
+      .reduce(function(s,e){ return s+e.valor; }, 0) * 100) / 100;
   } else {
     var seenCardSources = {};
     allFiltered.forEach(function(e) {
@@ -7833,7 +7805,7 @@ function renderDashboard() {
 
   var chartDiv=document.createElement('div');
   chartDiv.style.cssText='display:flex;justify-content:center;padding:8px 0';
-  chartDiv.innerHTML='<svg width="220" height="220" viewBox="0 0 220 220">'+svgSlices+'<circle cx="'+cx+'" cy="'+cy+'" r="'+ri+'" fill="var(--surface)"/><text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">TOTAL</text><text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600" font-family="DM Mono,monospace">'+fmtBRL(_dashPayFilter==='all'?totalMes:totalPositive)+'</text></svg>';
+  chartDiv.innerHTML='<svg width="220" height="220" viewBox="0 0 220 220">'+svgSlices+'<circle cx="'+cx+'" cy="'+cy+'" r="'+ri+'" fill="var(--surface)"/><text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">TOTAL</text><text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600" font-family="DM Mono,monospace">'+fmtBRL(_dashPayFilter==='paid'?totalPago:_dashPayFilter==='open'?totalAberto:totalMes)+'</text></svg>';
 
   // Category/Group list (same visual as openCardAnalysis)
   var list=document.createElement('div');
@@ -7887,7 +7859,7 @@ function renderDashboard() {
     } else {
       // Direct expense list for this category
       var items=expenses.filter(function(e){return (getCatName(e.categoriaId)||'Sem categoria')===cat.name;});
-      items.sort(function(a,b){return (b.data||'').localeCompare(a.data||'');});
+      items.sort(function(a,b){return dateStrToNum(b.data)-dateStrToNum(a.data);});
       items.forEach(function(e){
         var eRow=document.createElement('div'); eRow.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px';
         var dateEl=document.createElement('span'); dateEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace;width:62px;flex-shrink:0'; dateEl.textContent=e.data||'—';
@@ -7922,17 +7894,62 @@ function buildDashExpenseList(expenses, catName, color) {
   var div=document.createElement('div');
   div.style.cssText='display:none;background:var(--surface);border-left:2px solid '+color+';margin:0 12px 4px 48px;border-radius:0 6px 6px 0;padding:4px 0';
   var items=expenses.filter(function(e){return (getCatName(e.categoriaId)||'Sem categoria')===catName;});
-  items.sort(function(a,b){return (b.data||'').localeCompare(a.data||'');});
-  items.forEach(function(e){
-    var row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px';
-    var dateEl=document.createElement('span'); dateEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace;width:62px;flex-shrink:0'; dateEl.textContent=e.data||'—';
-    var descEl=document.createElement('span'); descEl.style.cssText='flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; descEl.textContent=e.descricao+(e.parcela?' ('+e.parcela+')':''); descEl.title=e.descricao;
-    var notaEl=document.createElement('span'); notaEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; notaEl.textContent=e.nota||''; notaEl.title=e.nota||'';
-    var srcEl=document.createElement('span'); srcEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0'; srcEl.textContent=e.sourceLabel;
-    var valEl=document.createElement('span'); valEl.style.cssText='font-size:11px;font-family:DM Mono,monospace;color:var(--muted);width:80px;text-align:right;flex-shrink:0'; valEl.textContent=fmtBRL(e.valor);
-    row.appendChild(dateEl); row.appendChild(descEl); row.appendChild(notaEl); row.appendChild(srcEl); row.appendChild(valEl);
-    div.appendChild(row);
-  });
+  var sortCol='data', sortDir=-1; // default: data desc
+
+  function sortItems() {
+    items.sort(function(a,b){
+      var av, bv;
+      if (sortCol==='data')   { return sortDir*(dateStrToNum(a.data)-dateStrToNum(b.data)); }
+      if (sortCol==='desc')   { av=(a.descricao||'').toLowerCase(); bv=(b.descricao||'').toLowerCase(); return sortDir*av.localeCompare(bv); }
+      if (sortCol==='nota')   { av=(a.nota||'').toLowerCase(); bv=(b.nota||'').toLowerCase(); return sortDir*av.localeCompare(bv); }
+      if (sortCol==='source') { av=(a.sourceLabel||'').toLowerCase(); bv=(b.sourceLabel||'').toLowerCase(); return sortDir*av.localeCompare(bv); }
+      if (sortCol==='valor')  { return sortDir*((parseFloat(a.valor)||0)-(parseFloat(b.valor)||0)); }
+      return 0;
+    });
+  }
+
+  function buildHeader() {
+    var hdr=document.createElement('div');
+    hdr.style.cssText='display:flex;align-items:center;gap:8px;padding:4px 10px 4px 10px;border-bottom:1px solid var(--border);';
+    function mkTh(label, col, w, align) {
+      var th=document.createElement('span');
+      var isActive=sortCol===col;
+      var arrow=isActive?(sortDir===1?' ↑':' ↓'):'';
+      th.textContent=label+arrow;
+      th.style.cssText='font-size:10px;font-weight:600;color:'+(isActive?'var(--accent)':'var(--muted)')+';text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;'+(w?'width:'+w+';flex-shrink:0;':'flex:1;')+(align?'text-align:'+align+';':'');
+      th.onclick=function(){
+        if(sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=col==='data'||col==='valor'?-1:1; }
+        buildRows();
+      };
+      hdr.appendChild(th);
+    }
+    mkTh('Data','data','62px'); mkTh('Descrição','desc'); mkTh('Nota','nota','140px'); mkTh('Fonte','source','80px'); mkTh('Valor','valor','80px','right');
+    return hdr;
+  }
+
+  var rowsWrap=document.createElement('div');
+
+  function buildRows() {
+    sortItems();
+    // rebuild header
+    var oldHdr=div.querySelector('.dash-exp-hdr');
+    var newHdr=buildHeader(); newHdr.className='dash-exp-hdr';
+    if(oldHdr) div.replaceChild(newHdr,oldHdr); else div.insertBefore(newHdr,rowsWrap);
+    rowsWrap.innerHTML='';
+    items.forEach(function(e){
+      var row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px';
+      var dateEl=document.createElement('span'); dateEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace;width:62px;flex-shrink:0'; dateEl.textContent=e.data||'—';
+      var descEl=document.createElement('span'); descEl.style.cssText='flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; descEl.textContent=e.descricao+(e.parcela?' ('+e.parcela+')':''); descEl.title=e.descricao;
+      var notaEl=document.createElement('span'); notaEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; notaEl.textContent=e.nota||''; notaEl.title=e.nota||'';
+      var srcEl=document.createElement('span'); srcEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; srcEl.textContent=e.sourceLabel;
+      var valEl=document.createElement('span'); valEl.style.cssText='font-size:11px;font-family:DM Mono,monospace;color:var(--muted);width:80px;text-align:right;flex-shrink:0'; valEl.textContent=fmtBRL(e.valor);
+      row.appendChild(dateEl); row.appendChild(descEl); row.appendChild(notaEl); row.appendChild(srcEl); row.appendChild(valEl);
+      rowsWrap.appendChild(row);
+    });
+  }
+
+  div.appendChild(rowsWrap);
+  buildRows();
   return div;
 }
 
@@ -8334,7 +8351,7 @@ function buildExpenseList(txs, catName, color) {
   var div = document.createElement('div');
   div.style.cssText = 'display:none;background:var(--surface);border-left:2px solid '+color+';margin:0 12px 4px 36px;border-radius:0 6px 6px 0;padding:4px 0';
   var items = txs.filter(function(t){ return (getCatName(t.categoriaId)||'Sem categoria') === catName; });
-  items.sort(function(a,b){ return (b.data||'').localeCompare(a.data||''); });
+  items.sort(function(a,b){ return dateStrToNum(b.data)-dateStrToNum(a.data); });
   items.forEach(function(tx) {
     var row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 10px;min-width:0';
@@ -8531,7 +8548,7 @@ function openCardAnalysis(cardId) {
       + svgSlices
       + '<circle cx="'+cx+'" cy="'+cy+'" r="'+ri+'" fill="var(--surface)"/>'
       + '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">'+(_dashPayFilter==='paid'?'PAGO':_dashPayFilter==='open'?'EM ABERTO':'TOTAL')+'</text>'
-      + '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600" font-family="DM Mono,monospace">'+fmtBRL(totalPositive)+'</text>'
+      + '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600" font-family="DM Mono,monospace">'+fmtBRL(_dashPayFilter==='paid'?totalPago:_dashPayFilter==='open'?totalAberto:totalMes)+'</text>'
       + '</svg>';
     bod.appendChild(chartDiv);
 
@@ -9176,17 +9193,19 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var nowAbs = now.getFullYear() * 12 + now.getMonth();
 
   // Collect all months with data
-  var allMonths = [];
+  var allMonthsSet = {};
   years.forEach(function(y) {
     var yb = bills[y] || {};
-    Object.keys(yb).map(Number).sort(function(a,b){return a-b;}).forEach(function(m) {
-      allMonths.push({ y: y, m: m });
+    Object.keys(yb).map(Number).forEach(function(m) {
+      allMonthsSet[y*12+m] = { y: y, m: m };
     });
   });
-  if (!allMonths.some(function(x){ return x.y*12+x.m===nowAbs; })) {
-    allMonths.push({ y: now.getFullYear(), m: now.getMonth() });
-    allMonths.sort(function(a,b){ return (a.y*12+a.m)-(b.y*12+b.m); });
+  // Always include current month and a 6-month window around it for navigation
+  for (var wi = -3; wi <= 6; wi++) {
+    var wabs = nowAbs + wi;
+    if (!allMonthsSet[wabs]) allMonthsSet[wabs] = { y: Math.floor(wabs/12), m: wabs%12 };
   }
+  var allMonths = Object.values(allMonthsSet).sort(function(a,b){ return (a.y*12+a.m)-(b.y*12+b.m); });
 
   // Find default index = highlighted month
   var defIdx = 0;
@@ -9451,6 +9470,18 @@ function cardSortClick(col) {
   renderCardPreserve();
 }
 
+
+function dateStrToNum(d) {
+  // Converts DD/MM/AA or DD/MM/AAAA to a sortable number YYYYMMDD
+  if (!d) return 0;
+  var p = d.split('/');
+  if (p.length < 3) return 0;
+  var day = parseInt(p[0])||0;
+  var mon = parseInt(p[1])||0;
+  var yr  = parseInt(p[2])||0;
+  if (yr < 100) yr += 2000;
+  return yr * 10000 + mon * 100 + day;
+}
 function cardDateToNum(d) {
   // Convert DD/MM/YY to YYYYMMDD number for correct chronological sort
   if (!d) return 0;
@@ -9515,7 +9546,7 @@ function acLoadMemory() {
   if (state.debit && state.debit.accounts) {
     (state.debit.accounts||[]).forEach(function(acc){
       var seenD = {}, descs = [], seenN = {}, notas = [];
-      var txs = (state.debit.transactions[acc.id]||[]).slice().sort(function(a,b){ return a.data<b.data?1:-1; });
+      var txs = (state.debit.transactions[acc.id]||[]).slice().sort(function(a,b){ return dateStrToNum(b.data)-dateStrToNum(a.data); });
       txs.forEach(function(t){
         if (t.descricao && !seenD[t.descricao.toLowerCase()]){ seenD[t.descricao.toLowerCase()]=1; descs.push(t.descricao); }
         if (t.nota && !seenN[t.nota.toLowerCase()]){ seenN[t.nota.toLowerCase()]=1; notas.push(t.nota); }
@@ -10161,7 +10192,7 @@ function buildCardTxTable(cardId, y, m, txs) {
       + '<td style="text-align:right;font-family:\'DM Mono\',monospace;white-space:nowrap;cursor:pointer;' + ((parseFloat(tx.valor)||0) < 0 ? 'color:#4caf50' : '') + '" onclick="inlineEditCardTx(this)" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" data-field="valor">' + fmtBRL(parseFloat(tx.valor)||0) + '</td>'
       + (function(){ var _n = tx.nota || getInstallmentNota(tx, cardId); return '<td onclick="editCardTxNota(this,\'' + cardId + '\',' + y + ',' + m + ',\'' + tx.id + '\')" style="cursor:pointer;min-width:120px;max-width:240px;vertical-align:top">' + (_n ? '<span style="font-size:11px;color:var(--text2);white-space:pre-wrap;cursor:pointer">' + escHtml(_n) + '</span>' : '<span style="font-size:11px;color:var(--border);cursor:pointer">+ descrição</span>') + '</td>'; })()
       + '<td><select class="cat-select" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" onchange="cardTxCatChange(this)">' + opts + '</select></td>'
-      + '<td><button class="btn-sm del" onclick="cardBillAction(this,\'removeTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '">✕</button></td>'
+      + '<td style="white-space:nowrap"><button class="btn-sm" style="padding:3px 7px;font-size:11px;margin-right:3px" onclick="cardBillAction(this,\'moveTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '" title="Mover para outra fatura">&#8599;</button><button class="btn-sm del" onclick="cardBillAction(this,\'removeTx\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '" data-txid="' + tx.id + '">&#215;</button></td>'
       + '</tr>';
   }).join('');
 
@@ -10236,6 +10267,7 @@ function cardBillAction(btn, action) {
   else if (action === 'saveTx') saveNewTx(cid, y, m);
   else if (action === 'togglePaid') toggleBillPaid(cid, y, m);
   else if (action === 'removeTx') removeCardTx(cid, y, m, txid);
+  else if (action === 'moveTx') openMoveTxModal(cid, y, m, txid);
   else if (action === 'remove') removeCardBill(cid, y, m);
   else if (action === 'addMonth') addCardMonth(cid, y);
   else if (action === 'deleteCard') deleteCard(cid);
@@ -10380,6 +10412,122 @@ function setCardTxCat(cardId, y, m, txId, catId) {
     if (catId) updateCardMemory(tx.descricao, catId);
     saveState();
   }
+}
+
+
+function openMoveTxModal(cardId, y, m, txId) {
+  var tx = (state.card.bills[cardId]&&state.card.bills[cardId][y]&&state.card.bills[cardId][y][m]||[]).find(function(t){ return t.id===txId; });
+  if (!tx) return;
+
+  // Build list of existing months for this card, plus option to create new
+  var bills = state.card.bills[cardId] || {};
+  var months = [];
+  Object.keys(bills).forEach(function(by) {
+    Object.keys(bills[by]).forEach(function(bm) {
+      var fy = parseInt(by), fm = parseInt(bm);
+      if (fy === y && fm === m) return; // skip current
+      months.push({ y: fy, m: fm });
+    });
+  });
+  months.sort(function(a,b){ return (a.y*12+a.m)-(b.y*12+b.m); });
+
+  var MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'move-tx-modal';
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.maxWidth = '360px';
+
+  var title = document.createElement('div');
+  title.className = 'modal-header';
+  title.innerHTML = '<span>Mover Transação</span><button class="modal-close" onclick="document.getElementById(&quot;move-tx-modal&quot;).remove()">&#215;</button>';
+
+  var body = document.createElement('div');
+  body.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:16px;';
+
+  var desc = document.createElement('div');
+  desc.style.cssText = 'font-size:12px;color:var(--muted);';
+  desc.textContent = '"' + (tx.descricao||'') + '" — ' + (tx.data||'');
+  body.appendChild(desc);
+
+  // Destination selector
+  var field = document.createElement('div'); field.className = 'modal-field';
+  var lbl = document.createElement('label'); lbl.className = 'modal-label'; lbl.textContent = 'Mover para a fatura de';
+  var sel = document.createElement('select'); sel.className = 'modal-input'; sel.id = 'move-tx-dest';
+
+  months.forEach(function(mo) {
+    var opt = document.createElement('option');
+    opt.value = mo.y + '_' + mo.m;
+    opt.textContent = MONTHS[mo.m] + '/' + mo.y;
+    sel.appendChild(opt);
+  });
+
+  // Option to create a new month
+  var newOpt = document.createElement('option');
+  newOpt.value = 'new';
+  newOpt.textContent = '+ Nova fatura...';
+  sel.appendChild(newOpt);
+
+  field.appendChild(lbl); field.appendChild(sel);
+  body.appendChild(field);
+
+  // New month inputs (hidden by default)
+  var newMonthRow = document.createElement('div');
+  newMonthRow.style.cssText = 'display:none;gap:10px;';
+  var selY = document.createElement('select'); selY.className = 'modal-input'; selY.id = 'move-new-y';
+  var selM = document.createElement('select'); selM.className = 'modal-input'; selM.id = 'move-new-m';
+  var nowY = new Date().getFullYear();
+  for (var yr = nowY-1; yr <= nowY+2; yr++) {
+    var o = document.createElement('option'); o.value=yr; o.textContent=yr;
+    if(yr===y) o.selected=true;
+    selY.appendChild(o);
+  }
+  MONTHS.forEach(function(mn, idx) {
+    var o = document.createElement('option'); o.value=idx; o.textContent=mn;
+    if(idx===(m+1)%12) o.selected=true;
+    selM.appendChild(o);
+  });
+  newMonthRow.appendChild(selY); newMonthRow.appendChild(selM);
+  body.appendChild(newMonthRow);
+
+  sel.onchange = function() {
+    newMonthRow.style.display = sel.value === 'new' ? 'flex' : 'none';
+  };
+  // Pre-select new if no existing months
+  if (!months.length) { sel.value = 'new'; newMonthRow.style.display = 'flex'; }
+
+  var footer = document.createElement('div'); footer.className = 'modal-footer';
+  var cancelBtn = document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar';
+  cancelBtn.onclick = function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button'); saveBtn.className='btn-sm accent'; saveBtn.textContent='Mover';
+  saveBtn.onclick = function() {
+    var destY, destM;
+    if (sel.value === 'new') {
+      destY = parseInt(document.getElementById('move-new-y').value);
+      destM = parseInt(document.getElementById('move-new-m').value);
+    } else {
+      var parts = sel.value.split('_');
+      destY = parseInt(parts[0]); destM = parseInt(parts[1]);
+    }
+    if (destY === y && destM === m) { overlay.remove(); return; }
+    pushUndo();
+    // Remove from source
+    state.card.bills[cardId][y][m] = state.card.bills[cardId][y][m].filter(function(t){ return t.id!==txId; });
+    // Add to destination
+    ensureCardMonth(cardId, destY, destM);
+    state.card.bills[cardId][destY][destM].push(tx);
+    saveState(); overlay.remove(); renderCard();
+  };
+  footer.appendChild(cancelBtn); footer.appendChild(saveBtn);
+
+  box.appendChild(title); box.appendChild(body); box.appendChild(footer);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  showModal(overlay);
 }
 
 function removeCardTx(cardId, y, m, txId) {
@@ -11394,6 +11542,946 @@ function renderLogoInverter(root) {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   LISTS MODULE
+═══════════════════════════════════════════════════════════ */
+
+var _listsActiveList = null; // null = grid, string id = active list
+
+function genListId()    { return 'lst-' + Math.random().toString(36).slice(2,10); }
+function genSectionId() { return 'sec-' + Math.random().toString(36).slice(2,10); }
+function genItemId()    { return 'itm-' + Math.random().toString(36).slice(2,10); }
+function genStatusId()  { return 'sts-' + Math.random().toString(36).slice(2,10); }
+
+function initListsState() {
+  if (!state.lists) state.lists = { lists: [] };
+  if (!state.lists.lists) state.lists.lists = [];
+}
+
+function getList(listId) {
+  initListsState();
+  return state.lists.lists.find(function(l){ return l.id === listId; });
+}
+
+function nowISO() { return new Date().toISOString(); }
+function fmtDate(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit' });
+}
+
+/* ─── Main render ─── */
+function renderLists() {
+  var root = document.getElementById('lists-root');
+  if (!root) return;
+  initListsState();
+  root.innerHTML = '';
+
+  if (_listsActiveList) {
+    var list = getList(_listsActiveList);
+    if (list) { renderListDetail(root, list); return; }
+    _listsActiveList = null;
+  }
+
+  renderListsGrid(root);
+}
+
+/* ─── Grid of lists ─── */
+function renderListsGrid(root) {
+  var hd = document.createElement('div'); hd.className = 'section-hd';
+  var hdL = document.createElement('div');
+  hdL.innerHTML = '<div class="section-title">Listas</div><div class="section-sub">Suas listas pessoais</div>';
+  var addBtn = document.createElement('button');
+  addBtn.className = 'btn-sm accent'; addBtn.textContent = '+ Lista';
+  addBtn.onclick = openAddListModal;
+  hd.appendChild(hdL); hd.appendChild(addBtn);
+  root.appendChild(hd);
+
+  var lists = state.lists.lists;
+  if (!lists.length) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;color:var(--muted);margin-top:60px;font-size:13px;';
+    empty.textContent = 'Nenhuma lista ainda. Clique em "+ Lista" para começar.';
+    root.appendChild(empty); return;
+  }
+
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:20px;';
+  root.appendChild(grid);
+
+  lists.forEach(function(list) {
+    var card = document.createElement('div');
+    card.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:border-color .15s;position:relative;';
+    card.onmouseenter = function(){ card.style.borderColor='var(--accent)'; };
+    card.onmouseleave = function(){ card.style.borderColor='var(--border)'; };
+    card.onclick = function(){ _listsActiveList = list.id; renderLists(); };
+
+    var colorBar = document.createElement('div');
+    colorBar.style.cssText = 'height:3px;border-radius:2px;background:'+(list.cor||'var(--accent)')+';margin-bottom:14px;';
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;';
+    title.textContent = list.nome;
+    var meta = document.createElement('div');
+    meta.style.cssText = 'font-size:11px;color:var(--muted);';
+    var total = (list.sections||[]).reduce(function(n,s){ return n+(s.items||[]).length; }, 0);
+    meta.textContent = total + ' item' + (total!==1?'s':'');
+
+    var menuBtn = document.createElement('button');
+    menuBtn.style.cssText = 'position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;';
+    menuBtn.textContent = '⋯';
+    menuBtn.onclick = function(e){ e.stopPropagation(); openListMenu(e, list); };
+
+    card.appendChild(colorBar); card.appendChild(title); card.appendChild(meta); card.appendChild(menuBtn);
+    grid.appendChild(card);
+  });
+}
+
+/* ─── List detail ─── */
+function renderListDetail(root, list) {
+  if (!list.sections) list.sections = [];
+
+  var hd = document.createElement('div'); hd.className = 'section-hd';
+  var hdL = document.createElement('div'); hdL.style.cssText = 'display:flex;align-items:center;gap:12px;';
+  var backBtn = document.createElement('button');
+  backBtn.style.cssText = 'background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;';
+  backBtn.textContent = '← Listas';
+  backBtn.onclick = function(){ _listsActiveList = null; renderLists(); };
+  var titleEl = document.createElement('div');
+  titleEl.className = 'section-title'; titleEl.textContent = list.nome;
+  hdL.appendChild(backBtn); hdL.appendChild(titleEl);
+
+  var hdR = document.createElement('div'); hdR.style.cssText = 'display:flex;gap:8px;';
+  var addSecBtn = document.createElement('button');
+  addSecBtn.className = 'btn-sm'; addSecBtn.textContent = '+ Seção';
+  addSecBtn.onclick = function(){ openAddSectionModal(list); };
+  var cfgBtn = document.createElement('button');
+  cfgBtn.className = 'btn-sm'; cfgBtn.textContent = '⚙ Status';
+  cfgBtn.onclick = function(){ openStatusConfigModal(list); };
+  hdR.appendChild(addSecBtn); hdR.appendChild(cfgBtn);
+
+  hd.appendChild(hdL); hd.appendChild(hdR);
+  root.appendChild(hd);
+
+  if (!list.sections.length) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;color:var(--muted);margin-top:60px;font-size:13px;';
+    empty.innerHTML = 'Nenhuma seção ainda.<br>Clique em "+ Seção" para começar.';
+    root.appendChild(empty); return;
+  }
+
+  var sectionsWrap = document.createElement('div');
+  sectionsWrap.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:24px;';
+  root.appendChild(sectionsWrap);
+
+  list.sections.forEach(function(sec, secIdx) {
+    sectionsWrap.appendChild(buildSectionBlock(list, sec, secIdx, sectionsWrap));
+  });
+}
+
+function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
+  // Declare shared vars upfront so closures can reference them
+  var tbody, selBar, selCount;
+
+  var block = document.createElement('div');
+  block.dataset.secId = sec.id;
+  block.className = 'list-sec-block';
+
+  // Section header
+  var secHd = document.createElement('div');
+  secHd.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;';
+
+  // Drag handle
+  var drag = document.createElement('span');
+  drag.textContent = '⠿'; drag.title = 'Arrastar seção';
+  drag.style.cssText = 'color:var(--muted);cursor:grab;font-size:16px;user-select:none;';
+
+  // Section name (inline editable)
+  var nameEl = document.createElement('div');
+  nameEl.style.cssText = 'font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;flex:1;';
+  nameEl.textContent = sec.nome;
+  nameEl.onclick = function(){ inlineEditSecName(nameEl, list, sec); };
+
+  var addItemBtn = document.createElement('button');
+  addItemBtn.className = 'btn-sm'; addItemBtn.textContent = '+ Item';
+  addItemBtn.onclick = function(){ addListItem(list, sec); };
+
+  var secMenuBtn = document.createElement('button');
+  secMenuBtn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 6px;';
+  secMenuBtn.textContent = '⋯';
+  secMenuBtn.onclick = function(e){ openSectionMenu(e, list, sec, secIdx, sectionsWrap); };
+
+  secHd.appendChild(drag); secHd.appendChild(nameEl); secHd.appendChild(addItemBtn); secHd.appendChild(secMenuBtn);
+  block.appendChild(secHd);
+
+  // Table
+  var table = document.createElement('div');
+  table.style.cssText = 'border:1px solid var(--border);border-radius:8px;overflow:hidden;';
+
+  // Multi-level sort state per section
+  var sortLevels = []; // [{col, dir}]
+
+  function sortedItems() {
+    var items = (sec.items || []).slice();
+    if (!sortLevels.length) return items;
+    var statuses = list.statuses || [];
+    items.sort(function(a, b) {
+      for (var i = 0; i < sortLevels.length; i++) {
+        var s = sortLevels[i], av, bv;
+        if (s.col === 'nome') {
+          av = (a.nome||'').toLowerCase(); bv = (b.nome||'').toLowerCase();
+        } else if (s.col === 'status') {
+          av = statuses.findIndex(function(st){return st.id===a.statusId;}); if(av<0) av=999;
+          bv = statuses.findIndex(function(st){return st.id===b.statusId;}); if(bv<0) bv=999;
+        } else if (s.col === 'updated') {
+          av = a.updatedAt||''; bv = b.updatedAt||'';
+        }
+        var cmp = av < bv ? -1 : av > bv ? 1 : 0;
+        if (cmp !== 0) return s.dir === 'asc' ? cmp : -cmp;
+      }
+      return 0;
+    });
+    return items;
+  }
+
+  function sortBadge(col) {
+    var idx = sortLevels.findIndex(function(s){return s.col===col;});
+    if (idx === -1) return '';
+    var s = sortLevels[idx];
+    return ' ' + (idx+1) + (s.dir==='asc'?'↑':'↓');
+  }
+
+  function sortClick(col) {
+    var idx = sortLevels.findIndex(function(s){return s.col===col;});
+    if (idx === -1) { sortLevels.push({col:col, dir:'asc'}); }
+    else if (sortLevels[idx].dir === 'asc') { sortLevels[idx].dir = 'desc'; }
+    else { sortLevels.splice(idx, 1); }
+    rebuildRows();
+  }
+
+  // Header row
+  var thead = document.createElement('div');
+  thead.style.cssText = 'display:grid;grid-template-columns:20px 1fr 140px 90px 28px;background:var(--surface2);border-bottom:1px solid var(--border);padding:6px 12px;gap:8px;';
+
+  function mkTh(label, col, align) {
+    var th = document.createElement('div');
+    th.style.cssText = 'font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;user-select:none;' + (col?'cursor:pointer;':'') + (align?'text-align:'+align+';':'');
+    th.dataset.col = col||'';
+    th.dataset.label = label;
+    th.textContent = label;
+    if (col) {
+      th.onclick = function() {
+        sortClick(col);
+        // Update all header indicators
+        thead.querySelectorAll('[data-col]').forEach(function(el){
+          var c = el.dataset.col; if(!c) return;
+          var badge = sortBadge(c);
+          el.textContent = el.dataset.label + badge;
+          el.style.color = badge ? 'var(--accent)' : 'var(--muted)';
+        });
+      };
+    }
+    thead.appendChild(th);
+  }
+
+  function updateSelectionBar() {
+    var ids = Array.from(tbody ? tbody.querySelectorAll('.list-item-chk:checked') : []).map(function(c){return c.dataset.itemId;});
+    if (ids.length === 0) { if(selBar) selBar.style.display='none'; return; }
+    if(selBar) selBar.style.display='flex';
+    if(selCount) selCount.textContent = ids.length + ' item' + (ids.length>1?'s':'') + ' selecionado' + (ids.length>1?'s':'');
+  }
+
+  function rebuildRows() {
+    tbody.innerHTML = '';
+    sortedItems().forEach(function(item){ tbody.appendChild(buildItemRow(list, sec, item, tbody, updateSelectionBar)); });
+    wireItemDragDrop(tbody, list, sec);
+  }
+
+  // Select-all checkbox
+  var thChk = document.createElement('div');
+  thChk.style.cssText = 'display:flex;align-items:center;';
+  var selAll = document.createElement('input'); selAll.type='checkbox';
+  selAll.style.cssText = 'width:13px;height:13px;cursor:pointer;accent-color:var(--accent);opacity:0;transition:opacity .15s;';
+  selAll.title = 'Selecionar todos';
+  thead.onmouseenter = function(){ selAll.style.opacity='1'; };
+  thead.onmouseleave = function(){ if(!selAll.checked) selAll.style.opacity='0'; };
+  selAll.onchange = function() {
+    var checked = selAll.checked;
+    tbody.querySelectorAll('.list-item-chk').forEach(function(chk){ chk.checked = checked; });
+    updateSelectionBar();
+  };
+  thChk.appendChild(selAll);
+  thead.appendChild(thChk);
+  mkTh('Nome', 'nome');
+  mkTh('Status', 'status');
+  mkTh('Atualizado', 'updated');
+  mkTh('', null);
+  table.appendChild(thead);
+
+  // Selection action bar (hidden by default)
+  selBar = document.createElement('div');
+  selBar.style.cssText = 'display:none;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border);';
+  selCount = document.createElement('span'); selCount.style.cssText='font-size:12px;color:var(--accent);flex:1;font-weight:600;';
+  var moveBtn = document.createElement('button'); moveBtn.className='btn-sm accent'; moveBtn.textContent='↗ Mover para...';
+  var clearBtn2 = document.createElement('button'); clearBtn2.className='btn-sm'; clearBtn2.textContent='Desmarcar';
+  clearBtn2.onclick = function(){
+    tbody.querySelectorAll('.list-item-chk').forEach(function(c){ c.checked=false; c.style.opacity='0'; });
+    selAll.checked=false; selAll.style.opacity='0'; updateSelectionBar();
+  };
+  selBar.appendChild(selCount); selBar.appendChild(moveBtn); selBar.appendChild(clearBtn2);
+  table.appendChild(selBar);
+
+  // Items tbody — created here so updateSelectionBar and rebuildRows can use it
+  tbody = document.createElement('div');
+  tbody.dataset.secId = sec.id;
+  tbody.className = 'list-sec-tbody';
+  table.appendChild(tbody);
+
+  moveBtn.onclick = function() {
+    var ids = Array.from(tbody.querySelectorAll('.list-item-chk:checked')).map(function(c){return c.dataset.itemId;});
+    if (!ids.length) return;
+    openMoveItemsModal(ids, list, sec, function(){
+      // rebuild after move
+      tbody.querySelectorAll('.list-item-chk').forEach(function(c){ c.checked=false; c.style.opacity='0'; });
+      selAll.checked=false; selAll.style.opacity='0'; updateSelectionBar();
+      rebuildRows();
+    });
+  };
+
+  // Items
+  block.appendChild(table);
+
+  if (!sec.items) sec.items = [];
+  sortedItems().forEach(function(item) {
+    tbody.appendChild(buildItemRow(list, sec, item, tbody, updateSelectionBar));
+  });
+
+  // Wire section drag & drop
+  wireSectionDragDrop(sectionsWrap, list);
+  wireItemDragDrop(tbody, list, sec);
+
+  return block;
+}
+
+function buildItemRow(list, sec, item, tbody, onSelChange) {
+  var row = document.createElement('div');
+  row.dataset.itemId = item.id;
+  row.style.cssText = 'display:grid;grid-template-columns:20px 1fr 140px 90px 28px;align-items:center;padding:8px 12px;gap:8px;border-bottom:1px solid var(--border);cursor:grab;';
+  row.style.background = 'var(--surface)';
+  row.onmouseenter = function(){ row.style.background='var(--surface2)'; };
+  row.onmouseleave = function(){ row.style.background='var(--surface)'; };
+
+  // Checkbox cell
+  var chkCell = document.createElement('div');
+  chkCell.style.cssText = 'display:flex;align-items:center;';
+  var chk = document.createElement('input'); chk.type='checkbox'; chk.className='list-item-chk';
+  chk.dataset.itemId = item.id;
+  chk.style.cssText = 'width:13px;height:13px;cursor:pointer;accent-color:var(--accent);opacity:0;transition:opacity .15s;';
+  chk.onclick = function(e){ e.stopPropagation(); chk.style.opacity='1'; if(onSelChange) onSelChange(); };
+  chkCell.appendChild(chk);
+  row.appendChild(chkCell);
+
+  // Name cell
+  var nameCell = document.createElement('div');
+  nameCell.style.cssText = 'font-size:13px;color:var(--text);cursor:text;min-height:20px;';
+  nameCell.textContent = item.nome;
+  nameCell.onclick = function(e){ e.stopPropagation(); inlineEditItemName(nameCell, list, sec, item, tbody); };
+  row.appendChild(nameCell);
+
+  // Status cell
+  var statusCell = document.createElement('div');
+  statusCell.style.cssText = 'cursor:pointer;';
+  var statuses = list.statuses || [];
+  var st = statuses.find(function(s){ return s.id === item.statusId; });
+  if (st) {
+    var tag = document.createElement('span');
+    tag.style.cssText = 'display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;background:'+st.cor+';color:#fff;cursor:pointer;white-space:nowrap;';
+    tag.textContent = st.nome;
+    tag.onclick = function(e){ e.stopPropagation(); openStatusPicker(e, list, sec, item, tbody); };
+    statusCell.appendChild(tag);
+  } else {
+    var emptyTag = document.createElement('span');
+    emptyTag.style.cssText = 'display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;background:var(--border);color:var(--muted);cursor:pointer;';
+    emptyTag.textContent = '—';
+    emptyTag.onclick = function(e){ e.stopPropagation(); openStatusPicker(e, list, sec, item, tbody); };
+    statusCell.appendChild(emptyTag);
+  }
+  row.appendChild(statusCell);
+
+  // Updated cell
+  var updCell = document.createElement('div');
+  updCell.style.cssText = 'font-size:11px;color:var(--muted);font-family:DM Mono,monospace;';
+  updCell.textContent = fmtDate(item.updatedAt);
+  row.appendChild(updCell);
+
+  // Delete cell
+  var delBtn = document.createElement('button');
+  delBtn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;opacity:0;transition:opacity .15s;';
+  delBtn.textContent = '×';
+  delBtn.title = 'Remover item';
+  delBtn.onclick = function(e){ e.stopPropagation(); deleteListItem(list, sec, item.id, tbody); };
+  row.onmouseenter = function(){ row.style.background='var(--surface2)'; delBtn.style.opacity='1'; if(!chk.checked) chk.style.opacity='1'; };
+  row.onmouseleave = function(){ row.style.background='var(--surface)'; delBtn.style.opacity='0'; if(!chk.checked) chk.style.opacity='0'; };
+  row.appendChild(delBtn);
+
+  return row;
+}
+
+/* ─── Inline edit item name ─── */
+function inlineEditItemName(cell, list, sec, item, tbody) {
+  var cur = item.nome;
+  var input = document.createElement('input');
+  input.value = cur;
+  input.style.cssText = 'width:100%;border:none;background:transparent;color:var(--text);font-size:13px;outline:none;font-family:inherit;';
+  cell.innerHTML = '';
+  cell.appendChild(input);
+  input.focus(); input.select();
+  function save() {
+    var v = input.value.trim();
+    if (v && v !== cur) {
+      var isDup = (sec.items||[]).some(function(i){
+        return i.id !== item.id && (i.nome||'').toLowerCase().trim() === v.toLowerCase().trim();
+      });
+      if (isDup) {
+        showToast('Já existe um item com esse nome nesta seção');
+        input.value = cur;
+      } else {
+        item.nome = v; item.updatedAt = nowISO(); saveState();
+      }
+    }
+    rebuildItemRow(list, sec, item, tbody);
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', function(e){
+    if (e.key==='Enter') input.blur();
+    if (e.key==='Escape') { input.value=cur; input.blur(); }
+  });
+}
+
+function rebuildItemRow(list, sec, item, tbody, onSelChange) {
+  var old = tbody.querySelector('[data-item-id="'+item.id+'"]');
+  if (old) { var newRow = buildItemRow(list, sec, item, tbody, onSelChange); old.replaceWith(newRow); }
+}
+
+/* ─── Inline edit section name ─── */
+function inlineEditSecName(el, list, sec) {
+  var cur = sec.nome;
+  var input = document.createElement('input');
+  input.value = cur;
+  input.style.cssText = 'border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:600;outline:none;font-family:inherit;width:200px;';
+  el.innerHTML = ''; el.appendChild(input);
+  input.focus(); input.select();
+  function save() {
+    var v = input.value.trim();
+    if (v) sec.nome = v;
+    el.innerHTML = ''; el.textContent = sec.nome;
+    saveState();
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', function(e){
+    if (e.key==='Enter') input.blur();
+    if (e.key==='Escape') { input.value=cur; input.blur(); }
+  });
+}
+
+/* ─── Add item ─── */
+function addListItem(list, sec) {
+  if (!sec.items) sec.items = [];
+  var item = { id: genItemId(), nome: 'Novo item', statusId: (list.statuses&&list.statuses[0])?list.statuses[0].id:null, updatedAt: nowISO() };
+  sec.items.push(item);
+  saveState();
+  // Rebuild this section's tbody
+  var tbody = document.querySelector('.list-sec-tbody[data-sec-id="'+sec.id+'"]');
+  if (tbody) {
+    tbody.appendChild(buildItemRow(list, sec, item, tbody));
+    // Immediately start editing the new item name
+    var lastRow = tbody.lastElementChild;
+    var nameCell = lastRow ? lastRow.children[1] : null; // index 1: after checkbox
+    if (nameCell) setTimeout(function(){ inlineEditItemName(nameCell, list, sec, item, tbody); }, 50);
+  }
+}
+
+/* ─── Delete item ─── */
+function deleteListItem(list, sec, itemId, tbody) {
+  confirmAction('Remover item', 'Remover este item da lista?', function() {
+    sec.items = (sec.items||[]).filter(function(i){ return i.id !== itemId; });
+    saveState();
+    var row = tbody.querySelector('[data-item-id="'+itemId+'"]');
+    if (row) row.remove();
+  });
+}
+
+/* ─── Status picker ─── */
+function openStatusPicker(e, list, sec, item, tbody) {
+  e.stopPropagation();
+  e.preventDefault();
+  // If picker already open for this item, close it
+  var existing = document.querySelector('.list-status-picker[data-item-id="'+item.id+'"]');
+  if (existing) { existing.remove(); return; }
+  document.querySelectorAll('.list-status-picker').forEach(function(el){ el.remove(); });
+  var statuses = list.statuses || [];
+  var dd = document.createElement('div');
+  dd.className = 'list-status-picker';
+  dd.dataset.itemId = item.id;
+  dd.style.cssText = 'position:fixed;z-index:9999;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+  var rect = e.target.getBoundingClientRect();
+  dd.style.left = rect.left + 'px';
+  dd.style.top = (rect.bottom+4) + 'px';
+
+  // No status option
+  var noneOpt = document.createElement('div');
+  noneOpt.style.cssText = 'padding:6px 10px;border-radius:5px;cursor:pointer;font-size:12px;color:var(--muted);';
+  noneOpt.textContent = '— Sem status';
+  noneOpt.onmouseenter = function(){ noneOpt.style.background='var(--surface)'; };
+  noneOpt.onmouseleave = function(){ noneOpt.style.background=''; };
+  noneOpt.onclick = function(){
+    item.statusId = null; item.updatedAt = nowISO(); saveState();
+    rebuildItemRow(list, sec, item, tbody); dd.remove();
+  };
+  dd.appendChild(noneOpt);
+
+  statuses.forEach(function(st) {
+    var opt = document.createElement('div');
+    opt.style.cssText = 'padding:6px 10px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:8px;';
+    opt.onmouseenter = function(){ opt.style.background='var(--surface)'; };
+    opt.onmouseleave = function(){ opt.style.background=''; };
+    var dot = document.createElement('span');
+    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;background:'+st.cor+';flex-shrink:0;';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:12px;color:var(--text);';
+    lbl.textContent = st.nome;
+    if (item.statusId === st.id) {
+      var chk = document.createElement('span');
+      chk.style.cssText = 'margin-left:auto;color:var(--accent);font-size:12px;';
+      chk.textContent = '✓';
+      opt.appendChild(chk);
+    }
+    opt.onclick = function(){
+      item.statusId = st.id; item.updatedAt = nowISO(); saveState();
+      rebuildItemRow(list, sec, item, tbody); dd.remove();
+    };
+    opt.prepend(dot); opt.insertBefore(lbl, opt.lastChild||null);
+    dd.appendChild(opt);
+  });
+
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h);} }, {capture:true}); }, 0);
+}
+
+/* ─── Section drag & drop ─── */
+function wireSectionDragDrop(container, list) {
+  var blocks = container.querySelectorAll(':scope > [data-sec-id]');
+  var dragging = null;
+  blocks.forEach(function(block) {
+    var handle = block.querySelector('span[title="Arrastar seção"]');
+    if (!handle) return;
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      dragging = block;
+      block.style.opacity = '0.5';
+      function onMove(ev) {
+        var after = null;
+        var siblings = Array.from(container.querySelectorAll(':scope > [data-sec-id]')).filter(function(b){ return b !== dragging; });
+        for (var i=0;i<siblings.length;i++) {
+          var r = siblings[i].getBoundingClientRect();
+          if (ev.clientY < r.top + r.height/2) { after = siblings[i]; break; }
+        }
+        if (after && after.parentNode === container) container.insertBefore(dragging, after);
+        else if (!after) container.appendChild(dragging);
+      }
+      function onUp() {
+        dragging.style.opacity = '';
+        // Sync order to state
+        var newOrder = Array.from(container.querySelectorAll(':scope > [data-sec-id]')).map(function(b){ return b.dataset.secId; });
+        list.sections = newOrder.map(function(id){ return list.sections.find(function(s){ return s.id===id; }); }).filter(Boolean);
+        saveState();
+        dragging = null;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  });
+}
+
+/* ─── Item drag & drop ─── */
+function wireItemDragDrop(tbody, list, sec) {
+  // Remove previous listener if any
+  if (tbody._dragController) tbody._dragController.abort();
+  tbody._dragController = new AbortController();
+  var signal = tbody._dragController.signal;
+  var dragging = null;
+  tbody.addEventListener('mousedown', function(e) {
+    var row = e.target.closest('[data-item-id]');
+    if (!row || e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    e.preventDefault();
+    if (dragging) return; // prevent double-drag
+    dragging = row;
+    row.style.opacity = '0.5';
+    function onMove(ev) {
+      var siblings = Array.from(tbody.querySelectorAll('[data-item-id]')).filter(function(r){ return r !== dragging; });
+      var after = null;
+      for (var i=0;i<siblings.length;i++) {
+        var r = siblings[i].getBoundingClientRect();
+        if (ev.clientY < r.top + r.height/2) { after = siblings[i]; break; }
+      }
+      if (after && after.parentNode === tbody) tbody.insertBefore(dragging, after);
+      else if (!after) tbody.appendChild(dragging);
+    }
+    function onUp() {
+      dragging.style.opacity = '';
+      var newOrder = Array.from(tbody.querySelectorAll('[data-item-id]')).map(function(r){ return r.dataset.itemId; });
+      sec.items = newOrder.map(function(id){ return (sec.items||[]).find(function(i){ return i.id===id; }); }).filter(Boolean);
+      saveState();
+      dragging = null;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+/* ─── Modals ─── */
+
+function openMoveItemsModal(itemIds, srcList, srcSec, onDone) {
+  var overlay = document.createElement('div'); overlay.className='modal-overlay'; overlay.id='move-items-modal';
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  var box = document.createElement('div'); box.className='modal-box'; box.style.maxWidth='380px';
+
+  var title = document.createElement('div'); title.className='modal-header';
+  title.innerHTML='<span>Mover '+itemIds.length+' item'+(itemIds.length>1?'s':'')+'</span><button class="modal-close" onclick="document.getElementById(&quot;move-items-modal&quot;).remove()">&#215;</button>';
+
+  var body = document.createElement('div'); body.style.cssText='display:flex;flex-direction:column;gap:12px;padding:16px;';
+
+  // Destination list
+  var listField = document.createElement('div'); listField.className='modal-field';
+  var listLbl = document.createElement('label'); listLbl.className='modal-label'; listLbl.textContent='Lista destino';
+  var listSel = document.createElement('select'); listSel.className='modal-input'; listSel.id='mi-list';
+  (state.lists.lists||[]).forEach(function(l){
+    var o=document.createElement('option'); o.value=l.id; o.textContent=l.nome;
+    if(l.id===srcList.id) o.selected=true;
+    listSel.appendChild(o);
+  });
+  listField.appendChild(listLbl); listField.appendChild(listSel);
+  body.appendChild(listField);
+
+  // Destination section
+  var secField = document.createElement('div'); secField.className='modal-field';
+  var secLbl = document.createElement('label'); secLbl.className='modal-label'; secLbl.textContent='Seção destino';
+  var secSel = document.createElement('select'); secSel.className='modal-input'; secSel.id='mi-sec';
+
+  function rebuildSecSel() {
+    secSel.innerHTML='';
+    var destList = (state.lists.lists||[]).find(function(l){return l.id===listSel.value;});
+    if (!destList) return;
+    (destList.sections||[]).forEach(function(s){
+      var o=document.createElement('option'); o.value=s.id; o.textContent=s.nome;
+      if(s.id===srcSec.id) o.selected=true;
+      secSel.appendChild(o);
+    });
+  }
+  rebuildSecSel();
+  listSel.onchange = rebuildSecSel;
+  secField.appendChild(secLbl); secField.appendChild(secSel);
+  body.appendChild(secField);
+
+  // Copy or move toggle
+  var modeField = document.createElement('div'); modeField.className='modal-field';
+  var modeLbl = document.createElement('label'); modeLbl.className='modal-label'; modeLbl.textContent='Ação';
+  var modeWrap = document.createElement('div'); modeWrap.style.cssText='display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;';
+  var moveMode = 'move';
+  ['move','copy'].forEach(function(m){
+    var b=document.createElement('button');
+    b.style.cssText='padding:6px 14px;border:none;font-size:12px;cursor:pointer;background:'+(m==='move'?'var(--accent)':'var(--surface2)')+';color:'+(m==='move'?'#000':'var(--muted)');
+    b.textContent = m==='move'?'Mover':'Copiar';
+    b.onclick=function(){
+      moveMode=m;
+      modeWrap.querySelectorAll('button').forEach(function(btn,i){
+        btn.style.background=(['move','copy'][i]===m)?'var(--accent)':'var(--surface2)';
+        btn.style.color=(['move','copy'][i]===m)?'#000':'var(--muted)';
+      });
+    };
+    modeWrap.appendChild(b);
+  });
+  modeField.appendChild(modeLbl); modeField.appendChild(modeWrap);
+  body.appendChild(modeField);
+
+  var footer = document.createElement('div'); footer.className='modal-footer';
+  var cancelBtn=document.createElement('button'); cancelBtn.className='btn-sm'; cancelBtn.textContent='Cancelar';
+  cancelBtn.onclick=function(){ overlay.remove(); };
+  var confirmBtn=document.createElement('button'); confirmBtn.className='btn-sm accent'; confirmBtn.textContent='Confirmar';
+  confirmBtn.onclick=function(){
+    var destListId=listSel.value, destSecId=secSel.value;
+    var destList=(state.lists.lists||[]).find(function(l){return l.id===destListId;});
+    if(!destList) return;
+    var destSec=(destList.sections||[]).find(function(s){return s.id===destSecId;});
+    if(!destSec) return;
+    if(!destSec.items) destSec.items=[];
+
+    var items = itemIds.map(function(id){
+      return (srcSec.items||[]).find(function(i){return i.id===id;});
+    }).filter(Boolean);
+
+    items.forEach(function(item){
+      if(moveMode==='copy'){
+        destSec.items.push({ id:genItemId(), nome:item.nome, statusId:item.statusId, updatedAt:nowISO() });
+      } else {
+        destSec.items.push(item);
+        srcSec.items = (srcSec.items||[]).filter(function(i){return i.id!==item.id;});
+      }
+    });
+
+    saveState(); overlay.remove();
+    if(onDone) onDone();
+    // If dest is different section/list, re-render
+    if(destListId !== srcList.id || destSecId !== srcSec.id) renderLists();
+  };
+  footer.appendChild(cancelBtn); footer.appendChild(confirmBtn);
+
+  box.appendChild(title); box.appendChild(body); box.appendChild(footer);
+  overlay.appendChild(box); document.body.appendChild(overlay); showModal(overlay);
+}
+
+function openAddListModal() {
+  var overlay = document.createElement('div'); overlay.className='modal-overlay'; overlay.id='add-list-modal';
+  var box = document.createElement('div'); box.className='modal-box';
+  box.innerHTML = '<div class="modal-title">Nova Lista</div>'
+    +'<div class="modal-field"><label class="modal-label">Nome</label><input class="modal-input" id="nl-nome" placeholder="Ex: Lista de Compras"></div>'
+    +'<div class="modal-field"><label class="modal-label">Cor</label><input type="color" id="nl-cor" value="#6366f1" style="width:48px;height:36px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:var(--surface2);"></div>'
+    +'<div class="modal-actions"><button class="btn-sm" onclick="document.getElementById(\'add-list-modal\').remove()">Cancelar</button><button class="btn-sm accent" id="nl-save">Criar</button></div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  showModal(overlay);
+  var inp = document.getElementById('nl-nome'); inp.focus();
+  document.getElementById('nl-save').onclick = function() {
+    var nome = inp.value.trim();
+    if (!nome) return;
+    var defaultStatuses = [
+      { id: genStatusId(), nome: 'NÃO PRECISA', cor: '#3b82f6' },
+      { id: genStatusId(), nome: 'COMPRAR',     cor: '#ef4444' },
+      { id: genStatusId(), nome: 'EM ESTOQUE',  cor: '#22c55e' },
+      { id: genStatusId(), nome: 'ESTOQUE BAIXO', cor: '#f59e0b' },
+    ];
+    var list = { id: genListId(), nome: nome, cor: document.getElementById('nl-cor').value, sections: [], statuses: defaultStatuses };
+    state.lists.lists.push(list);
+    saveState(); overlay.remove(); renderLists();
+  };
+}
+
+function openAddSectionModal(list) {
+  var overlay = document.createElement('div'); overlay.className='modal-overlay'; overlay.id='add-sec-modal';
+  var box = document.createElement('div'); box.className='modal-box';
+  box.innerHTML = '<div class="modal-title">Nova Seção</div>'
+    +'<div class="modal-field"><label class="modal-label">Nome</label><input class="modal-input" id="ns-nome" placeholder="Ex: Lista Principal"></div>'
+    +'<div class="modal-actions"><button class="btn-sm" onclick="document.getElementById(\'add-sec-modal\').remove()">Cancelar</button><button class="btn-sm accent" id="ns-save">Criar</button></div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  showModal(overlay);
+  var inp = document.getElementById('ns-nome'); inp.focus();
+  document.getElementById('ns-save').onclick = function() {
+    var nome = inp.value.trim();
+    if (!nome) return;
+    if (!list.sections) list.sections = [];
+    list.sections.push({ id: genSectionId(), nome: nome, items: [] });
+    saveState(); overlay.remove(); renderLists();
+  };
+}
+
+function openListMenu(e, list) {
+  e.stopPropagation();
+  document.querySelectorAll('.list-ctx-menu').forEach(function(el){ el.remove(); });
+  var dd = document.createElement('div'); dd.className='list-ctx-menu';
+  dd.style.cssText='position:fixed;z-index:9999;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+  var rect = e.target.getBoundingClientRect();
+  dd.style.left=rect.left+'px'; dd.style.top=(rect.bottom+4)+'px';
+  function mkOpt(label, fn, danger) {
+    var o=document.createElement('div');
+    o.style.cssText='padding:8px 12px;border-radius:5px;cursor:pointer;font-size:13px;color:'+(danger?'var(--danger)':'var(--text)')+';';
+    o.textContent=label;
+    o.onmouseenter=function(){ o.style.background='var(--surface)'; };
+    o.onmouseleave=function(){ o.style.background=''; };
+    o.onclick=function(){ dd.remove(); fn(); };
+    dd.appendChild(o);
+  }
+  mkOpt('✎ Renomear', function(){ openRenameListModal(list); });
+  mkOpt('🗑 Excluir', function(){
+    confirmAction('Excluir lista','Excluir "'+list.nome+'" e todos os seus itens?', function(){
+      state.lists.lists = state.lists.lists.filter(function(l){ return l.id!==list.id; });
+      saveState(); renderLists();
+    });
+  }, true);
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h);} },{capture:true}); }, 0);
+}
+
+function openRenameListModal(list) {
+  var overlay=document.createElement('div'); overlay.className='modal-overlay'; overlay.id='ren-list-modal';
+  var box=document.createElement('div'); box.className='modal-box';
+  box.innerHTML='<div class="modal-title">Renomear Lista</div>'
+    +'<div class="modal-field"><label class="modal-label">Nome</label><input class="modal-input" id="rl-nome" value="'+list.nome+'"></div>'
+    +'<div class="modal-field"><label class="modal-label">Cor</label><input type="color" id="rl-cor" value="'+(list.cor||'#6366f1')+'" style="width:48px;height:36px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:var(--surface2);"></div>'
+    +'<div class="modal-actions"><button class="btn-sm" onclick="document.getElementById(\'ren-list-modal\').remove()">Cancelar</button><button class="btn-sm accent" id="rl-save">Salvar</button></div>';
+  overlay.appendChild(box); document.body.appendChild(overlay); showModal(overlay);
+  document.getElementById('rl-nome').focus();
+  document.getElementById('rl-save').onclick=function(){
+    var v=document.getElementById('rl-nome').value.trim();
+    if(v){ list.nome=v; list.cor=document.getElementById('rl-cor').value; saveState(); overlay.remove(); renderLists(); }
+  };
+}
+
+function openSectionMenu(e, list, sec, secIdx, sectionsWrap) {
+  e.stopPropagation();
+  document.querySelectorAll('.list-ctx-menu').forEach(function(el){ el.remove(); });
+  var dd=document.createElement('div'); dd.className='list-ctx-menu';
+  dd.style.cssText='position:fixed;z-index:9999;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+  var rect=e.target.getBoundingClientRect();
+  dd.style.left=rect.left+'px'; dd.style.top=(rect.bottom+4)+'px';
+  function mkOpt(label,fn,danger){
+    var o=document.createElement('div');
+    o.style.cssText='padding:8px 12px;border-radius:5px;cursor:pointer;font-size:13px;color:'+(danger?'var(--danger)':'var(--text)')+';';
+    o.textContent=label;
+    o.onmouseenter=function(){ o.style.background='var(--surface)'; };
+    o.onmouseleave=function(){ o.style.background=''; };
+    o.onclick=function(){ dd.remove(); fn(); };
+    dd.appendChild(o);
+  }
+  mkOpt('🗑 Excluir seção', function(){
+    confirmAction('Excluir seção','Excluir "'+sec.nome+'" e todos os seus itens?', function(){
+      list.sections=list.sections.filter(function(s){ return s.id!==sec.id; });
+      saveState(); renderLists();
+    });
+  }, true);
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h);} },{capture:true}); }, 0);
+}
+
+/* ─── Status config modal ─── */
+function openStatusConfigModal(list) {
+  if (!list.statuses) list.statuses = [];
+  var overlay=document.createElement('div'); overlay.className='modal-overlay'; overlay.id='status-cfg-modal';
+  var box=document.createElement('div'); box.className='modal-box'; box.style.maxWidth='440px';
+  function rebuild() {
+    box.innerHTML='<div class="modal-title">Configurar Status</div>';
+    var list2=document.createElement('div'); list2.style.cssText='display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:320px;overflow-y:auto;';
+    list.statuses.forEach(function(st, i) {
+      var row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:8px;';
+      var dragH=document.createElement('span'); dragH.textContent='⠿'; dragH.style.cssText='color:var(--muted);cursor:grab;font-size:14px;user-select:none;';
+      var colorInp=document.createElement('input'); colorInp.type='color'; colorInp.value=st.cor;
+      colorInp.style.cssText='width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;padding:1px;background:none;flex-shrink:0;';
+      colorInp.oninput=function(){ st.cor=colorInp.value; saveState(); };
+      var nameInp=document.createElement('input'); nameInp.className='modal-input'; nameInp.value=st.nome;
+      nameInp.style.cssText='flex:1;font-size:12px;padding:5px 8px;';
+      nameInp.onchange=function(){ st.nome=nameInp.value.trim()||st.nome; saveState(); };
+      var delBtn=document.createElement('button'); delBtn.style.cssText='background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px;';
+      delBtn.textContent='×';
+      delBtn.onclick=function(){
+        list.statuses.splice(i,1); saveState(); rebuild();
+      };
+      row.appendChild(dragH); row.appendChild(colorInp); row.appendChild(nameInp); row.appendChild(delBtn);
+      list2.appendChild(row);
+      // wire drag for this row
+      dragH.addEventListener('mousedown', function(e){
+        e.preventDefault(); var dragging=row; row.style.opacity='0.5';
+        function mv(ev){
+          var siblings=Array.from(list2.children).filter(function(r){ return r!==dragging; });
+          var after=null;
+          for(var j=0;j<siblings.length;j++){ var r=siblings[j].getBoundingClientRect(); if(ev.clientY<r.top+r.height/2){after=siblings[j];break;} }
+          if(after && after.parentNode===list2) list2.insertBefore(dragging,after); else if(!after) list2.appendChild(dragging);
+        }
+        function up(){
+          dragging.style.opacity='';
+          document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
+          // Sync order from DOM before rebuild destroys it
+          var doms=Array.from(list2.children);
+          var reordered=doms.map(function(dom){
+            var ci=dom.querySelector('input[type=color]');
+            return list.statuses.find(function(s){ return s.cor===ci.value; });
+          }).filter(Boolean);
+          list.statuses=reordered;
+          saveState(); rebuild();
+        }
+        document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+      });
+    });
+    box.appendChild(list2);
+    var addRow=document.createElement('div'); addRow.style.cssText='display:flex;gap:8px;margin-bottom:16px;';
+    var newColor=document.createElement('input'); newColor.type='color'; newColor.value='#6366f1';
+    newColor.style.cssText='width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;padding:1px;background:none;flex-shrink:0;';
+    var newName=document.createElement('input'); newName.className='modal-input'; newName.placeholder='Nome do novo status';
+    newName.style.cssText='flex:1;font-size:12px;padding:5px 8px;';
+    var addBtn=document.createElement('button'); addBtn.className='btn-sm accent'; addBtn.textContent='+';
+    addBtn.onclick=function(){
+      var n=newName.value.trim();
+      if(!n) return;
+      list.statuses.push({id:genStatusId(),nome:n,cor:newColor.value});
+      saveState(); rebuild();
+    };
+    addRow.appendChild(newColor); addRow.appendChild(newName); addRow.appendChild(addBtn);
+    box.appendChild(addRow);
+    var actions=document.createElement('div'); actions.className='modal-actions';
+    var closeBtn=document.createElement('button'); closeBtn.className='btn-sm accent'; closeBtn.textContent='Fechar';
+    closeBtn.onclick=function(){ overlay.remove(); renderLists(); };
+    actions.appendChild(closeBtn); box.appendChild(actions);
+  }
+  rebuild();
+  overlay.appendChild(box); document.body.appendChild(overlay); showModal(overlay);
+}
+
+
+
+function applyListSeeds() {
+  initListsState();
+  // Use seed version gate to avoid re-applying on every load
+  if (state.lists._seedApplied) return;
+  if (state.lists.lists.length > 0) { state.lists._seedApplied = true; return; }
+
+  var stIds = { nao: genStatusId(), comprar: genStatusId(), estoque: genStatusId(), baixo: genStatusId() };
+  var statuses = [
+    { id: stIds.nao,     nome: 'NÃO PRECISA',   cor: '#3b82f6' },
+    { id: stIds.comprar, nome: 'COMPRAR',         cor: '#ef4444' },
+    { id: stIds.estoque, nome: 'EM ESTOQUE',      cor: '#22c55e' },
+    { id: stIds.baixo,   nome: 'ESTOQUE BAIXO',   cor: '#f59e0b' },
+  ];
+
+  function mkItem(nome) {
+    return { id: genItemId(), nome: nome, statusId: stIds.nao, updatedAt: nowISO() };
+  }
+
+  var secPrincipal = {
+    id: genSectionId(), nome: 'Lista Principal',
+    items: [
+      'Bisnaga','Cebolitos','Cheez It','Vitamina','NUV/Grego','Energético','Amendoim',
+      'Club Social','Pão','Peito de Peru','Queijo Prato','Requeijão','Suco','Azeitonas',
+      'Creme de Leite','Detergente','Macarrão','Pipoca','Tomate','Pringles','Cream Cheese',
+      'Alho','Papel Higiênico','Granola','Manteiga','Manjericão','Queijo Ralado Parmesão',
+      'Folha de Louro','Pimenta do Reino'
+    ].map(mkItem)
+  };
+
+  var secExtra = {
+    id: genSectionId(), nome: 'Lista Extra',
+    items: [
+      'Geleia','Guardanapo Premium','Molho Caesar','Limão','Óleo','Papel Toalha','Água',
+      'Açúcar','Álcool 70','Azeite de Oliva','Banana','Barra de Cereal','Bolacha',
+      'Café em Pó','Cloro X-14','Doces','Estopa','Iogurte','Laranja','Limpa Piso',
+      'Maçã','Ocos','Pingo Douro','Pano Convencional','Pano Mágico','Pano de Faxina',
+      'Papel Toalha Power','Papel Toalha Simples','Pão Francês','Refrigerante',
+      'Saco de Lixo','Sal de Ovo','Salada Orgânica','Torradas'
+    ].map(mkItem)
+  };
+
+  state.lists.lists.push({
+    id: genListId(),
+    nome: 'Lista de Compras',
+    cor: '#22c55e',
+    statuses: statuses,
+    sections: [secPrincipal, secExtra]
+  });
+  state.lists._seedApplied = true;
+  dedupListItems();
+}
+
 (async function init() {
   _skipUndo = true; // don't capture undo snapshots during init
   try {
@@ -11402,9 +12490,12 @@ function renderLogoInverter(root) {
       const local = localStorage.getItem('agenda_local');
       if (local) mergeState(JSON.parse(local));
     } catch(e) {}
+    dedupListItems(); // always run regardless of mergeState guard
 
     applySeeds();
     applyTaskSeeds();
+    applyListSeeds();
+    dedupListItems();
     applyTheme();
     showApp(false);
     renderAll();
