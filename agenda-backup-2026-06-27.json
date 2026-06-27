@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-06-26T01:37:44.288Z",
+  "_updatedAt": "2026-06-27T20:02:46.144Z",
   "tasks": {
     "items": [
       {
@@ -14337,22 +14337,16 @@
             "nome": "Lista Principal",
             "items": [
               {
-                "id": "itm-vsx1na1x",
-                "nome": "Queijo Ralado Parmesão",
-                "statusId": "sts-of9hlo0a",
-                "updatedAt": "2026-06-26T00:48:51.221Z"
-              },
-              {
                 "id": "itm-0b9caj6f",
                 "nome": "Macarrão Integral",
                 "statusId": "sts-of9hlo0a",
                 "updatedAt": "2026-06-26T01:04:17.680Z"
               },
               {
-                "id": "itm-pddtluq2",
-                "nome": "Creme de Leite",
-                "statusId": "sts-0cjx9hih",
-                "updatedAt": "2026-06-26T00:39:18.504Z"
+                "id": "itm-2zey1vdl",
+                "nome": "Sal de Ovo",
+                "statusId": "sts-of9hlo0a",
+                "updatedAt": "2026-06-26T01:37:23.137Z"
               },
               {
                 "id": "itm-4m78svya",
@@ -14361,10 +14355,10 @@
                 "updatedAt": "2026-06-26T00:39:33.243Z"
               },
               {
-                "id": "itm-g11zd1vx",
-                "nome": "Pringles",
+                "id": "itm-pddtluq2",
+                "nome": "Creme de Leite",
                 "statusId": "sts-0cjx9hih",
-                "updatedAt": "2026-06-26T00:39:56.395Z"
+                "updatedAt": "2026-06-26T00:39:18.504Z"
               },
               {
                 "id": "itm-9xw1twdb",
@@ -14379,16 +14373,10 @@
                 "updatedAt": "2026-06-26T01:04:33.194Z"
               },
               {
-                "id": "itm-mq0sxfi4",
-                "nome": "NUV/Grego",
-                "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T00:35:10.863Z"
-              },
-              {
-                "id": "itm-mez6gfth",
-                "nome": "Energético",
-                "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T00:35:21.777Z"
+                "id": "itm-g11zd1vx",
+                "nome": "Pringles",
+                "statusId": "sts-0cjx9hih",
+                "updatedAt": "2026-06-26T00:39:56.395Z"
               },
               {
                 "id": "itm-hhnx5eyg",
@@ -14397,16 +14385,16 @@
                 "updatedAt": "2026-06-26T00:35:25.331Z"
               },
               {
-                "id": "itm-bfo6y7gi",
-                "nome": "Pão",
+                "id": "itm-e7sa07o8",
+                "nome": "Azeite de Oliva",
                 "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T00:35:27.930Z"
+                "updatedAt": "2026-06-26T01:37:44.288Z"
               },
               {
-                "id": "itm-qb1wz6pp",
-                "nome": "Queijo Gouda ou Prato",
+                "id": "itm-n63ko4i9",
+                "nome": "Barra de Cereal",
                 "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T00:36:04.999Z"
+                "updatedAt": "2026-06-27T20:01:57.746Z"
               },
               {
                 "id": "itm-sh62vg68",
@@ -14415,16 +14403,10 @@
                 "updatedAt": "2026-06-26T00:39:29.328Z"
               },
               {
-                "id": "itm-35w6ufye",
-                "nome": "Papel Higiênico",
+                "id": "itm-mez6gfth",
+                "nome": "Energético",
                 "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T00:39:59.793Z"
-              },
-              {
-                "id": "itm-nfbavql5",
-                "nome": "Tomate",
-                "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T00:49:07.523Z"
+                "updatedAt": "2026-06-26T00:35:21.777Z"
               },
               {
                 "id": "itm-tpy1151w",
@@ -14439,22 +14421,52 @@
                 "updatedAt": "2026-06-26T00:59:54.863Z"
               },
               {
+                "id": "itm-mq0sxfi4",
+                "nome": "NUV/Grego",
+                "statusId": "sts-7mbbhiei",
+                "updatedAt": "2026-06-26T00:35:10.863Z"
+              },
+              {
+                "id": "itm-35w6ufye",
+                "nome": "Papel Higiênico",
+                "statusId": "sts-7mbbhiei",
+                "updatedAt": "2026-06-26T00:39:59.793Z"
+              },
+              {
                 "id": "itm-llwtqqnd",
                 "nome": "Pimenta do Reino",
                 "statusId": "sts-7mbbhiei",
                 "updatedAt": "2026-06-26T00:54:20.842Z"
               },
               {
-                "id": "itm-9876q8m8",
-                "nome": "Cheez It",
-                "statusId": "sts-16r1fzim",
-                "updatedAt": "2026-06-26T01:02:56.498Z"
+                "id": "itm-bfo6y7gi",
+                "nome": "Pão",
+                "statusId": "sts-7mbbhiei",
+                "updatedAt": "2026-06-26T00:35:27.930Z"
+              },
+              {
+                "id": "itm-qb1wz6pp",
+                "nome": "Queijo Gouda ou Prato",
+                "statusId": "sts-7mbbhiei",
+                "updatedAt": "2026-06-26T00:36:04.999Z"
+              },
+              {
+                "id": "itm-nfbavql5",
+                "nome": "Tomate",
+                "statusId": "sts-7mbbhiei",
+                "updatedAt": "2026-06-26T00:49:07.523Z"
               },
               {
                 "id": "itm-y2xr3het",
                 "nome": "Alho",
                 "statusId": "sts-16r1fzim",
                 "updatedAt": "2026-06-26T00:40:05.306Z"
+              },
+              {
+                "id": "itm-p47zqxkw",
+                "nome": "Azeitonas",
+                "statusId": "sts-16r1fzim",
+                "updatedAt": "2026-06-26T00:24:06.965Z"
               },
               {
                 "id": "itm-49h5xcta",
@@ -14469,16 +14481,34 @@
                 "updatedAt": "2026-06-26T00:24:06.965Z"
               },
               {
-                "id": "itm-vu9h62tv",
-                "nome": "Vitamina",
+                "id": "itm-9876q8m8",
+                "nome": "Cheez It",
                 "statusId": "sts-16r1fzim",
-                "updatedAt": "2026-06-26T00:24:06.965Z"
+                "updatedAt": "2026-06-26T01:02:56.498Z"
               },
               {
                 "id": "itm-sc37h7ok",
                 "nome": "Club Social",
                 "statusId": "sts-16r1fzim",
                 "updatedAt": "2026-06-26T00:24:06.965Z"
+              },
+              {
+                "id": "itm-233soc2w",
+                "nome": "Manteiga",
+                "statusId": "sts-16r1fzim",
+                "updatedAt": "2026-06-26T00:24:06.965Z"
+              },
+              {
+                "id": "itm-lahvqgdm",
+                "nome": "Pipoca",
+                "statusId": "sts-16r1fzim",
+                "updatedAt": "2026-06-26T00:24:06.965Z"
+              },
+              {
+                "id": "itm-vsx1na1x",
+                "nome": "Queijo Ralado Parmesão",
+                "statusId": "sts-16r1fzim",
+                "updatedAt": "2026-06-26T13:41:00.679Z"
               },
               {
                 "id": "itm-tzjirmtc",
@@ -14493,22 +14523,16 @@
                 "updatedAt": "2026-06-26T00:24:06.965Z"
               },
               {
-                "id": "itm-p47zqxkw",
-                "nome": "Azeitonas",
+                "id": "itm-vu9h62tv",
+                "nome": "Vitamina",
                 "statusId": "sts-16r1fzim",
                 "updatedAt": "2026-06-26T00:24:06.965Z"
               },
               {
-                "id": "itm-lahvqgdm",
-                "nome": "Pipoca",
-                "statusId": "sts-16r1fzim",
-                "updatedAt": "2026-06-26T00:24:06.965Z"
-              },
-              {
-                "id": "itm-233soc2w",
-                "nome": "Manteiga",
-                "statusId": "sts-16r1fzim",
-                "updatedAt": "2026-06-26T00:24:06.965Z"
+                "id": "itm-oepnenqn",
+                "nome": "Gatorade",
+                "statusId": "sts-of9hlo0a",
+                "updatedAt": "2026-06-27T20:02:32.173Z"
               }
             ]
           },
@@ -14571,20 +14595,8 @@
                 "updatedAt": "2026-06-26T00:24:06.965Z"
               },
               {
-                "id": "itm-e7sa07o8",
-                "nome": "Azeite de Oliva",
-                "statusId": "sts-7mbbhiei",
-                "updatedAt": "2026-06-26T01:37:44.288Z"
-              },
-              {
                 "id": "itm-tm2zryvu",
                 "nome": "Banana",
-                "statusId": "sts-16r1fzim",
-                "updatedAt": "2026-06-26T00:24:06.965Z"
-              },
-              {
-                "id": "itm-n63ko4i9",
-                "nome": "Barra de Cereal",
                 "statusId": "sts-16r1fzim",
                 "updatedAt": "2026-06-26T00:24:06.965Z"
               },
@@ -14644,9 +14656,9 @@
               },
               {
                 "id": "itm-mjhkr3iy",
-                "nome": "Ocos",
+                "nome": "Ovos",
                 "statusId": "sts-16r1fzim",
-                "updatedAt": "2026-06-26T00:24:06.965Z"
+                "updatedAt": "2026-06-26T23:29:08.706Z"
               },
               {
                 "id": "itm-32d5k9n2",
@@ -14703,12 +14715,6 @@
                 "updatedAt": "2026-06-26T00:24:06.965Z"
               },
               {
-                "id": "itm-2zey1vdl",
-                "nome": "Sal de Ovo",
-                "statusId": "sts-of9hlo0a",
-                "updatedAt": "2026-06-26T01:37:23.137Z"
-              },
-              {
                 "id": "itm-30v1nseu",
                 "nome": "Salada Orgânica",
                 "statusId": "sts-16r1fzim",
@@ -14725,7 +14731,20 @@
         ]
       }
     ],
-    "_seedApplied": true
+    "_seedApplied": true,
+    "sortLevels": {
+      "sec-70715om9": [
+        {
+          "col": "status",
+          "dir": "asc"
+        },
+        {
+          "col": "nome",
+          "dir": "asc"
+        }
+      ],
+      "sec-spayx2on": []
+    }
   },
   "config": {
     "apiKey": "",

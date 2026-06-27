@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.60</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.67</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1519,7 +1519,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.60 — agenda-v0560</p>
+    <p class="version-tag">Agenda v0.5.67 — agenda-v0567</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -11717,8 +11717,10 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
   var table = document.createElement('div');
   table.style.cssText = 'border:1px solid var(--border);border-radius:8px;overflow:hidden;';
 
-  // Multi-level sort state per section
-  var sortLevels = []; // [{col, dir}]
+  // Multi-level sort state per section — persisted in state
+  if (!state.lists.sortLevels) state.lists.sortLevels = {};
+  var sortLevels = state.lists.sortLevels[sec.id] || [];
+  state.lists.sortLevels[sec.id] = sortLevels;
 
   function sortedItems() {
     var items = (sec.items || []).slice();
@@ -11755,6 +11757,8 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
     if (idx === -1) { sortLevels.push({col:col, dir:'asc'}); }
     else if (sortLevels[idx].dir === 'asc') { sortLevels[idx].dir = 'desc'; }
     else { sortLevels.splice(idx, 1); }
+    state.lists.sortLevels[sec.id] = sortLevels;
+    saveState();
     rebuildRows();
   }
 
@@ -11819,7 +11823,7 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
 
   // Selection action bar (hidden by default)
   selBar = document.createElement('div');
-  selBar.style.cssText = 'display:none;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border);';
+  selBar.style.cssText = 'display:none;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;';
   selCount = document.createElement('span'); selCount.style.cssText='font-size:12px;color:var(--accent);flex:1;font-weight:600;';
   var moveBtn = document.createElement('button'); moveBtn.className='btn-sm accent'; moveBtn.textContent='↗ Mover para...';
   var clearBtn2 = document.createElement('button'); clearBtn2.className='btn-sm'; clearBtn2.textContent='Desmarcar';
@@ -11828,12 +11832,13 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
     selAll.checked=false; selAll.style.opacity='0'; updateSelectionBar();
   };
   selBar.appendChild(selCount); selBar.appendChild(moveBtn); selBar.appendChild(clearBtn2);
-  table.appendChild(selBar);
+  // selBar lives outside the table so overflow:hidden doesn't clip it
 
   // Items tbody — created here so updateSelectionBar and rebuildRows can use it
   tbody = document.createElement('div');
   tbody.dataset.secId = sec.id;
   tbody.className = 'list-sec-tbody';
+  tbody._onSelChange = updateSelectionBar; // store callback so callers outside this closure can use it
   table.appendChild(tbody);
 
   moveBtn.onclick = function() {
@@ -11848,6 +11853,7 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
   };
 
   // Items
+  block.appendChild(selBar);
   block.appendChild(table);
 
   if (!sec.items) sec.items = [];
@@ -11876,7 +11882,7 @@ function buildItemRow(list, sec, item, tbody, onSelChange) {
   var chk = document.createElement('input'); chk.type='checkbox'; chk.className='list-item-chk';
   chk.dataset.itemId = item.id;
   chk.style.cssText = 'width:13px;height:13px;cursor:pointer;accent-color:var(--accent);opacity:0;transition:opacity .15s;';
-  chk.onclick = function(e){ e.stopPropagation(); chk.style.opacity='1'; if(onSelChange) onSelChange(); };
+  chk.onclick = function(e){ e.stopPropagation(); chk.style.opacity='1'; var cb = onSelChange || (tbody && tbody._onSelChange); if(cb) cb(); };
   chkCell.appendChild(chk);
   row.appendChild(chkCell);
 
@@ -11948,7 +11954,7 @@ function inlineEditItemName(cell, list, sec, item, tbody) {
         item.nome = v; item.updatedAt = nowISO(); saveState();
       }
     }
-    rebuildItemRow(list, sec, item, tbody);
+    rebuildItemRow(list, sec, item, tbody, tbody._onSelChange);
   }
   input.addEventListener('blur', save);
   input.addEventListener('keydown', function(e){
@@ -11992,7 +11998,7 @@ function addListItem(list, sec) {
   // Rebuild this section's tbody
   var tbody = document.querySelector('.list-sec-tbody[data-sec-id="'+sec.id+'"]');
   if (tbody) {
-    tbody.appendChild(buildItemRow(list, sec, item, tbody));
+    tbody.appendChild(buildItemRow(list, sec, item, tbody, tbody._onSelChange));
     // Immediately start editing the new item name
     var lastRow = tbody.lastElementChild;
     var nameCell = lastRow ? lastRow.children[1] : null; // index 1: after checkbox
@@ -12035,7 +12041,7 @@ function openStatusPicker(e, list, sec, item, tbody) {
   noneOpt.onmouseleave = function(){ noneOpt.style.background=''; };
   noneOpt.onclick = function(){
     item.statusId = null; item.updatedAt = nowISO(); saveState();
-    rebuildItemRow(list, sec, item, tbody); dd.remove();
+    rebuildItemRow(list, sec, item, tbody, tbody._onSelChange); dd.remove();
   };
   dd.appendChild(noneOpt);
 
@@ -12057,7 +12063,7 @@ function openStatusPicker(e, list, sec, item, tbody) {
     }
     opt.onclick = function(){
       item.statusId = st.id; item.updatedAt = nowISO(); saveState();
-      rebuildItemRow(list, sec, item, tbody); dd.remove();
+      rebuildItemRow(list, sec, item, tbody, tbody._onSelChange); dd.remove();
     };
     opt.prepend(dot); opt.insertBefore(lbl, opt.lastChild||null);
     dd.appendChild(opt);
