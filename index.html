@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.67</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.73</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1519,7 +1519,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.67 — agenda-v0567</p>
+    <p class="version-tag">Agenda v0.5.73 — agenda-v0573</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -11771,7 +11771,9 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
     th.style.cssText = 'font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;user-select:none;' + (col?'cursor:pointer;':'') + (align?'text-align:'+align+';':'');
     th.dataset.col = col||'';
     th.dataset.label = label;
-    th.textContent = label;
+    var initBadge = col ? sortBadge(col) : '';
+    th.textContent = label + initBadge;
+    th.style.color = initBadge ? 'var(--accent)' : 'var(--muted)';
     if (col) {
       th.onclick = function() {
         sortClick(col);
@@ -11839,6 +11841,7 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
   tbody.dataset.secId = sec.id;
   tbody.className = 'list-sec-tbody';
   tbody._onSelChange = updateSelectionBar; // store callback so callers outside this closure can use it
+  tbody._rebuildRows = rebuildRows; // store full resort function so status changes can trigger resort
   table.appendChild(tbody);
 
   moveBtn.onclick = function() {
@@ -11954,7 +11957,7 @@ function inlineEditItemName(cell, list, sec, item, tbody) {
         item.nome = v; item.updatedAt = nowISO(); saveState();
       }
     }
-    rebuildItemRow(list, sec, item, tbody, tbody._onSelChange);
+    if (tbody._rebuildRows) tbody._rebuildRows(); else rebuildItemRow(list, sec, item, tbody, tbody._onSelChange);
   }
   input.addEventListener('blur', save);
   input.addEventListener('keydown', function(e){
@@ -12041,7 +12044,8 @@ function openStatusPicker(e, list, sec, item, tbody) {
   noneOpt.onmouseleave = function(){ noneOpt.style.background=''; };
   noneOpt.onclick = function(){
     item.statusId = null; item.updatedAt = nowISO(); saveState();
-    rebuildItemRow(list, sec, item, tbody, tbody._onSelChange); dd.remove();
+    if (tbody._rebuildRows) tbody._rebuildRows(); else rebuildItemRow(list, sec, item, tbody, tbody._onSelChange);
+    dd.remove();
   };
   dd.appendChild(noneOpt);
 
@@ -12063,7 +12067,8 @@ function openStatusPicker(e, list, sec, item, tbody) {
     }
     opt.onclick = function(){
       item.statusId = st.id; item.updatedAt = nowISO(); saveState();
-      rebuildItemRow(list, sec, item, tbody, tbody._onSelChange); dd.remove();
+      if (tbody._rebuildRows) tbody._rebuildRows(); else rebuildItemRow(list, sec, item, tbody, tbody._onSelChange);
+      dd.remove();
     };
     opt.prepend(dot); opt.insertBefore(lbl, opt.lastChild||null);
     dd.appendChild(opt);
