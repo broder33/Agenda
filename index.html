@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.01</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.03</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1526,7 +1526,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.01 — agenda-v0601</p>
+    <p class="version-tag">Agenda v0.6.03 — agenda-v0603</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -3797,7 +3797,8 @@ var _commentSortDesc = true; // true = mais novo primeiro
 var _cardSortLevels = [{ col: 'data', dir: 'desc' }]; // default: newest first
 var _cardViewMode = 'list'; // 'list' or 'month'
 var _cardFocusedBill = null; // { y, m } of the currently open bill in list view
-var _cardCollapsedYears = {}; // year -> bool (false=expanded)
+var _cardCollapsedYears = {}; // cardId|year -> bool (false=expanded)
+var _cardActiveMonthIdx = {};  // cardId -> monthIdx (por cartao, nao global)
 var _cardMonthLabel = 'fechamento'; // 'fechamento' or 'vencimento'
 
 function openCommentDropdown(anchorEl, taskId) {
@@ -9479,7 +9480,10 @@ function cardDisplayMonth(y, m, card) {
 
 function toggleCardYear(y) {
   if (y === new Date().getFullYear()) return;
-  _cardCollapsedYears[y] = (_cardCollapsedYears[y] !== false) ? false : true;
+  // Chave por cartao: recolher um ano em um cartao nao pode recolher nos outros
+  var pel = document.getElementById('card-panel-content');
+  var k = ((pel && pel.dataset.cardId) || '') + '|' + y;
+  _cardCollapsedYears[k] = (_cardCollapsedYears[k] !== false) ? false : true;
   renderCardPreserve();
 }
 
@@ -9507,9 +9511,10 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var defIdx = 0;
   allMonths.forEach(function(mo,i){ if (mo.y*12+mo.m===highlightAbs) defIdx=i; });
 
-  var activeIdx = el.dataset.monthIdx !== undefined && el.dataset.monthIdx !== '' ? parseInt(el.dataset.monthIdx) : defIdx;
+  var storedIdx = _cardActiveMonthIdx[cardId];
+  var activeIdx = (storedIdx !== undefined && storedIdx !== '') ? parseInt(storedIdx) : defIdx;
   activeIdx = Math.max(0, Math.min(activeIdx, allMonths.length-1));
-  el.dataset.monthIdx = activeIdx;
+  _cardActiveMonthIdx[cardId] = activeIdx;
   var mo = allMonths[activeIdx];
 
   // Header
@@ -9524,7 +9529,7 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var analysisBtn = document.createElement('button'); analysisBtn.className = 'btn-sm'; analysisBtn.textContent = '📊 Análise'; analysisBtn.onclick = function(){ openCardAnalysis(card.id); };
   var groupsBtn = document.createElement('button'); groupsBtn.className = 'btn-sm'; groupsBtn.textContent = 'Grupos'; groupsBtn.onclick = openCatGroupsModal;
   var vt = document.createElement('div'); vt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
-  var lb = document.createElement('button'); lb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='list'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='list'?'#000':'var(--muted)'); lb.textContent = '≡ Lista'; lb.onclick = function(){ _cardViewMode='list'; state.card.viewMode='list'; saveState(); el.dataset.monthIdx=''; renderCard(); };
+  var lb = document.createElement('button'); lb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='list'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='list'?'#000':'var(--muted)'); lb.textContent = '≡ Lista'; lb.onclick = function(){ _cardViewMode='list'; state.card.viewMode='list'; saveState(); delete _cardActiveMonthIdx[cardId]; renderCard(); };
   var mb = document.createElement('button'); mb.style.cssText = 'padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(_cardViewMode==='month'?'var(--accent)':'var(--surface2)')+';color:'+(_cardViewMode==='month'?'#000':'var(--muted)'); mb.textContent = '◫ Carousel';
   vt.appendChild(lb); vt.appendChild(mb);
   var lt = document.createElement('div'); lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden';
@@ -9539,11 +9544,11 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var prevBtn = document.createElement('button');
   prevBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:6px;color:' + (activeIdx===0?'var(--border)':'var(--muted)') + ';cursor:pointer;font-size:20px;padding:4px 14px;transition:color .15s';
   prevBtn.textContent = '‹'; prevBtn.disabled = activeIdx===0;
-  prevBtn.onclick = function(){ el.dataset.monthIdx = activeIdx-1; renderCard(); };
+  prevBtn.onclick = function(){ _cardActiveMonthIdx[cardId] = activeIdx-1; renderCard(); };
   var nextBtn = document.createElement('button');
   nextBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:6px;color:' + (activeIdx===allMonths.length-1?'var(--border)':'var(--muted)') + ';cursor:pointer;font-size:20px;padding:4px 14px;transition:color .15s';
   nextBtn.textContent = '›'; nextBtn.disabled = activeIdx===allMonths.length-1;
-  nextBtn.onclick = function(){ el.dataset.monthIdx = activeIdx+1; renderCard(); };
+  nextBtn.onclick = function(){ _cardActiveMonthIdx[cardId] = activeIdx+1; renderCard(); };
 
   var navCenter = document.createElement('div'); navCenter.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px';
   var monthLbl = document.createElement('div'); monthLbl.style.cssText = 'font-size:16px;font-weight:600;color:var(--text)';
@@ -9555,7 +9560,7 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
     var dot = document.createElement('div');
     var isAct = di===activeIdx;
     dot.style.cssText = 'width:'+(isAct?'18px':'6px')+';height:6px;border-radius:3px;background:'+(isAct?'var(--accent)':'var(--border)')+';cursor:pointer;transition:all .2s';
-    (function(idx){ dot.onclick = function(){ el.dataset.monthIdx=idx; renderCard(); }; })(di);
+    (function(idx){ dot.onclick = function(){ _cardActiveMonthIdx[cardId]=idx; renderCard(); }; })(di);
     dotsDiv.appendChild(dot);
   }
   navCenter.appendChild(monthLbl); navCenter.appendChild(dotsDiv);
@@ -9566,7 +9571,7 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   navBar.addEventListener('touchstart', function(e){ swipeX=e.touches[0].clientX; }, {passive:true});
   navBar.addEventListener('touchend', function(e){
     var dx = e.changedTouches[0].clientX - swipeX;
-    if (Math.abs(dx)>50) { el.dataset.monthIdx = dx<0 ? Math.min(activeIdx+1,allMonths.length-1) : Math.max(activeIdx-1,0); renderCard(); }
+    if (Math.abs(dx)>50) { _cardActiveMonthIdx[cardId] = dx<0 ? Math.min(activeIdx+1,allMonths.length-1) : Math.max(activeIdx-1,0); renderCard(); }
   }, {passive:true});
 
   // Bill content
@@ -9680,7 +9685,7 @@ function renderCardBills(el, cardId) {
     var months = Object.keys(yearBills).map(Number).sort(function(a,b){return b-a;});
     if (!months.length && y !== currentYear) return;
     var isCurrentYear = (y === currentYear);
-    var isCollapsed = !isCurrentYear && (_cardCollapsedYears[y] !== false);
+    var isCollapsed = !isCurrentYear && (_cardCollapsedYears[cardId + '|' + y] !== false);
     var chevRot = isCollapsed ? '0' : '90';
     html += '<div style="margin-top:16px">'      + '<div onclick="toggleCardYear(' + y + ')" style="font-family:DM Mono,monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none">'      + '<span style="font-size:9px;display:inline-block;transform:rotate(' + chevRot + 'deg);transition:transform .2s">▶</span>'      + '<span>' + y + '</span></div>';
     if (isCollapsed) { html += '</div>'; return; }
@@ -11735,16 +11740,49 @@ function importData() {
     reader.onload = ev => {
       try {
         const imported = JSON.parse(ev.target.result);
-        confirmAction('Importar dados', 'Isso substituirá todos os seus dados atuais. Continuar?', () => {
-          // Force timestamp so mergeState doesn't skip due to guard
-          imported._updatedAt = new Date().toISOString();
-          state._updatedAt = null;
+
+        /* Regra de datas na importacao
+           - Arquivo mais novo: importa e PRESERVA a data do arquivo. Dado
+             identico tem que manter data identica entre aparelhos.
+           - Arquivo mais antigo (fallback): avisa, exige confirmacao, e ao
+             confirmar CARIMBA A HORA ATUAL. A versao antiga passa a ser a mais
+             recente e sobrescreve as copias dos outros aparelhos, que de outro
+             modo a rejeitariam por serem mais novas. */
+        var fileStamp = imported._updatedAt || null;
+        var curStamp  = state._updatedAt || null;
+        var semData   = !fileStamp;
+        var maisAntigo = !!(fileStamp && curStamp && fileStamp < curStamp);
+
+        var cTitle = 'Importar dados';
+        var cMsg   = 'Isso substituirá todos os seus dados atuais. Continuar?';
+        if (semData && curStamp) {
+          cTitle = 'Importar arquivo sem data';
+          cMsg = 'O arquivo não tem data de atualização, então não é possível compará-lo com os dados atuais (' +
+                 fmtStamp(curStamp) + '). Se continuar, o conteúdo do arquivo passará a valer como o mais recente ' +
+                 'e substituirá as cópias dos outros aparelhos. Continuar?';
+        } else if (maisAntigo) {
+          cTitle = 'Importar versão mais antiga';
+          cMsg = 'ATENÇÃO: o arquivo é mais antigo que os dados atuais. Arquivo: ' + fmtStamp(fileStamp) +
+                 '. Atual: ' + fmtStamp(curStamp) + '. Se continuar, esta versão antiga passará a valer como a ' +
+                 'mais recente e substituirá as cópias dos outros aparelhos. Continuar?';
+        }
+
+        confirmAction(cTitle, cMsg, () => {
+          var finalStamp = (maisAntigo || semData) ? new Date().toISOString() : fileStamp;
+          imported._updatedAt = finalStamp;
+          state._updatedAt = null; // desarma o guard do mergeState
           mergeState(imported);
           applyTaskSeeds();
           applyTheme();
+          state._updatedAt = finalStamp;
+          // Sem isto, saveState leria a importacao como alteracao e carimbaria
+          // a hora atual por cima da data escolhida acima.
+          _lastDataSig = JSON.stringify(buildCloudPayload());
           saveState();
           renderAll();
-          showToast('Dados importados com sucesso');
+          showToast((maisAntigo || semData)
+            ? 'Versão importada e marcada como a mais recente'
+            : 'Dados importados com sucesso');
         });
       } catch(e) { showToast('Erro ao ler arquivo'); }
     };
