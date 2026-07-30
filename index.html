@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.99</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.01</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1526,7 +1526,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.99 — agenda-v0599</p>
+    <p class="version-tag">Agenda v0.6.01 — agenda-v0601</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1635,6 +1635,52 @@ function updateDbStamp() {
                '). Este navegador não está usando a nuvem.';
   }
 }
+
+/* Preferencias de tela: vivem apenas neste aparelho.
+   Ficam no espelho local (agenda_local) e sao removidas do que sobe para a
+   nuvem, para que trocar de aba ou ordenar nao gere gravacao nem mexa na
+   data do banco, e para que um aparelho nao imponha sua tela ao outro. */
+const UI_FIELDS = {
+  config:  ['activeTab', 'theme'],
+  tasks:   ['sortLevels', 'sortBy', 'sortColId', 'sortDir', 'showTime',
+            'filterStatus', 'viewMode', '_closedSectionOpen'],
+  lists:   ['sortLevels'],
+  card:    ['viewMode'],
+  debit:   ['viewMode'],
+  finance: ['openMonths', 'activeMonths', 'currentYear']
+};
+
+function stripUIFields(o) {
+  if (!o) return o;
+  Object.keys(UI_FIELDS).forEach(function(mod) {
+    if (!o[mod]) return;
+    UI_FIELDS[mod].forEach(function(f) { delete o[mod][f]; });
+  });
+  // zoom do Cronograma: depende do tamanho da tela
+  if (o.lists && o.lists.crono) {
+    delete o.lists.crono.scale;
+    delete o.lists.crono.autoFit;
+  }
+  // largura de coluna e por aparelho; a definicao da coluna nao
+  if (o.tasks && Array.isArray(o.tasks.columns)) {
+    o.tasks.columns.forEach(function(c) { if (c) delete c.width; });
+  }
+  return o;
+}
+
+// Estado que efetivamente vai para a nuvem, sem _updatedAt (que muda sempre e
+// impediria a comparacao com a gravacao anterior)
+function buildCloudPayload() {
+  var p = stripUIFields(JSON.parse(JSON.stringify(state)));
+  delete p._updatedAt;
+  return p;
+}
+
+// Duas perguntas independentes, duas referencias:
+//   _lastDataSig  : o dado mudou desde a ultima gravacao? (vale offline tambem)
+//   _lastCloudSig : a nuvem ja recebeu exatamente este payload?
+let _lastDataSig = null;
+let _lastCloudSig = null;
 
 function writeLocalMirror() {
   try {
@@ -1789,7 +1835,11 @@ async function onLogin() {
   _supabaseLoadComplete = true;
   // Espelho so aqui: antes dos seeds, tasks.items ainda esta vazio porque o
   // mergeState move os itens para _savedItems. Gravar antes apagaria tarefas.
-  if (_cloudLoaded) writeLocalMirror();
+  if (_cloudLoaded) {
+    writeLocalMirror();
+    // o que esta na tela e exatamente o que a nuvem tem
+    _lastCloudSig = _lastDataSig = JSON.stringify(buildCloudPayload());
+  }
 }
 
 function updateAuthUI() {
@@ -1892,7 +1942,20 @@ async function loadFromSupabase() {
       _cloudLoaded = false;
       return;
     }
-    if (data?.data) mergeState(data.data);
+    if (data?.data) {
+      // Larguras de coluna sao deste aparelho: guardar antes do merge, que
+      // substitui o array de colunas inteiro, e recolocar depois pelo id.
+      var localWidths = {};
+      ((state.tasks && state.tasks.columns) || []).forEach(function(c) {
+        if (c && c.width != null) localWidths[c.id] = c.width;
+      });
+      // Versoes anteriores gravaram preferencias de tela na nuvem; remove-las
+      // aqui impede que a configuracao do outro aparelho substitua a daqui.
+      mergeState(stripUIFields(data.data));
+      ((state.tasks && state.tasks.columns) || []).forEach(function(c) {
+        if (c && localWidths[c.id] != null) c.width = localWidths[c.id];
+      });
+    }
     _cloudLoaded = true;
   } catch(e) {
     console.warn('loadFromSupabase:', e);
@@ -2066,13 +2129,22 @@ async function saveState() {
     updateUndoRedoBtns();
   }
   dedupListItems(); // always dedup before saving
+  // Alteracao de tela (aba, ordenacao, zoom) nao muda o payload da nuvem:
+  // nesse caso nada sobe e a data do banco nao avanca.
+  const payload = buildCloudPayload();
+  const sig = JSON.stringify(payload);
+  const dataChanged = (_lastDataSig === null) || (sig !== _lastDataSig);
+  _lastDataSig = sig;
+
   // Antes de saber se existe sessao, o conteudo e gravado mas a hora NAO
   // avanca: senao esta copia venceria a nuvem na comparacao do proximo boot.
-  if (_authResolved) state._updatedAt = new Date().toISOString();
-  else _pendingLocalSave = true;
+  if (dataChanged) {
+    if (_authResolved) state._updatedAt = new Date().toISOString();
+    else _pendingLocalSave = true;
+  }
 
-  // Espelho local em TODA gravacao, logado ou nao. E isto que garante que
-  // uma abertura sem nuvem mostre o dado real em vez de uma copia velha.
+  // Espelho local em TODA gravacao, logado ou nao (inclusive preferencias de
+  // tela). E isto que garante que uma abertura sem nuvem mostre o dado real.
   writeLocalMirror();
   updateDbStamp();
 
@@ -2082,13 +2154,17 @@ async function saveState() {
   // com um estado possivelmente mais antigo.
   if (!_cloudLoaded) { updateCloudBanner(); return; }
 
+  if (sig === _lastCloudSig) return; // a nuvem ja tem exatamente isto
+
+  payload._updatedAt = state._updatedAt;
   try {
     const { error } = await _sb.from('agenda_data').upsert({
       user_id: currentUser.id,
-      data: state,
+      data: payload,
       updated_at: state._updatedAt || new Date().toISOString()
     }, { onConflict: 'user_id' });
     if (error) throw error;
+    _lastCloudSig = sig;
     if (_cloudSaveFailed) { _cloudSaveFailed = false; updateCloudBanner(); }
   } catch(e) {
     console.warn('Save failed:', e);
@@ -14062,6 +14138,10 @@ function applyListSeeds() {
 
     // Tenta conectar ao Supabase em background. Nao desiste se a
     // biblioteca ou a sessao nao subirem na primeira tentativa.
+    // Referencia inicial do dado: sem ela, a primeira acao de tela seria
+    // interpretada como alteracao e avancaria a data indevidamente.
+    _lastDataSig = JSON.stringify(buildCloudPayload());
+
     updateAuthUI();
     initAuth();
   } catch(e) {
