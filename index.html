@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.95</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.96</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1400,6 +1400,12 @@ tr.dragging { opacity: 0.4; }
     </div>
   </div>
 </header>
+
+<!-- Aviso de estado da nuvem (oculto quando tudo esta normal) -->
+<div id="cloudWarn" style="display:none;padding:10px 14px;background:#7f1d1d;color:#fee2e2;font-family:'DM Sans',sans-serif;font-size:12.5px;line-height:1.5;border-bottom:1px solid #b91c1c">
+  <span id="cloudWarnMsg"></span>
+  <button onclick="retryCloud()" style="margin-left:8px;background:#fee2e2;color:#7f1d1d;border:none;border-radius:4px;padding:3px 10px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer">Tentar novamente</button>
+</div>
 
 <!-- ═══════════════════ TABS ═══════════════════ -->
 <div class="tabs" id="tabsBar"></div>
@@ -1519,7 +1525,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.95 — agenda-v0595</p>
+    <p class="version-tag">Agenda v0.5.96 — agenda-v0596</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1544,33 +1550,149 @@ function showModal(el) {
 const SUPABASE_URL = 'https://fxzikckzgvdwzvjysoao.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4emlrY2t6Z3Zkd3p2anlzb2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzODA0MTEsImV4cCI6MjA5NDk1NjQxMX0.G2FxeztO2r1UP_LijbXwr4S4GIY8rK5b3zw5P2hcH5s';
 let _sb = null;
-try {
-  if (window.supabase && window.supabase.createClient && SUPABASE_URL !== 'SUPABASE_URL_PLACEHOLDER') {
-    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  }
-} catch(e) { console.warn('Supabase init:', e); }
+const SUPABASE_LIB_URL = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+
+function tryCreateSbClient() {
+  if (_sb) return true;
+  try {
+    if (window.supabase && window.supabase.createClient && SUPABASE_URL !== 'SUPABASE_URL_PLACEHOLDER') {
+      _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      return true;
+    }
+  } catch(e) { console.warn('Supabase init:', e); }
+  return false;
+}
+tryCreateSbClient();
+
+// Recarrega a biblioteca se o <script> do topo falhou (rede fria no boot)
+function loadSupabaseLib() {
+  return new Promise(function(resolve) {
+    if (window.supabase && window.supabase.createClient) return resolve(true);
+    var done = false;
+    var finish = function(v) { if (!done) { done = true; resolve(v); } };
+    var s = document.createElement('script');
+    s.src = SUPABASE_LIB_URL;
+    s.onload = function() { finish(!!(window.supabase && window.supabase.createClient)); };
+    s.onerror = function() { finish(false); };
+    // Requisicao pendurada nao pode travar a tentativa nem o aviso na tela
+    setTimeout(function() { finish(false); }, 8000);
+    document.head.appendChild(s);
+  });
+}
 
 let currentUser = null;
 let _supabaseLoadComplete = false;
 
-async function initAuth() {
-  if (!_sb) { showApp(false); return; }
-  const { data: { session } } = await _sb.auth.getSession();
-  if (session?.user) {
-    currentUser = session.user;
-    await onLogin();
-  } else {
-    showApp(false); // showApp agora sempre mostra o app
+/* Estado da nuvem
+   _cloudExpected : existe conta Supabase salva neste navegador
+   _cloudLoaded   : os dados da nuvem foram lidos com sucesso nesta sessao
+   Nunca gravar na nuvem com _cloudLoaded false: gravaria o estado local
+   por cima de algo possivelmente mais novo no servidor. */
+let _cloudExpected = false;
+let _cloudLoaded = false;
+// Enquanto false, ainda nao sabemos se existe sessao. Gravar um _updatedAt
+// novo neste periodo bloquearia a leitura da nuvem na proxima abertura.
+let _authResolved = false;
+let _cloudSaveFailed = false;
+let _authListenerAttached = false;
+
+// Espelho local: copia fiel do estado atual, sempre com o _updatedAt vigente
+// (nunca inventa hora nova, para nao competir com a nuvem na comparacao)
+function writeLocalMirror() {
+  try {
+    localStorage.setItem('agenda_local', JSON.stringify(state));
+  } catch(e) { console.warn('localStorage:', e); }
+}
+
+function hasCloudAccount() {
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') > 0) return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function updateCloudBanner() {
+  var el = document.getElementById('cloudWarn');
+  if (!el) return;
+  var msg = '';
+  if (currentUser && !_cloudLoaded) {
+    msg = 'Conectado, mas não foi possível ler seus dados da nuvem. O que está na tela é a cópia deste dispositivo, e nada será enviado à nuvem até a leitura funcionar.';
+  } else if (_cloudExpected && !currentUser) {
+    msg = 'Sem conexão com a nuvem. Você está vendo a cópia salva neste dispositivo, que pode não ter as alterações mais recentes feitas em outro aparelho.';
+  } else if (_cloudSaveFailed) {
+    msg = 'A última gravação na nuvem falhou. Suas alterações estão salvas neste dispositivo.';
   }
+  if (!msg) { el.style.display = 'none'; return; }
+  var m = document.getElementById('cloudWarnMsg');
+  if (m) m.textContent = msg;
+  el.style.display = 'block';
+}
+
+function attachAuthListener() {
+  if (_authListenerAttached || !_sb) return;
+  _authListenerAttached = true;
   _sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
       currentUser = session.user;
       await onLogin();
+      updateCloudBanner();
     } else if (event === 'SIGNED_OUT') {
       currentUser = null;
+      _cloudLoaded = false;
+      _cloudSaveFailed = false;
+      _cloudExpected = hasCloudAccount();
       showApp(false);
+      updateCloudBanner();
     }
   });
+}
+
+// Retorna 'ok' | 'anon' | 'lib' | 'session' | 'data'
+async function connectCloud() {
+  if (!tryCreateSbClient()) {
+    await loadSupabaseLib();
+    if (!tryCreateSbClient()) return 'lib';
+  }
+  attachAuthListener();
+  let session = null;
+  try {
+    const res = await _sb.auth.getSession();
+    session = res && res.data ? res.data.session : null;
+  } catch(e) { console.warn('getSession:', e); return 'session'; }
+  _authResolved = true;
+  if (!session || !session.user) {
+    showApp(false); // showApp agora sempre mostra o app
+    return _cloudExpected ? 'session' : 'anon';
+  }
+  currentUser = session.user;
+  await onLogin();
+  return _cloudLoaded ? 'ok' : 'data';
+}
+
+async function initAuth() {
+  _cloudExpected = hasCloudAccount();
+  const delays = [0, 1500, 4000, 10000, 20000];
+  for (let i = 0; i < delays.length; i++) {
+    if (delays[i]) await new Promise(function(r) { setTimeout(r, delays[i]); });
+    const st = await connectCloud();
+    updateCloudBanner();
+    if (st === 'ok' || st === 'anon') return;
+  }
+  // Esgotadas as tentativas: libera a gravacao normal para o app seguir
+  // utilizavel offline. O espelho local passa a valer como versao corrente.
+  _authResolved = true;
+  updateCloudBanner();
+}
+
+async function retryCloud() {
+  _cloudSaveFailed = false;
+  _cloudExpected = hasCloudAccount();
+  const st = await connectCloud();
+  updateCloudBanner();
+  if (st === 'ok') renderAll();
 }
 
 async function loginGoogle() {
@@ -1581,6 +1703,10 @@ async function loginGoogle() {
 async function logout() {
   if (_sb) await _sb.auth.signOut();
   currentUser = null;
+  // Saida intencional: nao e estado degradado, nao deve gerar aviso
+  _cloudLoaded = false;
+  _cloudSaveFailed = false;
+  _cloudExpected = hasCloudAccount();
   updateAuthUI();
   showToast('Sessão encerrada — modo local ativo');
 }
@@ -1605,6 +1731,9 @@ async function onLogin() {
   dedupListItems();
   renderAll();
   _supabaseLoadComplete = true;
+  // Espelho so aqui: antes dos seeds, tasks.items ainda esta vazio porque o
+  // mergeState move os itens para _savedItems. Gravar antes apagaria tarefas.
+  if (_cloudLoaded) writeLocalMirror();
 }
 
 function updateAuthUI() {
@@ -1623,6 +1752,7 @@ function updateAuthUI() {
     name.style.display = 'none';
     menuBtn.textContent = 'Entrar com Google';
   }
+  updateCloudBanner();
 }
 
 function showApp(loggedIn) {
@@ -1698,9 +1828,20 @@ let state = {
 async function loadFromSupabase() {
   if (!_sb || !currentUser) return;
   try {
-    const { data } = await _sb.from('agenda_data').select('data').eq('user_id', currentUser.id).single();
+    const { data, error } = await _sb.from('agenda_data').select('data').eq('user_id', currentUser.id).single();
+    if (error) {
+      // PGRST116 = nenhuma linha para este usuario: conta nova, nao e falha
+      if (error.code === 'PGRST116') { _cloudLoaded = true; return; }
+      console.warn('loadFromSupabase:', error);
+      _cloudLoaded = false;
+      return;
+    }
     if (data?.data) mergeState(data.data);
-  } catch(e) { /* primeira vez */ }
+    _cloudLoaded = true;
+  } catch(e) {
+    console.warn('loadFromSupabase:', e);
+    _cloudLoaded = false;
+  }
 }
 
 function dedupListItems() {
@@ -1868,18 +2009,33 @@ async function saveState() {
     updateUndoRedoBtns();
   }
   dedupListItems(); // always dedup before saving
-  state._updatedAt = new Date().toISOString();
-  if (!_sb || !currentUser) {
-    try { localStorage.setItem('agenda_local', JSON.stringify(state)); } catch(e) {}
-    return;
-  }
+  // Antes de saber se existe sessao, o conteudo e gravado mas a hora NAO
+  // avanca: senao esta copia venceria a nuvem na comparacao do proximo boot.
+  if (_authResolved) state._updatedAt = new Date().toISOString();
+
+  // Espelho local em TODA gravacao, logado ou nao. E isto que garante que
+  // uma abertura sem nuvem mostre o dado real em vez de uma copia velha.
+  writeLocalMirror();
+
+  if (!_sb || !currentUser) return;
+
+  // Sem ter lido a nuvem nesta sessao, gravar sobrescreveria o servidor
+  // com um estado possivelmente mais antigo.
+  if (!_cloudLoaded) { updateCloudBanner(); return; }
+
   try {
-    await _sb.from('agenda_data').upsert({
+    const { error } = await _sb.from('agenda_data').upsert({
       user_id: currentUser.id,
       data: state,
-      updated_at: state._updatedAt
+      updated_at: state._updatedAt || new Date().toISOString()
     }, { onConflict: 'user_id' });
-  } catch(e) { console.warn('Save failed:', e); }
+    if (error) throw error;
+    if (_cloudSaveFailed) { _cloudSaveFailed = false; updateCloudBanner(); }
+  } catch(e) {
+    console.warn('Save failed:', e);
+    _cloudSaveFailed = true;
+    updateCloudBanner();
+  }
 }
 
 /* Seeds financeiros migrados do faturas_9.html */
@@ -13844,9 +14000,10 @@ function applyListSeeds() {
       }
     });
 
-    // Tenta conectar ao Supabase em background
-    if (!_sb) { updateAuthUI(); return; }
-    await initAuth();
+    // Tenta conectar ao Supabase em background. Nao desiste se a
+    // biblioteca ou a sessao nao subirem na primeira tentativa.
+    updateAuthUI();
+    initAuth();
   } catch(e) {
     console.error('Init error:', e);
     // Garante que o app sempre apareça mesmo com erro
