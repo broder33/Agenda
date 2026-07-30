@@ -1376,7 +1376,8 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.96</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.5.99</span>
+    <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
     <button class="btn-header" id="undoBtn" onclick="undo()" disabled style="opacity:0.4;padding:4px 10px" title="Nada para desfazer">↩ Desfazer</button>
@@ -1525,7 +1526,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.5.96 — agenda-v0596</p>
+    <p class="version-tag">Agenda v0.5.99 — agenda-v0599</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1575,7 +1576,7 @@ function loadSupabaseLib() {
     s.onload = function() { finish(!!(window.supabase && window.supabase.createClient)); };
     s.onerror = function() { finish(false); };
     // Requisicao pendurada nao pode travar a tentativa nem o aviso na tela
-    setTimeout(function() { finish(false); }, 8000);
+    setTimeout(function() { finish(false); }, 5000);
     document.head.appendChild(s);
   });
 }
@@ -1593,11 +1594,48 @@ let _cloudLoaded = false;
 // Enquanto false, ainda nao sabemos se existe sessao. Gravar um _updatedAt
 // novo neste periodo bloquearia a leitura da nuvem na proxima abertura.
 let _authResolved = false;
+let _pendingLocalSave = false;
 let _cloudSaveFailed = false;
 let _authListenerAttached = false;
 
 // Espelho local: copia fiel do estado atual, sempre com o _updatedAt vigente
 // (nunca inventa hora nova, para nao competir com a nuvem na comparacao)
+// Data da ultima atualizacao dos dados (a mesma gravada na nuvem).
+// Serve para conferir, entre aparelhos, se a versao em uso esta sincronizada.
+function fmtStamp(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  var p = function(n) { return n < 10 ? '0' + n : '' + n; };
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2) +
+         ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+function updateDbStamp() {
+  var el = document.getElementById('dbStamp');
+  if (!el) return;
+  // Tres estados distintos:
+  //   confirmado : a nuvem foi lida com sucesso nesta sessao
+  //   degradado  : existe conta na nuvem, mas a leitura nao foi confirmada
+  //   sem nuvem  : este navegador nao usa nuvem (nunca logou ou saiu da conta)
+  var cloudInvolved = _cloudExpected || !!currentUser;
+  var degraded = cloudInvolved && !_cloudLoaded;
+  el.textContent = '⟳ ' + fmtStamp(state._updatedAt) + (degraded ? ' · local' : '');
+  el.style.color = degraded ? 'var(--accent2)' : 'var(--muted)';
+  var quando = state._updatedAt ? new Date(state._updatedAt).toLocaleString('pt-BR') : '';
+  if (!state._updatedAt) {
+    el.title = 'Sem data de atualização registrada';
+  } else if (degraded) {
+    el.title = 'Data da cópia deste dispositivo (' + quando +
+               '). Não foi possível confirmar com a nuvem nesta sessão.';
+  } else if (_cloudLoaded) {
+    el.title = 'Confirmado com a nuvem: ' + quando;
+  } else {
+    el.title = 'Dados locais deste dispositivo (' + quando +
+               '). Este navegador não está usando a nuvem.';
+  }
+}
+
 function writeLocalMirror() {
   try {
     localStorage.setItem('agenda_local', JSON.stringify(state));
@@ -1625,10 +1663,19 @@ function updateCloudBanner() {
   } else if (_cloudSaveFailed) {
     msg = 'A última gravação na nuvem falhou. Suas alterações estão salvas neste dispositivo.';
   }
+  updateDbStamp();
   if (!msg) { el.style.display = 'none'; return; }
   var m = document.getElementById('cloudWarnMsg');
   if (m) m.textContent = msg;
   el.style.display = 'block';
+}
+
+// Regrava com hora valida o que foi salvo antes da autenticacao resolver,
+// para que nenhuma edicao fique com data anterior a si mesma.
+function flushPendingSave() {
+  if (!_pendingLocalSave) return;
+  _pendingLocalSave = false;
+  saveState();
 }
 
 function attachAuthListener() {
@@ -1665,6 +1712,7 @@ async function connectCloud() {
   _authResolved = true;
   if (!session || !session.user) {
     showApp(false); // showApp agora sempre mostra o app
+    flushPendingSave();
     return _cloudExpected ? 'session' : 'anon';
   }
   currentUser = session.user;
@@ -1680,10 +1728,18 @@ async function initAuth() {
     const st = await connectCloud();
     updateCloudBanner();
     if (st === 'ok' || st === 'anon') return;
+    // Apos duas falhas seguidas assumimos que nao havera nuvem nesta abertura
+    // e liberamos a gravacao normal. As tentativas seguem em segundo plano.
+    if (i >= 1 && !_authResolved) {
+      _authResolved = true;
+      flushPendingSave();
+      updateCloudBanner();
+    }
   }
   // Esgotadas as tentativas: libera a gravacao normal para o app seguir
   // utilizavel offline. O espelho local passa a valer como versao corrente.
   _authResolved = true;
+  flushPendingSave();
   updateCloudBanner();
 }
 
@@ -1938,6 +1994,7 @@ function mergeState(saved) {
     }
   }
   state._updatedAt = saved._updatedAt;
+  updateDbStamp();
 }
 
 var _undoSnapshot = null;
@@ -2012,10 +2069,12 @@ async function saveState() {
   // Antes de saber se existe sessao, o conteudo e gravado mas a hora NAO
   // avanca: senao esta copia venceria a nuvem na comparacao do proximo boot.
   if (_authResolved) state._updatedAt = new Date().toISOString();
+  else _pendingLocalSave = true;
 
   // Espelho local em TODA gravacao, logado ou nao. E isto que garante que
   // uma abertura sem nuvem mostre o dado real em vez de uma copia velha.
   writeLocalMirror();
+  updateDbStamp();
 
   if (!_sb || !currentUser) return;
 
@@ -2282,6 +2341,7 @@ function renderAll() {
   if (activeTab === 'dashboard') renderDashboard();
   if (activeTab === 'apps') renderApps();
   if (activeTab === 'lists') renderLists();
+  updateDbStamp();
 }
 
 /* ═══════════════════════════════════════════════════════════
