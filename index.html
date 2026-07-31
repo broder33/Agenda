@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.03</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.04</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1526,7 +1526,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.03 — agenda-v0603</p>
+    <p class="version-tag">Agenda v0.6.04 — agenda-v0604</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -9074,6 +9074,31 @@ function openCardBills(cardId) {
 }
 
 
+/* Valor em aberto da fatura — mesma conta do rodape (buildCardTxTable):
+   total liquido de estornos menos os pagamentos lancados, nunca negativo. */
+function getBillOpenAmount(cardId, y, m) {
+  var txs = (state.card.bills && state.card.bills[cardId] && state.card.bills[cardId][y]
+             && state.card.bills[cardId][y][m]) || [];
+  var total = txs.reduce(function(s,t){ return s + (parseFloat(t.valor)||0); }, 0);
+  var pays = (state.card.payments && state.card.payments[cardId] && state.card.payments[cardId][y]
+              && state.card.payments[cardId][y][m]) || [];
+  var pago = pays.reduce(function(s,p){ return s + (parseFloat(p.valor)||0); }, 0);
+  return { total: total, pago: pago,
+           aberto: Math.round(Math.max(0, total - pago) * 100) / 100 };
+}
+
+/* Selo de valor em aberto para os cabecalhos de fatura. So aparece quando ha
+   pagamento parcial: sem pagamento o valor em aberto e igual ao total que ja
+   esta no cabecalho, e repetir o mesmo numero so polui. */
+function billOpenBadge(cardId, y, m) {
+  var info = getBillOpenAmount(cardId, y, m);
+  if (!(info.pago > 0 && info.aberto > 0.005)) return '';
+  return '<span title="Valor em aberto desta fatura" style="font-size:10px;'
+    + 'background:rgba(239,68,68,.12);color:var(--danger);border-radius:4px;'
+    + 'padding:2px 7px;font-family:DM Mono,monospace;white-space:nowrap">aberto '
+    + fmtBRL(info.aberto) + '</span>';
+}
+
 function getBillStatus(cardId, y, m, card) {
   var txs = (state.card.bills[cardId] && state.card.bills[cardId][y] && state.card.bills[cardId][y][m]) || [];
   if (!txs.length) return 'empty'; // no transactions — neutral status
@@ -9584,14 +9609,17 @@ function renderCardBillsMonth(el, cardId, card, bills, years, highlightAbs) {
   var billDiv = document.createElement('div');
   billDiv.style.cssText = 'border:1px solid var(--border);border-radius:10px;overflow:hidden';
   var billHdr = document.createElement('div');
-  billHdr.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2)';
+  billHdr.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 14px;background:var(--surface2)';
   var sb = document.createElement('span'); sb.style.cssText = 'font-size:10px;border-radius:4px;padding:2px 7px';
   if (status==='paid'){sb.style.background='#1a3a1a';sb.style.color='#4caf50';sb.textContent='✓ Paga';}
   else if (status==='overdue'){sb.style.background='#3a1a1a';sb.style.color='var(--danger)';sb.textContent='⚠ Em atraso';}
   else if (status==='empty'){sb.style.background='var(--surface)';sb.style.color='var(--muted)';sb.textContent='Sem lançamentos';}
   else{sb.style.background='#2a2a1a';sb.style.color='#f0a500';sb.textContent='● Em aberto';}
   var te = document.createElement('span'); te.className='month-total'; te.textContent=fmtBRL(net);
-  billHdr.appendChild(sb); billHdr.appendChild(te);
+  billHdr.appendChild(sb);
+  var ob = billOpenBadge(cardId, mo.y, mo.m);
+  if (ob) { var obEl = document.createElement('span'); obEl.innerHTML = ob; billHdr.appendChild(obEl.firstChild); }
+  billHdr.appendChild(te);
   if (status!=='empty') {
     var pb = document.createElement('button');
     pb.style.cssText = 'font-size:10px;background:'+(status==='paid'?'#1a3a1a':'none')+';color:'+(status==='paid'?'#4caf50':'var(--muted)')+';border:1px solid '+(status==='paid'?'#4caf5066':'var(--border)')+';border-radius:4px;padding:2px 8px;cursor:pointer;margin-left:auto';
@@ -9720,7 +9748,7 @@ function renderCardBills(el, cardId) {
       var dispLabel = MONTHS_PT[dispM.m] + (dispM.y !== y ? ' ' + dispM.y : '');
 
       html += '<div class="month-block" style="margin-bottom:8px' + (isHighlight ? ';box-shadow:0 0 0 1px var(--accent)44;border-radius:8px' : '') + '">'        + '<div class="month-header" data-bid="' + bid + '" style="' + headerExtra + '">'        + '<span class="month-chevron' + (isOpen ? ' open' : '') + '">▶</span>'        + '<span class="month-name">' + dispLabel + '</span>'
-        + '<div class="month-pills">' + statusBadge + '</div>'
+        + '<div class="month-pills">' + statusBadge + billOpenBadge(cardId, y, m) + '</div>'
         + (total ? '<span class="month-total">' + fmtBRL(total) + '</span>' : '')
         + payBtn
         + '<button class="btn-remove-month" onclick="event.stopPropagation();cardBillAction(this,\'remove\')" data-cid="' + cardId + '" data-y="' + y + '" data-m="' + m + '">✕</button>'
