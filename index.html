@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.06</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.08</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1526,7 +1526,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.06 — agenda-v0606</p>
+    <p class="version-tag">Agenda v0.6.08 — agenda-v0608</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -2004,6 +2004,7 @@ function mergeState(saved) {
     if (!state.card.rules) state.card.rules = [];
     migrateCategorias();
   }
+  if (saved.dashboard) state.dashboard = { ...(state.dashboard||{}), ...saved.dashboard };
   if (saved.debit) {
     state.debit = { ...state.debit, ...saved.debit };
     if (!state.debit.accounts) state.debit.accounts = [];
@@ -6362,6 +6363,24 @@ var _dashLabel = 'fechamento';
 var _dashAccum = false; // acumulado do ano
 var _dashActiveSources = null; // null = all active; Set of source ids when filtered
 var _dashActiveGroups = null; // null = all active; Set of group names when filtered
+
+/* Filtros do "Exibir" — persistidos em state.dashboard e sincronizados.
+   Guardamos apenas os itens OCULTOS: assim um cartao/grupo criado depois
+   nasce visivel, em vez de sumir por nao constar numa lista de visiveis. */
+function dashHydrateFilters() {
+  var d = state.dashboard || {};
+  _dashHiddenSources = Array.isArray(d.hiddenSources) ? d.hiddenSources.slice() : [];
+  _dashHiddenGroups  = Array.isArray(d.hiddenGroups)  ? d.hiddenGroups.slice()  : [];
+}
+var _dashHiddenSources = [];
+var _dashHiddenGroups = [];
+
+function dashPersistFilters(allSourceIds, allGroupNames) {
+  if (!state.dashboard) state.dashboard = {};
+  state.dashboard.hiddenSources = allSourceIds.filter(function(id){ return !_dashActiveSources.has(id); });
+  state.dashboard.hiddenGroups  = allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); });
+  saveState();
+}
 var _dashViewMode = 'group'; // 'category' or 'group'
 var _dashPayFilter = 'all'; // 'all' | 'paid' | 'open'
 
@@ -7828,13 +7847,27 @@ function renderDashboard() {
   allSources.push({id:'contas', label:'Contas', color:'var(--muted)'});
   var debitSources = (state.debit.accounts||[]).map(function(a){ return {id:a.id, label:a.nome, color:a.cor||'var(--accent)'}; });
   debitSources.forEach(function(s){ allSources.push(s); });
-  if (!_dashActiveSources) _dashActiveSources = new Set(allSources.map(function(s){return s.id;}));
+  var _allSourceIds = allSources.map(function(s){ return s.id; });
+  var _allGroupNames = (state.card.catGroups || []).map(function(g){ return g.name||g.nome; });
+  if (!_dashActiveSources || !_dashActiveGroups) dashHydrateFilters();
+  if (!_dashActiveSources) {
+    _dashActiveSources = new Set(_allSourceIds.filter(function(id){ return _dashHiddenSources.indexOf(id) < 0; }));
+    if (!_dashActiveSources.size) _dashActiveSources = new Set(_allSourceIds); // nunca deixa tudo oculto
+  }
+  // Grupos hidratados AQUI, antes do botao: o indicador de filtro ativo
+  // precisa considerar grupos, e nao apenas fontes.
+  if (!_dashActiveGroups) {
+    _dashActiveGroups = new Set(_allGroupNames.filter(function(n){ return _dashHiddenGroups.indexOf(n) < 0; }));
+    if (!_dashActiveGroups.size) _dashActiveGroups = new Set(_allGroupNames);
+  }
 
   var exibirWrap = document.createElement('div');
   exibirWrap.style.cssText = 'position:relative;display:inline-block';
 
   var exibirBtn = document.createElement('button');
-  var allActive = allSources.every(function(s){ return _dashActiveSources.has(s.id); });
+  var _nHidden = _allSourceIds.filter(function(id){ return !_dashActiveSources.has(id); }).length
+               + _allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); }).length;
+  var allActive = (_nHidden === 0);
   exibirBtn.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:'+(allActive?'var(--muted)':'var(--text)')+';cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px';
   exibirBtn.innerHTML = 'Exibir' + (!allActive ? ' <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent)"></span>' : '');
 
@@ -7877,6 +7910,7 @@ function renderDashboard() {
       } else {
         _dashActiveSources.add(s.id);
       }
+      dashPersistFilters(_allSourceIds, _allGroupNames);
       renderDashboard();
     };
     return row;
@@ -7884,8 +7918,7 @@ function renderDashboard() {
 
   var cardSources = allSources.filter(function(s){ return s.id !== 'contas' && !debitSources.find(function(d){ return d.id===s.id; }); });
   var contasSource = allSources.find(function(s){ return s.id === 'contas'; });
-  var allGroups = state.card.catGroups || [];
-  if (!_dashActiveGroups) _dashActiveGroups = new Set(allGroups.map(function(g){ return g.name||g.nome; }));
+  var allGroups = state.card.catGroups || []; // hidratacao dos grupos ocorre acima, antes do botao
 
   function makeSep() {
     var sep = document.createElement('div');
@@ -7916,6 +7949,7 @@ function renderDashboard() {
       } else {
         _dashActiveGroups.add(gname);
       }
+      dashPersistFilters(_allSourceIds, _allGroupNames);
       renderDashboard();
     };
     return row;
