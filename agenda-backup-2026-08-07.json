@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-07-29T17:59:58.415Z",
+  "_updatedAt": "2026-08-07T17:53:42.799Z",
   "tasks": {
     "items": [
       {
@@ -1091,30 +1091,37 @@
       {
         "id": "ts-25",
         "title": "Anunciar memória DDR4",
-        "status": "pausado",
+        "status": "aguardando",
         "priority": "media",
-        "dueDate": "",
+        "dueDate": "2026-08-31",
         "description": "",
         "children": [],
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-05-27T01:05:38.642Z",
+        "updatedAt": "2026-07-31T20:40:32.531Z",
         "linkedItems": [],
         "notes": "",
         "tags": [],
         "expanded": false,
-        "comments": [],
+        "comments": [
+          {
+            "id": "c-1785530432530",
+            "author": "Broder",
+            "text": "Memórias anunciadas no Mercado Livre e na OLX. Se não houver retorno em 30 dias, abaixar o valor.",
+            "createdAt": "2026-07-31T20:40:32.531Z"
+          }
+        ],
         "customFields": {
           "col-mpncx3x8esctq8roca": "opt-1779843934457"
         },
         "group": "default"
       },
       {
-        "id": "mrz30c0r0mvaf43qrrt",
-        "title": "Localiza Cobrança Dupla",
+        "id": "ms9eqenzh4r78z00t9e",
+        "title": "Fisioterapeuta",
         "description": "",
-        "dueDate": "2026-08-01",
+        "dueDate": "2026-08-07",
         "priority": "media",
-        "status": "aguardando",
+        "status": "pendente",
         "children": [],
         "linkedItems": [],
         "notes": "",
@@ -1122,24 +1129,56 @@
         "expanded": false,
         "comments": [
           {
-            "id": "c-1784906151315",
-            "author": "Usuário",
-            "text": "Contato feito dia 24/07/2026 realizando a reclamação da cobrança dupla. O prazo de resposta é de até 5 dias úteis em meu e-mail. Se não houver resposta, entrar em contato novamente.\n\nProtocolo de atendimento: 202627436641\n\nTelefone: 0800 979 2020",
-            "createdAt": "2026-07-24T15:15:51.315Z",
-            "editedAt": "2026-07-24T15:18:26.045Z"
-          },
-          {
-            "id": "c-1785347842617",
-            "author": "Usuário",
-            "text": "A localiza já apresentou resposta; a cobrança deverá ser estornada no cartão. Aguardar o estorno até o fechamento da fatura (dia 01).",
-            "createdAt": "2026-07-29T17:57:22.617Z"
+            "id": "c-1785530500369",
+            "author": "Broder",
+            "text": "Marcar uma consulta com um fisioterapeuta - verificar situação do distal.",
+            "createdAt": "2026-07-31T20:41:40.369Z"
           }
         ],
         "customFields": {
-          "col-mpncx3x8esctq8roca": "opt-1779843980510"
+          "col-mpncx3x8esctq8roca": "opt-1779844233774"
         },
+        "createdAt": "2026-07-31T20:40:57.791Z",
+        "updatedAt": "2026-07-31T20:41:40.369Z"
+      },
+      {
+        "id": "mrz30c0r0mvaf43qrrt",
+        "tags": [],
+        "notes": "",
+        "title": "Localiza Cobrança Dupla",
+        "status": "encerrada",
+        "dueDate": "2026-08-01",
+        "children": [],
+        "comments": [
+          {
+            "id": "c-1784906151315",
+            "text": "Contato feito dia 24/07/2026 realizando a reclamação da cobrança dupla. O prazo de resposta é de até 5 dias úteis em meu e-mail. Se não houver resposta, entrar em contato novamente.\n\nProtocolo de atendimento: 202627436641\n\nTelefone: 0800 979 2020",
+            "author": "Usuário",
+            "editedAt": "2026-07-24T15:18:26.045Z",
+            "createdAt": "2026-07-24T15:15:51.315Z"
+          },
+          {
+            "id": "c-1785347842617",
+            "text": "A localiza já apresentou resposta; a cobrança deverá ser estornada no cartão. Aguardar o estorno até o fechamento da fatura (dia 01).",
+            "author": "Usuário",
+            "createdAt": "2026-07-29T17:57:22.617Z"
+          },
+          {
+            "id": "c-1785511759493",
+            "author": "Broder",
+            "text": "Estorno confirmado.",
+            "createdAt": "2026-07-31T15:29:19.493Z"
+          }
+        ],
+        "expanded": false,
+        "priority": "media",
         "createdAt": "2026-07-24T15:15:03.771Z",
-        "updatedAt": "2026-07-29T17:57:30.474Z"
+        "updatedAt": "2026-08-07T12:55:14.594Z",
+        "description": "",
+        "linkedItems": [],
+        "customFields": {
+          "col-mpncx3x8esctq8roca": "opt-1779843980510"
+        }
       },
       {
         "id": "mqu87nrxusahnjdljh",
@@ -1209,7 +1248,7 @@
         "notes": "",
         "title": "Dermatologista",
         "status": "acao-necessaria",
-        "dueDate": "2026-07-09",
+        "dueDate": "2026-08-07",
         "children": [],
         "comments": [
           {
@@ -1228,7 +1267,7 @@
         "expanded": false,
         "priority": "alta",
         "createdAt": "2026-06-11T19:18:15.733Z",
-        "updatedAt": "2026-07-08T19:48:37.492Z",
+        "updatedAt": "2026-07-31T20:42:01.822Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1285,7 +1324,7 @@
         "tags": [],
         "notes": "",
         "title": "LG CX55",
-        "status": "acao-necessaria",
+        "status": "encerrada",
         "dueDate": "2026-08-07",
         "children": [],
         "comments": [
@@ -1310,15 +1349,15 @@
           },
           {
             "id": "c-1785347876266",
-            "author": "Usuário",
             "text": "TV pronta; buscar a TV.",
+            "author": "Usuário",
             "createdAt": "2026-07-29T17:57:56.266Z"
           }
         ],
         "expanded": false,
         "priority": "media",
         "createdAt": "2026-06-09T18:28:46.625Z",
-        "updatedAt": "2026-07-29T17:58:14.568Z",
+        "updatedAt": "2026-08-07T12:55:17.913Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1357,7 +1396,7 @@
         "notes": "",
         "title": "Colnago Concept",
         "status": "acao-necessaria",
-        "dueDate": "2026-07-10",
+        "dueDate": "2026-08-03",
         "children": [
           {
             "id": "mprgaam5mwxr23000h",
@@ -1461,7 +1500,7 @@
             "notes": "",
             "title": "Adquirir gancheira",
             "status": "aguardando",
-            "dueDate": "2026-07-11",
+            "dueDate": "2026-07-31",
             "timeEnd": "",
             "children": [],
             "comments": [
@@ -1482,7 +1521,7 @@
             "priority": "media",
             "createdAt": "2026-05-29T21:57:27.197Z",
             "timeStart": "",
-            "updatedAt": "2026-07-08T19:48:07.106Z",
+            "updatedAt": "2026-07-30T17:24:51.260Z",
             "description": "",
             "linkedItems": [],
             "customFields": {
@@ -1508,7 +1547,7 @@
         "expanded": false,
         "priority": "media",
         "createdAt": "2026-05-29T21:43:52.770Z",
-        "updatedAt": "2026-07-08T19:53:08.263Z",
+        "updatedAt": "2026-07-30T17:24:27.481Z",
         "description": "",
         "linkedItems": [],
         "customFields": {
@@ -1736,24 +1775,24 @@
         "type": "status",
         "label": "Status",
         "order": 0,
-        "width": 120,
-        "visible": true
+        "visible": true,
+        "width": 120
       },
       {
         "id": "priority",
         "type": "priority",
         "label": "Prioridade",
         "order": 1,
-        "width": 100,
-        "visible": true
+        "visible": true,
+        "width": 100
       },
       {
         "id": "dueDate",
         "type": "date",
         "label": "Data",
         "order": 2,
-        "width": 80,
-        "visible": true
+        "visible": true,
+        "width": 80
       },
       {
         "id": "col-mpncx3x8esctq8roca",
@@ -2766,8 +2805,8 @@
             "obs": "",
             "nome": "Celular",
             "venc": "20/7/26",
-            "valor": 0,
-            "status": "aguardando",
+            "valor": 318.27,
+            "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
           },
           {
@@ -2792,65 +2831,65 @@
         "7": [
           {
             "id": 1784309634417.616,
+            "obs": "",
             "nome": "Aluguel",
             "venc": "10/8/26",
             "valor": 0,
-            "status": "nao-pago",
-            "obs": "",
+            "status": "aguardando",
             "categoriaId": "cat-z7pr22s4wd"
           },
           {
             "id": 1784309634417.5566,
+            "obs": "00547212968",
             "nome": "Condomínio",
             "venc": "10/8/26",
-            "valor": 0,
+            "valor": 1300.17,
             "status": "nao-pago",
-            "obs": "00547212968",
             "categoriaId": "cat-z7pr22s4wd"
           },
           {
             "id": 1784309634417.0332,
+            "obs": "",
             "nome": "Compagás",
             "venc": "10/8/26",
             "valor": 0,
-            "status": "nao-pago",
-            "obs": "",
+            "status": "aguardando",
             "categoriaId": "cat-m7umq5lu78"
           },
           {
             "id": 1784309634417.5527,
+            "obs": "",
             "nome": "Internet",
             "venc": "2/8/26",
             "valor": 0,
             "status": "nao-pago",
-            "obs": "",
             "categoriaId": "cat-m7umq5lu78"
           },
           {
             "id": 1784309634417.5854,
+            "obs": "",
             "nome": "Celular",
             "venc": "20/8/26",
             "valor": 0,
             "status": "nao-pago",
-            "obs": "",
             "categoriaId": "cat-0cihdyll7p"
           },
           {
             "id": 1784309634417.5974,
+            "obs": "",
             "nome": "Unimed",
             "venc": "7/8/26",
             "valor": 844.01,
             "status": "pago",
-            "obs": "",
             "categoriaId": "cat-winmzzrenu"
           },
           {
             "id": 1784309634417.4888,
+            "obs": "",
             "nome": "Londrina",
             "venc": "19/8/26",
             "valor": 0,
             "status": "nao-pago",
-            "obs": "",
             "categoriaId": "cat-1u3e2oudmq"
           }
         ],
@@ -6346,374 +6385,491 @@
             },
             {
               "id": "mrp8bst8h676cajsv1c",
-              "descricao": "BURGER KING",
               "data": "09/07/26",
+              "nota": "Burger King",
               "valor": 29.4,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Burger King"
+              "descricao": "BURGER KING",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8dj77fkbh5xxz05d",
-              "descricao": "Seguro de Conta",
               "data": "10/07/26",
+              "nota": "Seguro Cartão",
               "valor": 4.5,
               "parcela": "",
-              "categoriaId": "cat-iachsi0ie7",
-              "nota": "Seguro Cartão"
+              "descricao": "Seguro de Conta",
+              "categoriaId": "cat-iachsi0ie7"
             },
             {
               "id": "mrp8cwnm5xiv92cj16o",
-              "descricao": "Chef Verge Curitiba",
               "data": "10/07/26",
+              "nota": "Chef Verge Shopping Curitiba",
               "valor": 87.7,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Chef Verge Shopping Curitiba"
+              "descricao": "Chef Verge Curitiba",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8c9xeg8ltc0iwxcu",
-              "descricao": "Uber",
               "data": "10/07/26",
+              "nota": "Uber",
               "valor": 5.96,
               "parcela": "",
-              "categoriaId": "cat-9gx45purug",
-              "nota": "Uber"
+              "descricao": "Uber",
+              "categoriaId": "cat-9gx45purug"
             },
             {
               "id": "mrp8e4lwp7j7gefm3wd",
-              "descricao": "BURGER KING",
               "data": "12/07/26",
+              "nota": "Burger King",
               "valor": 20,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Burger King"
+              "descricao": "BURGER KING",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8er50gchbu83k56",
-              "descricao": "Giassi Supermercados",
               "data": "12/07/26",
+              "nota": "Giassi Joinville",
               "valor": 62.82,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Giassi Joinville"
+              "descricao": "Giassi Supermercados",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8fp2y436z9m8zbya",
-              "descricao": "AtaideSoaresTrind",
               "data": "13/07/26",
+              "nota": "Tata Lanches",
               "valor": 24,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Tata Lanches"
+              "descricao": "AtaideSoaresTrind",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8h4pqzguxaaw705p",
-              "descricao": "Pantanal Auto Pos",
               "data": "13/07/26",
+              "nota": "Lanche no posto",
               "valor": 16.99,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Lanche no posto"
+              "descricao": "Pantanal Auto Pos",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8hkaoqpccukf0j5",
-              "descricao": "Pantanal Auto Pos",
               "data": "13/07/26",
+              "nota": "Lanche no posto",
               "valor": 11.99,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Lanche no posto"
+              "descricao": "Pantanal Auto Pos",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8ij1gx70xkns8j3",
-              "descricao": "BURGER KING",
               "data": "14/07/26",
+              "nota": "Burger King",
               "valor": 42.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Burger King"
+              "descricao": "BURGER KING",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8m0uxq1ul6fysmia",
-              "descricao": "Jmcomercio",
               "data": "15/07/26",
+              "nota": "Hot Dog Higienópolis",
               "valor": 20.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Hot Dog Higienópolis"
+              "descricao": "Jmcomercio",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8mi3pgk8cgkwyoko",
-              "descricao": "Spotify",
               "data": "15/07/26",
+              "nota": "Spotify",
               "valor": 40.9,
               "parcela": "",
-              "categoriaId": "cat-iachsi0ie7",
-              "nota": "Spotify"
+              "descricao": "Spotify",
+              "categoriaId": "cat-iachsi0ie7"
             },
             {
               "id": "mrp8mu5nrp3co7uju5",
-              "descricao": "BURGER KING",
               "data": "15/07/26",
+              "nota": "Burger King",
               "valor": 81.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Burger King"
+              "descricao": "BURGER KING",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8poitmakut0sxsg",
-              "descricao": "Grupo Gennius Bra",
               "data": "16/07/26",
+              "nota": "Habib's - 30 Esfihas de Carne",
               "valor": 88.7,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Habib's - 30 Esfihas de Carne"
+              "descricao": "Grupo Gennius Bra",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "mrp8ol5l3b5mbdfgyn4",
-              "descricao": "Ifood",
               "data": "16/07/26",
+              "nota": "iFood - Outback Almoço",
               "valor": 146.87,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "iFood - Outback Almoço"
+              "descricao": "Ifood",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4tvtmc8ee6ts9pojs",
-              "descricao": "CALDO DE CANA VERA",
               "data": "17/07/26",
+              "nota": "Caldo de Cana",
               "valor": 8,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Caldo de Cana"
+              "descricao": "CALDO DE CANA VERA",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4tw5z808ramdjctvhq",
-              "descricao": "BURGER KING",
               "data": "17/07/26",
+              "nota": "Burger King",
               "valor": 20,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Burger King"
+              "descricao": "BURGER KING",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4tworl8u1zemnnj9q",
-              "descricao": "Uber",
               "data": "17/07/26",
+              "nota": "Uber",
               "valor": 8.46,
               "parcela": "",
-              "categoriaId": "cat-9gx45purug",
-              "nota": "Uber"
+              "descricao": "Uber",
+              "categoriaId": "cat-9gx45purug"
             },
             {
               "id": "ms4tx89hcnodjzgr",
-              "descricao": "URENTCAR",
               "data": "18/07/26",
+              "nota": "JET",
               "valor": 2.36,
               "parcela": "",
-              "categoriaId": "cat-9gx45purug",
-              "nota": "JET"
+              "descricao": "URENTCAR",
+              "categoriaId": "cat-9gx45purug"
             },
             {
               "id": "ms4txk2re22x48o4oxc",
-              "descricao": "JK LONDRINA",
               "data": "18/07/26",
+              "nota": "Muffato",
               "valor": 49.33,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Muffato"
+              "descricao": "JK LONDRINA",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4txvts2mvqwan8qjz",
-              "descricao": "URENTCAR",
               "data": "18/07/26",
+              "nota": "JET",
               "valor": 2.36,
               "parcela": "",
-              "categoriaId": "cat-9gx45purug",
-              "nota": "JET"
+              "descricao": "URENTCAR",
+              "categoriaId": "cat-9gx45purug"
             },
             {
               "id": "ms4tybdo7fpceuhs3ys",
-              "descricao": "CALDO DE CANA VERA",
               "data": "18/07/26",
+              "nota": "Caldo de Cana",
               "valor": 9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Caldo de Cana"
+              "descricao": "CALDO DE CANA VERA",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4ubqsbwyuqut7v6lf",
-              "descricao": "Microsoft",
               "data": "19/07/26",
+              "nota": "GamePass",
               "valor": 59.99,
               "parcela": "",
-              "categoriaId": "cat-77wa3taxwj",
-              "nota": "GamePass"
+              "descricao": "Microsoft",
+              "categoriaId": "cat-77wa3taxwj"
             },
             {
               "id": "ms4ucrzgf71zxbhsmdt",
-              "descricao": "iFood",
               "data": "20/07/26",
+              "nota": "iFood",
               "valor": 37.89,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "iFood"
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4uddwznkgjjl3lx5d",
-              "descricao": "iFood",
               "data": "20/07/26",
+              "nota": "iFood",
               "valor": 30.92,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "iFood"
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4udobg4n3if7t47mf",
-              "descricao": "Uber",
               "data": "20/07/26",
+              "nota": "Uber",
               "valor": 6.75,
               "parcela": "",
-              "categoriaId": "cat-9gx45purug",
-              "nota": "Uber"
+              "descricao": "Uber",
+              "categoriaId": "cat-9gx45purug"
             },
             {
               "id": "ms4udymtjmkj8zt4j5s",
-              "descricao": "BURGER KING",
               "data": "20/07/26",
+              "nota": "Burger King",
               "valor": 11.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Burger King"
+              "descricao": "BURGER KING",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4ueo4khdexssubqy",
-              "descricao": "Lai Chi",
               "data": "20/07/26",
+              "nota": "Refeição (Sara)",
               "valor": 34.99,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Refeição (Sara)"
+              "descricao": "Lai Chi",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4uff415mdk5vve1d3",
-              "descricao": "Sua Academia",
               "data": "20/07/26",
+              "nota": "SmartFit",
               "valor": 149.9,
               "parcela": "",
-              "categoriaId": "cat-hlva536gw7",
-              "nota": "SmartFit"
+              "descricao": "Sua Academia",
+              "categoriaId": "cat-hlva536gw7"
             },
             {
               "id": "ms4ugiajd8u0u5xks8j",
-              "descricao": "CALDO DE CANA VERA",
               "data": "21/07/26",
+              "nota": "Caldo de Cana",
               "valor": 8,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Caldo de Cana"
+              "descricao": "CALDO DE CANA VERA",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4ugscf2cmyhwp7wme",
-              "descricao": "99 Ride",
               "data": "21/07/26",
+              "nota": "99",
               "valor": 8.7,
               "parcela": "",
-              "categoriaId": "cat-9gx45purug",
-              "nota": "99"
+              "descricao": "99 Ride",
+              "categoriaId": "cat-9gx45purug"
             },
             {
               "id": "ms4uh82c27lpqck8xpz",
-              "descricao": "PANIF NATHALIA",
               "data": "21/07/26",
+              "nota": "Energético",
               "valor": 12.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Energético"
+              "descricao": "PANIF NATHALIA",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4uhocvksfu4gym8xf",
-              "descricao": "iFood",
               "data": "23/07/26",
+              "nota": "iFood",
               "valor": 26.99,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "iFood"
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4uitewo28uciu8gy",
-              "descricao": "Amazon Prime",
               "data": "24/07/26",
+              "nota": "Locação Filme - Soldado Universal",
               "valor": 11.9,
               "parcela": "",
-              "categoriaId": "cat-iachsi0ie7",
-              "nota": "Locação Filme - Soldado Universal"
+              "descricao": "Amazon Prime",
+              "categoriaId": "cat-iachsi0ie7"
             },
             {
               "id": "ms4ujeg5mff8x1n7d9",
-              "descricao": "iFood",
               "data": "25/07/26",
+              "nota": "iFood",
               "valor": 12.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "iFood"
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
             }
           ],
           "7": [
             {
               "id": "ms4ukeog7xqpazuvt2x",
-              "descricao": "iFood",
               "data": "27/07/26",
+              "nota": "iFood",
               "valor": 26.99,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "iFood"
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4ul4mjs3tdogb02q",
-              "descricao": "Mayconaparecido",
               "data": "27/07/26",
+              "nota": "Cachorro Quente",
               "valor": 20.9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Cachorro Quente"
+              "descricao": "Mayconaparecido",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4ule191jej2qj56lb",
-              "descricao": "CALDO DE CANA VERA",
               "data": "27/07/26",
+              "nota": "Caldo de Cana",
               "valor": 9,
               "parcela": "",
-              "categoriaId": "cat-2metcc4gvh",
-              "nota": "Caldo de Cana"
+              "descricao": "CALDO DE CANA VERA",
+              "categoriaId": "cat-2metcc4gvh"
             },
             {
               "id": "ms4ulu3eqh3xhjrgtc9",
-              "descricao": "iFood",
               "data": "27/07/26",
+              "nota": "iFood",
               "valor": 19.91,
+              "parcela": "",
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
+            },
+            {
+              "id": "ms4ujprfzdjqiir4v9",
+              "data": "26/07/26",
+              "nota": "iFood",
+              "valor": 63.24,
+              "parcela": "",
+              "descricao": "iFood",
+              "categoriaId": "cat-2metcc4gvh"
+            },
+            {
+              "id": "ms4uj5h6qpa2lf7p699",
+              "data": "25/07/26",
+              "nota": "Caldo de Cana",
+              "valor": 9,
+              "parcela": "",
+              "descricao": "CALDO DE CANA VERA",
+              "categoriaId": "cat-2metcc4gvh"
+            },
+            {
+              "id": "ms95d15qe3ma0ihyrcl",
+              "descricao": "iFood",
+              "data": "28/07/26",
+              "valor": 51.1,
               "parcela": "",
               "categoriaId": "cat-2metcc4gvh",
               "nota": "iFood"
             },
             {
-              "id": "ms4ujprfzdjqiir4v9",
+              "id": "ms95dahaodgkqexks6m",
               "descricao": "iFood",
-              "data": "26/07/26",
+              "data": "28/07/26",
+              "valor": 8.97,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "ms95dld8kl66yq0bws",
+              "descricao": "Uber",
+              "data": "28/07/26",
+              "valor": 5.77,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "ms95dzyd0p2cwojhkhpr",
+              "descricao": "iFood",
+              "data": "29/07/26",
+              "valor": 28.97,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "ms95eb11m8mpg192p6",
+              "descricao": "URENTCAR",
+              "data": "29/07/26",
+              "valor": 1.96,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "ms95ejx86xr99h4y7gs",
+              "descricao": "BURGER KING",
+              "data": "29/07/26",
+              "valor": 64.99,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger King"
+            },
+            {
+              "id": "ms95ex48vd7c86x4or",
+              "descricao": "iFood",
+              "data": "30/07/26",
               "valor": 63.24,
               "parcela": "",
               "categoriaId": "cat-2metcc4gvh",
               "nota": "iFood"
             },
             {
-              "id": "ms4uj5h6qpa2lf7p699",
-              "descricao": "CALDO DE CANA VERA",
-              "data": "25/07/26",
-              "valor": 9,
+              "id": "ms95f4hnqxgmu4uziyb",
+              "descricao": "Uber",
+              "data": "30/07/26",
+              "valor": 6.76,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "ms95fcaa6oss8ewbg5t",
+              "descricao": "Uber",
+              "data": "30/07/26",
+              "valor": 5.58,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "ms95gg6o7b1cngpdpdu",
+              "descricao": "SUPERMERCADOS VISCARDI",
+              "data": "28/07/26",
+              "valor": 19.9,
               "parcela": "",
               "categoriaId": "cat-2metcc4gvh",
-              "nota": "Caldo de Cana"
+              "nota": "Viscardi"
+            },
+            {
+              "id": "ms95gse69ld86ienpfo",
+              "descricao": "99 Ride",
+              "data": "28/07/26",
+              "valor": 8.6,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "ms95h65gqzn02cbnc0p",
+              "descricao": "iFood",
+              "data": "28/07/26",
+              "valor": 23.91,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "ms95kvbn8uxmwme36do",
+              "descricao": "Compra Mercado Livre",
+              "data": "28/07/26",
+              "valor": 63.19,
+              "parcela": "",
+              "categoriaId": "cat-ulhkok9chc",
+              "nota": "x15 Pilhas CR2032 Philips"
             }
           ]
         }
@@ -8776,15 +8932,15 @@
               "valor": 27.95,
               "parcela": "5/12",
               "descricao": "DM*helphbomaxcom  05/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "8d7b1dbf88864a3c83b2",
@@ -8794,15 +8950,15 @@
               "valor": 27.95,
               "parcela": "6/12",
               "descricao": "DM*helphbomaxcom  06/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "d69c1003932246c5a87e",
@@ -8812,15 +8968,15 @@
               "valor": 27.95,
               "parcela": "7/12",
               "descricao": "DM*helphbomaxcom  07/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "f3a2fc39f68d44be8ea2",
@@ -8830,15 +8986,15 @@
               "valor": 27.95,
               "parcela": "8/12",
               "descricao": "DM*helphbomaxcom  08/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "1176dead89e741868451",
@@ -8848,15 +9004,15 @@
               "valor": 27.95,
               "parcela": "9/12",
               "descricao": "DM*helphbomaxcom  09/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "4a717eda91284ce2bb08",
@@ -8866,15 +9022,15 @@
               "valor": 27.95,
               "parcela": "10/12",
               "descricao": "DM*helphbomaxcom  10/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "ab17563dc5974b36b581",
@@ -8884,15 +9040,15 @@
               "valor": 27.95,
               "parcela": "11/12",
               "descricao": "DM*helphbomaxcom  11/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 11,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "dd153f77b0354ca0b012",
@@ -8902,15 +9058,15 @@
               "valor": 27.95,
               "parcela": "12/12",
               "descricao": "DM*helphbomaxcom  12/12",
+              "anticipated": true,
               "categoriaId": "cat-iachsi0ie7",
+              "anticipatedFromM": 2,
+              "anticipatedFromY": 2027,
               "installmentTotal": 12,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 12,
-              "installmentGroupId": "grp-migrated-mq0aioubvxbh",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 2
+              "installmentGroupId": "grp-migrated-mq0aioubvxbh"
             },
             {
               "id": "c8e2cd8007834fc4bb47",
@@ -8920,15 +9076,15 @@
               "valor": 250.67,
               "parcela": "5/18",
               "descricao": "EC          *SAMSU05/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "343d454394a742f39cae",
@@ -8938,15 +9094,15 @@
               "valor": 250.67,
               "parcela": "6/18",
               "descricao": "EC          *SAMSU06/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "48f433bdae2e4f76ba5f",
@@ -8956,15 +9112,15 @@
               "valor": 250.67,
               "parcela": "7/18",
               "descricao": "EC          *SAMSU07/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "f16ed24368734b4f88ed",
@@ -8974,15 +9130,15 @@
               "valor": 250.67,
               "parcela": "8/18",
               "descricao": "EC          *SAMSU08/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "f4491a6ae8cd4c558043",
@@ -8992,15 +9148,15 @@
               "valor": 250.67,
               "parcela": "9/18",
               "descricao": "EC          *SAMSU09/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "c694f8ff13e1472b95a5",
@@ -9010,15 +9166,15 @@
               "valor": 250.67,
               "parcela": "10/18",
               "descricao": "EC          *SAMSU10/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "469a204aa7ae4beda852",
@@ -9028,15 +9184,15 @@
               "valor": 250.67,
               "parcela": "11/18",
               "descricao": "EC          *SAMSU11/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 11,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "2c5172252e414994ba72",
@@ -9046,15 +9202,15 @@
               "valor": 250.67,
               "parcela": "12/18",
               "descricao": "EC          *SAMSU12/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 2,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 12,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 2
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "809a48c09a784bffafd8",
@@ -9064,15 +9220,15 @@
               "valor": 250.67,
               "parcela": "13/18",
               "descricao": "EC          *SAMSU13/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 3,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 13,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 3
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "656d921733934c07bfeb",
@@ -9082,15 +9238,15 @@
               "valor": 250.67,
               "parcela": "14/18",
               "descricao": "EC          *SAMSU14/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 4,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 14,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 4
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "87c5d989cb9d4235a6e3",
@@ -9100,15 +9256,15 @@
               "valor": 250.67,
               "parcela": "15/18",
               "descricao": "EC          *SAMSU15/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 5,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 15,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 5
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "a0767bf7005a48db9599",
@@ -9118,15 +9274,15 @@
               "valor": 250.67,
               "parcela": "16/18",
               "descricao": "EC          *SAMSU16/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 6,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 16,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 6
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "c59911ba28ce4a38bcd1",
@@ -9136,15 +9292,15 @@
               "valor": 250.67,
               "parcela": "17/18",
               "descricao": "EC          *SAMSU17/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 17,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "c79e348550d140bfacb3",
@@ -9154,15 +9310,15 @@
               "valor": 250.67,
               "parcela": "18/18",
               "descricao": "EC          *SAMSU18/18",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2027,
               "installmentTotal": 18,
               "installmentStartM": 3,
               "installmentStartY": 2026,
               "installmentCurrent": 18,
-              "installmentGroupId": "grp-migrated-mq0aioubpkp2",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubpkp2"
             },
             {
               "id": "67e95a682a524f3a822b",
@@ -9172,15 +9328,15 @@
               "valor": 129.23,
               "parcela": "6/12",
               "descricao": "EC     *PICHAUINFO06/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "fdd0825abfd94cbab0f7",
@@ -9190,15 +9346,15 @@
               "valor": 129.23,
               "parcela": "7/12",
               "descricao": "EC     *PICHAUINFO07/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "5a7a445d90de4796b506",
@@ -9208,15 +9364,15 @@
               "valor": 129.23,
               "parcela": "8/12",
               "descricao": "EC     *PICHAUINFO08/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "6c8f9257bca545a3a481",
@@ -9226,15 +9382,15 @@
               "valor": 129.23,
               "parcela": "9/12",
               "descricao": "EC     *PICHAUINFO09/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "e25e2ad3ff2b44dbbf4f",
@@ -9244,15 +9400,15 @@
               "valor": 129.23,
               "parcela": "10/12",
               "descricao": "EC     *PICHAUINFO10/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "0f19f4e3fd874ad1bdb7",
@@ -9262,15 +9418,15 @@
               "valor": 129.23,
               "parcela": "11/12",
               "descricao": "EC     *PICHAUINFO11/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 11,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "a2ecb04c2fbe47a691a4",
@@ -9280,15 +9436,15 @@
               "valor": 129.23,
               "parcela": "12/12",
               "descricao": "EC     *PICHAUINFO12/12",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 12,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 12,
-              "installmentGroupId": "grp-migrated-mq0aioubtxy3",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubtxy3"
             },
             {
               "id": "01d61a8bc7c7480fa171",
@@ -9298,15 +9454,15 @@
               "valor": 1290,
               "parcela": "4/10",
               "descricao": "JIM.COM* DPA-CT TR04/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 4,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "c83e73139fd2495b9a3c",
@@ -9316,15 +9472,15 @@
               "valor": 1290,
               "parcela": "5/10",
               "descricao": "JIM.COM* DPA-CT TR05/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "9f78621f05384a268a92",
@@ -9334,15 +9490,15 @@
               "valor": 1290,
               "parcela": "6/10",
               "descricao": "JIM.COM* DPA-CT TR06/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "b07d8c822775426684e6",
@@ -9352,15 +9508,15 @@
               "valor": 1290,
               "parcela": "7/10",
               "descricao": "JIM.COM* DPA-CT TR07/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "fdea9fc5a0fe4efc9550",
@@ -9370,15 +9526,15 @@
               "valor": 1290,
               "parcela": "8/10",
               "descricao": "JIM.COM* DPA-CT TR08/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "f7b8dac035534898a512",
@@ -9388,15 +9544,15 @@
               "valor": 1290,
               "parcela": "9/10",
               "descricao": "JIM.COM* DPA-CT TR09/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "b5cde29185ce4839924b",
@@ -9406,15 +9562,15 @@
               "valor": 1290,
               "parcela": "10/10",
               "descricao": "JIM.COM* DPA-CT TR10/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubhoen",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubhoen"
             },
             {
               "id": "e76496149a8a4c86b4cc",
@@ -9424,15 +9580,15 @@
               "valor": 73.56,
               "parcela": "4/10",
               "descricao": "MERCADOLIVRE*MERCA04/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 4,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "7df72cdaade34df08802",
@@ -9442,15 +9598,15 @@
               "valor": 73.56,
               "parcela": "5/10",
               "descricao": "MERCADOLIVRE*MERCA05/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "5916a78c57c0401c9d2c",
@@ -9460,15 +9616,15 @@
               "valor": 73.56,
               "parcela": "6/10",
               "descricao": "MERCADOLIVRE*MERCA06/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "0412b18ba93d48b680d7",
@@ -9478,15 +9634,15 @@
               "valor": 73.56,
               "parcela": "7/10",
               "descricao": "MERCADOLIVRE*MERCA07/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "94bc733d0628401baca3",
@@ -9496,15 +9652,15 @@
               "valor": 73.56,
               "parcela": "8/10",
               "descricao": "MERCADOLIVRE*MERCA08/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "efd5e14386bc4514aca6",
@@ -9514,15 +9670,15 @@
               "valor": 73.56,
               "parcela": "9/10",
               "descricao": "MERCADOLIVRE*MERCA09/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "de9efa7c73a148a5a130",
@@ -9532,15 +9688,15 @@
               "valor": 73.56,
               "parcela": "10/10",
               "descricao": "MERCADOLIVRE*MERCA10/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubdtwo",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubdtwo"
             },
             {
               "id": "274200bdbaf64a8ca625",
@@ -9550,15 +9706,15 @@
               "valor": 66.41,
               "parcela": "4/10",
               "descricao": "MERCADOLIVRE*MERCA04/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 4,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "811602a696194bbc8b04",
@@ -9568,15 +9724,15 @@
               "valor": 66.41,
               "parcela": "5/10",
               "descricao": "MERCADOLIVRE*MERCA05/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "927dc085ffce4832897a",
@@ -9586,15 +9742,15 @@
               "valor": 66.41,
               "parcela": "6/10",
               "descricao": "MERCADOLIVRE*MERCA06/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "b55d3b743c1f42239455",
@@ -9604,15 +9760,15 @@
               "valor": 66.41,
               "parcela": "7/10",
               "descricao": "MERCADOLIVRE*MERCA07/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "4e97cbeaf8f14ca1b97c",
@@ -9622,15 +9778,15 @@
               "valor": 66.41,
               "parcela": "8/10",
               "descricao": "MERCADOLIVRE*MERCA08/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "c7c9119e3ff543759a35",
@@ -9640,15 +9796,15 @@
               "valor": 66.41,
               "parcela": "9/10",
               "descricao": "MERCADOLIVRE*MERCA09/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "eab6ccc673a24cc9ae05",
@@ -9658,15 +9814,15 @@
               "valor": 66.41,
               "parcela": "10/10",
               "descricao": "MERCADOLIVRE*MERCA10/10",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubtmeu",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubtmeu"
             },
             {
               "id": "bc88559e9026431eb276",
@@ -9676,15 +9832,15 @@
               "valor": 272.03,
               "parcela": "6/10",
               "descricao": "MLP    *KaBuM-KaBu06/10",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubahrw",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubahrw"
             },
             {
               "id": "a1c2f60f69354e6b9c6f",
@@ -9694,15 +9850,15 @@
               "valor": 272.03,
               "parcela": "7/10",
               "descricao": "MLP    *KaBuM-KaBu07/10",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubahrw",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubahrw"
             },
             {
               "id": "ce7304d4d0cb4908909b",
@@ -9712,15 +9868,15 @@
               "valor": 272.03,
               "parcela": "8/10",
               "descricao": "MLP    *KaBuM-KaBu08/10",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubahrw",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubahrw"
             },
             {
               "id": "c30760484ad24324a90e",
@@ -9730,15 +9886,15 @@
               "valor": 272.03,
               "parcela": "9/10",
               "descricao": "MLP    *KaBuM-KaBu09/10",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubahrw",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubahrw"
             },
             {
               "id": "f428e51cd5d746c99b45",
@@ -9748,15 +9904,15 @@
               "valor": 272.03,
               "parcela": "10/10",
               "descricao": "MLP    *KaBuM-KaBu10/10",
+              "anticipated": true,
               "categoriaId": "cat-18u0qooj47",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 2,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubahrw",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubahrw"
             },
             {
               "id": "2a0588fd4b444577858d",
@@ -9766,15 +9922,15 @@
               "valor": 382.5,
               "parcela": "4/10",
               "descricao": "VIVARA            04/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 4,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "af5eb7a5b4dd49658a7a",
@@ -9784,15 +9940,15 @@
               "valor": 382.5,
               "parcela": "5/10",
               "descricao": "VIVARA            05/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "11a8b533edae43d5b1ce",
@@ -9802,15 +9958,15 @@
               "valor": 382.5,
               "parcela": "6/10",
               "descricao": "VIVARA            06/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "c99880557ace42e1b556",
@@ -9820,15 +9976,15 @@
               "valor": 382.5,
               "parcela": "7/10",
               "descricao": "VIVARA            07/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 10,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 7,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 10
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "4881b72d1ab1471cad1c",
@@ -9838,15 +9994,15 @@
               "valor": 382.5,
               "parcela": "8/10",
               "descricao": "VIVARA            08/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 11,
+              "anticipatedFromY": 2026,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 8,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 11
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "da01162ae48a4d33b21b",
@@ -9856,15 +10012,15 @@
               "valor": 382.5,
               "parcela": "9/10",
               "descricao": "VIVARA            09/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 0,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 9,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 0
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "9f2e02352c4a4926b90a",
@@ -9874,15 +10030,15 @@
               "valor": 382.5,
               "parcela": "10/10",
               "descricao": "VIVARA            10/10",
+              "anticipated": true,
               "categoriaId": "cat-ovg9hujjsz",
+              "anticipatedFromM": 1,
+              "anticipatedFromY": 2027,
               "installmentTotal": 10,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 10,
-              "installmentGroupId": "grp-migrated-mq0aioubms8a",
-              "anticipated": true,
-              "anticipatedFromY": 2027,
-              "anticipatedFromM": 1
+              "installmentGroupId": "grp-migrated-mq0aioubms8a"
             },
             {
               "id": "64a2a8a2e166494a8105",
@@ -9892,15 +10048,15 @@
               "valor": 750,
               "parcela": "4/6",
               "descricao": "ZP     *LUIZ ALBE504/06",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 7,
+              "anticipatedFromY": 2026,
               "installmentTotal": 6,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 4,
-              "installmentGroupId": "grp-migrated-mq0aioubcuwa",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 7
+              "installmentGroupId": "grp-migrated-mq0aioubcuwa"
             },
             {
               "id": "0adc096bbd8b455d8f64",
@@ -9910,15 +10066,15 @@
               "valor": 750,
               "parcela": "5/6",
               "descricao": "ZP     *LUIZ ALBE505/06",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 8,
+              "anticipatedFromY": 2026,
               "installmentTotal": 6,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 5,
-              "installmentGroupId": "grp-migrated-mq0aioubcuwa",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 8
+              "installmentGroupId": "grp-migrated-mq0aioubcuwa"
             },
             {
               "id": "ac12342f89094c6ea5c9",
@@ -9928,361 +10084,427 @@
               "valor": 750,
               "parcela": "6/6",
               "descricao": "ZP     *LUIZ ALBE506/06",
+              "anticipated": true,
               "categoriaId": "cat-ulhkok9chc",
+              "anticipatedFromM": 9,
+              "anticipatedFromY": 2026,
               "installmentTotal": 6,
               "installmentStartM": 4,
               "installmentStartY": 2026,
               "installmentCurrent": 6,
-              "installmentGroupId": "grp-migrated-mq0aioubcuwa",
-              "anticipated": true,
-              "anticipatedFromY": 2026,
-              "anticipatedFromM": 9
+              "installmentGroupId": "grp-migrated-mq0aioubcuwa"
             },
             {
               "id": "mrp78wk6o3k03mvd3qr",
-              "descricao": "Estorno antecipação — DM*helphbomaxcom  05/12",
               "data": "09/07/26",
-              "valor": -7.45,
-              "tipo": "despesa",
-              "categoriaId": "cat-iachsi0ie7",
               "nota": "Antecipação de 5/12, 6/12, 7/12, 8/12, 9/12, 10/12, 11/12, 12/12",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -7.45,
+              "parcela": "",
+              "descricao": "Estorno antecipação — DM*helphbomaxcom  05/12",
+              "categoriaId": "cat-iachsi0ie7"
             },
             {
               "id": "mrp78wk6gbn3weqm14",
-              "descricao": "Estorno antecipação — EC          *SAMSU05/18",
               "data": "09/07/26",
-              "valor": -191.97,
-              "tipo": "despesa",
-              "categoriaId": "cat-18u0qooj47",
               "nota": "Antecipação de 5/18, 6/18, 7/18, 8/18, 9/18, 10/18, 11/18, 12/18, 13/18, 14/18, 15/18, 16/18, 17/18, 18/18",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -191.97,
+              "parcela": "",
+              "descricao": "Estorno antecipação — EC          *SAMSU05/18",
+              "categoriaId": "cat-18u0qooj47"
             },
             {
               "id": "mrp78wk6abteleo45ys",
-              "descricao": "Estorno antecipação — EC     *PICHAUINFO06/12",
               "data": "09/07/26",
-              "valor": -26.85,
-              "tipo": "despesa",
-              "categoriaId": "cat-18u0qooj47",
               "nota": "Antecipação de 6/12, 7/12, 8/12, 9/12, 10/12, 11/12, 12/12",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -26.85,
+              "parcela": "",
+              "descricao": "Estorno antecipação — EC     *PICHAUINFO06/12",
+              "categoriaId": "cat-18u0qooj47"
             },
             {
               "id": "mrp78wk6y63kqqd2ih",
-              "descricao": "Estorno antecipação — JIM.COM* DPA-CT TR04/10",
               "data": "09/07/26",
-              "valor": -268.09,
-              "tipo": "despesa",
-              "categoriaId": "cat-ulhkok9chc",
               "nota": "Antecipação de 4/10, 5/10, 6/10, 7/10, 8/10, 9/10, 10/10",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -268.09,
+              "parcela": "",
+              "descricao": "Estorno antecipação — JIM.COM* DPA-CT TR04/10",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrp78wk6or1l22w5vnn",
-              "descricao": "Estorno antecipação — MERCADOLIVRE*MERCA04/10",
               "data": "09/07/26",
-              "valor": -15.27,
-              "tipo": "despesa",
-              "categoriaId": "cat-ulhkok9chc",
               "nota": "Antecipação de 4/10, 5/10, 6/10, 7/10, 8/10, 9/10, 10/10",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -15.27,
+              "parcela": "",
+              "descricao": "Estorno antecipação — MERCADOLIVRE*MERCA04/10",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrp78wk6n9rxrp6gduf",
-              "descricao": "Estorno antecipação — MERCADOLIVRE*MERCA04/10",
               "data": "09/07/26",
-              "valor": -13.8,
-              "tipo": "despesa",
-              "categoriaId": "cat-ulhkok9chc",
               "nota": "Antecipação de 4/10, 5/10, 6/10, 7/10, 8/10, 9/10, 10/10",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -13.8,
+              "parcela": "",
+              "descricao": "Estorno antecipação — MERCADOLIVRE*MERCA04/10",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrp78wk6wo9yrerem4j",
-              "descricao": "Estorno antecipação — MLP    *KaBuM-KaBu06/10",
               "data": "09/07/26",
-              "valor": -30.43,
-              "tipo": "despesa",
-              "categoriaId": "cat-18u0qooj47",
               "nota": "Antecipação de 6/10, 7/10, 8/10, 9/10, 10/10",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -30.43,
+              "parcela": "",
+              "descricao": "Estorno antecipação — MLP    *KaBuM-KaBu06/10",
+              "categoriaId": "cat-18u0qooj47"
             },
             {
               "id": "mrp78wk6nokd3p00ch",
-              "descricao": "Estorno antecipação — VIVARA            04/10",
               "data": "09/07/26",
-              "valor": -79.48,
-              "tipo": "despesa",
-              "categoriaId": "cat-ovg9hujjsz",
               "nota": "Antecipação de 4/10, 5/10, 6/10, 7/10, 8/10, 9/10, 10/10",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -79.48,
+              "parcela": "",
+              "descricao": "Estorno antecipação — VIVARA            04/10",
+              "categoriaId": "cat-ovg9hujjsz"
             },
             {
               "id": "mrp78wk6027g9y1vhlzk",
-              "descricao": "Estorno antecipação — ZP     *LUIZ ALBE504/06",
               "data": "09/07/26",
-              "valor": -33.77,
-              "tipo": "despesa",
-              "categoriaId": "cat-ulhkok9chc",
               "nota": "Antecipação de 4/6, 5/6, 6/6",
-              "parcela": ""
+              "tipo": "despesa",
+              "valor": -33.77,
+              "parcela": "",
+              "descricao": "Estorno antecipação — ZP     *LUIZ ALBE504/06",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrp7f4z2iq15753b6",
-              "descricao": "LOCALIZA",
               "data": "10/07/26",
+              "nota": "Localiza",
               "valor": 358.46,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Localiza"
+              "descricao": "LOCALIZA",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7ejoqhhlrs3n54jp",
-              "descricao": "Auto posto agua verd",
               "data": "10/07/26",
+              "nota": "Abastecimento",
               "valor": 47.9,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Auto posto agua verd",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7ck2575j0n99dbbo",
-              "descricao": "Menegatti",
               "data": "10/07/26",
+              "nota": "Abastecimento",
               "valor": 100,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Menegatti",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7blq6zo4foodke5f",
-              "descricao": "Daiso brasil",
               "data": "10/07/26",
+              "nota": "Sacola p/ presente Isabela",
               "valor": 9.99,
               "parcela": "",
-              "categoriaId": "cat-bo388xg881",
-              "nota": "Sacola p/ presente Isabela"
+              "descricao": "Daiso brasil",
+              "categoriaId": "cat-bo388xg881"
             },
             {
               "id": "mrp7g0bvrjld31t7prd",
-              "descricao": "Auto posto santos dumo",
               "data": "12/07/26",
+              "nota": "Abastecimento",
               "valor": 101.17,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Auto posto santos dumo",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7jjoh8825so1z7i",
-              "descricao": "Auto posto azul ponta",
               "data": "13/07/26",
+              "nota": "Abastecimento",
               "valor": 159,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Auto posto azul ponta",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7ioh5a7yqz4bwtgf",
-              "descricao": "Posto montecarlo i",
               "data": "13/07/26",
+              "nota": "Abastecimento",
               "valor": 51.9,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Posto montecarlo i",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7hyixdg12p02xsep",
-              "descricao": "Autopostojardim",
               "data": "13/07/26",
+              "nota": "Abastecimento",
               "valor": 43.9,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Autopostojardim",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7na9cr4gw6aj56lb",
-              "descricao": "GAMMA.APP",
               "data": "14/07/26",
+              "nota": "Gamma Paul",
               "valor": 105.98,
               "parcela": "",
-              "categoriaId": "cat-1jv9cpaujf",
-              "nota": "Gamma Paul"
+              "descricao": "GAMMA.APP",
+              "categoriaId": "cat-1jv9cpaujf"
             },
             {
               "id": "mrp7mt8ce2xjq7a9c3b",
-              "descricao": "QUINTINO",
               "data": "14/07/26",
+              "nota": "Muffato - Cera p/ Bike",
               "valor": 90.77,
               "parcela": "",
-              "categoriaId": "cat-ulhkok9chc",
-              "nota": "Muffato - Cera p/ Bike"
+              "descricao": "QUINTINO",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrp7lo2rgkd6mmnbizs",
-              "descricao": "Localizabrrac",
               "data": "14/07/26",
+              "nota": "Localiza",
               "valor": 477.94,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Localiza"
+              "descricao": "Localizabrrac",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7p2tkoc31w85urs",
-              "descricao": "ANTHROPIC* CLAUDE SUB",
               "data": "15/07/26",
+              "nota": "Claude Paul",
               "valor": 1157.45,
               "parcela": "",
-              "categoriaId": "cat-1jv9cpaujf",
-              "nota": "Claude Paul"
+              "descricao": "ANTHROPIC* CLAUDE SUB",
+              "categoriaId": "cat-1jv9cpaujf"
             },
             {
               "id": "mrp7obhg33pl1m78n4",
-              "descricao": "IOF COMPRA INTERNACIONA",
               "data": "15/07/26",
+              "nota": "IOF Gamma",
               "valor": 3.73,
               "parcela": "",
-              "categoriaId": "cat-1jv9cpaujf",
-              "nota": "IOF Gamma"
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "categoriaId": "cat-1jv9cpaujf"
             },
             {
               "id": "mrz24uvyk2vn7wk6khk",
-              "descricao": "TUDOOFERTAS.COM",
               "data": "16/07/26",
+              "nota": "Vape 30k",
               "valor": 120,
               "parcela": "",
-              "categoriaId": "cat-qt8k9krhlw",
-              "nota": "Vape 30k"
+              "descricao": "TUDOOFERTAS.COM",
+              "categoriaId": "cat-qt8k9krhlw"
             },
             {
               "id": "mrz269rsxa3coeta0r",
-              "descricao": "Autopostomustang",
               "data": "16/07/26",
+              "nota": "Abastecimento",
               "valor": 98.16,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Abastecimento"
+              "descricao": "Autopostomustang",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrp7plch5la4qb2zgzd",
-              "descricao": "IOF COMPRA INTERNACIONA",
               "data": "16/07/26",
+              "nota": "IOF Claude",
               "valor": 40.49,
               "parcela": "",
-              "categoriaId": "cat-1jv9cpaujf",
-              "nota": "IOF Claude"
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "categoriaId": "cat-1jv9cpaujf"
             },
             {
               "id": "mrz28rr6blgae3rup68",
-              "descricao": "LOCALIZA RAC ACBNU03/03",
               "data": "17/07/26",
+              "nota": "Parcelamento 03/03 (Teste de antecipação - não compensa para esse valor)",
               "valor": 79.15,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Parcelamento 03/03 (Teste de antecipação - não compensa para esse valor)"
+              "descricao": "LOCALIZA RAC ACBNU03/03",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrz295h0o5bakfqbp3g",
-              "descricao": "LOCALIZA RAC ACBNU02/03",
               "data": "17/07/26",
+              "nota": "Parcelamento 02/03 (Teste de antecipação - não compensa para esse valor)",
               "valor": 79.15,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Parcelamento 02/03 (Teste de antecipação - não compensa para esse valor)"
+              "descricao": "LOCALIZA RAC ACBNU02/03",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrz2bro0823cetv5pz",
-              "descricao": "LOCALIZA",
               "data": "17/07/26",
+              "nota": "Localiza",
               "valor": 237.41,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Localiza"
+              "descricao": "LOCALIZA",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrz2cfmpcn375fkfyc",
-              "descricao": "LOCALIZA RAC ACBNU01/03",
               "data": "17/07/26",
+              "nota": "Parcelamento 01/03 (Teste de antecipação - não compensa para esse valor)",
               "valor": 79.15,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Parcelamento 01/03 (Teste de antecipação - não compensa para esse valor)"
+              "descricao": "LOCALIZA RAC ACBNU01/03",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrz2yyhpcl1cgouze2",
-              "descricao": "Dm *mailamericas",
               "data": "17/07/26",
+              "nota": "Imposto - Gancheira Colnago",
               "valor": 108.36,
               "parcela": "",
-              "categoriaId": "cat-ulhkok9chc",
-              "nota": "Imposto - Gancheira Colnago"
+              "descricao": "Dm *mailamericas",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrz385crzcl0z6hdob8",
-              "descricao": "Estorno antecipação — LOCALIZA RAC ACBNU01/03",
               "data": "19/07/26",
+              "nota": "Antecipação 01/03, 02/03 e 03/03 (apenas R$1,78 - não compensa)",
               "valor": -1.78,
               "parcela": "",
-              "categoriaId": "cat-lud3o8ruhh",
-              "nota": "Antecipação 01/03, 02/03 e 03/03 (apenas R$1,78 - não compensa)"
+              "descricao": "Estorno antecipação — LOCALIZA RAC ACBNU01/03",
+              "categoriaId": "cat-lud3o8ruhh"
             },
             {
               "id": "mrz3ejcxj5hqhmkrueg",
-              "descricao": "CASA CHINA LONDRINA",
               "data": "20/07/26",
+              "nota": "Pote de vidro p/ limpeza de corrente (+ pelúcia p/ Matilda)",
               "valor": 39.98,
               "parcela": "",
-              "categoriaId": "cat-ulhkok9chc",
-              "nota": "Pote de vidro p/ limpeza de corrente (+ pelúcia p/ Matilda)"
+              "descricao": "CASA CHINA LONDRINA",
+              "categoriaId": "cat-ulhkok9chc"
             },
             {
               "id": "mrz3c06qbontzwa1q3r",
-              "descricao": "45694166francine",
               "data": "20/07/26",
+              "nota": "Aromata - Gifts p/ Sara",
               "valor": 39.1,
               "parcela": "",
-              "categoriaId": "cat-bo388xg881",
-              "nota": "Aromata - Gifts p/ Sara"
+              "descricao": "45694166francine",
+              "categoriaId": "cat-bo388xg881"
             },
             {
               "id": "mrz3f7spayyd4tzgp8",
-              "descricao": "TUDOOFERTAS.COM",
               "data": "22/07/26",
+              "nota": "Vape 30k",
               "valor": 120,
               "parcela": "",
-              "categoriaId": "cat-qt8k9krhlw",
-              "nota": "Vape 30k"
+              "descricao": "TUDOOFERTAS.COM",
+              "categoriaId": "cat-qt8k9krhlw"
             },
             {
               "id": "ms4tqvdtdodqi1ss77",
-              "descricao": "ANTHROPIC* CLAUDE SUB",
               "data": "24/07/26",
+              "nota": "Claude",
               "valor": 116.53,
               "parcela": "",
-              "categoriaId": "cat-ck0lcei8oi",
-              "nota": "Claude"
+              "descricao": "ANTHROPIC* CLAUDE SUB",
+              "categoriaId": "cat-ck0lcei8oi"
             },
             {
               "id": "ms4trn2ccg7fm3xj5td",
-              "descricao": "IOF COMPRA INTERNACIONA",
               "data": "25/07/26",
+              "nota": "IOF Claude",
               "valor": 4.08,
               "parcela": "",
-              "categoriaId": "cat-ck0lcei8oi",
-              "nota": "IOF Claude"
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "categoriaId": "cat-ck0lcei8oi"
             },
             {
               "id": "ms4tsdp5mkz9acdoqna",
-              "descricao": "TUDOOFERTAS.COM",
               "data": "28/07/26",
+              "nota": "Vape 30k",
+              "valor": 120,
+              "parcela": "",
+              "descricao": "TUDOOFERTAS.COM",
+              "categoriaId": "cat-qt8k9krhlw"
+            },
+            {
+              "id": "ms95an5en4rto8ox9e",
+              "descricao": "Localizabrrac",
+              "data": "14/07/26",
+              "valor": -237.41,
+              "parcela": "",
+              "categoriaId": "cat-lud3o8ruhh",
+              "nota": "Localiza - Estorno cobrança dupla"
+            }
+          ],
+          "7": [
+            {
+              "id": "msj6flo73ytov2upnmx",
+              "descricao": "TUDOOFERTAS.COM",
+              "data": "03/08/26",
               "valor": 120,
               "parcela": "",
               "categoriaId": "cat-qt8k9krhlw",
               "nota": "Vape 30k"
+            },
+            {
+              "id": "msj6j9jrj4849c0ugj",
+              "descricao": "Elevenlabs.io",
+              "data": "04/08/26",
+              "valor": 61.99,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "ElevenLabs"
+            },
+            {
+              "id": "msj6jtkp0tyn1pw8tqw",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "05/08/26",
+              "valor": 2.16,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "IOF ElevenLabs"
+            },
+            {
+              "id": "msj6nvhy63um13hm5o",
+              "descricao": "Trinitron com de equip",
+              "data": "06/08/26",
+              "valor": 1100,
+              "parcela": "1/2",
+              "categoriaId": "cat-3jf6zlep3r",
+              "nota": "Conserto LG CX55",
+              "installmentGroupId": "grp-1786121564469",
+              "installmentTotal": 2,
+              "installmentCurrent": 1,
+              "installmentStartY": 2026,
+              "installmentStartM": 7
             }
           ],
-          "7": [],
-          "8": [],
+          "8": [
+            {
+              "id": "msj6nvhyhbs2fv75fa",
+              "descricao": "Trinitron com de equip",
+              "data": "06/08/26",
+              "valor": 1100,
+              "parcela": "2/2",
+              "categoriaId": "cat-3jf6zlep3r",
+              "nota": "Conserto LG CX55",
+              "installmentGroupId": "grp-1786121564469",
+              "installmentTotal": 2,
+              "installmentCurrent": 2,
+              "installmentStartY": 2026,
+              "installmentStartM": 7
+            }
+          ],
           "9": [],
           "10": [],
           "11": []
@@ -10603,6 +10825,10 @@
       {
         "id": "cat-sow8dvt8m6",
         "name": "Paul Gaming"
+      },
+      {
+        "id": "cat-5oxsma9hp6",
+        "name": "Roupas & Wearables"
       }
     ],
     "memory": [
@@ -10632,7 +10858,7 @@
       },
       {
         "pattern": "IOF COMPRA INTERNACIONA",
-        "categoriaId": "cat-ck0lcei8oi"
+        "categoriaId": "cat-1jv9cpaujf"
       },
       {
         "pattern": "CLAUDE.AI SUBSCRIPTION",
@@ -11789,6 +12015,18 @@
       {
         "pattern": "Mayconaparecido",
         "categoriaId": "cat-2metcc4gvh"
+      },
+      {
+        "pattern": "Compra Mercado Livre",
+        "categoriaId": "cat-ulhkok9chc"
+      },
+      {
+        "pattern": "Elevenlabs.io",
+        "categoriaId": "cat-1jv9cpaujf"
+      },
+      {
+        "pattern": "Trinitron com de equip",
+        "categoriaId": "cat-3jf6zlep3r"
       }
     ],
     "catGroups": [
@@ -11908,6 +12146,24 @@
               "valor": 162.98,
               "descricao": "Pagamento (Fechamento)"
             }
+          ],
+          "6": [
+            {
+              "id": "ms96e643pg17wl3g8i",
+              "data": "29/07/26",
+              "valor": 1795.85,
+              "descricao": "Pagamento (Fechamento)",
+              "nota": "Pagamento Integral pós-fechamento"
+            }
+          ],
+          "7": [
+            {
+              "id": "ms95nuguivl38802ehm",
+              "data": "31/07/26",
+              "valor": 501.98,
+              "descricao": "Pagamento (Antecipado)",
+              "nota": "Pagamento antecipado para liberar limite"
+            }
           ]
         }
       },
@@ -11981,16 +12237,23 @@
             {
               "id": "mrp7afa4rzs77vo323d",
               "data": "10/07/26",
+              "nota": "Pagamento p/ antecipação de parcelas",
               "valor": 20267.92,
-              "descricao": "Pagamento (Antecipado)",
-              "nota": "Pagamento p/ antecipação de parcelas"
+              "descricao": "Pagamento (Antecipado)"
             },
             {
               "id": "mrp7s3dwigwaj3n7glc",
               "data": "17/07/26",
+              "nota": "Pagamento Antecipado",
               "valor": 2748.68,
-              "descricao": "Pagamento (Antecipado)",
-              "nota": "Pagamento Antecipado"
+              "descricao": "Pagamento (Antecipado)"
+            },
+            {
+              "id": "msj6ewubasfc0m32uko",
+              "data": "01/08/26",
+              "valor": 1001.88,
+              "descricao": "Pagamento (Fechamento)",
+              "nota": "Pagamento para fechar a fatura"
             }
           ]
         }
@@ -12037,9 +12300,9 @@
             {
               "id": "ms4v2vhi0be6npvzya5b",
               "data": "24/07/26",
+              "nota": "",
               "valor": 155.16,
-              "descricao": "Pagamento (Fechamento)",
-              "nota": ""
+              "descricao": "Pagamento (Fechamento)"
             }
           ]
         }
@@ -12047,24 +12310,28 @@
     },
     "acMemory": {
       "ac_tx-desc": [
+        "Trinitron com de equip",
+        "IOF COMPRA INTERNACIONA",
+        "Elevenlabs.io",
         "TUDOOFERTAS.COM",
         "iFood",
+        "Uber",
+        "URENTCAR",
+        "BURGER KING",
+        "SUPERMERCADOS VISCARDI",
+        "99 Ride",
+        "Compra Mercado Livre",
         "Mayconaparecido",
         "CALDO DE CANA VERA",
-        "IOF COMPRA INTERNACIONA",
         "Amazon Prime",
         "ANTHROPIC* CLAUDE SUB",
-        "99 Ride",
         "PANIF NATHALIA",
-        "Uber",
-        "BURGER KING",
         "Lai Chi",
         "Sua Academia",
         "CASA CHINA LONDRINA",
         "45694166francine",
         "Microsoft",
         "Estorno antecipação — LOCALIZA RAC ACBNU01/03",
-        "URENTCAR",
         "JK LONDRINA",
         "LOCALIZA RAC ACBNU03/03",
         "LOCALIZA RAC ACBNU02/03",
@@ -12173,7 +12440,6 @@
         "FARM LONDRIN-CT",
         "INDITEX BRAS-CT TDA",
         "AtaideSoares",
-        "SUPERMERCADOS VISCARDI",
         "ANTHROPIC",
         "VIVARA            01/10",
         "VIVARA            02/10",
@@ -12344,6 +12610,14 @@
         "Fatura Residual Dezembro"
       ],
       "ac_detalhes": [
+        "Corrente SRAM Red Flattop Rainbow",
+        "Genshin - Welkin Moon",
+        "YouTube Premium",
+        "Parafuso caixa direção",
+        "Casio G-Shock G-5600UE-1DR",
+        "Pastilha de freio + Power Link (x4) SRAM",
+        "IOF ElevenLabs",
+        "Aniversário Sara",
         "Meli+ Disney+ Premium",
         "Amazon Prime Video",
         "Suporte GPS Alumínio",
@@ -12363,8 +12637,6 @@
         "Pagamento serviço YOLO BD 2/2",
         "Pagamento serviço YOLO BD 1/2",
         "Egytus Festa",
-        "Genshin - Welkin Moon",
-        "YouTube Premium",
         "Compra batizado Isabela",
         "Genshin - Gnostic Hymn",
         "PIX Cinema",
@@ -12437,19 +12709,13 @@
         "Compra de capa p/ notebook Acer",
         "Compra de tokens",
         "Vape 30k",
-        "Um suco, provavelmente",
-        "Comida japonesa (aparentemente)",
-        "Aparentemente, alguma refeição na Rua Goiás - seria o Nathalia?",
-        "Abastecimento",
-        "Encerramento locação (pedágio + diária)",
-        "Antimofo",
-        "Plástico Bolha p/ TV"
+        "Um suco, provavelmente"
       ],
       "ac_pay-desc-card-mp": [
         "Pagamento Total",
         "Pagamento da fatura de junho/2026",
-        "Pagamento (Antecipado)",
         "Pagamento (Fechamento)",
+        "Pagamento (Antecipado)",
         "Pagamento Total (Atrasado)",
         "Pagamento total",
         "Pagamento antecipado",
@@ -12458,11 +12724,13 @@
       ],
       "ac_pay-nota-card-mp": [
         "Pagamento Integral pós-fechamento",
+        "Pagamento antecipado para liberar limite",
+        "Pagamento para fechar a fatura",
         "Pagamento único",
         "Pagamento Antecipado",
-        "Pagamento para fechar a fatura",
         "Antecipação: 1 dia antes do vencimento",
         "Pagamento antecipado para liberação de limite para locação de carro",
+        "Pagamento p/ antecipação de parcelas",
         "Pagamento após vencimento - Irá gerar multa no próximo mês"
       ],
       "ac_pay-desc-card-itau": [
@@ -12645,7 +12913,8 @@
         "Emille Freitas Espirito Santo",
         "Yasmin",
         "Empresa Hoteleira Eden LTDA",
-        "Pix Danilo Darienco Valenca Coelho"
+        "Pix Danilo Darienco Valenca Coelho",
+        "Pagliarini Bikes"
       ],
       "ac_debit-desc-debit-mqishlnu2ci81kqukvu": [
         "BAR DO JAPA",
@@ -12666,7 +12935,9 @@
         "Pay2all Instituicao de Pagamento Ltda.",
         "Pagseguro International",
         "Bruno Paiva Almeida",
-        "Danilo Darienço Valença Coelho"
+        "Danilo Darienço Valença Coelho",
+        "Pix enviado Sara Darienço Valença Coelho",
+        "Proparts Comercio de Artigos Esportivos e Tecnologia Ltda"
       ],
       "ac_debit-nota-debit-mqh2es5f1r51l8vg6v7": [
         "Burger King",
@@ -12760,7 +13031,9 @@
         "Suporte GPS SRAM",
         "Partk Tool CC-4.2",
         "Kit Completo Lawax",
-        "Suporte GPS Alumínio"
+        "Suporte GPS Alumínio",
+        "Casio G-Shock G-5600UE-1DR",
+        "Parafuso caixa direção"
       ],
       "ac_debit-nota-debit-mqishlnu2ci81kqukvu": [
         "Bar do Japa",
@@ -12777,28 +13050,34 @@
         "Caixa de Direção Cane Creek 40 + Jogo de arruelas",
         "PUBG",
         "Specialized Rockhopper",
-        "PIX p/ Uber (buscar bike)"
+        "PIX p/ Uber (buscar bike)",
+        "Aniversário Sara",
+        "Pastilha de freio + Power Link (x4) SRAM"
       ]
     },
     "notaMemory": {
+      "Trinitron com de equip": "Conserto LG CX55",
+      "IOF COMPRA INTERNACIONA": "IOF ElevenLabs",
+      "Elevenlabs.io": "ElevenLabs",
       "TUDOOFERTAS.COM": "Vape 30k",
       "iFood": "iFood",
+      "Uber": "Uber",
+      "URENTCAR": "JET",
+      "BURGER KING": "Burger King",
+      "SUPERMERCADOS VISCARDI": "Viscardi",
+      "99 Ride": "99",
+      "Compra Mercado Livre": "x15 Pilhas CR2032 Philips",
       "Mayconaparecido": "Cachorro Quente",
       "CALDO DE CANA VERA": "Caldo de Cana",
-      "IOF COMPRA INTERNACIONA": "IOF Claude",
       "Amazon Prime": "Locação Filme - Soldado Universal",
       "ANTHROPIC* CLAUDE SUB": "Claude",
-      "99 Ride": "99",
       "PANIF NATHALIA": "Energético",
-      "Uber": "Uber",
-      "BURGER KING": "Burger King",
       "Lai Chi": "Refeição (Sara)",
       "Sua Academia": "SmartFit",
       "CASA CHINA LONDRINA": "Pote de vidro p/ limpeza de corrente (+ pelúcia p/ Matilda)",
       "45694166francine": "Aromata - Gifts p/ Sara",
       "Microsoft": "GamePass",
       "Estorno antecipação — LOCALIZA RAC ACBNU01/03": "Antecipação 01/03, 02/03 e 03/03 (apenas R$1,78 - não compensa)",
-      "URENTCAR": "JET",
       "JK LONDRINA": "Muffato",
       "LOCALIZA RAC ACBNU03/03": "Parcelamento 03/03 (Teste de antecipação - não compensa para esse valor)",
       "LOCALIZA RAC ACBNU02/03": "Parcelamento 02/03 (Teste de antecipação - não compensa para esse valor)",
@@ -12893,7 +13172,6 @@
       "FARM LONDRIN-CT": "Vestido Paul",
       "INDITEX BRAS-CT TDA": "Terno Paul",
       "AtaideSoares": "Tata Lanches",
-      "SUPERMERCADOS VISCARDI": "Viscardi",
       "ANTHROPIC": "Claude Paul",
       "VIVARA            01/10": "Aliança",
       "MERCADO*MERCADOLIV01/03": "Blocagem Titânio Enlee",
@@ -16439,60 +16717,110 @@
         {
           "id": "ms4utbrwuwnyvr3in4q",
           "data": "2026-07-15",
-          "descricao": "Pagamento Mercado Livre",
           "nota": "Suporte GPS SRAM",
           "valor": 46.99,
+          "estorno": false,
+          "descricao": "Pagamento Mercado Livre",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "ms4uu61mzpqw3080mp",
           "data": "2026-07-16",
-          "descricao": "Pagamento Mercado Livre",
           "nota": "Partk Tool CC-4.2",
           "valor": 178.1,
+          "estorno": false,
+          "descricao": "Pagamento Mercado Livre",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "ms4uup8c3syz7m1srru",
           "data": "2026-07-16",
-          "descricao": "Pagamento Mercado Livre",
           "nota": "Kit Completo Lawax",
           "valor": 417.09,
+          "estorno": false,
+          "descricao": "Pagamento Mercado Livre",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "ms4uvjlpd1npnviq6vc",
           "data": "2026-07-18",
-          "descricao": "Pagamento Mercado Livre",
           "nota": "Suporte GPS Alumínio",
           "valor": 53.91,
+          "estorno": false,
+          "descricao": "Pagamento Mercado Livre",
+          "categoriaId": "cat-ulhkok9chc",
+          "ignorarDashboard": false
+        },
+        {
+          "id": "ms4uxdclc1acqeddd4g",
+          "data": "2026-07-21",
+          "nota": "Amazon Prime Video",
+          "valor": 19.9,
+          "estorno": false,
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false
+        },
+        {
+          "id": "ms4uxvphbna13j2btk",
+          "data": "2026-07-26",
+          "nota": "Meli+ Disney+ Premium",
+          "valor": 59.9,
+          "estorno": false,
+          "descricao": "Pagamento de assinatura Meli+",
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false
+        },
+        {
+          "id": "msj8p7g1hhvka4v4p7",
+          "data": "2026-07-31",
+          "descricao": "Pagamento Mercado Livre",
+          "nota": "Casio G-Shock G-5600UE-1DR",
+          "valor": 377,
+          "categoriaId": "cat-5oxsma9hp6",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msj8qfn3f2vqmnrr0ir",
+          "data": "2026-08-01",
+          "descricao": "Pagliarini Bikes",
+          "nota": "Parafuso caixa direção",
+          "valor": 15,
           "categoriaId": "cat-ulhkok9chc",
           "ignorarDashboard": false,
           "estorno": false
         },
         {
-          "id": "ms4uxdclc1acqeddd4g",
-          "data": "2026-07-21",
+          "id": "msj8rv7wbkcdniikv9u",
+          "data": "2026-08-02",
           "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
-          "nota": "Amazon Prime Video",
-          "valor": 19.9,
+          "nota": "YouTube Premium",
+          "valor": 16.9,
           "categoriaId": "cat-iachsi0ie7",
           "ignorarDashboard": false,
           "estorno": false
         },
         {
-          "id": "ms4uxvphbna13j2btk",
-          "data": "2026-07-26",
-          "descricao": "Pagamento de assinatura Meli+",
-          "nota": "Meli+ Disney+ Premium",
-          "valor": 59.9,
-          "categoriaId": "cat-iachsi0ie7",
+          "id": "msj8sez3kbiu3u7kez",
+          "data": "2026-08-02",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "nota": "Genshin - Welkin Moon",
+          "valor": 26.81,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msj8uaa4zm9mvlngjx",
+          "data": "2026-08-05",
+          "descricao": "Pagamento Mercado Livre",
+          "nota": "Corrente SRAM Red Flattop Rainbow",
+          "valor": 799,
+          "categoriaId": "cat-ulhkok9chc",
           "ignorarDashboard": false,
           "estorno": false
         }
@@ -16653,100 +16981,120 @@
         {
           "id": "mrp7zfvu77ble810s5l",
           "data": "2026-07-10",
-          "descricao": "Pix enviado Thiago Martins Teixeira",
           "nota": "Sinal de negócio Specialized Crux",
           "valor": 2490,
+          "estorno": false,
+          "descricao": "Pix enviado Thiago Martins Teixeira",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrp814iszyn4odbvjs9",
           "data": "2026-07-13",
-          "descricao": "Pix enviado Thiago Martins Teixeira",
           "nota": "Specialized Crux (restante pós-sinal)",
           "valor": 22410,
+          "estorno": false,
+          "descricao": "Pix enviado Thiago Martins Teixeira",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrp82sfi0lyxgzwgay8a",
           "data": "2026-07-13",
-          "descricao": "Specialisti Comercio E Servicos De Bicicletas Ltda",
           "nota": "Muck-Off, Caramanholas, Selante, Chave Allen",
           "valor": 488.34,
+          "estorno": false,
+          "descricao": "Specialisti Comercio E Servicos De Bicicletas Ltda",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3jp7b8j7vz79ggy",
           "data": "2026-07-20",
-          "descricao": "Vindi Pagamentos Online",
           "nota": "Caixa de Direção Cane Creek 40 + Jogo de arruelas",
           "valor": 485.9,
+          "estorno": false,
+          "descricao": "Vindi Pagamentos Online",
           "categoriaId": "cat-ulhkok9chc",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3lsa397vhkvl1ux8",
           "data": "2026-07-21",
-          "descricao": "Pay2all Instituicao de Pagamento Ltda.",
           "nota": "PUBG",
           "valor": 507.94,
+          "estorno": false,
+          "descricao": "Pay2all Instituicao de Pagamento Ltda.",
           "categoriaId": "cat-sow8dvt8m6",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3nhaywyn0opibgsb",
           "data": "2026-07-21",
-          "descricao": "Pay2all Instituicao de Pagamento Ltda.",
           "nota": "PUBG",
           "valor": 507.94,
+          "estorno": false,
+          "descricao": "Pay2all Instituicao de Pagamento Ltda.",
           "categoriaId": "cat-sow8dvt8m6",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3l2pw55o1g7xcx6i",
           "data": "2026-07-21",
-          "descricao": "Pagseguro International",
           "nota": "PUBG",
           "valor": 507.94,
+          "estorno": false,
+          "descricao": "Pagseguro International",
           "categoriaId": "cat-sow8dvt8m6",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3ogv3ht7nngzvkgd",
           "data": "2026-07-22",
-          "descricao": "Pagseguro International",
           "nota": "PUBG",
           "valor": 506.96,
+          "estorno": false,
+          "descricao": "Pagseguro International",
           "categoriaId": "cat-77wa3taxwj",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3pt1fj23dhwl81ad",
           "data": "2026-07-23",
-          "descricao": "Bruno Paiva Almeida",
           "nota": "Specialized Rockhopper",
           "valor": 2700,
+          "estorno": false,
+          "descricao": "Bruno Paiva Almeida",
           "categoriaId": "cat-bo388xg881",
-          "ignorarDashboard": false,
-          "estorno": false
+          "ignorarDashboard": false
         },
         {
           "id": "mrz3rp1nt66u1rjvkmb",
           "data": "2026-07-23",
-          "descricao": "Danilo Darienço Valença Coelho",
           "nota": "PIX p/ Uber (buscar bike)",
           "valor": 50,
+          "estorno": false,
+          "descricao": "Danilo Darienço Valença Coelho",
           "categoriaId": "cat-bo388xg881",
+          "ignorarDashboard": false
+        },
+        {
+          "id": "ms7u00n5c1jtpyxd",
+          "data": "2026-07-29",
+          "nota": "Aniversário Sara",
+          "valor": 500,
+          "estorno": false,
+          "descricao": "Pix enviado Sara Darienço Valença Coelho",
+          "categoriaId": "cat-bo388xg881",
+          "ignorarDashboard": false
+        },
+        {
+          "id": "msj6rbt9yve65tcqkh9",
+          "data": "2026-08-05",
+          "descricao": "Proparts Comercio de Artigos Esportivos e Tecnologia Ltda",
+          "nota": "Pastilha de freio + Power Link (x4) SRAM",
+          "valor": 540.16,
+          "categoriaId": "cat-ulhkok9chc",
           "ignorarDashboard": false,
           "estorno": false
         }
@@ -16778,6 +17126,7 @@
       "pagamento posto gt": "cat-lud3o8ruhh",
       "pagamento quintino": "cat-2metcc4gvh",
       "pagamento raia4431": "cat-winmzzrenu",
+      "bruno paiva almeida": "cat-bo388xg881",
       "elton silva matsuda": "cat-2metcc4gvh",
       "pagamento copa cafe": "cat-2metcc4gvh",
       "pagamento menegatti": "cat-lud3o8ruhh",
@@ -16794,6 +17143,8 @@
       "pagamento carrefour xas": "cat-2metcc4gvh",
       "pagamento mercado libre": "cat-ulhkok9chc",
       "pagamento mercado livre": "cat-ulhkok9chc",
+      "pagseguro international": "cat-sow8dvt8m6",
+      "vindi pagamentos online": "cat-ulhkok9chc",
       "pagamento festval ozorio": "cat-2metcc4gvh",
       "pagamento posto tio zico": "cat-lud3o8ruhh",
       "pagamento 61173122heloysa": "cat-2metcc4gvh",
@@ -16837,6 +17188,7 @@
       "pagamento lindt sprungli brazil": "cat-bo388xg881",
       "pix enviado agua leve pura ltda": "cat-2metcc4gvh",
       "pix enviado richard broder wang": "cat-winmzzrenu",
+      "danilo darienço valença coelho": "cat-bo388xg881",
       "pagamento angeloni super loja 23": "cat-2metcc4gvh",
       "pagamento av higienopolis londri": "cat-2metcc4gvh",
       "pagamento bacio di latte- lj0016": "cat-2metcc4gvh",
@@ -16860,16 +17212,21 @@
       "pagamento com qr pix urentcar ltda": "cat-9gx45purug",
       "pix danilo darienco valenca coelho": "cat-bo388xg881",
       "pagamento bruxa do setenta e um bar": "cat-2metcc4gvh",
+      "pix enviado thiago martins teixeira": "cat-ulhkok9chc",
       "pagamento com qr pix raia drogasil sa": "cat-winmzzrenu",
       "pagamento com qr pix antonio juncanssi": "cat-ulhkok9chc",
       "pagamento de conta itaú unibanco s.a.": "cat-m7umq5lu78",
+      "pay2all instituicao de pagamento ltda.": "cat-sow8dvt8m6",
       "representacoes s.a. pagamento quintino": "cat-2metcc4gvh",
       "pagamento google brasil pagamentos ltda.": "cat-iachsi0ie7",
+      "pay2all instituição de pagamento ltda.": "cat-ovg9hujjsz",
       "richard broder wang pagamento jk londrina": "cat-2metcc4gvh",
+      "pix enviado sara darienço valença coelho": "cat-bo388xg881",
       "pagamento com qr pix localiza rent a car sa": "cat-lud3o8ruhh",
       "richard broder wang pagamento parada do suco": "cat-2metcc4gvh",
       "pagamento com qr pix pagseguro tecnologia ltda": "cat-77wa3taxwj",
       "pagamento com qr pix arca solucoes tecnologicas sa": "cat-s74hyo6cb6",
+      "specialisti comercio e servicos de bicicletas ltda": "cat-ulhkok9chc",
       "pagamento com qr pix empreendimentos pague menos sa": "cat-winmzzrenu",
       "pagamento com qr pix companhia paranaense de gas compagas": "cat-m7umq5lu78",
       "pagamento com qr pix estok comercio e representacoes s.a.": "cat-3jf6zlep3r",
@@ -16882,14 +17239,8 @@
       "compra de plug tomada adaptador para mac apple macbook pro air brazil": "cat-ovg9hujjsz",
       "pagamento com qr pix natura co pay servicos financeiros e tecnologia em": "cat-winmzzrenu",
       "compra de secador ferrari v1 volare 2000w - by roger - não perca mercado livre": "cat-3jf6zlep3r",
-      "pix enviado thiago martins teixeira": "cat-ulhkok9chc",
-      "specialisti comercio e servicos de bicicletas ltda": "cat-ulhkok9chc",
-      "vindi pagamentos online": "cat-ulhkok9chc",
-      "pagseguro international": "cat-sow8dvt8m6",
-      "pay2all instituição de pagamento ltda.": "cat-ovg9hujjsz",
-      "pay2all instituicao de pagamento ltda.": "cat-sow8dvt8m6",
-      "bruno paiva almeida": "cat-bo388xg881",
-      "danilo darienço valença coelho": "cat-bo388xg881"
+      "proparts comercio de artigos esportivos e tecnologia ltda": "cat-ulhkok9chc",
+      "pagliarini bikes": "cat-ulhkok9chc"
     },
     "ignoreKeywords": [
       "PIX RICHARD",
@@ -17334,25 +17685,8 @@
       },
       {
         "id": "lst-lpmsu7be",
-        "nome": "Check-List",
         "cor": "#8b5cf6",
-        "statuses": [
-          {
-            "id": "sts-9uz34na4",
-            "nome": "PRONTO",
-            "cor": "#22c55e"
-          },
-          {
-            "id": "sts-6n3tk2uv",
-            "nome": "NÃO VAI",
-            "cor": "#3b82f6"
-          },
-          {
-            "id": "sts-f3ilz4sv",
-            "nome": "NÃO SEPARADO",
-            "cor": "#ec4899"
-          }
-        ],
+        "nome": "Check-List",
         "sections": [
           {
             "id": "sec-dk5r9o37",
@@ -17361,8 +17695,6 @@
               {
                 "id": "itm-8ezdv442",
                 "nome": "Necessaire",
-                "statusId": "sts-f3ilz4sv",
-                "updatedAt": "2026-07-28T17:25:10.667Z",
                 "children": [
                   {
                     "id": "itm-uxy6ilbm",
@@ -17443,13 +17775,13 @@
                     "updatedAt": "2026-07-28T17:25:29.731Z"
                   }
                 ],
-                "collapsed": false
+                "statusId": "sts-f3ilz4sv",
+                "collapsed": false,
+                "updatedAt": "2026-07-28T17:25:10.667Z"
               },
               {
                 "id": "itm-7osavu3u",
                 "nome": "Mochila",
-                "statusId": "sts-9uz34na4",
-                "updatedAt": "2026-03-03T12:00:00.000Z",
                 "children": [
                   {
                     "id": "itm-0cg85tgw",
@@ -17548,13 +17880,13 @@
                     "updatedAt": "2026-07-28T17:25:59.513Z"
                   }
                 ],
-                "collapsed": false
+                "statusId": "sts-9uz34na4",
+                "collapsed": false,
+                "updatedAt": "2026-03-03T12:00:00.000Z"
               },
               {
                 "id": "itm-fu3t500w",
                 "nome": "Shampoo",
-                "statusId": "sts-9uz34na4",
-                "updatedAt": "2026-07-10T12:00:00.000Z",
                 "children": [
                   {
                     "id": "itm-c5tl8lwc",
@@ -17587,7 +17919,9 @@
                     "updatedAt": "2025-07-29T12:00:00.000Z"
                   }
                 ],
-                "collapsed": false
+                "statusId": "sts-9uz34na4",
+                "collapsed": false,
+                "updatedAt": "2026-07-10T12:00:00.000Z"
               },
               {
                 "id": "itm-wijnv84m",
@@ -17687,6 +18021,23 @@
               }
             ]
           }
+        ],
+        "statuses": [
+          {
+            "id": "sts-9uz34na4",
+            "cor": "#22c55e",
+            "nome": "PRONTO"
+          },
+          {
+            "id": "sts-6n3tk2uv",
+            "cor": "#3b82f6",
+            "nome": "NÃO VAI"
+          },
+          {
+            "id": "sts-f3ilz4sv",
+            "cor": "#ec4899",
+            "nome": "NÃO SEPARADO"
+          }
         ]
       }
     ],
@@ -17702,11 +18053,67 @@
           "dir": "asc"
         }
       ],
-      "sec-spayx2on": [],
-      "sec-dk5r9o37": []
+      "sec-dk5r9o37": [],
+      "sec-spayx2on": []
     },
     "_travelSeedApplied": true,
     "crono": {
+      "trips": [
+        {
+          "id": "crn-f68h5snp",
+          "days": [
+            {
+              "id": "crn-daibkgit",
+              "nome": "Sexta-feira",
+              "values": {
+                "crn-9qs1mre6": "31/07/26",
+                "crn-of3ndlem": "2"
+              },
+              "statusId": null
+            },
+            {
+              "id": "crn-cd6hppph",
+              "nome": "Sábado",
+              "values": {
+                "crn-9qs1mre6": "01/08/26",
+                "crn-of3ndlem": "2"
+              },
+              "statusId": null
+            },
+            {
+              "id": "crn-9kfptrzh",
+              "nome": "Domingo",
+              "values": {
+                "crn-9qs1mre6": "02/08/26",
+                "crn-of3ndlem": "2"
+              },
+              "statusId": null
+            },
+            {
+              "id": "crn-591zlgzc",
+              "nome": "Segunda-feira",
+              "values": {
+                "crn-9qs1mre6": "03/08/26"
+              },
+              "statusId": null
+            },
+            {
+              "id": "crn-52maahwd",
+              "nome": "Terça-feira",
+              "values": {
+                "crn-9qs1mre6": "04/08/26"
+              },
+              "statusId": null
+            }
+          ],
+          "nome": "São Paulo",
+          "values": {
+            "crn-9qs1mre6": "31/07/26"
+          },
+          "statusId": null,
+          "collapsed": false
+        }
+      ],
       "columns": [
         {
           "id": "crn-9qs1mre6",
@@ -17760,79 +18167,23 @@
       "statuses": [
         {
           "id": "crn-xxg4zt35",
-          "nome": "PRONTO",
-          "cor": "#22c55e"
+          "cor": "#22c55e",
+          "nome": "PRONTO"
         },
         {
           "id": "crn-tiudwe31",
-          "nome": "ENCERRADO",
-          "cor": "#15803d"
+          "cor": "#15803d",
+          "nome": "ENCERRADO"
         }
       ],
-      "trips": [
-        {
-          "id": "crn-f68h5snp",
-          "nome": "São Paulo",
-          "statusId": null,
-          "values": {
-            "crn-9qs1mre6": "31/07/26"
-          },
-          "days": [
-            {
-              "id": "crn-daibkgit",
-              "nome": "Sexta-feira",
-              "statusId": null,
-              "values": {
-                "crn-9qs1mre6": "31/07/26",
-                "crn-of3ndlem": "2"
-              }
-            },
-            {
-              "id": "crn-cd6hppph",
-              "nome": "Sábado",
-              "statusId": null,
-              "values": {
-                "crn-9qs1mre6": "01/08/26",
-                "crn-of3ndlem": "2"
-              }
-            },
-            {
-              "id": "crn-9kfptrzh",
-              "nome": "Domingo",
-              "statusId": null,
-              "values": {
-                "crn-9qs1mre6": "02/08/26",
-                "crn-of3ndlem": "2"
-              }
-            },
-            {
-              "id": "crn-591zlgzc",
-              "nome": "Segunda-feira",
-              "statusId": null,
-              "values": {
-                "crn-9qs1mre6": "03/08/26"
-              }
-            },
-            {
-              "id": "crn-52maahwd",
-              "nome": "Terça-feira",
-              "statusId": null,
-              "values": {
-                "crn-9qs1mre6": "04/08/26"
-              }
-            }
-          ],
-          "collapsed": false
-        }
-      ],
-      "scale": 69,
-      "autoFit": true
+      "scale": 100,
+      "autoFit": false
     }
   },
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "card",
+    "activeTab": "debit",
     "tabLabels": {
       "ai": "IA",
       "card": "Cartão",

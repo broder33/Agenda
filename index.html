@@ -1376,7 +1376,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.04</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.06</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1526,7 +1526,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.04 — agenda-v0604</p>
+    <p class="version-tag">Agenda v0.6.06 — agenda-v0606</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -6116,7 +6116,7 @@ function showImportReview(cardId, y, m, txs, overlay) {
     sel.innerHTML = catOpts;
     if (tx.categoriaId) sel.value = tx.categoriaId;
     sel.addEventListener('change', function(){
-      if (this.value === '__manage__') { this.value = despesas[i].categoriaId || ''; openCatManager(); return; }
+      if (this.value === '__manage__') { openCatManagerForSelect(this, despesas[i].categoriaId || ''); return; }
       despesas[i].categoriaId = this.value;
       this.style.borderColor = this.value ? 'var(--border)' : 'var(--danger)';
     });
@@ -6751,7 +6751,7 @@ function buildDebitTxTable(accountId, ym, txs) {
 }
 
 function debitTxCatChange(sel) {
-  if (sel.value === '__manage__') { sel.value = ''; openCatManager(); return; }
+  if (sel.value === '__manage__') { openCatManagerForSelect(sel, sel.dataset.prev || ''); return; }
   var accountId = sel.dataset.acid, txid = sel.dataset.txid;
   var txs = state.debit.transactions[accountId]||[];
   var tx = txs.find(function(t){ return t.id===txid; });
@@ -6817,7 +6817,7 @@ function inlineEditDebitTx(cell) {
     sel.innerHTML = buildCatOpts(tx.categoriaId||'');
     cell.innerHTML=''; cell.appendChild(sel); sel.focus();
     sel.onchange = function(){
-      if (sel.value==='__manage__'){ sel.value=tx.categoriaId||''; openCatManager(); return; }
+      if (sel.value==='__manage__'){ openCatManagerForSelect(sel, tx.categoriaId||''); return; }
       tx.categoriaId=sel.value;
       if (tx.descricao && tx.categoriaId) state.debit.acMemory[tx.descricao.trim().toLowerCase()]=tx.categoriaId;
       saveState(); renderDebit();
@@ -7108,8 +7108,16 @@ function openAddDebitTxModal(accountId, ym) {
   acAttach(notaInp, 'debit-nota-'+accountId, null);
   var fVal = makeField('Valor (R$)'); var valInp=makeInput('dbt-val','number',''); fVal.appendChild(valInp);
   var fCat = makeField('Categoria'); var catSel=makeInput('dbt-cat','select',null); fCat.appendChild(catSel);
-  var noneOpt=document.createElement('option'); noneOpt.value=''; noneOpt.textContent='— Sem categoria'; catSel.appendChild(noneOpt);
-  getDebitCats().forEach(function(c){ var o=document.createElement('option'); o.value=c.id; o.textContent=c.name||c.nome; catSel.appendChild(o); });
+  // buildCatOpts inclui a opcao "Gerenciar categorias"; montar as opcoes a mao
+  // aqui era o motivo de nao existir como criar categoria neste modal.
+  catSel.innerHTML = buildCatOpts('');
+  var _semCat = catSel.querySelector('option[value=""]');
+  if (_semCat) _semCat.textContent = '— Sem categoria'; // rotulo original deste modal
+  catSel.dataset.prev = '';
+  catSel.onchange = function(){
+    if (catSel.value === '__manage__') { openCatManagerForSelect(catSel, catSel.dataset.prev || ''); return; }
+    catSel.dataset.prev = catSel.value;
+  };
   acAttach(descInp, 'debit-desc-'+accountId, function(val){
     descInp.value = val;
     var memCat = state.debit.acMemory && state.debit.acMemory[val.trim().toLowerCase()];
@@ -7705,7 +7713,7 @@ function showDebitImportReview(accountId, txs, overlay, selectedYM) {
     sel.innerHTML=catOpts;
     if (tx.categoriaId) sel.value=tx.categoriaId;
     sel.addEventListener('change', function(){
-      if (this.value==='__manage__') { this.value=txs[i].categoriaId||''; openCatManager(); return; }
+      if (this.value==='__manage__') { openCatManagerForSelect(this, txs[i].categoriaId||''); return; }
       txs[i].categoriaId=this.value;
       txs[i].source='manual';
       txs[i].ignorarDashboard=(state.debit.recurringCategories||[]).indexOf(this.value)!==-1;
@@ -8255,8 +8263,12 @@ function openRulesManager(cardId, y, m) {
   // Populate category dropdown
   var sel = document.getElementById('newRuleCat');
   if (sel) {
-    sel.innerHTML = '<option value="">— Categoria —</option>'
-      + (state.card.categorias||[]).map(function(c){ return '<option value="'+escHtml(c.id)+'">'+escHtml(c.name)+'</option>'; }).join('');
+    sel.innerHTML = buildCatOpts('');
+    sel.dataset.prev = '';
+    sel.onchange = function(){
+      if (sel.value === '__manage__') { openCatManagerForSelect(sel, sel.dataset.prev || ''); return; }
+      sel.dataset.prev = sel.value;
+    };
   }
   // Show/hide apply button based on context
   var actions = document.querySelector('#rulesManagerModal .modal-actions');
@@ -8482,12 +8494,28 @@ function addCatGroup() {
 }
 
 /* ═══ CATEGORY MANAGER ═══ */
-var _catManagerContext = null; // {y, m, id, source:'fin'|'card'|null}
+var _catManagerContext = null; // {y, m, id, source:'fin'|'card'} ou {source:'select', sel:<element>}
+
+/* Abre o gerenciador a partir de um <select> de categoria qualquer.
+   Guarda o proprio elemento: ao criar a categoria, ela e selecionada nele e o
+   onchange dispara, reaproveitando a logica de gravacao que a tela ja possui.
+   Sem isto seria preciso um caso especial por tela — e foi por faltarem esses
+   casos que criar categoria nao funcionava em Debito, importacoes e + Despesa. */
+function openCatManagerForSelect(sel, fallbackValue) {
+  if (sel) sel.value = (fallbackValue !== undefined && fallbackValue !== null) ? fallbackValue : '';
+  openCatManager({ source: 'select', sel: sel });
+}
 function openCatManager(ctx) {
   if (ctx !== undefined) _catManagerContext = ctx || null;
   renderCatManager();
   var modal = document.getElementById('catManagerModal');
-  if (modal) modal.classList.add('show');
+  if (modal) {
+    // Chamado de dentro de outro modal: reposiciona no fim do body e sobe o
+    // z-index, senao abre atras do modal de origem e parece nao ter aberto.
+    document.body.appendChild(modal);
+    modal.style.zIndex = '100010';
+    modal.classList.add('show');
+  }
   // Update modal title to reflect context
   var titleEl = modal && modal.querySelector('.modal-title');
   if (titleEl) titleEl.textContent = 'Gerenciar Categorias';
@@ -8593,6 +8621,18 @@ function addCategoria() {
       setTimeout(function(){ openFinCatPropagateModal(_nom, newCat.id, ctx.y, ctx.m, ctx.id); }, 0);
     } else if (ctx.source === 'card') {
       setCardTxCat(ctx.cardId, ctx.y, ctx.m, ctx.id, label);
+      closeCatManager();
+    } else if (ctx.source === 'select' && ctx.sel) {
+      // Reconstroi as opcoes (a categoria nova ainda nao estava na lista),
+      // seleciona e dispara o onchange que a tela ja implementa.
+      var sel = ctx.sel;
+      if (sel.isConnected !== false) {
+        sel.innerHTML = buildCatOpts(newCat.id);
+        sel.value = newCat.id;
+        sel.dataset.prev = newCat.id;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        if (typeof sel.onchange === 'function') sel.onchange({ target: sel });
+      }
       closeCatManager();
     }
   }
@@ -10695,8 +10735,7 @@ function buildCatOpts(selectedId) {
 
 function cardTxCatChange(sel) {
   if (sel.value === '__manage__') {
-    sel.value = sel.dataset.prev || '';
-    openCatManager();
+    openCatManagerForSelect(sel, sel.dataset.prev || '');
     return;
   }
   sel.dataset.prev = sel.value;
@@ -11520,7 +11559,7 @@ function openAddTxModal(cardId, y, m) {
   document.getElementById('tx-parc-total').addEventListener('input', function(){ syncInstallmentValues('parcela'); });
   // Handle __manage__ in category select
   var catSelTx = document.getElementById('tx-cat');
-  if (catSelTx) catSelTx.addEventListener('change', function(){ if (this.value === '__manage__') { this.value = ''; openCatManager(); } });
+  if (catSelTx) catSelTx.addEventListener('change', function(){ if (this.value === '__manage__') { openCatManagerForSelect(this, ''); } });
   // Attach autocomplete to description field — auto-fill category on select
   var descInput = document.getElementById('tx-desc');
   if (descInput) acAttach(descInput, 'tx-desc', function(val) {
