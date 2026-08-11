@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-08-07T17:53:42.799Z",
+  "_updatedAt": "2026-08-11T19:46:51.508Z",
   "tasks": {
     "items": [
       {
@@ -1091,13 +1091,13 @@
       {
         "id": "ts-25",
         "title": "Anunciar memória DDR4",
-        "status": "aguardando",
+        "status": "status-em-andamento",
         "priority": "media",
         "dueDate": "2026-08-31",
         "description": "",
         "children": [],
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-07-31T20:40:32.531Z",
+        "updatedAt": "2026-08-11T12:47:21.197Z",
         "linkedItems": [],
         "notes": "",
         "tags": [],
@@ -1108,6 +1108,12 @@
             "author": "Broder",
             "text": "Memórias anunciadas no Mercado Livre e na OLX. Se não houver retorno em 30 dias, abaixar o valor.",
             "createdAt": "2026-07-31T20:40:32.531Z"
+          },
+          {
+            "id": "c-1786452357396",
+            "author": "Broder",
+            "text": "Um dos dois kits vendidos e despachados dia 10/08/2026 pelo Mercado Livre. O outro permanece à venda.",
+            "createdAt": "2026-08-11T12:45:57.396Z"
           }
         ],
         "customFields": {
@@ -1739,6 +1745,13 @@
         "builtin": true
       },
       {
+        "id": "status-em-andamento",
+        "label": "Em andamento",
+        "color": "#ff6400",
+        "bg": "#ff640026",
+        "builtin": false
+      },
+      {
         "bg": "#ffff0026",
         "id": "aguardando",
         "color": "#ffff00",
@@ -1924,7 +1937,7 @@
             "id": 2501,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/1/25",
+            "venc": "10/01/25",
             "valor": 1445.36,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -1933,7 +1946,7 @@
             "id": 2502,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/1/25",
+            "venc": "10/01/25",
             "valor": 1276.36,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -1942,7 +1955,7 @@
             "id": 2503,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/1/25",
+            "venc": "02/01/25",
             "valor": 81.8,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -1951,7 +1964,7 @@
             "id": 2504,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/1/25",
+            "venc": "20/01/25",
             "valor": 288.94,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -1962,7 +1975,7 @@
             "id": 2510,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/2/25",
+            "venc": "10/02/25",
             "valor": 1445.36,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -1971,7 +1984,7 @@
             "id": 2511,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/2/25",
+            "venc": "10/02/25",
             "valor": 1210.94,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -1980,7 +1993,7 @@
             "id": 2512,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/2/25",
+            "venc": "02/02/25",
             "valor": 80.11,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -1989,7 +2002,7 @@
             "id": 2513,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/2/25",
+            "venc": "20/02/25",
             "valor": 288.29,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2000,7 +2013,7 @@
             "id": 2520,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/3/25",
+            "venc": "10/03/25",
             "valor": 1659.43,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2009,7 +2022,7 @@
             "id": 2521,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/3/25",
+            "venc": "10/03/25",
             "valor": 1224.58,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2018,7 +2031,7 @@
             "id": 2522,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/3/25",
+            "venc": "02/03/25",
             "valor": 84.05,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2027,7 +2040,7 @@
             "id": 2523,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/3/25",
+            "venc": "20/03/25",
             "valor": 281.28,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2038,7 +2051,7 @@
             "id": 2530,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/4/25",
+            "venc": "10/04/25",
             "valor": 1659.43,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2047,7 +2060,7 @@
             "id": 2531,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/4/25",
+            "venc": "10/04/25",
             "valor": 1102.26,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2056,7 +2069,7 @@
             "id": 2532,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/4/25",
+            "venc": "02/04/25",
             "valor": 80.11,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2065,7 +2078,7 @@
             "id": 2533,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/4/25",
+            "venc": "20/04/25",
             "valor": 298.25,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2076,7 +2089,7 @@
             "id": 2540,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/5/25",
+            "venc": "10/05/25",
             "valor": 1659.43,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2085,7 +2098,7 @@
             "id": 2541,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/5/25",
+            "venc": "10/05/25",
             "valor": 1040.3,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2094,7 +2107,7 @@
             "id": 2542,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/5/25",
+            "venc": "02/05/25",
             "valor": 84.07,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2103,7 +2116,7 @@
             "id": 2543,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/5/25",
+            "venc": "20/05/25",
             "valor": 298.25,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2114,7 +2127,7 @@
             "id": 2550,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/6/25",
+            "venc": "10/06/25",
             "valor": 1781.94,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2123,7 +2136,7 @@
             "id": 2551,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/6/25",
+            "venc": "10/06/25",
             "valor": 1244.81,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2132,7 +2145,7 @@
             "id": 2552,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/6/25",
+            "venc": "02/06/25",
             "valor": 81.33,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2141,7 +2154,7 @@
             "id": 2553,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/6/25",
+            "venc": "20/06/25",
             "valor": 328.25,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2152,7 +2165,7 @@
             "id": 2560,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/7/25",
+            "venc": "10/07/25",
             "valor": 1781.94,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2161,7 +2174,7 @@
             "id": 2561,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/7/25",
+            "venc": "10/07/25",
             "valor": 1110.12,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2170,7 +2183,7 @@
             "id": 2562,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/7/25",
+            "venc": "02/07/25",
             "valor": 80.11,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2179,7 +2192,7 @@
             "id": 2563,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/7/25",
+            "venc": "20/07/25",
             "valor": 329.12,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2190,7 +2203,7 @@
             "id": 2570,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/8/25",
+            "venc": "10/08/25",
             "valor": 1781.94,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2199,7 +2212,7 @@
             "id": 2571,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/8/25",
+            "venc": "10/08/25",
             "valor": 1082.08,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2208,7 +2221,7 @@
             "id": 2572,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/8/25",
+            "venc": "02/08/25",
             "valor": 80.11,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2217,7 +2230,7 @@
             "id": 2573,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/8/25",
+            "venc": "20/08/25",
             "valor": 295.06,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2228,7 +2241,7 @@
             "id": 2580,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/9/25",
+            "venc": "10/09/25",
             "valor": 1781.94,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2237,7 +2250,7 @@
             "id": 2581,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/9/25",
+            "venc": "10/09/25",
             "valor": 1255.98,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2246,7 +2259,7 @@
             "id": 2582,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/9/25",
+            "venc": "02/09/25",
             "valor": 80.89,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2255,7 +2268,7 @@
             "id": 2583,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/9/25",
+            "venc": "20/09/25",
             "valor": 288.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2284,7 +2297,7 @@
             "id": 2592,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/10/25",
+            "venc": "02/10/25",
             "valor": 81.9,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2322,7 +2335,7 @@
             "id": 2602,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/11/25",
+            "venc": "02/11/25",
             "valor": 81.96,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2360,7 +2373,7 @@
             "id": 2612,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/12/25",
+            "venc": "02/12/25",
             "valor": 81.96,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2382,8 +2395,8 @@
             "id": 1,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/1/26",
-            "valor": 1347.27,
+            "venc": "10/01/26",
+            "valor": 1567.87,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
           },
@@ -2391,8 +2404,8 @@
             "id": 2,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/1/26",
-            "valor": 1559.1,
+            "venc": "10/01/26",
+            "valor": 1383.46,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
           },
@@ -2400,7 +2413,7 @@
             "id": 3,
             "obs": "",
             "nome": "Compagás",
-            "venc": "10/1/26",
+            "venc": "10/01/26",
             "valor": 0,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2409,7 +2422,7 @@
             "id": 4,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/1/26",
+            "venc": "02/01/26",
             "valor": 83.66,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2418,7 +2431,7 @@
             "id": 5,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/1/26",
+            "venc": "20/01/26",
             "valor": 318.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2427,7 +2440,7 @@
             "id": 6,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/1/26",
+            "venc": "07/01/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
@@ -2436,7 +2449,7 @@
             "id": 1781591158094,
             "obs": "",
             "nome": "Londrina",
-            "venc": "19/6/26",
+            "venc": "19/06/26",
             "valor": 1500,
             "status": "pago",
             "categoria": "",
@@ -2448,7 +2461,7 @@
             "id": 10,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/2/26",
+            "venc": "10/02/26",
             "valor": 1347.27,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2457,16 +2470,17 @@
             "id": 11,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/2/26",
+            "venc": "10/02/26",
             "valor": 1559.1,
             "status": "pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagoEm": "18/02/26"
           },
           {
             "id": 12,
             "obs": "",
             "nome": "Compagás",
-            "venc": "10/2/26",
+            "venc": "10/02/26",
             "valor": 0,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2475,7 +2489,7 @@
             "id": 13,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/2/26",
+            "venc": "02/02/26",
             "valor": 83.66,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2484,7 +2498,7 @@
             "id": 14,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/2/26",
+            "venc": "20/02/26",
             "valor": 318.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2493,10 +2507,21 @@
             "id": 15,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/2/26",
+            "venc": "07/02/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
+          },
+          {
+            "id": 1786454023424,
+            "nome": "Londrina",
+            "venc": "19/02/26",
+            "valor": 0,
+            "status": "pago",
+            "categoria": "cat-1u3e2oudmq",
+            "obs": "Pago por Gustavo",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           }
         ],
         "2": [
@@ -2504,7 +2529,7 @@
             "id": 20,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/3/26",
+            "venc": "10/03/26",
             "valor": 1598.07,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2513,7 +2538,7 @@
             "id": 21,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/3/26",
+            "venc": "10/03/26",
             "valor": 1211.07,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2522,7 +2547,7 @@
             "id": 22,
             "obs": "",
             "nome": "Compagás",
-            "venc": "10/3/26",
+            "venc": "10/03/26",
             "valor": 27,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2531,7 +2556,7 @@
             "id": 23,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/3/26",
+            "venc": "02/03/26",
             "valor": 81.96,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2540,7 +2565,7 @@
             "id": 24,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/3/26",
+            "venc": "20/03/26",
             "valor": 288.4,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2549,7 +2574,7 @@
             "id": 25,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/3/26",
+            "venc": "07/03/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
@@ -2558,7 +2583,7 @@
             "id": 1781591027006,
             "obs": "Richard/Paul",
             "nome": "Londrina",
-            "venc": "16/3/26",
+            "venc": "16/03/26",
             "valor": 3180.25,
             "status": "pago",
             "categoria": "",
@@ -2570,25 +2595,29 @@
             "id": 30,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/4/26",
+            "venc": "10/04/26",
             "valor": 1598.03,
             "status": "pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           },
           {
             "id": 31,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/4/26",
+            "venc": "10/04/26",
             "valor": 1435.8,
             "status": "pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           },
           {
             "id": 32,
             "obs": "",
             "nome": "Compagás",
-            "venc": "10/4/26",
+            "venc": "10/04/26",
             "valor": 58.68,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2597,7 +2626,7 @@
             "id": 33,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/4/26",
+            "venc": "02/04/26",
             "valor": 81.81,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2606,7 +2635,7 @@
             "id": 34,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/4/26",
+            "venc": "20/04/26",
             "valor": 288.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2615,7 +2644,7 @@
             "id": 35,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/4/26",
+            "venc": "07/04/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
@@ -2624,7 +2653,7 @@
             "id": 1781590936239,
             "obs": "",
             "nome": "Londrina",
-            "venc": "16/4/26",
+            "venc": "16/04/26",
             "valor": 1835.11,
             "status": "pago",
             "categoria": "cat-1u3e2oudmq",
@@ -2636,25 +2665,29 @@
             "id": 40,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/5/26",
+            "venc": "10/05/26",
             "valor": 1818.63,
             "status": "pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           },
           {
             "id": 41,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/5/26",
+            "venc": "10/05/26",
             "valor": 1531.17,
             "status": "pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           },
           {
             "id": 42,
             "obs": "",
             "nome": "Compagás",
-            "venc": "11/5/26",
+            "venc": "11/05/26",
             "valor": 46.13,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2663,7 +2696,7 @@
             "id": 43,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/5/26",
+            "venc": "02/05/26",
             "valor": 91.31,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2672,7 +2705,7 @@
             "id": 44,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/5/26",
+            "venc": "20/05/26",
             "valor": 318.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2681,7 +2714,7 @@
             "id": 45,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/5/26",
+            "venc": "07/05/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
@@ -2690,7 +2723,7 @@
             "id": 1781590802542,
             "obs": "",
             "nome": "Londrina",
-            "venc": "19/5/26",
+            "venc": "19/05/26",
             "valor": 1618.58,
             "status": "pago",
             "categoria": "",
@@ -2702,19 +2735,22 @@
             "id": 1780116641836.969,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/6/26",
+            "venc": "10/06/26",
             "valor": 1878.53,
             "status": "pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           },
           {
             "id": 1780116641836.6943,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/6/26",
-            "valor": 1062.8,
-            "status": "nao-pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "venc": "10/06/26",
+            "valor": 1105.4,
+            "status": "pago",
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagoEm": "10/08/26"
           },
           {
             "id": 1780116641836.4788,
@@ -2729,7 +2765,7 @@
             "id": 1780116641836.3508,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/6/26",
+            "venc": "02/06/26",
             "valor": 92.01,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2738,7 +2774,7 @@
             "id": 1780116641836.436,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/6/26",
+            "venc": "20/06/26",
             "valor": 318.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2747,7 +2783,7 @@
             "id": 1780116641836.5938,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/6/26",
+            "venc": "07/06/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
@@ -2756,7 +2792,7 @@
             "id": 1781676178131,
             "obs": "",
             "nome": "Londrina",
-            "venc": "19/6/26",
+            "venc": "19/06/26",
             "valor": 1910.15,
             "status": "pago",
             "categoria": "",
@@ -2768,7 +2804,7 @@
             "id": 1781676462356.229,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/7/26",
+            "venc": "10/07/26",
             "valor": 1878.53,
             "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
@@ -2777,16 +2813,17 @@
             "id": 1781676462356.8474,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/7/26",
-            "valor": 1198.75,
-            "status": "nao-pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "venc": "10/07/26",
+            "valor": 1235.12,
+            "status": "pago",
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagoEm": "10/08/26"
           },
           {
             "id": 1781676462356.1663,
             "obs": "",
             "nome": "Compagás",
-            "venc": "10/7/26",
+            "venc": "10/07/26",
             "valor": 52.94,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2795,7 +2832,7 @@
             "id": 1781676462356.2898,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/7/26",
+            "venc": "02/07/26",
             "valor": 92.02,
             "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
@@ -2804,7 +2841,7 @@
             "id": 1781676462356.5034,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/7/26",
+            "venc": "20/07/26",
             "valor": 318.27,
             "status": "pago",
             "categoriaId": "cat-0cihdyll7p"
@@ -2813,19 +2850,21 @@
             "id": 1781676462356.1636,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/7/26",
+            "venc": "07/07/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
           },
           {
             "id": 1781676462356.0237,
-            "obs": "",
+            "obs": "Pago por Gustavo",
             "nome": "Londrina",
-            "venc": "19/7/26",
+            "venc": "19/07/26",
             "valor": 0,
-            "status": "aguardando",
-            "categoriaId": "cat-1u3e2oudmq"
+            "status": "pago",
+            "categoriaId": "cat-1u3e2oudmq",
+            "pagadorId": "payer-1786465039311-161",
+            "pagadorEstorno": false
           }
         ],
         "7": [
@@ -2833,52 +2872,54 @@
             "id": 1784309634417.616,
             "obs": "",
             "nome": "Aluguel",
-            "venc": "10/8/26",
-            "valor": 0,
-            "status": "aguardando",
+            "venc": "10/08/26",
+            "valor": 1878.53,
+            "status": "pago",
             "categoriaId": "cat-z7pr22s4wd"
           },
           {
             "id": 1784309634417.5566,
             "obs": "00547212968",
             "nome": "Condomínio",
-            "venc": "10/8/26",
+            "venc": "10/08/26",
             "valor": 1300.17,
             "status": "nao-pago",
-            "categoriaId": "cat-z7pr22s4wd"
+            "categoriaId": "cat-z7pr22s4wd",
+            "pagadorId": "payer-richard",
+            "pagadorEstorno": false
           },
           {
             "id": 1784309634417.0332,
             "obs": "",
             "nome": "Compagás",
-            "venc": "10/8/26",
-            "valor": 0,
-            "status": "aguardando",
+            "venc": "10/08/26",
+            "valor": 58.9,
+            "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
           },
           {
             "id": 1784309634417.5527,
             "obs": "",
             "nome": "Internet",
-            "venc": "2/8/26",
-            "valor": 0,
-            "status": "nao-pago",
+            "venc": "02/08/26",
+            "valor": 0.71,
+            "status": "pago",
             "categoriaId": "cat-m7umq5lu78"
           },
           {
             "id": 1784309634417.5854,
             "obs": "",
             "nome": "Celular",
-            "venc": "20/8/26",
+            "venc": "20/08/26",
             "valor": 0,
-            "status": "nao-pago",
+            "status": "aguardando",
             "categoriaId": "cat-0cihdyll7p"
           },
           {
             "id": 1784309634417.5974,
             "obs": "",
             "nome": "Unimed",
-            "venc": "7/8/26",
+            "venc": "07/08/26",
             "valor": 844.01,
             "status": "pago",
             "categoriaId": "cat-winmzzrenu"
@@ -2887,9 +2928,9 @@
             "id": 1784309634417.4888,
             "obs": "",
             "nome": "Londrina",
-            "venc": "19/8/26",
+            "venc": "19/08/26",
             "valor": 0,
-            "status": "nao-pago",
+            "status": "aguardando",
             "categoriaId": "cat-1u3e2oudmq"
           }
         ],
@@ -2926,12 +2967,24 @@
       ]
     },
     "openMonths": {
-      "5": true,
-      "6": true,
       "7": true
     },
     "currentYear": 2026,
-    "chatHistory": {}
+    "chatHistory": {},
+    "payers": [
+      {
+        "id": "payer-richard",
+        "name": "Richard",
+        "color": "#6366f1",
+        "isDefault": true
+      },
+      {
+        "id": "payer-1786465039311-161",
+        "name": "Gustavo",
+        "color": "#10b981",
+        "isDefault": false
+      }
+    ]
   },
   "card": {
     "cards": [
@@ -6870,6 +6923,474 @@
               "parcela": "",
               "categoriaId": "cat-ulhkok9chc",
               "nota": "x15 Pilhas CR2032 Philips"
+            },
+            {
+              "id": "msjg7e7bhuvbz6ztxd7",
+              "descricao": "59202675Joaopedro",
+              "data": "31/07/26",
+              "valor": 38,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msjg7tsro764whmaf6",
+              "descricao": "99 Ride",
+              "data": "31/07/26",
+              "valor": 6.03,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjg82qqjou1ue7q7ra",
+              "descricao": "99 Ride",
+              "data": "31/07/26",
+              "valor": 10.3,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjg8cvwfo7wf4e9raw",
+              "descricao": "BURGER KING",
+              "data": "31/07/26",
+              "valor": 25,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger King"
+            },
+            {
+              "id": "msjg99n1jve6lblp13c",
+              "descricao": "59202675Joaopedro",
+              "data": "01/08/26",
+              "valor": 24,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msjg9i1gunok263qba",
+              "descricao": "59202675Joaopedro",
+              "data": "01/08/26",
+              "valor": 12,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msjg9zbbyizmzq8vrfp",
+              "descricao": "URENTCAR",
+              "data": "01/08/26",
+              "valor": 1.77,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msjgaba7zmboudqpjae",
+              "descricao": "URENTCAR",
+              "data": "01/08/26",
+              "valor": 1.77,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msjgdobonwz83wf7sip",
+              "descricao": "Adelciocostapenha",
+              "data": "01/08/26",
+              "valor": 10,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msjge1sb3vhbj7dpq5h",
+              "descricao": "59202675Joaopedro",
+              "data": "02/08/26",
+              "valor": 48,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msjgegeh9j3hil6hp54",
+              "descricao": "iFood",
+              "data": "03/08/26",
+              "valor": 50.08,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgeq96eni016o9pb",
+              "descricao": "iFood",
+              "data": "03/08/26",
+              "valor": 8.97,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgeyhrbin06czih3k",
+              "descricao": "CALDO DE CANA VERA",
+              "data": "03/08/26",
+              "valor": 8,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msjgf6gijstcz9mvcgg",
+              "descricao": "99 Ride",
+              "data": "03/08/26",
+              "valor": 8.7,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjgfd9gx8fc2e8vv7",
+              "descricao": "99 Ride",
+              "data": "03/08/26",
+              "valor": 11.1,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjgfmy7kffhptce75l",
+              "descricao": "BURGER KING",
+              "data": "03/08/26",
+              "valor": 64.99,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger King"
+            },
+            {
+              "id": "msjgg19doim5c07i1ql",
+              "descricao": "iFood",
+              "data": "04/08/26",
+              "valor": 50.08,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjggbz8my5rqw6bfeq",
+              "descricao": "URENTCAR",
+              "data": "04/08/26",
+              "valor": 9.99,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msjggl38f54tq1hwqwn",
+              "descricao": "59202675Joaopedro",
+              "data": "04/08/26",
+              "valor": 24,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msjggto2ekl6b0vv1ab",
+              "descricao": "99 Ride",
+              "data": "04/08/26",
+              "valor": 9.3,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjgh2yqhsmqrtm6a8s",
+              "descricao": "Uber",
+              "data": "04/08/26",
+              "valor": 9.29,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msjghgf2ln4kj8us1f",
+              "descricao": "iFood",
+              "data": "04/08/26",
+              "valor": 49.9,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgkrjxp3yqvg8r13s",
+              "descricao": "iFood",
+              "data": "05/08/26",
+              "valor": 61.77,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgldrteqzofkukbzm",
+              "descricao": "INSANO BURGER-CENTRO",
+              "data": "05/08/26",
+              "valor": 48,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger Vizinho"
+            },
+            {
+              "id": "msjglnprcqke1y9ofdj",
+              "descricao": "Uber",
+              "data": "05/08/26",
+              "valor": 7.4,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msjglymej768r8dza0b",
+              "descricao": "BURGER KING",
+              "data": "05/08/26",
+              "valor": 59.99,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger King"
+            },
+            {
+              "id": "msjgnmklgb1618akkz",
+              "descricao": "iFood",
+              "data": "06/08/26",
+              "valor": 50.08,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgntiqph4eraynpee",
+              "descricao": "iFood",
+              "data": "06/08/26",
+              "valor": 8.97,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgo9600lm4awkwjl0b",
+              "descricao": "URENTCAR",
+              "data": "06/08/26",
+              "valor": 0.98,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msjgoj7zfo30kx5noou",
+              "descricao": "59202675Joaopedro",
+              "data": "06/08/26",
+              "valor": 24,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msjgp1do0bks3rn6rrz7",
+              "descricao": "URENTCAR",
+              "data": "06/08/26",
+              "valor": 3.43,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msjgq1u1akt43h797c6",
+              "descricao": "FARMACIA PRECO POPULAR",
+              "data": "06/08/26",
+              "valor": 21.99,
+              "parcela": "",
+              "categoriaId": "cat-winmzzrenu",
+              "nota": "Shampoo"
+            },
+            {
+              "id": "msjgqeid6ztr0e8q0g9",
+              "descricao": "99 Ride",
+              "data": "06/08/26",
+              "valor": 8.7,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjgqtl32cfomc730ce",
+              "descricao": "PANIF NATHALIA",
+              "data": "06/08/26",
+              "valor": 36,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Picolés"
+            },
+            {
+              "id": "msjgrz0nai051w14s2v",
+              "descricao": "7 COPAS",
+              "data": "06/08/26",
+              "valor": 12,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msp2d4i3d7mqhkcw2p",
+              "descricao": "INSANO BURGER-CENTRO",
+              "data": "07/08/26",
+              "valor": 88,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger Vizinho"
+            },
+            {
+              "id": "msp2dh1w4xxs25a1lmf",
+              "descricao": "99 Ride",
+              "data": "07/08/26",
+              "valor": 8.2,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msp2dydh4fl0xuhrz2i",
+              "descricao": "QUINTINO",
+              "data": "07/08/26",
+              "valor": 179.11,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Muffato"
+            },
+            {
+              "id": "msp2ec2txu575lip6wf",
+              "descricao": "99 Ride",
+              "data": "07/08/26",
+              "valor": 9.5,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msjgst5p7a3ncdvikso",
+              "descricao": "Americanas",
+              "data": "07/08/26",
+              "valor": 45.17,
+              "parcela": "",
+              "categoriaId": "cat-3jf6zlep3r",
+              "nota": "Pilhas Duracell"
+            },
+            {
+              "id": "msjgtbfg7ujtcg27f4u",
+              "descricao": "iFood",
+              "data": "07/08/26",
+              "valor": 104.68,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msjgtv4pu60jr8ll9bi",
+              "descricao": "iFood",
+              "data": "07/08/26",
+              "valor": 7.95,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msp2hye304hehnduxw5f",
+              "descricao": "iFood",
+              "data": "08/08/26",
+              "valor": 53.48,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msp2i7bltx869ds1v0b",
+              "descricao": "CALDO DE CANA VERA",
+              "data": "08/08/26",
+              "valor": 9,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msp2igwj5s3qfkqjd8f",
+              "descricao": "iFood",
+              "data": "08/08/26",
+              "valor": 91.6,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msp2iqukw55x67jc5bd",
+              "descricao": "CALDO DE CANA VERA",
+              "data": "09/08/26",
+              "valor": 8,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msp2j6s2lnt9neggibo",
+              "descricao": "59202675Joaopedro",
+              "data": "10/08/26",
+              "valor": 36,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Pastel Mato Grosso"
+            },
+            {
+              "id": "msp2jifgd9c0nzclg0o",
+              "descricao": "Uber",
+              "data": "10/08/26",
+              "valor": 6.46,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msp2jpk3cq23afbagg9",
+              "descricao": "Uber",
+              "data": "10/08/26",
+              "valor": 6.6,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msp2ktzuy1x5rrud3u",
+              "descricao": "Atitude Papelaria",
+              "data": "10/08/26",
+              "valor": 10,
+              "parcela": "",
+              "categoriaId": "cat-3jf6zlep3r",
+              "nota": "Impressão de folhas"
+            },
+            {
+              "id": "msp2lidx2y3yrae5w1u",
+              "descricao": "URENTCAR",
+              "data": "11/08/26",
+              "valor": 5.88,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msp2l8rgrk4nerr9yfd",
+              "descricao": "iFood",
+              "data": "11/08/26",
+              "valor": 38.98,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
             }
           ]
         }
@@ -10487,6 +11008,24 @@
               "installmentCurrent": 1,
               "installmentStartY": 2026,
               "installmentStartM": 7
+            },
+            {
+              "id": "msp22itj8k53rgmrm8l",
+              "descricao": "TUDOOFERTAS.COM",
+              "data": "07/08/26",
+              "valor": 120,
+              "parcela": "",
+              "categoriaId": "cat-qt8k9krhlw",
+              "nota": "Vape 30k"
+            },
+            {
+              "id": "msp237q3az4zf7fq67o",
+              "descricao": "Auto pecas londrina",
+              "data": "11/08/26",
+              "valor": 50,
+              "parcela": "",
+              "categoriaId": "cat-ulhkok9chc",
+              "nota": "Fluído de freio Bosch DOT 5.1"
             }
           ],
           "8": [
@@ -10589,7 +11128,7 @@
               "valor": 114.62,
               "parcela": "",
               "descricao": "Madre Leonia",
-              "categoriaId": "cat-ovg9hujjsz"
+              "categoriaId": "cat-bo388xg881"
             },
             {
               "id": "mqczx8ayczauukfqbqg",
@@ -10599,7 +11138,7 @@
               "valor": 182.25,
               "parcela": "",
               "descricao": "Madre Leonia",
-              "categoriaId": "cat-ovg9hujjsz"
+              "categoriaId": "cat-bo388xg881"
             },
             {
               "id": "mqczx8ay27ki2g87uxe",
@@ -10609,7 +11148,7 @@
               "valor": 287.45,
               "parcela": "",
               "descricao": "Codigo de Carne",
-              "categoriaId": "cat-ovg9hujjsz"
+              "categoriaId": "cat-bo388xg881"
             },
             {
               "id": "mqczx8ayq5qqsipprr",
@@ -11518,7 +12057,7 @@
       },
       {
         "pattern": "QUINTINO",
-        "categoriaId": "cat-ulhkok9chc"
+        "categoriaId": "cat-2metcc4gvh"
       },
       {
         "pattern": "IFD*iFood",
@@ -11782,11 +12321,11 @@
       },
       {
         "pattern": "Madre Leonia",
-        "categoriaId": "cat-ovg9hujjsz"
+        "categoriaId": "cat-bo388xg881"
       },
       {
         "pattern": "Codigo de Carne",
-        "categoriaId": "cat-ovg9hujjsz"
+        "categoriaId": "cat-bo388xg881"
       },
       {
         "pattern": "Juros de atraso",
@@ -12027,6 +12566,42 @@
       {
         "pattern": "Trinitron com de equip",
         "categoriaId": "cat-3jf6zlep3r"
+      },
+      {
+        "pattern": "59202675Joaopedro",
+        "categoriaId": "cat-2metcc4gvh"
+      },
+      {
+        "pattern": "Adelciocostapenha",
+        "categoriaId": "cat-2metcc4gvh"
+      },
+      {
+        "pattern": "INSANO BURGER-CENTRO",
+        "categoriaId": "cat-2metcc4gvh"
+      },
+      {
+        "pattern": "FARMACIA PRECO POPULAR",
+        "categoriaId": "cat-winmzzrenu"
+      },
+      {
+        "pattern": "7 COPAS",
+        "categoriaId": "cat-2metcc4gvh"
+      },
+      {
+        "pattern": "Americanas",
+        "categoriaId": "cat-3jf6zlep3r"
+      },
+      {
+        "pattern": "auto pecas londrina",
+        "categoriaId": "cat-ulhkok9chc"
+      },
+      {
+        "pattern": "Auto pecas londrina",
+        "categoriaId": "cat-ulhkok9chc"
+      },
+      {
+        "pattern": "Atitude Papelaria",
+        "categoriaId": "cat-3jf6zlep3r"
       }
     ],
     "catGroups": [
@@ -12046,13 +12621,13 @@
           "cat-hlva536gw7",
           "cat-8aubry5uzc",
           "cat-m8lptmmn8b",
-          "cat-m7umq5lu78",
           "cat-0cihdyll7p",
           "cat-1u3e2oudmq",
           "cat-77wa3taxwj",
           "cat-o53k88i1e4",
           "cat-s74hyo6cb6",
-          "cat-3jsrybrpzz"
+          "cat-3jsrybrpzz",
+          "cat-5oxsma9hp6"
         ],
         "name": "Richard",
         "color": "#6366f1"
@@ -12071,9 +12646,10 @@
       {
         "id": "grp-1781592625604",
         "cats": [
-          "cat-z7pr22s4wd"
+          "cat-z7pr22s4wd",
+          "cat-m7umq5lu78"
         ],
-        "name": "Paul CWB",
+        "name": "CWB",
         "color": "#f59e0b"
       }
     ],
@@ -12310,22 +12886,31 @@
     },
     "acMemory": {
       "ac_tx-desc": [
+        "URENTCAR",
+        "iFood",
+        "Atitude Papelaria",
+        "Uber",
+        "59202675Joaopedro",
+        "CALDO DE CANA VERA",
+        "99 Ride",
+        "QUINTINO",
+        "INSANO BURGER-CENTRO",
+        "Auto pecas londrina",
+        "Americanas",
+        "TUDOOFERTAS.COM",
+        "FARMACIA PRECO POPULAR",
+        "PANIF NATHALIA",
+        "7 COPAS",
         "Trinitron com de equip",
+        "BURGER KING",
         "IOF COMPRA INTERNACIONA",
         "Elevenlabs.io",
-        "TUDOOFERTAS.COM",
-        "iFood",
-        "Uber",
-        "URENTCAR",
-        "BURGER KING",
+        "Adelciocostapenha",
         "SUPERMERCADOS VISCARDI",
-        "99 Ride",
         "Compra Mercado Livre",
         "Mayconaparecido",
-        "CALDO DE CANA VERA",
         "Amazon Prime",
         "ANTHROPIC* CLAUDE SUB",
-        "PANIF NATHALIA",
         "Lai Chi",
         "Sua Academia",
         "CASA CHINA LONDRINA",
@@ -12344,7 +12929,6 @@
         "Jmcomercio",
         "Spotify",
         "GAMMA.APP",
-        "QUINTINO",
         "Localizabrrac",
         "AtaideSoaresTrind",
         "Pantanal Auto Pos",
@@ -12593,23 +13177,14 @@
         "IFD*CL PIZZARIA LTDA",
         "Crédito concedido",
         "IFD*OUTBACK STEAKHOUSE RE",
-        "IFD*MARCIA COSTA RESTAURA",
-        "IFD*IRMAOS MUFFATO SA",
-        "IFD*OLD IS COOL BURGER LO",
-        "SMARTFIT",
-        "IFD*WSK RESTAURANTE E PIZ",
-        "Compra internacional em THE NEW YORK TIMES",
-        "Devolução do IOF de rotativo",
-        "Devolução dos juros do rotativo",
-        "IOF do rotativo",
-        "Juros do rotativo",
-        "IFD*LANCHONETE REI DO",
-        "JUSBRASIL",
-        "MP*LOTERIASONLINEO2A8",
-        "IFD*LEMOS PIZZARIA LTD",
-        "Fatura Residual Dezembro"
+        "IFD*MARCIA COSTA RESTAURA"
       ],
       "ac_detalhes": [
+        "Desengraxante 2Wheels All Clean Maxx 1 Litro",
+        "Selante 2Wheels Bike Seal X",
+        "Relógio Casio G-Shock GA-110-1B (devolver se fake)",
+        "SERASA Experian",
+        "Seguro Cartão Itaú",
         "Corrente SRAM Red Flattop Rainbow",
         "Genshin - Welkin Moon",
         "YouTube Premium",
@@ -12632,7 +13207,6 @@
         "Muck-Off, Caramanholas, Selante, Chave Allen",
         "Specialized Crux (restante pós-sinal)",
         "Sinal de negócio Specialized Crux",
-        "SERASA Experian",
         "Aniversário",
         "Pagamento serviço YOLO BD 2/2",
         "Pagamento serviço YOLO BD 1/2",
@@ -12645,7 +13219,6 @@
         "Algum tipo de devolução",
         "Whey",
         "Tok & Stok",
-        "Seguro Cartão Itaú",
         "Passagem Crianças",
         "Galaxy A26 Danilo",
         "Panificadora Nathalia",
@@ -12706,10 +13279,7 @@
         "Tokens",
         "IOF Claude",
         "Mensalidade Claude",
-        "Compra de capa p/ notebook Acer",
-        "Compra de tokens",
-        "Vape 30k",
-        "Um suco, provavelmente"
+        "Compra de capa p/ notebook Acer"
       ],
       "ac_pay-desc-card-mp": [
         "Pagamento Total",
@@ -13033,7 +13603,10 @@
         "Kit Completo Lawax",
         "Suporte GPS Alumínio",
         "Casio G-Shock G-5600UE-1DR",
-        "Parafuso caixa direção"
+        "Parafuso caixa direção",
+        "Corrente SRAM Red Flattop Rainbow",
+        "Relógio Casio G-Shock GA-110-1B (devolver se fake)",
+        "Selante 2Wheels Bike Seal X"
       ],
       "ac_debit-nota-debit-mqishlnu2ci81kqukvu": [
         "Bar do Japa",
@@ -13056,22 +13629,29 @@
       ]
     },
     "notaMemory": {
+      "Auto pecas londrina": "Fluído de freio Bosch DOT 5.1",
+      "Americanas": "Pilhas Duracell",
+      "iFood": "iFood",
+      "TUDOOFERTAS.COM": "Vape 30k",
+      "URENTCAR": "JET",
+      "59202675Joaopedro": "Pastel Mato Grosso",
+      "FARMACIA PRECO POPULAR": "Shampoo",
+      "99 Ride": "99",
+      "PANIF NATHALIA": "Picolés",
+      "7 COPAS": "Caldo de Cana",
       "Trinitron com de equip": "Conserto LG CX55",
+      "INSANO BURGER-CENTRO": "Burger Vizinho",
+      "Uber": "Uber",
+      "BURGER KING": "Burger King",
       "IOF COMPRA INTERNACIONA": "IOF ElevenLabs",
       "Elevenlabs.io": "ElevenLabs",
-      "TUDOOFERTAS.COM": "Vape 30k",
-      "iFood": "iFood",
-      "Uber": "Uber",
-      "URENTCAR": "JET",
-      "BURGER KING": "Burger King",
+      "CALDO DE CANA VERA": "Caldo de Cana",
+      "Adelciocostapenha": "Caldo de Cana",
       "SUPERMERCADOS VISCARDI": "Viscardi",
-      "99 Ride": "99",
       "Compra Mercado Livre": "x15 Pilhas CR2032 Philips",
       "Mayconaparecido": "Cachorro Quente",
-      "CALDO DE CANA VERA": "Caldo de Cana",
       "Amazon Prime": "Locação Filme - Soldado Universal",
       "ANTHROPIC* CLAUDE SUB": "Claude",
-      "PANIF NATHALIA": "Energético",
       "Lai Chi": "Refeição (Sara)",
       "Sua Academia": "SmartFit",
       "CASA CHINA LONDRINA": "Pote de vidro p/ limpeza de corrente (+ pelúcia p/ Matilda)",
@@ -13090,7 +13670,7 @@
       "Jmcomercio": "Hot Dog Higienópolis",
       "Spotify": "Spotify",
       "GAMMA.APP": "Gamma Paul",
-      "QUINTINO": "Muffato - Cera p/ Bike",
+      "QUINTINO": "Muffato",
       "Localizabrrac": "Localiza",
       "AtaideSoaresTrind": "Tata Lanches",
       "Pantanal Auto Pos": "Lanche no posto",
@@ -13273,7 +13853,8 @@
       "JUSBRASIL": "JusBrasil",
       "MP*LOTERIASONLINEO2A8": "Mega-Sena",
       "IFD*LEMOS PIZZARIA LTD": "iFood",
-      "Fatura Residual Dezembro": "Fatura Residual de Dezembro"
+      "Fatura Residual Dezembro": "Fatura Residual de Dezembro",
+      "Atitude Papelaria": "Impressão de folhas"
     },
     "rules": [
       {
@@ -16823,6 +17404,46 @@
           "categoriaId": "cat-ulhkok9chc",
           "ignorarDashboard": false,
           "estorno": false
+        },
+        {
+          "id": "msp26a5hjknd3upyjq",
+          "data": "2026-08-07",
+          "descricao": "Pagamento GOOGLE BRASIL PAGAMENTOS LTDA.",
+          "nota": "SERASA Experian",
+          "valor": 23.9,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msp298gvnlxewb7gfbk",
+          "data": "2026-08-09",
+          "descricao": "Pagamento Mercado Livre",
+          "nota": "Relógio Casio G-Shock GA-110-1B (devolver se fake)",
+          "valor": 149.95,
+          "categoriaId": "cat-5oxsma9hp6",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msp2anz4yibxx3ze88",
+          "data": "2026-08-10",
+          "descricao": "Pagamento Mercado Livre",
+          "nota": "Selante 2Wheels Bike Seal X 1 Litro",
+          "valor": 118.68,
+          "categoriaId": "cat-ulhkok9chc",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msp2bhejf31gy9luht7",
+          "data": "2026-08-10",
+          "descricao": "Pagamento Mercado Livre",
+          "nota": "Desengraxante 2Wheels All Clean Maxx 1 Litro",
+          "valor": 78.99,
+          "categoriaId": "cat-ulhkok9chc",
+          "ignorarDashboard": false,
+          "estorno": false
         }
       ],
       "debit-mqishlnu2ci81kqukvu": [
@@ -16925,7 +17546,7 @@
           "valor": 1342.15,
           "estorno": false,
           "descricao": "Pix Marketplace",
-          "categoriaId": "cat-ovg9hujjsz",
+          "categoriaId": "cat-bo388xg881",
           "ignorarDashboard": false
         },
         {
@@ -17097,6 +17718,16 @@
           "categoriaId": "cat-ulhkok9chc",
           "ignorarDashboard": false,
           "estorno": false
+        },
+        {
+          "id": "msp1y85l8sp8f01qnwt",
+          "data": "2026-08-11",
+          "descricao": "Seguro Cartão",
+          "nota": "Seguro Cartão Itaú",
+          "valor": 42,
+          "categoriaId": "cat-iachsi0ie7",
+          "ignorarDashboard": false,
+          "estorno": false
         }
       ]
     },
@@ -17118,7 +17749,7 @@
       "pagamento duque": "cat-ovg9hujjsz",
       "pagamento ebanx": "cat-ulhkok9chc",
       "pagamento meli+": "cat-iachsi0ie7",
-      "pix marketplace": "cat-ovg9hujjsz",
+      "pix marketplace": "cat-bo388xg881",
       "pagamento mp*joao": "cat-2metcc4gvh",
       "pagamento raia323": "cat-winmzzrenu",
       "pagamento raia330": "cat-winmzzrenu",
@@ -18183,7 +18814,7 @@
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "debit",
+    "activeTab": "dashboard",
     "tabLabels": {
       "ai": "IA",
       "card": "Cartão",
@@ -18191,6 +18822,15 @@
       "finance": "Contas",
       "settings": "Config"
     }
+  },
+  "dashboard": {
+    "hiddenSources": [],
+    "hiddenGroups": [
+      "Richard"
+    ],
+    "hiddenPayers": [
+      "payer-1786465039311-161"
+    ]
   },
   "_seedVersion": "v2",
   "_taskSeedVersion": "v4"

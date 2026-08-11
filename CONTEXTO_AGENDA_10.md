@@ -4,7 +4,7 @@
 
 **App:** Agenda Pessoal — PWA single-file (`index.html` + `sw.js`), hospedado em `broder33.github.io/Agenda`, Supabase para auth/sync, Anthropic API para IA.
 
-**Versão atual:** v0.5.95
+**Versão atual:** v0.6.08
 
 **Workflow:** Richard faz upload do `index.html` → Claude edita via bash/Python str_replace → entrega `index.html` + `sw.js` juntos. `node --check` obrigatório antes de toda entrega. Bump de versão em toda mudança de código.
 
@@ -41,6 +41,13 @@
 - **Drag precisa de limiar de movimento (5px)** — sem isso, micro-movimentos durante cliques normais viram drag e cancelam o `click`
 - **`overflow:hidden` no container recorta filhos sticky/posicionados** — cuidado ao posicionar barras dentro de tabelas
 - **`<input type="date">` exibe no locale do navegador** — incontrolável pela página; usar calendário próprio do app
+- **Estado de visualização deve ser chaveado por entidade**, não guardado em `dataset` de
+  container compartilhado nem em global simples (ex.: `_cardActiveMonthIdx[cardId]`,
+  `_cardCollapsedYears[cardId+'|'+ano]`, `lists.sortLevels[secId]`)
+- **Todo seletor de categoria deve usar `buildCatOpts()`** — montar `<option>` à mão omite a
+  opção "⚙ Gerenciar categorias"
+- **Modal aberto de dentro de outro modal** precisa ser reposicionado no fim do `body` com
+  z-index maior (modais dinâmicos usam `showModal` → `body.appendChild`)
 - **Seeds não alteram estado já existente** — mudar o texto do seed no código não renomeia lista já criada; só rename pela UI ou edição do JSON
 
 ---
@@ -83,9 +90,17 @@ state = {
     _seedApplied: true,
     _travelSeedApplied: true
   },
-  config: { activeTab, theme, ... }
+  config: { activeTab, theme, apiKey, tabLabels },
+  dashboard: {                     // v0.6.07 — filtros do "Exibir", sincronizados
+    hiddenSources: [],             // guarda os OCULTOS (item novo nasce visível)
+    hiddenGroups: []
+  },
+  _updatedAt: 'ISO'                // árbitro do merge E data exibida no cabeçalho
 }
 ```
+
+**`mergeState` só copia módulos que conhece explicitamente** — ao criar um módulo novo no
+`state`, é obrigatório adicioná-lo lá, senão ele sobe para a nuvem e nunca volta.
 
 **Transações de cartão antecipadas** ganham flags: `anticipated: true`, `anticipatedFromY`, `anticipatedFromM`.
 
@@ -166,7 +181,7 @@ state = {
 
 ---
 
-## Alterações desta sessão (v0.5.61 → v0.5.95)
+## Alterações da sessão anterior (v0.5.61 → v0.5.95)
 
 ### v0.5.61 — `tbody._onSelChange`
 - `updateSelectionBar` é closure de `buildSectionBlock`; chamadas externas (`inlineEditItemName`, `addListItem`, `openStatusPicker`) passavam `onSelChange` undefined
@@ -297,6 +312,212 @@ state = {
 
 ---
 
+---
+
+## Alterações desta sessão (v0.5.95 → v0.6.08)
+
+Sessão dominada por um problema de **persistência/sincronização** que se revelou
+estrutural, seguida de correções de bugs de UI encontrados pelo Richard em uso real.
+
+### O problema original — "importação some ao reabrir o Chrome"
+
+Sintoma: após importar, fechar e reabrir o Chrome, o app voltava ao estado anterior.
+Diagnóstico levou várias rodadas e **três hipóteses minhas foram derrubadas por dados**:
+
+1. Falha de gravação na nuvem → descartada (`erro: null` no console)
+2. Cota do `localStorage` → descartada (usuário logado não usa esse caminho)
+3. "Corrida no boot" (um `saveState()` pré-auth carimbando hora nova) → **parcialmente
+   certa quanto ao mecanismo, errada quanto à causa**
+
+**Fato decisivo trazido pelo Richard:** a importação *voltou sozinha* depois de algumas
+tentativas. Isso provou que a nuvem nunca foi sobrescrita — logo, `currentUser` era `null`
+durante a **sessão inteira**, não só num instante do boot. O app estava **abrindo
+deslogado** e exibindo a cópia velha do `localStorage` sem avisar.
+
+**Causa raiz:** a biblioteca do Supabase vinha de CDN (`cdn.jsdelivr.net`) a cada abertura,
+e o `sw.js` tinha bypass explícito de cache para jsdelivr. Rede fria no boot (restauração de
+abas do Chrome) → `<script>` falha → `_sb = null` → `initAuth()` morria na primeira linha
+(`if (!_sb) { showApp(false); return; }`), sem nova tentativa e sem aviso.
+
+### v0.5.96 — Correção estrutural de sincronização (5 mudanças)
+
+1. **`sw.js` cacheia as bibliotecas de CDN** (supabase, xlsx, pdf.js) — cache-first com
+   atualização em background. Correção da causa raiz.
+2. **Novas tentativas de conexão** — `initAuth()` com 5 tentativas (0/1,5/4/10/20s),
+   `loadSupabaseLib()` recarrega o `<script>` se `window.supabase` não existir, com timeout
+   de 5s por tentativa (requisição pendurada não pode travar o aviso).
+3. **Espelho local em toda gravação** (`writeLocalMirror()`) — antes, logado, o
+   `localStorage` **nunca** era escrito; era isso que mantinha o fóssil de 805 bytes vivo.
+4. **Trava contra sobrescrever a nuvem** — `loadFromSupabase` distingue erro de rede de
+   conta nova (`PGRST116`). Com `_cloudLoaded = false`, nada sobe. Único caminho que
+   destruía dado.
+5. **`_authResolved`** — a hora só avança depois de saber se existe sessão;
+   `_pendingLocalSave` + `flushPendingSave()` regravam com hora válida depois.
+
+Mais banner vermelho de estado degradado (`updateCloudBanner`) com botão "Tentar novamente".
+
+### v0.5.97/98/99 — Carimbo de data no cabeçalho
+
+Pedido do Richard para conferir sincronização entre aparelhos. `⟳ DD/MM/AA HH:MM` ao lado
+da versão, com três estados:
+
+| Estado | Exibição | Tooltip |
+|---|---|---|
+| Confirmado | `⟳ 29/07/26 21:54` cinza | "Confirmado com a nuvem" |
+| Degradado | `⟳ ... · local` laranja | "Data da cópia deste dispositivo" |
+| Sem nuvem | `⟳ ...` cinza | "Este navegador não está usando a nuvem" |
+
+**Bug meu corrigido em v0.5.99:** a cadeia tinha `if (degraded) ... else "confirmado"`.
+Como `degraded` exige conta na nuvem, o app puramente local caía no `else` e **afirmava
+confirmação que nunca houve**. Estados "sem nuvem" e "confirmado" **não** são complementares.
+
+### v0.6.00/01 — Separação nuvem × aparelho
+
+Richard notou que trocar de aba atualizava a data do banco. Auditoria **por campo** (não por
+nome de função — a busca por nome achou 7 pontos, a busca por campo achou o dobro):
+
+```js
+const UI_FIELDS = {
+  config:  ['activeTab', 'theme'],
+  tasks:   ['sortLevels','sortBy','sortColId','sortDir','showTime','filterStatus','viewMode','_closedSectionOpen'],
+  lists:   ['sortLevels'],
+  card:    ['viewMode'],
+  debit:   ['viewMode'],
+  finance: ['openMonths','activeMonths','currentYear']
+};
+```
+Mais `lists.crono.scale/autoFit` e `tasks.columns[].width` (aninhados, tratados à parte).
+
+- `stripUIFields()` usada nos **dois sentidos** (escrita e leitura) — na leitura impede que
+  preferências gravadas por versões antigas invadam o aparelho
+- `buildCloudPayload()` remove `_updatedAt` antes de comparar (senão a assinatura nunca bate)
+- Larguras de coluna preservadas por id em torno do merge
+- **Decisões do Richard:** colunas → dividido (`width` local, `visible`/`order` na nuvem);
+  `apiKey` → mantida na nuvem; `finance.currentYear` → local, junto com os meses
+
+**Bug meu corrigido em v0.6.01:** usei **uma** variável para duas perguntas independentes.
+Em modo local `_lastCloudSig` nunca era inicializada, ficava `null`, toda gravação contava
+como alteração e a data avançava ao trocar de aba — o próprio problema que a feature
+resolvia. Separadas em `_lastDataSig` (o dado mudou? vale offline) e `_lastCloudSig` (a
+nuvem já tem isto?), com inicialização de `_lastDataSig` no fim do `init()`.
+
+### v0.6.02 — Importação + 2 bugs de escopo compartilhado no Cartão
+
+- **Importação carimbava a hora do import** (`// Force timestamp so mergeState doesn't skip`)
+  — o carimbo forçado era efeito colateral desnecessário; quem desarma o guard é
+  `state._updatedAt = null`. Agora preserva a data do arquivo.
+- **Meses de um cartão mexiam nos outros:** `el.dataset.monthIdx` no painel da aba
+  (container único) → `_cardActiveMonthIdx[cardId]`, padrão que o Débito já usava
+- **Anos recolhidos idem:** `_cardCollapsedYears[y]` → chave `cardId + '|' + y`
+- Varredura descartou: Débito (já correto), Listas (`sortLevels[sec.id]`), Contas,
+  `_savedOpenBids` (transitório)
+
+### v0.6.03 — Regra de fallback na importação (desenhada pelo Richard)
+
+Discussão longa até o Richard formular a regra. O impasse: importar é a única operação que
+**move conteúdo pronto** em vez de produzir conteúdo, separando "de quando é o conteúdo" de
+"quando o usuário deu a ordem".
+
+| Caso | Prompt | Data resultante |
+|---|---|---|
+| Arquivo mais novo | padrão | data do arquivo, preservada |
+| Arquivo mais antigo | aviso com as duas datas | **hora atual** |
+| Arquivo sem data | aviso de impossível comparar | **hora atual** |
+
+Carimbar a hora atual no fallback transforma a versão antiga na mais recente do sistema, e
+ela prevalece nos outros aparelhos (que de outro modo a rejeitariam por serem mais novos).
+Cancelar é inteiramente inócuo (zero upserts).
+
+**Limite conhecido:** se o outro aparelho editar **offline** depois do fallback, ele vence ao
+conectar. Consequência de sincronizar o estado inteiro em bloco com last-write-wins.
+
+### v0.6.04 — Valor em aberto no cabeçalho da fatura
+
+`getBillOpenAmount(cardId, y, m)` extraído com a **mesma** conta do rodapé (total líquido de
+estornos − pagamentos, nunca negativo) — não é cálculo paralelo. `billOpenBadge()` aparece nos
+dois cabeçalhos (visão Lista e visão Mês), **só quando há pagamento parcial** (sem pagamento
+o valor em aberto é igual ao total já exibido). `flex-wrap` adicionado ao cabeçalho da visão Mês.
+
+### v0.6.05/06 — Criar categoria a partir dos seletores
+
+Dois problemas distintos, e eu **inverti a ordem de diagnóstico** (ver Lições):
+
+**v0.6.05 — a categoria criada não voltava para o campo.** `addCategoria` só tratava
+`source: 'fin'` e `'card'`; outros seis pontos abriam `openCatManager()` sem contexto.
+Solução genérica: `openCatManagerForSelect(sel, fallback)` guarda o **próprio elemento**,
+e ao criar seleciona nele e dispara o `change` — reaproveita a lógica de gravação de cada
+tela. Cobre qualquer seletor futuro sem tocar em `addCategoria`.
+
+**v0.6.06 — a opção "⚙ Gerenciar categorias" não existia** (era o que o Richard relatava;
+esclarecido por captura de tela). Dois seletores montavam as opções à mão em vez de usar
+`buildCatOpts`: **Débito → Nova transação** e **Cartão → Regras de classificação**.
+Mais: `openCatManager` agora reposiciona o modal no fim do `body` com `z-index:100010`
+(aberto de dentro de modal dinâmico, abriria atrás).
+
+### v0.6.07/08 — Filtros do Dashboard
+
+- **v0.6.07:** `_dashActiveSources`/`_dashActiveGroups` eram globais puras, sem `saveState()`
+  — refresh zerava tudo. Novo módulo **`state.dashboard`**, sincronizado (escolha do Richard).
+  Guarda os itens **ocultos**, não os visíveis: item criado depois nasce visível.
+  **`mergeState` precisou reconhecer o módulo** — sem isso subiria e nunca voltaria.
+- **v0.6.08:** o indicador de filtro ativo (bolinha) só olhava **fontes**, não grupos — e
+  `_dashActiveGroups` era hidratado ~60 linhas depois da criação do botão. Hidratação movida
+  para antes; `_nHidden` conta fontes + grupos. `_nHidden` já disponível se quiser trocar a
+  bolinha por "Exibir · N ocultos".
+
+---
+
+## Arquitetura de sincronização (estado atual)
+
+```
+Sinais de estado da nuvem
+  _cloudExpected  hasCloudAccount() — varre localStorage por 'sb-*-auth-token'
+  _cloudLoaded    leitura remota confirmada NESTA sessão (PGRST116 = conta nova, é true)
+  _authResolved   já sabemos se há sessão (libera o avanço do timestamp)
+  _cloudSaveFailed / _pendingLocalSave
+
+Assinaturas (duas perguntas independentes!)
+  _lastDataSig    o dado mudou? — init() + toda gravação — VALE OFFLINE
+  _lastCloudSig   a nuvem já tem isto? — pós-carga e pós-envio
+
+saveState() em ordem:
+  payload = buildCloudPayload()          // stripUIFields + delete _updatedAt
+  dataChanged = sig !== _lastDataSig  →  só então state._updatedAt avança
+  writeLocalMirror(); updateDbStamp();
+  return se !_sb || !currentUser         // sem sessão: só local
+  return se !_cloudLoaded                // não grava sem ter lido
+  return se sig === _lastCloudSig        // nuvem já tem
+  upsert(payload) → _lastCloudSig = sig
+```
+
+**Documentos gerados para portar isto a outro app do Richard:**
+`CONTEXTO_CARIMBO_DATA.md` (4 camadas + armadilhas + testes de aceitação) e
+`CONTEXTO_CARIMBO_DATA_ADENDO_IMPORTACAO.md` (regra de fallback).
+
+---
+
+## Lições desta sessão (erros meus, todos pegos pelo Richard ou por teste)
+
+- **Testar o caminho relatado, não o adjacente.** Padrão que se repetiu **três vezes**:
+  testei online quando o problema era local (v0.6.01), testei filtro de fonte quando o
+  relato era de grupo (v0.6.08), corrigi o "depois de criar" quando o relato era "não vejo
+  a opção" (v0.6.05/06).
+- **Pedir captura de tela antes de implementar** quando o relato é sobre o que o usuário
+  **vê**. Duas rodadas perdidas por partir do código.
+- **Uma variável não pode responder duas perguntas independentes.** Aconteceu com
+  `_lastCloudSig` (dado mudou × nuvem tem) e é o mesmo formato do impasse do `_updatedAt`
+  (conteúdo × ordem do usuário).
+- **Cadeia de condições precisa de um ramo por estado real**, não por complemento binário.
+- **Classificar por campo, não por nome de função.** Com 167 chamadas de `saveState()`,
+  marcar chamada a chamada é garantia de esquecer alguma — e o esquecimento é silencioso.
+- **Validar todas as substituições antes de gravar qualquer uma.** Um script meu gravou
+  parcialmente antes de falhar, deixando o arquivo inconsistente. Scripts agora abortam
+  sem escrever se alguma substituição não bater exatamente 1 vez.
+- **O fato que o usuário traz pode derrubar a hipótese inteira.** "A importação voltou
+  sozinha" reorientou todo o diagnóstico da sessão.
+
+---
+
 ## Funções chave — módulo Listas
 
 - `renderLists()` → `renderCronoView()` | `renderListsGrid()` | `renderListDetail()`
@@ -352,18 +573,38 @@ state = {
 
 - **Tarefas:** sort multi-nível (`state.tasks.sortLevels`)
 - **Contas (finance):** categorias por ID com `migrateCategorias()`
-- **Cartão:** carousel com janela de navegação, botão ↗ Mover por transação, sem seeds hardcoded, **antecipação de parcelas**, `getBillStatus` corrigido
+- **Cartão:** carousel com janela de navegação, botão ↗ Mover por transação, sem seeds
+  hardcoded, **antecipação de parcelas**, `getBillStatus` corrigido, **mês ativo e anos
+  recolhidos por cartão**, **selo de valor em aberto no cabeçalho da fatura**
 - **Débito:** parser PDF coordinate-based (Mercado Pago), sort multi-nível, detecção de duplicatas
-- **Dashboard:** donut chart, filtros Pago/Em aberto/Todos, modo acumulado anual, sort por categoria expandida; abate estornos negativos automaticamente
+- **Dashboard:** donut chart, filtros Pago/Em aberto/Todos, modo acumulado anual, sort por
+  categoria expandida; abate estornos negativos automaticamente; **filtros do "Exibir"
+  (fontes e grupos) persistidos e sincronizados em `state.dashboard`**
 - **Listas:** grid + detalhe, sub-itens, sort persistido, seleção múltipla, seeds (Compras e Check-List), **Cronograma Roupas**
 - **Apps:** Logo Inverter (processamento de imagem com matriz linear 4×4)
-- **Config:** temas, labels de abas, API key Anthropic — aba removida da barra, acessível pelo menu de 3 pontos
+- **Config:** temas, labels de abas, API key Anthropic — aba removida da barra, acessível
+  pelo menu de 3 pontos
+- **Sincronização:** cabeçalho com carimbo de data (3 estados), banner de estado degradado
+  com "Tentar novamente", preferências de tela separadas da nuvem, bibliotecas de CDN em
+  cache no `sw.js`
 
 ---
 
-## Possíveis próximos passos
+## Pendências e possíveis próximos passos
 
-- Renomear "Check-List" → "Check-List Viagem" (pela UI: card → `⋯` → ✎ Renomear; o seed no código não altera lista já criada)
+**Levantado nesta sessão, não implementado (aguarda decisão do Richard):**
+- **Status inconsistente na visão Mês do Cartão:** fatura parcialmente paga mostra
+  "● Em aberto"; a visão Lista mostra "◑ Parcialmente pago" para o mesmo caso. A cadeia da
+  visão Mês trata `paid`/`overdue`/`empty` e joga o resto no `else` — falta o caso `partial`.
+  Fica visualmente contraditório ao lado do novo selo "aberto R$ ...".
+- **Indicador de filtro do Dashboard:** hoje bolinha verde de 5px, discreta. `_nHidden` já
+  calculado — trocar por "Exibir · N ocultos" é uma linha.
+- **Bugs de escopo compartilhado em outras seções:** a varredura cobriu Cartão, Débito,
+  Listas e Contas. Vale repetir se surgirem seções com múltiplas entidades navegáveis.
+
+**De sessões anteriores:**
+- Renomear "Check-List" → "Check-List Viagem" (pela UI: card → `⋯` → ✎ Renomear; o seed no
+  código não altera lista já criada)
 - Popular o Cronograma com a próxima viagem (viagens/dias não foram pré-populados, só as colunas)
 - Sub-itens não são selecionáveis para "Mover" — mover o pai leva os filhos junto
 - Auto-fit trava no piso de 60% em janelas muito estreitas (rolagem horizontal permanece)

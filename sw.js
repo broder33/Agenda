@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agenda-v0608';
+const CACHE_NAME = 'agenda-v0615';
 
 self.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'SKIP_WAITING') {
@@ -19,7 +19,10 @@ const STATIC_ASSETS = [
 const CDN_ASSETS = [
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
   'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
-  'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'
+  'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
+  // Geracao de PDF: carregada sob demanda na exportacao do Dashboard, mas
+  // pre-cacheada aqui para que exportar tambem funcione sem rede.
+  'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
 ];
 
 function isCdnAsset(url) {

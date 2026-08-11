@@ -815,7 +815,7 @@ select option { background: var(--bg, #0f0f0f); color: var(--text, #f0f0f0); }
 .pill.aguardando { background: var(--status-aguardando-bg); color: var(--status-aguardando); }
 .month-total { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; }
 .month-body { border-top: 1px solid var(--border); overflow-x: auto; }
-.fin-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
+.fin-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 680px; }
 .fin-table thead th {
   background: var(--surface2); padding: 8px 12px;
   text-align: left; font-family: 'DM Mono', monospace;
@@ -827,7 +827,8 @@ select option { background: var(--bg, #0f0f0f); color: var(--text, #f0f0f0); }
 .fin-table tbody tr:last-child { border-bottom: none; }
 .fin-table tbody tr:hover { background: var(--surface2); }
 .fin-table td { padding: 9px 12px; vertical-align: middle; }
-.fin-table td:nth-child(5) { max-width: 180px; }
+.fin-table td:nth-child(7) { max-width: 180px; }  /* Categoria */
+.fin-table td:nth-child(6) { max-width: 150px; }  /* Pagador */
 .editable-cell { cursor: text; }
 .editable-cell:hover { background: var(--surface2); }
 .inline-badge {
@@ -851,6 +852,10 @@ select option { background: var(--bg, #0f0f0f); color: var(--text, #f0f0f0); }
   display: block; width: 100%; padding: 7px 10px;
   border: none; background: transparent; text-align: left;
   cursor: pointer; border-radius: 4px;
+  /* Sem isto o <button> cai no buttontext do navegador (preto) e some no
+     tema escuro. Os modificadores abaixo sao mais especificos e continuam
+     mandando na cor deles. */
+  color: var(--text);
   font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
   margin-bottom: 2px; transition: filter .1s;
 }
@@ -1041,6 +1046,10 @@ tr.dragging { opacity: 0.4; }
   padding: 8px 0; border-bottom: 1px solid var(--border);
 }
 .status-manager-row:last-child { border-bottom: none; }
+.status-drag-grip { cursor: grab; color: var(--muted); font-size: 14px; user-select: none; flex-shrink: 0; padding: 0 2px 0 0; }
+.status-drag-grip:active { cursor: grabbing; }
+.payer-select.is-estorno { font-style: italic; }
+.payer-select.is-estorno::after { content: ''; }
 .status-color-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; flex-shrink: 0; position: relative; }
 .status-color-swatch input[type=color] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; padding: 0; }
 .status-manager-label-input { flex: 1; background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); border-bottom: 1px solid transparent; transition: border-color .15s; }
@@ -1224,6 +1233,25 @@ tr.dragging { opacity: 0.4; }
   </div>
 </div>
 
+<!-- ═══════════════════ PAYER MANAGER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="payerManagerModal">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-title">Gerenciar Pagadores</div>
+    <div style="font-size:11px;color:var(--muted);margin:-6px 0 10px;line-height:1.5">
+      Despesas sem pagador informado — inclusive cartões e débito — são atribuídas ao pagador padrão.
+    </div>
+    <div id="payerManagerList" class="col-manager" style="max-height:320px;overflow-y:auto"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+      <input class="modal-input" id="newPayerName" placeholder="Nome do novo pagador" style="flex:1">
+      <input type="color" id="newPayerColor" value="#10b981" style="width:36px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;padding:2px">
+      <button class="btn-modal-save" onclick="addPayer()">+ Adicionar</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn-modal-cancel" onclick="closePayerManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ PRIORITY MANAGER MODAL ═══════════════════ -->
 <div class="modal-overlay" id="priorityManagerModal">
   <div class="modal-box" style="max-width:420px">
@@ -1376,7 +1404,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.08</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.15</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1526,7 +1554,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.08 — agenda-v0608</p>
+    <p class="version-tag">Agenda v0.6.15 — agenda-v0615</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1979,7 +2007,10 @@ function dedupListItems() {
 function mergeState(saved) {
   if (!saved) return;
   if (saved._updatedAt && state._updatedAt && saved._updatedAt <= state._updatedAt) return;
-  if (saved.finance) state.finance = { ...state.finance, ...saved.finance };
+  if (saved.finance) {
+    state.finance = { ...state.finance, ...saved.finance };
+    migrateFinDates();
+  }
   if (saved.lists) {
     state.lists = { ...state.lists, ...saved.lists };
     dedupListItems();
@@ -2176,23 +2207,23 @@ async function saveState() {
 
 /* Seeds financeiros migrados do faturas_9.html */
 const FINANCE_SEEDS = {
-  '2025-0':[{id:2501,nome:'Aluguel',venc:'10/1/25',valor:1445.36,status:'pago',obs:''},{id:2502,nome:'Condomínio',venc:'10/1/25',valor:1276.36,status:'pago',obs:'00547212968'},{id:2503,nome:'Internet',venc:'2/1/25',valor:81.80,status:'pago',obs:''},{id:2504,nome:'Celular',venc:'20/1/25',valor:288.94,status:'pago',obs:''}],
-  '2025-1':[{id:2510,nome:'Aluguel',venc:'10/2/25',valor:1445.36,status:'pago',obs:''},{id:2511,nome:'Condomínio',venc:'10/2/25',valor:1210.94,status:'pago',obs:'00547212968'},{id:2512,nome:'Internet',venc:'2/2/25',valor:80.11,status:'pago',obs:''},{id:2513,nome:'Celular',venc:'20/2/25',valor:288.29,status:'pago',obs:''}],
-  '2025-2':[{id:2520,nome:'Aluguel',venc:'10/3/25',valor:1659.43,status:'pago',obs:''},{id:2521,nome:'Condomínio',venc:'10/3/25',valor:1224.58,status:'pago',obs:'00547212968'},{id:2522,nome:'Internet',venc:'2/3/25',valor:84.05,status:'pago',obs:''},{id:2523,nome:'Celular',venc:'20/3/25',valor:281.28,status:'pago',obs:''}],
-  '2025-3':[{id:2530,nome:'Aluguel',venc:'10/4/25',valor:1659.43,status:'pago',obs:''},{id:2531,nome:'Condomínio',venc:'10/4/25',valor:1102.26,status:'pago',obs:'00547212968'},{id:2532,nome:'Internet',venc:'2/4/25',valor:80.11,status:'pago',obs:''},{id:2533,nome:'Celular',venc:'20/4/25',valor:298.25,status:'pago',obs:''}],
-  '2025-4':[{id:2540,nome:'Aluguel',venc:'10/5/25',valor:1659.43,status:'pago',obs:''},{id:2541,nome:'Condomínio',venc:'10/5/25',valor:1040.30,status:'pago',obs:'00547212968'},{id:2542,nome:'Internet',venc:'2/5/25',valor:84.07,status:'pago',obs:''},{id:2543,nome:'Celular',venc:'20/5/25',valor:298.25,status:'pago',obs:''}],
-  '2025-5':[{id:2550,nome:'Aluguel',venc:'10/6/25',valor:1781.94,status:'pago',obs:''},{id:2551,nome:'Condomínio',venc:'10/6/25',valor:1244.81,status:'pago',obs:'00547212968'},{id:2552,nome:'Internet',venc:'2/6/25',valor:81.33,status:'pago',obs:''},{id:2553,nome:'Celular',venc:'20/6/25',valor:328.25,status:'pago',obs:''}],
-  '2025-6':[{id:2560,nome:'Aluguel',venc:'10/7/25',valor:1781.94,status:'pago',obs:''},{id:2561,nome:'Condomínio',venc:'10/7/25',valor:1110.12,status:'pago',obs:'00547212968'},{id:2562,nome:'Internet',venc:'2/7/25',valor:80.11,status:'pago',obs:''},{id:2563,nome:'Celular',venc:'20/7/25',valor:329.12,status:'pago',obs:''}],
-  '2025-7':[{id:2570,nome:'Aluguel',venc:'10/8/25',valor:1781.94,status:'pago',obs:''},{id:2571,nome:'Condomínio',venc:'10/8/25',valor:1082.08,status:'pago',obs:'00547212968'},{id:2572,nome:'Internet',venc:'2/8/25',valor:80.11,status:'pago',obs:''},{id:2573,nome:'Celular',venc:'20/8/25',valor:295.06,status:'pago',obs:''}],
-  '2025-8':[{id:2580,nome:'Aluguel',venc:'10/9/25',valor:1781.94,status:'pago',obs:''},{id:2581,nome:'Condomínio',venc:'10/9/25',valor:1255.98,status:'pago',obs:'00547212968'},{id:2582,nome:'Internet',venc:'2/9/25',valor:80.89,status:'pago',obs:''},{id:2583,nome:'Celular',venc:'20/9/25',valor:288.27,status:'pago',obs:''}],
-  '2025-9':[{id:2590,nome:'Aluguel',venc:'10/10/25',valor:1781.94,status:'pago',obs:''},{id:2591,nome:'Condomínio',venc:'10/10/25',valor:1327.16,status:'pago',obs:'00547212968'},{id:2592,nome:'Internet',venc:'2/10/25',valor:81.90,status:'pago',obs:''},{id:2593,nome:'Celular',venc:'20/10/25',valor:288.27,status:'pago',obs:''}],
-  '2025-10':[{id:2600,nome:'Aluguel',venc:'10/11/25',valor:1781.94,status:'pago',obs:''},{id:2601,nome:'Condomínio',venc:'10/11/25',valor:1391.38,status:'pago',obs:'00547212968'},{id:2602,nome:'Internet',venc:'2/11/25',valor:81.96,status:'pago',obs:''},{id:2603,nome:'Celular',venc:'20/11/25',valor:288.27,status:'pago',obs:''}],
-  '2025-11':[{id:2610,nome:'Aluguel',venc:'10/12/25',valor:1787.07,status:'pago',obs:''},{id:2611,nome:'Condomínio',venc:'10/12/25',valor:1353.88,status:'pago',obs:'00547212968'},{id:2612,nome:'Internet',venc:'2/12/25',valor:81.96,status:'pago',obs:''},{id:2613,nome:'Celular',venc:'20/12/25',valor:318.27,status:'pago',obs:''}],
-  '2026-0':[{id:1,nome:'Aluguel',venc:'10/1/26',valor:1347.27,status:'pago',obs:''},{id:2,nome:'Condomínio',venc:'10/1/26',valor:1559.10,status:'pago',obs:'00547212968'},{id:3,nome:'Compagás',venc:'10/1/26',valor:0,status:'pago',obs:''},{id:4,nome:'Internet',venc:'2/1/26',valor:83.66,status:'pago',obs:''},{id:5,nome:'Celular',venc:'20/1/26',valor:318.27,status:'pago',obs:''},{id:6,nome:'Unimed',venc:'7/1/26',valor:844.01,status:'pago',obs:''}],
-  '2026-1':[{id:10,nome:'Aluguel',venc:'10/2/26',valor:1347.27,status:'pago',obs:''},{id:11,nome:'Condomínio',venc:'10/2/26',valor:1559.10,status:'pago',obs:'00547212968'},{id:12,nome:'Compagás',venc:'10/2/26',valor:0,status:'pago',obs:''},{id:13,nome:'Internet',venc:'2/2/26',valor:83.66,status:'pago',obs:''},{id:14,nome:'Celular',venc:'20/2/26',valor:318.27,status:'pago',obs:''},{id:15,nome:'Unimed',venc:'7/2/26',valor:844.01,status:'pago',obs:''}],
-  '2026-2':[{id:20,nome:'Aluguel',venc:'10/3/26',valor:1598.07,status:'pago',obs:''},{id:21,nome:'Condomínio',venc:'10/3/26',valor:1211.07,status:'pago',obs:'00547212968'},{id:22,nome:'Compagás',venc:'10/3/26',valor:27,status:'pago',obs:''},{id:23,nome:'Internet',venc:'2/3/26',valor:81.96,status:'pago',obs:''},{id:24,nome:'Celular',venc:'20/3/26',valor:288.40,status:'pago',obs:''},{id:25,nome:'Unimed',venc:'7/3/26',valor:844.01,status:'pago',obs:''}],
-  '2026-3':[{id:30,nome:'Aluguel',venc:'10/4/26',valor:1598.03,status:'pago',obs:''},{id:31,nome:'Condomínio',venc:'10/4/26',valor:1435.80,status:'pago',obs:'00547212968'},{id:32,nome:'Compagás',venc:'10/4/26',valor:58.68,status:'pago',obs:''},{id:33,nome:'Internet',venc:'2/4/26',valor:81.81,status:'pago',obs:''},{id:34,nome:'Celular',venc:'20/4/26',valor:288.27,status:'pago',obs:''},{id:35,nome:'Unimed',venc:'7/4/26',valor:844.01,status:'pago',obs:''}],
-  '2026-4':[{id:40,nome:'Aluguel',venc:'10/5/26',valor:1818.63,status:'pago',obs:''},{id:41,nome:'Condomínio',venc:'10/5/26',valor:1531.17,status:'nao-pago',obs:'00547212968'},{id:42,nome:'Compagás',venc:'11/5/26',valor:46.13,status:'nao-pago',obs:''},{id:43,nome:'Internet',venc:'2/5/26',valor:91.31,status:'pago',obs:''},{id:44,nome:'Celular',venc:'20/5/26',valor:0,status:'debito',obs:''},{id:45,nome:'Unimed',venc:'7/5/26',valor:844.01,status:'pago',obs:''}],
+  '2025-0':[{id:2501,nome:'Aluguel',venc:'10/01/25',valor:1445.36,status:'pago',obs:''},{id:2502,nome:'Condomínio',venc:'10/01/25',valor:1276.36,status:'pago',obs:'00547212968'},{id:2503,nome:'Internet',venc:'02/01/25',valor:81.80,status:'pago',obs:''},{id:2504,nome:'Celular',venc:'20/01/25',valor:288.94,status:'pago',obs:''}],
+  '2025-1':[{id:2510,nome:'Aluguel',venc:'10/02/25',valor:1445.36,status:'pago',obs:''},{id:2511,nome:'Condomínio',venc:'10/02/25',valor:1210.94,status:'pago',obs:'00547212968'},{id:2512,nome:'Internet',venc:'02/02/25',valor:80.11,status:'pago',obs:''},{id:2513,nome:'Celular',venc:'20/02/25',valor:288.29,status:'pago',obs:''}],
+  '2025-2':[{id:2520,nome:'Aluguel',venc:'10/03/25',valor:1659.43,status:'pago',obs:''},{id:2521,nome:'Condomínio',venc:'10/03/25',valor:1224.58,status:'pago',obs:'00547212968'},{id:2522,nome:'Internet',venc:'02/03/25',valor:84.05,status:'pago',obs:''},{id:2523,nome:'Celular',venc:'20/03/25',valor:281.28,status:'pago',obs:''}],
+  '2025-3':[{id:2530,nome:'Aluguel',venc:'10/04/25',valor:1659.43,status:'pago',obs:''},{id:2531,nome:'Condomínio',venc:'10/04/25',valor:1102.26,status:'pago',obs:'00547212968'},{id:2532,nome:'Internet',venc:'02/04/25',valor:80.11,status:'pago',obs:''},{id:2533,nome:'Celular',venc:'20/04/25',valor:298.25,status:'pago',obs:''}],
+  '2025-4':[{id:2540,nome:'Aluguel',venc:'10/05/25',valor:1659.43,status:'pago',obs:''},{id:2541,nome:'Condomínio',venc:'10/05/25',valor:1040.30,status:'pago',obs:'00547212968'},{id:2542,nome:'Internet',venc:'02/05/25',valor:84.07,status:'pago',obs:''},{id:2543,nome:'Celular',venc:'20/05/25',valor:298.25,status:'pago',obs:''}],
+  '2025-5':[{id:2550,nome:'Aluguel',venc:'10/06/25',valor:1781.94,status:'pago',obs:''},{id:2551,nome:'Condomínio',venc:'10/06/25',valor:1244.81,status:'pago',obs:'00547212968'},{id:2552,nome:'Internet',venc:'02/06/25',valor:81.33,status:'pago',obs:''},{id:2553,nome:'Celular',venc:'20/06/25',valor:328.25,status:'pago',obs:''}],
+  '2025-6':[{id:2560,nome:'Aluguel',venc:'10/07/25',valor:1781.94,status:'pago',obs:''},{id:2561,nome:'Condomínio',venc:'10/07/25',valor:1110.12,status:'pago',obs:'00547212968'},{id:2562,nome:'Internet',venc:'02/07/25',valor:80.11,status:'pago',obs:''},{id:2563,nome:'Celular',venc:'20/07/25',valor:329.12,status:'pago',obs:''}],
+  '2025-7':[{id:2570,nome:'Aluguel',venc:'10/08/25',valor:1781.94,status:'pago',obs:''},{id:2571,nome:'Condomínio',venc:'10/08/25',valor:1082.08,status:'pago',obs:'00547212968'},{id:2572,nome:'Internet',venc:'02/08/25',valor:80.11,status:'pago',obs:''},{id:2573,nome:'Celular',venc:'20/08/25',valor:295.06,status:'pago',obs:''}],
+  '2025-8':[{id:2580,nome:'Aluguel',venc:'10/09/25',valor:1781.94,status:'pago',obs:''},{id:2581,nome:'Condomínio',venc:'10/09/25',valor:1255.98,status:'pago',obs:'00547212968'},{id:2582,nome:'Internet',venc:'02/09/25',valor:80.89,status:'pago',obs:''},{id:2583,nome:'Celular',venc:'20/09/25',valor:288.27,status:'pago',obs:''}],
+  '2025-9':[{id:2590,nome:'Aluguel',venc:'10/10/25',valor:1781.94,status:'pago',obs:''},{id:2591,nome:'Condomínio',venc:'10/10/25',valor:1327.16,status:'pago',obs:'00547212968'},{id:2592,nome:'Internet',venc:'02/10/25',valor:81.90,status:'pago',obs:''},{id:2593,nome:'Celular',venc:'20/10/25',valor:288.27,status:'pago',obs:''}],
+  '2025-10':[{id:2600,nome:'Aluguel',venc:'10/11/25',valor:1781.94,status:'pago',obs:''},{id:2601,nome:'Condomínio',venc:'10/11/25',valor:1391.38,status:'pago',obs:'00547212968'},{id:2602,nome:'Internet',venc:'02/11/25',valor:81.96,status:'pago',obs:''},{id:2603,nome:'Celular',venc:'20/11/25',valor:288.27,status:'pago',obs:''}],
+  '2025-11':[{id:2610,nome:'Aluguel',venc:'10/12/25',valor:1787.07,status:'pago',obs:''},{id:2611,nome:'Condomínio',venc:'10/12/25',valor:1353.88,status:'pago',obs:'00547212968'},{id:2612,nome:'Internet',venc:'02/12/25',valor:81.96,status:'pago',obs:''},{id:2613,nome:'Celular',venc:'20/12/25',valor:318.27,status:'pago',obs:''}],
+  '2026-0':[{id:1,nome:'Aluguel',venc:'10/01/26',valor:1347.27,status:'pago',obs:''},{id:2,nome:'Condomínio',venc:'10/01/26',valor:1559.10,status:'pago',obs:'00547212968'},{id:3,nome:'Compagás',venc:'10/01/26',valor:0,status:'pago',obs:''},{id:4,nome:'Internet',venc:'02/01/26',valor:83.66,status:'pago',obs:''},{id:5,nome:'Celular',venc:'20/01/26',valor:318.27,status:'pago',obs:''},{id:6,nome:'Unimed',venc:'07/01/26',valor:844.01,status:'pago',obs:''}],
+  '2026-1':[{id:10,nome:'Aluguel',venc:'10/02/26',valor:1347.27,status:'pago',obs:''},{id:11,nome:'Condomínio',venc:'10/02/26',valor:1559.10,status:'pago',obs:'00547212968'},{id:12,nome:'Compagás',venc:'10/02/26',valor:0,status:'pago',obs:''},{id:13,nome:'Internet',venc:'02/02/26',valor:83.66,status:'pago',obs:''},{id:14,nome:'Celular',venc:'20/02/26',valor:318.27,status:'pago',obs:''},{id:15,nome:'Unimed',venc:'07/02/26',valor:844.01,status:'pago',obs:''}],
+  '2026-2':[{id:20,nome:'Aluguel',venc:'10/03/26',valor:1598.07,status:'pago',obs:''},{id:21,nome:'Condomínio',venc:'10/03/26',valor:1211.07,status:'pago',obs:'00547212968'},{id:22,nome:'Compagás',venc:'10/03/26',valor:27,status:'pago',obs:''},{id:23,nome:'Internet',venc:'02/03/26',valor:81.96,status:'pago',obs:''},{id:24,nome:'Celular',venc:'20/03/26',valor:288.40,status:'pago',obs:''},{id:25,nome:'Unimed',venc:'07/03/26',valor:844.01,status:'pago',obs:''}],
+  '2026-3':[{id:30,nome:'Aluguel',venc:'10/04/26',valor:1598.03,status:'pago',obs:''},{id:31,nome:'Condomínio',venc:'10/04/26',valor:1435.80,status:'pago',obs:'00547212968'},{id:32,nome:'Compagás',venc:'10/04/26',valor:58.68,status:'pago',obs:''},{id:33,nome:'Internet',venc:'02/04/26',valor:81.81,status:'pago',obs:''},{id:34,nome:'Celular',venc:'20/04/26',valor:288.27,status:'pago',obs:''},{id:35,nome:'Unimed',venc:'07/04/26',valor:844.01,status:'pago',obs:''}],
+  '2026-4':[{id:40,nome:'Aluguel',venc:'10/05/26',valor:1818.63,status:'pago',obs:''},{id:41,nome:'Condomínio',venc:'10/05/26',valor:1531.17,status:'nao-pago',obs:'00547212968'},{id:42,nome:'Compagás',venc:'11/05/26',valor:46.13,status:'nao-pago',obs:''},{id:43,nome:'Internet',venc:'02/05/26',valor:91.31,status:'pago',obs:''},{id:44,nome:'Celular',venc:'20/05/26',valor:0,status:'debito',obs:''},{id:45,nome:'Unimed',venc:'07/05/26',valor:844.01,status:'pago',obs:''}],
 };
 const FINANCE_YEARS = [2025, 2026];
 
@@ -3343,7 +3374,7 @@ function closeStatusManager() { document.getElementById('statusManagerModal').cl
 function renderStatusManager() {
   var list = document.getElementById('statusManagerList');
   if (!list) return;
-  list.innerHTML = getStatuses().map(function(s) {
+  list.innerHTML = getStatuses().map(function(s, i) {
     var roleBadge = '';
     if (s.role === 'done')    roleBadge = '<span class="status-manager-builtin" title="Status de conclusão">✓ conclusão</span>';
     else if (s.role === 'default') roleBadge = '<span class="status-manager-builtin" title="Status padrão">⬤ padrão</span>';
@@ -3351,7 +3382,8 @@ function renderStatusManager() {
     var delBtn = s.role
       ? roleBadge
       : '<button class="status-del-btn" onclick="deleteStatus(&#39;'+s.id+'&#39;)">✕</button>';
-    return '<div class="status-manager-row" id="smr-'+s.id+'">'
+    return '<div class="status-manager-row" data-stidx="'+i+'" id="smr-'+s.id+'">'
+      +'<span class="status-drag-grip" title="Arraste para reordenar">⠿</span>'
       +'<div class="status-color-swatch" style="background:'+s.color+'">'
       +'<input type="color" value="'+s.color+'" oninput="updateStatusColor(&#39;'+s.id+'&#39;,this.value)">'
       +'</div>'
@@ -3361,6 +3393,57 @@ function renderStatusManager() {
       +delBtn
       +'</div>';
   }).join('');
+
+  // Reordenar por arrasto. O draggable so e ligado no mousedown da alca:
+  // se a linha inteira ficasse draggable, o input de label perderia a
+  // selecao de texto com o mouse (o drag do pai captura o gesto).
+  var dragSrcIdx = null;
+  function clearMarks() {
+    list.querySelectorAll('[data-stidx]').forEach(function(r) {
+      r.style.borderTop = ''; r.style.borderBottom = '';
+    });
+  }
+  list.querySelectorAll('[data-stidx]').forEach(function(row) {
+    var grip = row.querySelector('.status-drag-grip');
+    if (grip) {
+      grip.addEventListener('mousedown', function() { row.draggable = true; });
+    }
+    row.addEventListener('mouseup', function() { row.draggable = false; });
+    row.addEventListener('dragstart', function(e) {
+      dragSrcIdx = parseInt(row.dataset.stidx);
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(dragSrcIdx));
+      row.style.opacity = '0.5';
+    });
+    row.addEventListener('dragend', function() {
+      row.style.opacity = ''; row.draggable = false; clearMarks();
+    });
+    row.addEventListener('dragover', function(e) {
+      if (dragSrcIdx === null) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      var tgtIdx = parseInt(row.dataset.stidx);
+      clearMarks();
+      if (tgtIdx < dragSrcIdx) row.style.borderTop = '2px solid var(--accent)';
+      else if (tgtIdx > dragSrcIdx) row.style.borderBottom = '2px solid var(--accent)';
+    });
+    row.addEventListener('dragleave', function() {
+      row.style.borderTop = ''; row.style.borderBottom = '';
+    });
+    row.addEventListener('drop', function(e) {
+      e.preventDefault();
+      clearMarks();
+      if (dragSrcIdx === null) return;
+      var tgtIdx = parseInt(row.dataset.stidx);
+      var src = dragSrcIdx;
+      dragSrcIdx = null;
+      if (tgtIdx === src) return;
+      var statuses = getStatuses();
+      var moved = statuses.splice(src, 1)[0];
+      statuses.splice(tgtIdx, 0, moved);
+      saveState(); renderStatusManager(); renderTasks();
+    });
+  });
 }
 
 function updateStatusColor(statusId, color) {
@@ -5080,8 +5163,8 @@ function buildMonthBlock(y, m) {
 
 function buildFinTable(y, m) {
   const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];
-  let tbody=rows.length?rows.map(function(r){return finRowHTML(y,m,r);}).join(''):'<tr><td colspan="7" class="empty-cell">Nenhuma conta. Adicione abaixo.</td></tr>';
-  return '<div style="overflow-x:auto"><table class="fin-table"><thead><tr><th>Nome</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Categoria</th><th>Observações</th><th></th></tr></thead><tbody>'+tbody+'</tbody></table></div>'
+  let tbody=rows.length?rows.map(function(r){return finRowHTML(y,m,r);}).join(''):'<tr><td colspan="9" class="empty-cell">Nenhuma conta. Adicione abaixo.</td></tr>';
+  return '<div style="overflow-x:auto"><table class="fin-table"><thead><tr><th>Nome</th><th>Vencimento</th><th>Pago em</th><th>Valor</th><th>Status</th><th>Pagador</th><th>Categoria</th><th>Observações</th><th></th></tr></thead><tbody>'+tbody+'</tbody></table></div>'
     +'<div class="add-row">'
     +'<input type="text" id="fn-'+y+'-'+m+'-nome" placeholder="Nome da conta"/>'
     +'<input type="date" id="fn-'+y+'-'+m+'-venc"/>'
@@ -5092,8 +5175,9 @@ function buildFinTable(y, m) {
     +'<button class="btn-add-fin" onclick="addFinBill('+y+','+m+')">+ ADD</button></div>';
 }
 
-function openFinDateDropdown(ev, y, m, id) {
+function openFinDateDropdown(ev, y, m, id, field) {
   ev.stopPropagation();
+  field = field || 'venc';
   var anchorEl = ev.currentTarget;
   // Close any existing date dropdown
   closeDateDropdown();
@@ -5101,11 +5185,14 @@ function openFinDateDropdown(ev, y, m, id) {
   var r = rows.find(function(x){ return x.id == id; });
   if (!r) return;
 
-  // Parse existing venc DD/MM/YY or DD/MM/YYYY
+  // Parse existing value DD/MM/YY or DD/MM/YYYY
   var viewYear, viewMonth, selectedISO = '';
   var now = new Date();
-  if (r.venc) {
-    var parts = r.venc.split('/');
+  var curVal = r[field] || '';
+  // "Pago em" vazio abre no mes do vencimento: e' o palpite util.
+  if (!curVal && field === 'pagoEm' && r.venc) curVal = r.venc;
+  if (curVal) {
+    var parts = curVal.split('/');
     if (parts.length >= 2) {
       var day = parseInt(parts[0]);
       var mon = parseInt(parts[1]) - 1;
@@ -5134,7 +5221,8 @@ function openFinDateDropdown(ev, y, m, id) {
     var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     var DAYS_PT = ['D','S','T','Q','Q','S','S'];
     var _n = new Date(); var today = _n.getFullYear() + '-' + String(_n.getMonth()+1).padStart(2,'0') + '-' + String(_n.getDate()).padStart(2,'0');
-    var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+    var html = '<div style="font-size:10px;font-family:DM Mono,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">'+(field==='pagoEm'?'Pago em':'Vencimento')+'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
       +'<button id="cal-prev" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;line-height:1">‹</button>'
       +'<span style="font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:600;color:var(--text)">'+MONTHS_PT[viewMonth]+' '+viewYear+'</span>'
       +'<button id="cal-next" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;line-height:1">›</button>'
@@ -5147,7 +5235,7 @@ function openFinDateDropdown(ev, y, m, id) {
     for (var i=0;i<first;i++) html += '<div></div>';
     for (var d=1;d<=days;d++) {
       var iso = viewYear+'-'+String(viewMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-      var isSel = iso === selectedISO;
+      var isSel = !!r[field] && iso === selectedISO;
       var isToday = iso === today;
       var bg = isSel ? 'var(--accent)' : isToday ? 'var(--surface2)' : 'transparent';
       var col = isSel ? '#000' : isToday ? 'var(--accent)' : 'var(--text)';
@@ -5163,14 +5251,13 @@ function openFinDateDropdown(ev, y, m, id) {
       el.addEventListener('click', function() {
         var iso = el.getAttribute('data-iso');
         var p = iso.split('-');
-        var vencStr = p[2]+'/'+p[1]+'/'+p[0].slice(2); // DD/MM/YY
-        saveFinField(y, m, id, 'venc', vencStr);
+        saveFinField(y, m, id, field, finDateFromISO(iso));
         closeDateDropdown();
       });
     });
     dd.querySelector('#cal-prev').addEventListener('click', function(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCal(); });
     dd.querySelector('#cal-next').addEventListener('click', function(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderCal(); });
-    dd.querySelector('#cal-clear').addEventListener('click', function(){ saveFinField(y, m, id, 'venc', ''); closeDateDropdown(); });
+    dd.querySelector('#cal-clear').addEventListener('click', function(){ saveFinField(y, m, id, field, ''); closeDateDropdown(); });
   }
 
   renderCal();
@@ -5181,12 +5268,29 @@ function openFinDateDropdown(ev, y, m, id) {
 function finRowHTML(y,m,r) {
   const val=(parseFloat(r.valor)||0)>0?fmtBRL(parseFloat(r.valor)):'–';
   const catLabel=escHtml(getCatName(r.categoriaId)||'— Classificar');
+  // "Pago em" vazio => despesa cai no mes do bloco. Avisa quando a data
+  // preenchida joga a despesa para outro mes no dashboard.
+  var _eff = finRowEffectiveYM(y, m, r);
+  var _moved = (_eff.y !== parseInt(y,10) || _eff.m !== parseInt(m,10));
+  var pagoTitle = r.pagoEm
+    ? ' title="'+escHtml(_moved ? ('Lançado no dashboard em '+MONTHS_FULL[_eff.m]+'/'+_eff.y) : 'Pago no mês de vencimento')+'"'
+    : ' title="Vazio: considera pago no mês do vencimento"';
+  var _pName = escHtml(finRowPayerLabel(r));
+  var _pObj = getPayerObj(finRowPayerId(r));
+  var _pColor = (_pObj && _pObj.color) || 'var(--muted)';
+  var payerBtn = '<button class="cat-select payer-select'+(r.pagadorEstorno?' is-estorno':'')+'" onclick="openPayerDD(event,'+y+','+m+','+r.id+')"'
+    + ' style="cursor:pointer;text-align:left;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'
+    + (r.pagadorId ? '' : 'color:var(--muted);')+'">'
+    + '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+_pColor+';margin-right:5px;vertical-align:middle"></span>'
+    + _pName + '</button>';
   const catBtn='<button class="cat-select" onclick="openCatDD(event,'+y+','+m+','+r.id+')" style="cursor:pointer;text-align:left;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+catLabel+'</button>';
   return '<tr id="frow-'+y+'-'+m+'-'+r.id+'">'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="nome" style="font-weight:500">'+escHtml(r.nome||'–')+'</td>'
-    +'<td class="editable-cell" onclick="openFinDateDropdown(event,'+y+','+m+','+r.id+')" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="venc" style="color:var(--text2);cursor:pointer">'+(r.venc||'–')+'</td>'
+    +'<td class="editable-cell" onclick="openFinDateDropdown(event,'+y+','+m+','+r.id+',&#39;venc&#39;)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="venc" style="color:var(--text2);cursor:pointer">'+(r.venc||'–')+'</td>'
+    +'<td class="editable-cell" onclick="openFinDateDropdown(event,'+y+','+m+','+r.id+',&#39;pagoEm&#39;)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="pagoEm" style="cursor:pointer;color:'+(r.pagoEm?'var(--text2)':'var(--muted)')+'"'+(pagoTitle)+'>'+(r.pagoEm||'–')+'</td>'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="valor">'+val+'</td>'
     +'<td><span class="inline-badge '+r.status+'" onclick="openStatusDD(event,'+y+','+m+','+r.id+')">'+(STATUS_LABELS[r.status]||r.status)+'</span></td>'
+    +'<td>'+payerBtn+'</td>'
     +'<td>'+catBtn+'</td>'
     +'<td class="editable-cell" onclick="editFinCell(this)" data-y="'+y+'" data-m="'+m+'" data-id="'+r.id+'" data-field="obs" style="color:var(--text2)">'+escHtml(r.obs||'')+'</td>'
     +'<td><button class="btn-sm del" onclick="delFinBill('+y+','+m+','+r.id+')">✕</button></td>'
@@ -5240,7 +5344,129 @@ function editFinCell(td) {
 }
 
 function parseDateToISO(str){if(!str||str==='–')return '';const p=str.split('/');if(p.length<2)return '';const day=p[0].padStart(2,'0'),mon=p[1].padStart(2,'0');const yr=p[2]?p[2].trim():'';const year=yr.length===2?'20'+yr:yr;return year+'-'+mon+'-'+day;}
-function parseDateFromISO(str){if(!str)return '';const p=str.split('-');if(p.length<3)return str;return parseInt(p[2])+'/'+parseInt(p[1])+'/'+(p[0].slice(-2));}
+/* ═══ PAGADORES (aba Contas) ═══
+   Um pagador e' marcado como padrao: toda despesa sem pagador informado
+   — inclusive cartoes e debito, que nao tem o campo — cai nele. Assim
+   nenhuma despesa fica orfa no filtro do dashboard. */
+function getPayers() {
+  if (!state.finance.payers || !state.finance.payers.length) {
+    state.finance.payers = [
+      { id: 'payer-richard', name: 'Richard', color: '#6366f1', isDefault: true }
+    ];
+  }
+  // Garante exatamente um padrao: sem isso o fallback ficaria indefinido.
+  var defs = state.finance.payers.filter(function(p){ return p.isDefault; });
+  if (defs.length !== 1) {
+    state.finance.payers.forEach(function(p,i){ p.isDefault = (i === 0); });
+  }
+  return state.finance.payers;
+}
+function getDefaultPayerId() {
+  var ps = getPayers();
+  var d = ps.find(function(p){ return p.isDefault; });
+  return d ? d.id : (ps[0] ? ps[0].id : '');
+}
+function getPayerObj(id) {
+  var ps = getPayers();
+  return ps.find(function(p){ return p.id === id; }) || null;
+}
+function getPayerName(id) {
+  var p = getPayerObj(id);
+  return p ? p.name : '';
+}
+/* Pagador efetivo de uma linha de conta. Vazio => padrao.
+   No modelo de campo unico, "fulano - estorno" ja significa que fulano
+   e' o pagador efetivo; o flag de estorno e' so classificacao, para nao
+   confundir na conferencia de comprovantes. */
+function finRowPayerId(r) {
+  if (r && r.pagadorId && getPayerObj(r.pagadorId)) return r.pagadorId;
+  return getDefaultPayerId();
+}
+function finRowPayerLabel(r) {
+  var name = getPayerName(finRowPayerId(r));
+  if (!name) return '—';
+  return (r && r.pagadorEstorno) ? (name + ' - estorno') : name;
+}
+
+/* ═══ FORMATO CANONICO DE DATA NA ABA CONTAS: DD/MM/AA ═══
+   Todo campo de data das contas (venc, pagoEm) e' gravado e lido neste
+   formato unico. finDateNorm e' o unico ponto de conversao: quem escreve
+   passa por finDateFromISO, quem le dado antigo passa por finDateNorm. */
+
+/* Normaliza qualquer variante para DD/MM/AA. Devolve a entrada INTACTA
+   quando nao consegue interpretar: normalizar nunca pode destruir dado. */
+function finDateNorm(str) {
+  if (str === null || str === undefined) return '';
+  var v = String(str).trim();
+  if (!v) return '';
+  var p = v.split('/');
+  if (p.length !== 3) return v;
+  var d = parseInt(p[0], 10), mo = parseInt(p[1], 10), yr = parseInt(p[2], 10);
+  if (isNaN(d) || isNaN(mo) || isNaN(yr)) return v;
+  if (d < 1 || d > 31 || mo < 1 || mo > 12) return v;
+  if (p[2].length === 4) {
+    if (yr < 1900 || yr > 2999) return v;
+    yr = yr % 100;
+  } else if (p[2].length !== 2) {
+    return v;
+  }
+  return String(d).padStart(2,'0') + '/' + String(mo).padStart(2,'0') + '/' + String(yr).padStart(2,'0');
+}
+
+/* AAAA-MM-DD (input type=date e calendario in-app) -> DD/MM/AA. */
+function finDateFromISO(iso) {
+  if (!iso) return '';
+  var p = String(iso).split('-');
+  if (p.length < 3) return String(iso);
+  return finDateNorm(p[2] + '/' + p[1] + '/' + p[0].slice(-2));
+}
+
+/* Passa todas as contas para o formato canonico. Idempotente e sem flag de
+   versao de proposito: roda a cada mergeState, entao funciona igual venha o
+   dado do localStorage, da nuvem ou de um backup importado. Nao chama
+   saveState — gravar aqui mexeria no carimbo de tempo antes do _cloudLoaded
+   confirmar; a normalizacao persiste no proximo save natural. */
+function migrateFinDates() {
+  var bills = (state.finance && state.finance.bills) || {};
+  var n = 0;
+  Object.keys(bills).forEach(function(fy) {
+    Object.keys(bills[fy] || {}).forEach(function(fm) {
+      (bills[fy][fm] || []).forEach(function(r) {
+        if (!r) return;
+        ['venc','pagoEm'].forEach(function(f) {
+          if (r[f] === undefined || r[f] === null) return;
+          var norm = finDateNorm(r[f]);
+          if (norm !== r[f]) { r[f] = norm; n++; }
+        });
+      });
+    });
+  });
+  return n;
+}
+
+/* Le DD/MM/AA (canonico) e tambem as variantes antigas, para o caso de um
+   dado nao normalizado escapar por algum caminho novo. */
+function parseFinDateYM(str) {
+  if (!str) return null;
+  var p = String(str).split('/');
+  if (p.length < 3 || p[2] === '') return null;
+  var d = parseInt(p[0], 10), mo = parseInt(p[1], 10), yr = parseInt(p[2], 10);
+  if (isNaN(d) || isNaN(mo) || isNaN(yr)) return null;
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  if (p[2].length <= 2) yr = 2000 + yr;
+  return { y: yr, m: mo - 1 };
+}
+
+/* Mes em que a despesa entra no dashboard: o de "Pago em" quando
+   preenchido, senao o bloco de mes onde a linha esta. */
+function finRowEffectiveYM(bucketY, bucketM, r) {
+  var pago = r && r.pagoEm ? parseFinDateYM(r.pagoEm) : null;
+  if (pago) return pago;
+  return { y: parseInt(bucketY, 10), m: parseInt(bucketM, 10) };
+}
+
+/* Mantido por compatibilidade: delega para o formato canonico. */
+function parseDateFromISO(str){ return finDateFromISO(str); }
 
 function openStatusDD(e,y,m,id) {
   e.stopPropagation();closeStatusDD();
@@ -5257,6 +5483,190 @@ function openStatusDD(e,y,m,id) {
   setTimeout(function(){document.addEventListener('click',closeStatusDD,{once:true});},0);
 }
 function closeStatusDD(){const el=document.getElementById('status-dd');if(el)el.remove();}
+
+function openPayerDD(e, y, m, id) {
+  e.stopPropagation(); closePayerDD();
+  var btn = e.currentTarget; var rect = btn.getBoundingClientRect();
+  var payers = getPayers();
+  var rows = (state.finance.bills[y] && state.finance.bills[y][m]) ? state.finance.bills[y][m] : [];
+  var r = rows.find(function(x){ return x.id == id; });
+  if (!r) return;
+  var dd = document.createElement('div'); dd.className = 'status-dropdown'; dd.id = 'payer-dd';
+  var nOpts = payers.length * 2 + 2;
+  var top = rect.bottom + 4;
+  if (top + nOpts * 30 > window.innerHeight) top = Math.max(4, rect.top - nOpts * 30 - 8);
+  dd.style.top = top + 'px'; dd.style.left = rect.left + 'px'; dd.style.minWidth = '190px';
+  dd.style.maxHeight = '320px'; dd.style.overflowY = 'auto';
+
+  function mkOpt(label, color, active, onPick, dim) {
+    var b = document.createElement('button'); b.className = 'status-opt';
+    b.style.cssText = 'display:flex;align-items:center;gap:7px;text-align:left;width:100%'
+      + (dim ? ';color:var(--muted)' : '') + (active ? ';background:var(--surface2)' : '');
+    b.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+color+'"></span>'
+      + '<span style="flex:1">'+escHtml(label)+'</span>'
+      + (active ? '<span style="color:var(--accent);font-size:11px">\u2713</span>' : '');
+    b.onclick = function(ev){ ev.stopPropagation(); onPick(); closePayerDD(); };
+    dd.appendChild(b);
+  }
+
+  // Sem pagador: cai no padrao
+  mkOpt('\u2014 Padrão (' + (getPayerName(getDefaultPayerId()) || '\u2014') + ')', 'var(--border)',
+    !r.pagadorId, function(){ setFinPayer(y, m, id, '', false); }, true);
+
+  payers.forEach(function(pa) {
+    mkOpt(pa.name, pa.color || 'var(--accent)',
+      r.pagadorId === pa.id && !r.pagadorEstorno,
+      function(){ setFinPayer(y, m, id, pa.id, false); });
+  });
+
+  var sep = document.createElement('div');
+  sep.style.cssText = 'border-top:1px solid var(--border);margin:4px 0';
+  dd.appendChild(sep);
+
+  // Estorno: quem estornou vira o pagador efetivo; o rotulo preserva a
+  // classificacao para nao confundir na conferencia de comprovantes.
+  payers.forEach(function(pa) {
+    mkOpt(pa.name + ' - estorno', pa.color || 'var(--accent)',
+      r.pagadorId === pa.id && !!r.pagadorEstorno,
+      function(){ setFinPayer(y, m, id, pa.id, true); });
+  });
+
+  var sep2 = document.createElement('div');
+  sep2.style.cssText = 'border-top:1px solid var(--border);margin:4px 0';
+  dd.appendChild(sep2);
+  var mgr = document.createElement('button'); mgr.className = 'status-opt';
+  mgr.style.cssText = 'color:var(--muted);font-size:11px;text-align:left;width:100%';
+  mgr.textContent = '\u2699 Gerenciar pagadores';
+  mgr.onclick = function(ev){ ev.stopPropagation(); closePayerDD(); openPayerManager(); };
+  dd.appendChild(mgr);
+
+  document.body.appendChild(dd);
+  setTimeout(function(){ document.addEventListener('click', closePayerDD, {once:true}); }, 0);
+}
+function closePayerDD(){ var el=document.getElementById('payer-dd'); if(el) el.remove(); }
+
+function setFinPayer(y, m, id, payerId, estorno) {
+  var rows = (state.finance.bills[y] && state.finance.bills[y][m]) ? state.finance.bills[y][m] : [];
+  var r = rows.find(function(x){ return x.id == id; });
+  if (!r) return;
+  r.pagadorId = payerId || '';
+  r.pagadorEstorno = payerId ? !!estorno : false;
+  saveState();
+  refreshFinRow(y, m, id);
+}
+
+/* ═══ GERENCIAR PAGADORES ═══ */
+function openPayerManager() {
+  getPayers();
+  renderPayerManager();
+  var modal = document.getElementById('payerManagerModal');
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.zIndex = '100010';
+    modal.classList.add('show');
+  }
+}
+function closePayerManager() {
+  var modal = document.getElementById('payerManagerModal');
+  if (modal) modal.classList.remove('show');
+  refreshAllFinRows();
+}
+function renderPayerManager() {
+  var list = document.getElementById('payerManagerList');
+  if (!list) return;
+  var payers = getPayers();
+  list.innerHTML = payers.map(function(pa) {
+    var defBtn = pa.isDefault
+      ? '<span class="status-manager-builtin" title="Despesas sem pagador informado caem neste">\u2b24 padrão</span>'
+      : '<button class="status-del-btn" title="Tornar padrão" onclick="setDefaultPayer(&#39;'+pa.id+'&#39;)" style="font-size:10px">tornar padrão</button>';
+    var delBtn = pa.isDefault
+      ? ''
+      : '<button class="status-del-btn" onclick="deletePayer(&#39;'+pa.id+'&#39;)">\u2715</button>';
+    return '<div class="status-manager-row" id="pyr-'+pa.id+'">'
+      +'<div class="status-color-swatch" style="background:'+pa.color+'">'
+      +'<input type="color" value="'+pa.color+'" oninput="updatePayerColor(&#39;'+pa.id+'&#39;,this.value)">'
+      +'</div>'
+      +'<input class="status-manager-label-input" value="'+escHtml(pa.name)+'" '
+      +'onchange="updatePayerName(&#39;'+pa.id+'&#39;,this.value)" '
+      +'onblur="updatePayerName(&#39;'+pa.id+'&#39;,this.value)">'
+      +defBtn+delBtn
+      +'</div>';
+  }).join('');
+}
+function updatePayerColor(id, color) {
+  var pa = getPayerObj(id); if (!pa) return;
+  pa.color = color;
+  var sw = document.querySelector('#pyr-'+id+' .status-color-swatch');
+  if (sw) sw.style.background = color;
+  saveState();
+}
+function updatePayerName(id, name) {
+  var pa = getPayerObj(id); if (!pa) return;
+  name = (name||'').trim();
+  if (!name || name === pa.name) return;
+  pa.name = name;
+  saveState();
+}
+function setDefaultPayer(id) {
+  var payers = getPayers();
+  if (!getPayerObj(id)) return;
+  payers.forEach(function(pa){ pa.isDefault = (pa.id === id); });
+  saveState(); renderPayerManager();
+}
+function deletePayer(id) {
+  var pa = getPayerObj(id);
+  if (!pa || pa.isDefault) return;
+  // Conta quantas linhas apontam para ele, para avisar antes de apagar.
+  var n = 0;
+  var bills = state.finance.bills || {};
+  Object.keys(bills).forEach(function(fy){
+    Object.keys(bills[fy]||{}).forEach(function(fm){
+      (bills[fy][fm]||[]).forEach(function(r){ if (r.pagadorId === id) n++; });
+    });
+  });
+  var msg = n
+    ? n + ' conta(s) apontam para ele e voltarão ao pagador padrão.'
+    : 'Nenhuma conta aponta para ele.';
+  confirmAction('Excluir pagador "'+pa.name+'"', msg, function(){
+    Object.keys(bills).forEach(function(fy){
+      Object.keys(bills[fy]||{}).forEach(function(fm){
+        (bills[fy][fm]||[]).forEach(function(r){
+          if (r.pagadorId === id) { r.pagadorId = ''; r.pagadorEstorno = false; }
+        });
+      });
+    });
+    state.finance.payers = getPayers().filter(function(x){ return x.id !== id; });
+    // Filtro do dashboard nao pode guardar um pagador que nao existe mais.
+    if (state.dashboard && Array.isArray(state.dashboard.hiddenPayers)) {
+      state.dashboard.hiddenPayers = state.dashboard.hiddenPayers.filter(function(x){ return x !== id; });
+    }
+    _dashActivePayers = null;
+    saveState(); renderPayerManager();
+  });
+}
+function addPayer() {
+  var input = document.getElementById('newPayerName');
+  var colorEl = document.getElementById('newPayerColor');
+  if (!input) return;
+  var name = input.value.trim();
+  if (!name) return;
+  var payers = getPayers();
+  if (payers.find(function(pa){ return pa.name.toLowerCase() === name.toLowerCase(); })) {
+    showToast('Pagador já existe'); return;
+  }
+  var id = 'payer-' + Date.now() + '-' + Math.floor(Math.random()*1000);
+  payers.push({ id: id, name: name, color: (colorEl && colorEl.value) || '#10b981', isDefault: false });
+  input.value = '';
+  saveState(); renderPayerManager();
+}
+
+/* Redesenha as linhas de contas visiveis (nomes/cores de pagador mudaram). */
+function refreshAllFinRows() {
+  var y = state.finance.currentYear;
+  Object.keys(state.finance.openMonths || {}).forEach(function(m) {
+    if (state.finance.openMonths[m]) refreshFinBlock(y, parseInt(m));
+  });
+}
 
 function openCatDD(e, y, m, id) {
   e.stopPropagation(); closeCatDD();
@@ -5472,7 +5882,7 @@ function addFinBill(y,m){
   if(!state.finance.bills[y])state.finance.bills[y]={};
   if(!state.finance.bills[y][m])state.finance.bills[y][m]=[];
   const vencRaw=document.getElementById('fn-'+y+'-'+m+'-venc').value;
-  state.finance.bills[y][m].push({id:Date.now(),nome,venc:vencRaw?parseDateFromISO(vencRaw):'',valor:parseFloat(document.getElementById('fn-'+y+'-'+m+'-valor').value.replace(',','.'))||0,status:document.getElementById('fn-'+y+'-'+m+'-status').value,categoria:document.getElementById('fn-'+y+'-'+m+'-cat').value,obs:document.getElementById('fn-'+y+'-'+m+'-obs').value});
+  state.finance.bills[y][m].push({id:Date.now(),nome,venc:vencRaw?parseDateFromISO(vencRaw):'',pagoEm:'',pagadorId:'',pagadorEstorno:false,valor:parseFloat(document.getElementById('fn-'+y+'-'+m+'-valor').value.replace(',','.'))||0,status:document.getElementById('fn-'+y+'-'+m+'-status').value,categoria:document.getElementById('fn-'+y+'-'+m+'-cat').value,obs:document.getElementById('fn-'+y+'-'+m+'-obs').value});
   saveState();refreshFinBlock(y,m);
 }
 
@@ -5482,7 +5892,7 @@ function addNextMonth(y){
   const active=state.finance.activeMonths[y]||[];const last=active[active.length-1];if(last>=11)return;
   const next=last+1;const prevRows=(state.finance.bills[y]&&state.finance.bills[y][last])?state.finance.bills[y][last]:[];
   if(!state.finance.bills[y])state.finance.bills[y]={};
-  state.finance.bills[y][next]=prevRows.map(function(r){let newVenc=r.venc;const parts=r.venc?r.venc.split('/'):null;if(parts&&parts.length>=2){const day=parts[0],yr=parts[2]||String(y).slice(-2);newVenc=day+'/'+(next+1)+'/'+yr;}return{id:Date.now()+Math.random(),nome:r.nome,venc:newVenc,valor:0,status:'nao-pago',obs:r.obs||'',categoriaId:r.categoriaId||''};});
+  state.finance.bills[y][next]=prevRows.map(function(r){let newVenc=finDateNorm(r.venc);const parts=newVenc?newVenc.split('/'):null;if(parts&&parts.length>=3){newVenc=finDateNorm(parts[0]+'/'+(next+1)+'/'+parts[2]);}return{id:Date.now()+Math.random(),nome:r.nome,venc:newVenc,pagoEm:'',valor:0,status:'nao-pago',pagadorId:r.pagadorId||'',pagadorEstorno:false,obs:r.obs||'',categoriaId:r.categoriaId||''};});
   state.finance.activeMonths[y].push(next);state.finance.openMonths[next]=true;saveState();renderFinance();
 }
 
@@ -6363,6 +6773,7 @@ var _dashLabel = 'fechamento';
 var _dashAccum = false; // acumulado do ano
 var _dashActiveSources = null; // null = all active; Set of source ids when filtered
 var _dashActiveGroups = null; // null = all active; Set of group names when filtered
+var _dashActivePayers = null; // null = all active; Set of payer ids when filtered
 
 /* Filtros do "Exibir" — persistidos em state.dashboard e sincronizados.
    Guardamos apenas os itens OCULTOS: assim um cartao/grupo criado depois
@@ -6371,14 +6782,45 @@ function dashHydrateFilters() {
   var d = state.dashboard || {};
   _dashHiddenSources = Array.isArray(d.hiddenSources) ? d.hiddenSources.slice() : [];
   _dashHiddenGroups  = Array.isArray(d.hiddenGroups)  ? d.hiddenGroups.slice()  : [];
+  _dashHiddenPayers  = Array.isArray(d.hiddenPayers)  ? d.hiddenPayers.slice()  : [];
 }
 var _dashHiddenSources = [];
 var _dashHiddenGroups = [];
+var _dashHiddenPayers = [];
+
+/* Hoisted de dentro de renderDashboard: a exportacao precisa aplicar
+   exatamente o mesmo filtro de grupo que a tela, e duplicar a regra faria
+   arquivo e tela divergirem na primeira alteracao. */
+function expInActiveGroup(e) {
+  if (!_dashActiveGroups) return true;
+  var allGroups = state.card.catGroups || [];
+  if (!allGroups.length) return true;
+  var catName = getCatName(e.categoriaId) || 'Sem categoria';
+  for (var gi = 0; gi < allGroups.length; gi++) {
+    var g = allGroups[gi];
+    var gname = g.name || g.nome;
+    if (!_dashActiveGroups.has(gname)) continue;
+    if ((g.cats||[]).some(function(c){ return getCatName(c) === catName; })) return true;
+  }
+  // expense not in any group — show if at least one group is fully active
+  return _dashActiveGroups.size === allGroups.length;
+}
+
+/* Toda despesa tem pagador: as de Contas pelo campo, as demais pelo padrao.
+   Por isso o filtro nunca precisa de um caso "sem pagador". */
+function expPayerActive(e) {
+  if (!_dashActivePayers) return true;
+  return _dashActivePayers.has(e.payerId || getDefaultPayerId());
+}
 
 function dashPersistFilters(allSourceIds, allGroupNames) {
   if (!state.dashboard) state.dashboard = {};
   state.dashboard.hiddenSources = allSourceIds.filter(function(id){ return !_dashActiveSources.has(id); });
   state.dashboard.hiddenGroups  = allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); });
+  if (_dashActivePayers) {
+    state.dashboard.hiddenPayers = getPayers().map(function(p){ return p.id; })
+      .filter(function(id){ return !_dashActivePayers.has(id); });
+  }
   saveState();
 }
 var _dashViewMode = 'group'; // 'category' or 'group'
@@ -6416,20 +6858,32 @@ function getDashboardExpenses(y, m, label, payFilter) {
           if (valor>0 && payFilter === 'paid' && !(coverage && coverage.coveredIds[tx.id])) return;
           if (valor>0 && payFilter === 'open' && (coverage && coverage.coveredIds[tx.id])) return;
           var nota = tx.nota || getInstallmentNota(tx, card.id) || '';
-          expenses.push({ descricao:tx.descricao||'', valor:valor, categoriaId:tx.categoriaId||'', source:card.id, sourceLabel:'💳 '+card.nome, pago:billPaid, data:tx.data||'', nota:nota, parcela:tx.parcela||'', _billPayTotal:payTotal });
+          expenses.push({ descricao:tx.descricao||'', valor:valor, categoriaId:tx.categoriaId||'', source:card.id, sourceLabel:'💳 '+card.nome, pago:billPaid, data:tx.data||'', nota:nota, parcela:tx.parcela||'', _billPayTotal:payTotal, payerId:getDefaultPayerId(), payerEstorno:false });
         });
       });
     });
   });
   // Contas
-  var finBills = (state.finance.bills[y]&&state.finance.bills[y][m])||[];
-  finBills.forEach(function(r) {
-    var valor = parseFloat(r.valor)||0;
-    if (valor<=0) return;
-    var isPago = r.status==='pago'||r.status==='debito';
-    if (payFilter === 'paid' && !isPago) return;
-    if (payFilter === 'open' && isPago) return;
-    expenses.push({ descricao:r.nome, valor:valor, categoriaId:r.categoriaId||'', source:'contas', sourceLabel:'Contas', pago:isPago, data:r.venc||'', nota:r.obs||'' });
+  // Varre TODOS os meses: com "Pago em" preenchido, uma conta do bloco de
+  // janeiro pode ser lancada em marco. Filtrar bills[y][m] deixaria ela
+  // invisivel no mes em que foi de fato paga.
+  var _defPayer = getDefaultPayerId();
+  var _allFin = state.finance.bills || {};
+  Object.keys(_allFin).forEach(function(fy) {
+    Object.keys(_allFin[fy] || {}).forEach(function(fm) {
+      (_allFin[fy][fm] || []).forEach(function(r) {
+        var eff = finRowEffectiveYM(fy, fm, r);
+        if (eff.y !== y || eff.m !== m) return;
+        var valor = parseFloat(r.valor)||0;
+        if (valor<=0) return;
+        var isPago = r.status==='pago'||r.status==='debito';
+        if (payFilter === 'paid' && !isPago) return;
+        if (payFilter === 'open' && isPago) return;
+        var _pid = finRowPayerId(r);
+        expenses.push({ descricao:r.nome, valor:valor, categoriaId:r.categoriaId||'', source:'contas', sourceLabel:'Contas', pago:isPago, data:r.venc||'', nota:r.obs||'',
+          payerId:_pid, payerEstorno:!!r.pagadorEstorno, pagoEm:r.pagoEm||'' });
+      });
+    });
   });
   // Débito
   (state.debit.accounts||[]).forEach(function(acc) {
@@ -6444,7 +6898,7 @@ function getDashboardExpenses(y, m, label, payFilter) {
       if (payFilter === 'open') return; // debit is always "paid" immediately
       var rawData = tx.data||'';
       var fmtData = rawData.length===10 ? rawData.slice(8,10)+'/'+rawData.slice(5,7)+'/'+rawData.slice(2,4) : rawData;
-      expenses.push({ descricao:tx.descricao, valor:valor, categoriaId:tx.categoriaId||'', source:acc.id, sourceLabel:'🏦 '+acc.nome, pago:true, data:fmtData, nota:tx.nota||'' });
+      expenses.push({ descricao:tx.descricao, valor:valor, categoriaId:tx.categoriaId||'', source:acc.id, sourceLabel:'🏦 '+acc.nome, pago:true, data:fmtData, nota:tx.nota||'', payerId:getDefaultPayerId(), payerEstorno:false });
     });
   });
   return expenses;
@@ -7781,6 +8235,518 @@ function showDebitImportReview(accountId, txs, overlay, selectedYM) {
   overlay.appendChild(box);
 }
 
+/* Hoisted de renderDashboard: a exportacao precisa do MESMO numero de "Pago"
+   que a tela mostra. Cartao usa cobertura de pagamento da fatura, nao o flag
+   por lancamento, entao a regra nao e' trivial e nao pode ser duplicada. */
+function computeDashPago(allFiltered) {
+  var totalPago = 0;
+  if (_dashAccum) {
+    // Accum: soma os pagos direto com payFilter='paid' — mesma base do donut
+    var paidAccum = [];
+    for (var _pmo = 0; _pmo <= 11; _pmo++) {
+      paidAccum = paidAccum.concat(getDashboardExpenses(_dashY, _pmo, _dashLabel, 'paid'));
+    }
+    return Math.round(paidAccum
+      .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); })
+      .reduce(function(s,e){ return s+e.valor; }, 0) * 100) / 100;
+  }
+  var seenCardSources = {};
+  allFiltered.forEach(function(e) {
+    if (e.source === 'contas') { if (e.pago) totalPago += e.valor; return; }
+    var isDebitSource = (state.debit.accounts||[]).some(function(a){ return a.id===e.source; });
+    if (isDebitSource) { totalPago += e.valor; return; }
+    if (!seenCardSources[e.source]) {
+      seenCardSources[e.source] = { payTotal: e._billPayTotal||0, billTotal: 0 };
+    }
+    seenCardSources[e.source].billTotal += e.valor;
+  });
+  Object.values(seenCardSources).forEach(function(b) {
+    totalPago += Math.min(b.payTotal, b.billTotal);
+  });
+  return Math.round(totalPago * 100) / 100;
+}
+
+/* ═══ EXPORTACAO DO DASHBOARD ═══
+   Monta o recorte visivel UMA vez; PDF e Excel consomem a mesma estrutura,
+   entao os dois arquivos nunca divergem entre si nem da tela. O recorte e'
+   definido pelo filtro Exibir (fontes, grupos, pagadores) + periodo +
+   fechamento/vencimento + pago/em aberto. */
+function buildDashExportData() {
+  var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  // Mesmo pipeline de renderDashboard, na mesma ordem
+  var allRaw = [];
+  if (_dashAccum) {
+    for (var mo = 0; mo <= 11; mo++) allRaw = allRaw.concat(getDashboardExpenses(_dashY, mo, _dashLabel, 'all'));
+  } else {
+    allRaw = getDashboardExpenses(_dashY, _dashM, _dashLabel, 'all');
+  }
+  function passaFiltro(e) {
+    return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e);
+  }
+  var allFiltered = allRaw.filter(passaFiltro);
+
+  // A lista da tela usa payFilter; os totais usam sempre o conjunto completo
+  var expenses;
+  if (_dashPayFilter === 'all') {
+    expenses = allFiltered;
+  } else {
+    var fe = [];
+    if (_dashAccum) {
+      for (var _mo = 0; _mo <= 11; _mo++) fe = fe.concat(getDashboardExpenses(_dashY, _mo, _dashLabel, _dashPayFilter));
+    } else {
+      fe = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter);
+    }
+    expenses = fe.filter(passaFiltro);
+  }
+
+  var totalMes = Math.round(allFiltered.reduce(function(s,e){ return s+e.valor; },0) * 100) / 100;
+  var totalPago = computeDashPago(allFiltered);
+  var totalAberto = Math.max(0, Math.round((totalMes - totalPago) * 100) / 100);
+
+  // catMap a partir da lista exibida
+  var catMap = {};
+  expenses.forEach(function(e){
+    var cat = getCatName(e.categoriaId) || 'Sem categoria';
+    catMap[cat] = (catMap[cat]||0) + e.valor;
+  });
+  var totalPositive = 0;
+  Object.keys(catMap).forEach(function(k){ if (catMap[k] > 0) totalPositive += catMap[k]; });
+
+  // displayCats: MESMA logica e ordenacao de renderDashboard
+  var groups = state.card.catGroups || [];
+  var hasGroups = groups.length > 0;
+  var useGroups = (_dashViewMode === 'group') && hasGroups;
+  var displayCats;
+  if (useGroups) {
+    var grouped = {}, usedCats = [];
+    groups.forEach(function(g){
+      var total = 0;
+      (g.cats||[]).forEach(function(c){ var n = getCatName(c); total += catMap[n]||0; usedCats.push(n); });
+      if (total > 0) grouped[g.name||g.nome] = { val: total, color: g.color };
+    });
+    Object.keys(catMap).forEach(function(c){
+      if (usedCats.indexOf(c) < 0) grouped[c] = { val: catMap[c], color: null };
+    });
+    displayCats = Object.keys(grouped).map(function(k){ return { name:k, val:grouped[k].val, color:grouped[k].color }; });
+    displayCats.sort(function(a,b){ return b.val - a.val; });
+  } else {
+    displayCats = Object.keys(catMap).map(function(k){ return { name:k, val:catMap[k] }; });
+    displayCats.sort(function(a,b){
+      if (a.val < 0 && b.val >= 0) return 1;
+      if (a.val >= 0 && b.val < 0) return -1;
+      return Math.abs(b.val) - Math.abs(a.val);
+    });
+  }
+
+  function expensesOf(catName) {
+    return expenses.filter(function(e){ return (getCatName(e.categoriaId)||'Sem categoria') === catName; })
+      .sort(function(a,b){ return dateStrToNum(b.data) - dateStrToNum(a.data); })
+      .map(function(e){
+        var pa = getPayerObj(e.payerId || getDefaultPayerId());
+        return {
+          data: e.data || '',
+          descricao: (e.descricao||'') + (e.parcela ? ' (' + e.parcela + ')' : ''),
+          detalhe: e.nota || '',
+          fonte: (e.sourceLabel || '').replace(/^[^\w\sÀ-ÿ]+\s*/, ''),
+          pagador: (pa ? pa.name : '') + (e.payerEstorno ? ' - estorno' : ''),
+          status: e.pago ? 'Pago' : 'Em aberto',
+          valor: e.valor
+        };
+      });
+  }
+
+  // Arvore identica a da tela: grupo -> subcategorias -> despesas
+  var tree = displayCats.map(function(cat, i) {
+    var isCredit = cat.val < 0;
+    var absVal = Math.abs(cat.val);
+    var pct = (absVal / (_dashPayFilter === 'all' ? (Math.abs(totalMes)||1) : (totalPositive||1)) * 100);
+    var color = isCredit ? '#22c55e' : (cat.color || DASH_COLORS[i % DASH_COLORS.length]);
+    var groupDef = useGroups ? groups.find(function(g){ return (g.name||g.nome) === cat.name; }) : null;
+    var subs = [];
+    if (groupDef && groupDef.cats) {
+      groupDef.cats.forEach(function(c){
+        var n = getCatName(c);
+        if (catMap[n]) subs.push({ name:n, val:catMap[n], pct: catMap[n]/cat.val*100, rows: expensesOf(n) });
+      });
+      subs.sort(function(a,b){ return b.val - a.val; });
+    }
+    return {
+      name: cat.name, val: cat.val, absVal: absVal, pct: pct, color: color, isCredit: isCredit,
+      subs: subs,
+      rows: subs.length ? [] : expensesOf(cat.name)
+    };
+  });
+
+  // Lista achatada para o Excel
+  var flat = [];
+  tree.forEach(function(g){
+    if (g.subs.length) {
+      g.subs.forEach(function(sc){ sc.rows.forEach(function(r){
+        flat.push({ grupo: useGroups ? g.name : '', categoria: sc.name, data:r.data, descricao:r.descricao,
+          detalhe:r.detalhe, fonte:r.fonte, pagador:r.pagador, status:r.status, valor:r.valor });
+      }); });
+    } else {
+      g.rows.forEach(function(r){
+        flat.push({ grupo: useGroups ? 'Sem grupo' : '', categoria: g.name, data:r.data, descricao:r.descricao,
+          detalhe:r.detalhe, fonte:r.fonte, pagador:r.pagador, status:r.status, valor:r.valor });
+      });
+    }
+  });
+
+  var hiddenBits = [];
+  var _payers = getPayers();
+  if (_dashActivePayers && _dashActivePayers.size < _payers.length) {
+    hiddenBits.push('Pagadores: ' + _payers.filter(function(pa){ return _dashActivePayers.has(pa.id); })
+      .map(function(pa){ return pa.name; }).join(', '));
+  }
+  if (_dashActiveGroups && groups.length && _dashActiveGroups.size < groups.length) {
+    hiddenBits.push('Grupos: ' + Array.from(_dashActiveGroups).join(', '));
+  }
+
+  return {
+    periodo: _dashAccum ? ('Acumulado ' + _dashY) : (MONTHS_PT[_dashM] + ' ' + _dashY),
+    base: _dashLabel === 'fechamento' ? 'Fechamento' : 'Vencimento',
+    situacao: _dashPayFilter === 'paid' ? 'Somente pagos' : _dashPayFilter === 'open' ? 'Somente em aberto' : 'Todos',
+    filtros: hiddenBits.join(' | '),
+    useGroups: useGroups,
+    tree: tree,
+    rows: flat,
+    totalMes: totalMes,
+    totalPago: totalPago,
+    totalAberto: totalAberto,
+    total: Math.round(expenses.reduce(function(s,e){ return s+e.valor; },0) * 100) / 100,
+    fileBase: 'dashboard-' + (_dashAccum ? _dashY : (_dashY + '-' + String(_dashM+1).padStart(2,'0')))
+  };
+}
+
+/* jsPDF so e' baixado quando o usuario exporta pela primeira vez: sao ~400KB
+   que nao tem por que pesar no boot. O sw.js pre-cacheia essas URLs, entao a
+   exportacao tambem funciona offline. */
+var JSPDF_URLS = [
+  'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
+];
+var _jsPdfLoading = null;
+function loadJsPDF() {
+  if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve();
+  if (_jsPdfLoading) return _jsPdfLoading;
+  _jsPdfLoading = JSPDF_URLS.reduce(function(chain, url) {
+    return chain.then(function() {
+      return new Promise(function(res, rej) {
+        var sc = document.createElement('script');
+        sc.src = url;
+        sc.onload = res;
+        sc.onerror = function(){ rej(new Error('Falha ao carregar ' + url)); };
+        document.head.appendChild(sc);
+      });
+    });
+  }, Promise.resolve());
+  _jsPdfLoading.catch(function(){ _jsPdfLoading = null; });
+  return _jsPdfLoading;
+}
+
+/* Download proprio em vez do saveAs do jsPDF/SheetJS: os dois criam uma
+   ancora FORA do DOM e clicam dentro de setTimeout(0). Ancora destacada nao
+   e' confiavel, e o setTimeout joga o clique para fora do gesto do usuario —
+   numa janela PWA isso faz o navegador navegar para o blob em vez de baixar,
+   resultando em tela branca sem arquivo. Aqui a ancora entra no DOM e e'
+   clicada de forma sincrona. */
+function downloadBlob(blob, filename) {
+  try {
+    if (navigator.msSaveOrOpenBlob) { navigator.msSaveOrOpenBlob(blob, filename); return true; }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+      if (a.parentNode) a.parentNode.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 40000);
+    console.log('[export] download disparado:', filename, blob.size + ' bytes');
+    return true;
+  } catch (err) {
+    console.warn('[export] falha no download:', err);
+    return false;
+  }
+}
+
+function fmtExpBRL(v) {
+  var neg = v < 0;
+  var out = 'R$ ' + Math.abs(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return neg ? '-' + out : out;
+}
+
+function hexToRgb(h) {
+  h = String(h||'#888').replace('#','');
+  if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var n = parseInt(h, 16);
+  if (isNaN(n)) return [136,136,136];
+  return [(n>>16)&255, (n>>8)&255, n&255];
+}
+
+/* Desenho manual em vez de autotable: a tela mostra grupo -> subcategoria ->
+   despesas aninhadas, com cor e percentual. Duas tabelas soltas (totais em
+   cima, detalhe embaixo) nao refletem isso. Aqui cada bloco e' desenhado na
+   mesma ordem e hierarquia do Dashboard. */
+function exportDashPDF() {
+  var d = buildDashExportData();
+  if (!d.tree.length) { showToast('Nada a exportar com os filtros atuais'); return; }
+  showToast('Gerando PDF...');
+  loadJsPDF().then(function() {
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+    var W = doc.internal.pageSize.getWidth();
+    var H = doc.internal.pageSize.getHeight();
+    var M = 40, RIGHT = W - M;
+    var y = 0;
+    /* A tela nao mostra pagador na linha de despesa, mas ele importa para
+       conferir comprovantes. Solucao: so ocupa coluna quando o recorte tem
+       mais de um pagador — caso contrario o dado seria constante e inutil. */
+    var _pset = {};
+    d.rows.forEach(function(r){ if (r.pagador) _pset[r.pagador] = 1; });
+    var showPayer = Object.keys(_pset).length > 1;
+
+    function txt(t, x, yy, opt) { doc.text(String(t == null ? '' : t), x, yy, opt); }
+    function trunc(t, maxW, size) {
+      t = String(t == null ? '' : t);
+      if (!t) return '';
+      doc.setFontSize(size);
+      if (doc.getTextWidth(t) <= maxW) return t;
+      // corta por caractere ate caber: evita palavra partida no meio pelo
+      // linebreak automatico, que era o que deixava o texto "quebrado".
+      while (t.length > 1 && doc.getTextWidth(t + '…') > maxW) t = t.slice(0, -1);
+      return t + '…';
+    }
+    function pageFooter() {
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(150);
+      txt('Página ' + doc.internal.getNumberOfPages(), RIGHT, H - 22, { align: 'right' });
+    }
+    // Contexto para repetir na quebra de pagina: sem isso a primeira linha da
+    // pagina seguinte fica orfa, sem dizer de que grupo/categoria ela e'.
+    var ctxGroup = '', ctxSub = '', ctxRgb = [136,136,136];
+    function ensure(h) {
+      if (y + h <= H - 40) return;
+      pageFooter();
+      doc.addPage();
+      y = M + 6;
+      if (ctxGroup) {
+        doc.setFillColor(ctxRgb[0], ctxRgb[1], ctxRgb[2]);
+        doc.rect(M, y + 2, 3, 10, 'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(150);
+        txt(ctxGroup + (ctxSub ? '  ›  ' + ctxSub : '') + '  (continuação)', M + 10, y + 10);
+        y += 20;
+      }
+    }
+
+    // ── Cabecalho ──
+    doc.setFont('helvetica','normal'); doc.setFontSize(17); doc.setTextColor(25);
+    txt('Dashboard — ' + d.periodo, M, 52);
+    doc.setFontSize(11); doc.setTextColor(25);
+    txt('Total: ' + fmtExpBRL(d.total), RIGHT, 52, { align: 'right' });
+    doc.setFontSize(8.5); doc.setTextColor(130);
+    var sub = 'Base: ' + d.base + '   |   ' + d.situacao;
+    if (d.filtros) sub += '   |   ' + d.filtros;
+    txt(sub, M, 68);
+    y = 84;
+
+    // ── Cards de totais, como na tela ──
+    var cardW = (RIGHT - M - 16) / 3, cardH = 44;
+    [['Total do ' + (d.periodo.indexOf('Acumulado') === 0 ? 'ano' : 'mês'), d.totalMes, [40,40,40]],
+     ['Pago', d.totalPago, [34,197,94]],
+     ['Em aberto', d.totalAberto, [239,68,68]]].forEach(function(c, ci) {
+      var x = M + ci * (cardW + 8);
+      doc.setFillColor(246,246,246); doc.setDrawColor(228,228,228); doc.setLineWidth(0.5);
+      doc.roundedRect(x, y, cardW, cardH, 4, 4, 'FD');
+      doc.setFontSize(7.5); doc.setTextColor(130);
+      txt(c[0].toUpperCase(), x + 10, y + 15);
+      doc.setFontSize(13); doc.setTextColor(c[2][0], c[2][1], c[2][2]);
+      txt(fmtExpBRL(c[1]), x + 10, y + 33);
+    });
+    y += cardH + 22;
+
+    // ── Lista hierarquica ──
+    d.tree.forEach(function(g) {
+      var rgb = hexToRgb(g.color);
+      ctxGroup = ''; ctxSub = '';   // o cabecalho do grupo em si nao repete
+      ensure(34);
+      ctxGroup = g.name; ctxRgb = rgb;
+
+      // Linha do grupo/categoria
+      doc.setFillColor(243,243,245);
+      doc.rect(M, y, RIGHT - M, 22, 'F');
+      doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+      doc.circle(M + 12, y + 11, 4, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(30);
+      txt(trunc(g.name, RIGHT - M - 210, 10.5), M + 24, y + 15);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(140);
+      txt(g.pct.toFixed(1) + '%', RIGHT - 118, y + 15, { align: 'right' });
+      doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+      if (g.isCredit) doc.setTextColor(34,197,94); else doc.setTextColor(30);
+      txt((g.isCredit ? '+ ' : '') + fmtExpBRL(g.absVal), RIGHT - 8, y + 15, { align: 'right' });
+      y += 24;
+
+      /* Colunas ancoradas a' DIREITA e alinhadas a' direita: assim cada uma
+         termina onde a proxima comeca e nada invade a coluna do valor. */
+      function drawRows(rows, indent) {
+        if (!rows.length) return;
+        var xL = M + indent;
+        var xVal   = RIGHT - 6;              // valor (fim)
+        var wVal   = 58;
+        var xPagad = xVal - wVal - 8;        // pagador (fim), so quando util
+        var wPagad = showPayer ? 54 : 0;
+        var xFonte = xPagad - wPagad - (showPayer ? 8 : 0);
+        var wFonte = 56;
+        var xDet   = xFonte - wFonte - 8;
+        var wDet   = 92;
+        var cData  = xL + 8;
+        var cDesc  = xL + 60;
+        var wDesc  = (xDet - wDet - 10) - cDesc;
+        rows.forEach(function(r) {
+          ensure(14);
+          doc.setDrawColor(rgb[0], rgb[1], rgb[2]); doc.setLineWidth(1.5);
+          doc.line(xL, y - 2, xL, y + 10);
+          doc.setFont('helvetica','normal'); doc.setFontSize(7.8); doc.setTextColor(145);
+          txt(r.data || '—', cData, y + 7);
+          doc.setTextColor(55); doc.setFontSize(8.2);
+          txt(trunc(r.descricao, wDesc, 8.2), cDesc, y + 7);
+          doc.setFontSize(7.3); doc.setTextColor(155);
+          if (r.detalhe) txt(trunc(r.detalhe, wDet, 7.3), xDet, y + 7, { align: 'right' });
+          if (r.fonte)   txt(trunc(r.fonte, wFonte, 7.3), xFonte, y + 7, { align: 'right' });
+          if (showPayer && r.pagador) txt(trunc(r.pagador, wPagad, 7.3), xPagad, y + 7, { align: 'right' });
+          doc.setFontSize(8.2); doc.setTextColor(70);
+          txt(fmtExpBRL(r.valor), xVal, y + 7, { align: 'right' });
+          y += 13;
+        });
+        y += 3;
+      }
+
+      if (g.subs.length) {
+        g.subs.forEach(function(sc) {
+          ctxSub = '';
+          ensure(20);
+          ctxSub = sc.name;
+          doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+          doc.rect(M + 20, y + 3, 3, 11, 'F');
+          doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(45);
+          txt(trunc(sc.name, RIGHT - M - 230, 9.5), M + 30, y + 12);
+          doc.setFontSize(8); doc.setTextColor(150);
+          txt(sc.pct.toFixed(1) + '%', RIGHT - 118, y + 12, { align: 'right' });
+          doc.setFontSize(9.5); doc.setTextColor(70);
+          txt(fmtExpBRL(sc.val), RIGHT - 8, y + 12, { align: 'right' });
+          y += 17;
+          drawRows(sc.rows, 30);
+        });
+      } else {
+        drawRows(g.rows, 20);
+      }
+      ctxGroup = ''; ctxSub = '';
+      y += 6;
+    });
+
+    // ── Rodape final ──
+    ensure(26);
+    doc.setDrawColor(210); doc.setLineWidth(0.7);
+    doc.line(M, y, RIGHT, y);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(25);
+    txt('TOTAL', M + 4, y + 17);
+    txt(fmtExpBRL(d.total), RIGHT - 8, y + 17, { align: 'right' });
+    pageFooter();
+
+    var blob = doc.output('blob');
+    if (downloadBlob(blob, d.fileBase + '.pdf')) {
+      showToast('PDF exportado');
+    } else {
+      showToast('Falha ao salvar o PDF');
+    }
+  }).catch(function(err) {
+    console.warn('[export] exportDashPDF:', err);
+    showToast('Falha ao gerar o PDF: ' + (err && err.message ? err.message : 'erro desconhecido'));
+  });
+}
+
+function exportDashXLSX() {
+  var d = buildDashExportData();
+  if (!d.tree.length) { showToast('Nada a exportar com os filtros atuais'); return; }
+  if (typeof XLSX === 'undefined') { showToast('Biblioteca de planilha indisponível'); return; }
+  var MONEY = 'R$ #,##0.00';
+  var wb = XLSX.utils.book_new();
+
+  // Aba Resumo — espelha a lista da tela
+  var sumAoa = [
+    ['Dashboard', d.periodo],
+    ['Base', d.base],
+    ['Situação', d.situacao]
+  ];
+  if (d.filtros) sumAoa.push(['Filtros', d.filtros]);
+  sumAoa.push([]);
+  sumAoa.push(['Total do período', d.totalMes]);
+  sumAoa.push(['Pago', d.totalPago]);
+  sumAoa.push(['Em aberto', d.totalAberto]);
+  var cardsStart = sumAoa.length - 3;
+  sumAoa.push([]);
+  sumAoa.push(d.useGroups ? ['Grupo','Categoria','%','Valor'] : ['Categoria','%','Valor']);
+  var sumStart = sumAoa.length;
+  d.tree.forEach(function(g) {
+    if (d.useGroups) {
+      sumAoa.push([g.name, '', g.pct/100, g.val]);
+      g.subs.forEach(function(c){ sumAoa.push(['', c.name, c.pct/100, c.val]); });
+    } else {
+      sumAoa.push([g.name, g.pct/100, g.val]);
+    }
+  });
+  sumAoa.push([]);
+  sumAoa.push(d.useGroups ? ['TOTAL','','', d.total] : ['TOTAL','', d.total]);
+  var wsSum = XLSX.utils.aoa_to_sheet(sumAoa);
+  var moneyColSum = d.useGroups ? 3 : 2;
+  var pctColSum = d.useGroups ? 2 : 1;
+  for (var r = sumStart; r < sumAoa.length; r++) {
+    var ref = XLSX.utils.encode_cell({ r: r, c: moneyColSum });
+    if (wsSum[ref] && typeof wsSum[ref].v === 'number') { wsSum[ref].t = 'n'; wsSum[ref].z = MONEY; }
+    var pref = XLSX.utils.encode_cell({ r: r, c: pctColSum });
+    if (wsSum[pref] && typeof wsSum[pref].v === 'number') { wsSum[pref].t = 'n'; wsSum[pref].z = '0.0%'; }
+  }
+  for (var cr = cardsStart; cr < cardsStart + 3; cr++) {
+    var cref = XLSX.utils.encode_cell({ r: cr, c: 1 });
+    if (wsSum[cref] && typeof wsSum[cref].v === 'number') { wsSum[cref].t = 'n'; wsSum[cref].z = MONEY; }
+  }
+  wsSum['!cols'] = d.useGroups ? [{wch:24},{wch:28},{wch:9},{wch:14}] : [{wch:28},{wch:9},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, wsSum, 'Resumo');
+
+  // Aba Despesas — uma linha por lancamento, valor como numero
+  var head = d.useGroups
+    ? ['Grupo','Categoria','Data','Descrição','Parcela','Detalhe','Fonte','Pagador','Situação','Valor']
+    : ['Categoria','Data','Descrição','Parcela','Detalhe','Fonte','Pagador','Situação','Valor'];
+  var aoa = [head];
+  d.rows.forEach(function(r) {
+    var base = [r.categoria, r.data, r.descricao, r.parcela, r.detalhe, r.fonte, r.pagador, r.status, r.valor];
+    aoa.push(d.useGroups ? [r.grupo].concat(base) : base);
+  });
+  var ws = XLSX.utils.aoa_to_sheet(aoa);
+  var moneyCol = head.length - 1;
+  for (var i = 1; i < aoa.length; i++) {
+    var cell = XLSX.utils.encode_cell({ r: i, c: moneyCol });
+    if (ws[cell]) { ws[cell].t = 'n'; ws[cell].z = MONEY; }
+  }
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:aoa.length-1, c:head.length-1} }) };
+  ws['!cols'] = head.map(function(h){
+    return { wch: h === 'Descrição' ? 34 : h === 'Detalhe' ? 26 : h === 'Categoria' || h === 'Grupo' ? 20 : 13 };
+  });
+  XLSX.utils.book_append_sheet(wb, ws, 'Despesas');
+
+  // Mesmo motivo do PDF: XLSX.writeFile usa ancora destacada internamente.
+  var wbout = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+  var xblob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  if (downloadBlob(xblob, d.fileBase + '.xlsx')) {
+    showToast('Excel exportado');
+  } else {
+    showToast('Falha ao salvar o Excel');
+  }
+}
+
 function renderDashboard() {
   var content = document.getElementById('dashboardContent');
   var controls = document.getElementById('dashboardControls');
@@ -7860,13 +8826,26 @@ function renderDashboard() {
     _dashActiveGroups = new Set(_allGroupNames.filter(function(n){ return _dashHiddenGroups.indexOf(n) < 0; }));
     if (!_dashActiveGroups.size) _dashActiveGroups = new Set(_allGroupNames);
   }
+  var _allPayers = getPayers();
+  var _allPayerIds = _allPayers.map(function(pa){ return pa.id; });
+  if (!_dashActivePayers) {
+    _dashActivePayers = new Set(_allPayerIds.filter(function(id){ return _dashHiddenPayers.indexOf(id) < 0; }));
+    if (!_dashActivePayers.size) _dashActivePayers = new Set(_allPayerIds);
+  } else {
+    // Pagador removido em outra tela nao pode sobreviver no Set.
+    Array.from(_dashActivePayers).forEach(function(id){
+      if (_allPayerIds.indexOf(id) < 0) _dashActivePayers.delete(id);
+    });
+    if (!_dashActivePayers.size) _dashActivePayers = new Set(_allPayerIds);
+  }
 
   var exibirWrap = document.createElement('div');
   exibirWrap.style.cssText = 'position:relative;display:inline-block';
 
   var exibirBtn = document.createElement('button');
   var _nHidden = _allSourceIds.filter(function(id){ return !_dashActiveSources.has(id); }).length
-               + _allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); }).length;
+               + _allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); }).length
+               + _allPayerIds.filter(function(id){ return !_dashActivePayers.has(id); }).length;
   var allActive = (_nHidden === 0);
   exibirBtn.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:'+(allActive?'var(--muted)':'var(--text)')+';cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px';
   exibirBtn.innerHTML = 'Exibir' + (!allActive ? ' <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent)"></span>' : '');
@@ -7955,6 +8934,35 @@ function renderDashboard() {
     return row;
   }
 
+  function makePayerCheckRow(pa) {
+    var isActive = _dashActivePayers.has(pa.id);
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 14px;cursor:pointer;user-select:none';
+    row.onmouseenter = function(){ row.style.background='var(--bg3,var(--border))'; };
+    row.onmouseleave = function(){ row.style.background=''; };
+    var dot = document.createElement('span');
+    dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+(isActive ? (pa.color||'var(--accent)') : 'var(--border)');
+    var chk = document.createElement('span');
+    chk.style.cssText = 'font-size:12px;color:'+(isActive?'var(--accent)':'var(--border)');
+    chk.textContent = isActive ? '\u2713' : '\u25cb';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;color:'+(isActive?'var(--text)':'var(--muted)');
+    lbl.textContent = pa.name + (pa.isDefault ? ' \u2022' : '');
+    if (pa.isDefault) lbl.title = 'Pagador padrão: recebe cartões, débito e contas sem pagador';
+    row.appendChild(dot); row.appendChild(chk); row.appendChild(lbl);
+    row.onclick = function(e) {
+      e.stopPropagation();
+      if (_dashActivePayers.has(pa.id)) {
+        if (_dashActivePayers.size > 1) _dashActivePayers.delete(pa.id);
+      } else {
+        _dashActivePayers.add(pa.id);
+      }
+      dashPersistFilters(_allSourceIds, _allGroupNames);
+      renderDashboard();
+    };
+    return row;
+  }
+
   if (cardSources.length) {
     exibirDd.appendChild(makeSecLabel('Cartões'));
     cardSources.forEach(function(s){ exibirDd.appendChild(makeCheckRow(s)); });
@@ -7974,6 +8982,11 @@ function renderDashboard() {
     exibirDd.appendChild(makeSecLabel('Grupos'));
     allGroups.forEach(function(g){ exibirDd.appendChild(makeGroupCheckRow(g)); });
   }
+  if (_allPayers.length > 1) {
+    exibirDd.appendChild(makeSep());
+    exibirDd.appendChild(makeSecLabel('Pagadores'));
+    _allPayers.forEach(function(pa){ exibirDd.appendChild(makePayerCheckRow(pa)); });
+  }
 
   var _exibirOpen = false;
   exibirBtn.onclick = function(e) {
@@ -7992,6 +9005,38 @@ function renderDashboard() {
   exibirWrap.appendChild(exibirBtn);
   exibirWrap.appendChild(exibirDd);
 
+  // Exportar — mesmo recorte do filtro Exibir
+  var expWrap = document.createElement('div');
+  expWrap.style.cssText = 'position:relative;display:inline-block';
+  var expBtn = document.createElement('button');
+  expBtn.className = 'btn-sm';
+  expBtn.textContent = '\u2b07 Exportar';
+  expBtn.title = 'Exporta exatamente o que está no filtro Exibir';
+  var expDd = document.createElement('div');
+  expDd.style.cssText = 'display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);'
+    + 'border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 4px 20px rgba(0,0,0,.4);'
+    + 'z-index:9999;min-width:150px;padding:4px';
+  [['PDF', exportDashPDF], ['Excel', exportDashXLSX]].forEach(function(pair) {
+    var b = document.createElement('button');
+    b.className = 'status-opt';
+    b.textContent = pair[0];
+    b.onclick = function(ev) { ev.stopPropagation(); expDd.style.display='none'; _expOpen=false; pair[1](); };
+    expDd.appendChild(b);
+  });
+  var _expOpen = false;
+  expBtn.onclick = function(e) {
+    e.stopPropagation();
+    _expOpen = !_expOpen;
+    expDd.style.display = _expOpen ? 'block' : 'none';
+    // Adianta o download da lib enquanto o usuario escolhe o formato: assim o
+    // clique em "PDF" costuma achar tudo pronto e baixar dentro do gesto.
+    if (_expOpen) loadJsPDF().catch(function(){});
+  };
+  document.addEventListener('mousedown', function closeExp(e) {
+    if (!expWrap.contains(e.target)) { expDd.style.display='none'; _expOpen=false; document.removeEventListener('mousedown', closeExp); }
+  });
+  expWrap.appendChild(expBtn); expWrap.appendChild(expDd);
+
   var sourceBar = document.createElement('div');
   sourceBar.style.cssText = 'display:none';
 
@@ -8005,21 +9050,7 @@ function renderDashboard() {
   } else {
     allExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, 'all');
   }
-  function expInActiveGroup(e) {
-    if (!_dashActiveGroups) return true;
-    var allGroups = state.card.catGroups || [];
-    if (!allGroups.length) return true;
-    var catName = getCatName(e.categoriaId) || 'Sem categoria';
-    for (var gi = 0; gi < allGroups.length; gi++) {
-      var g = allGroups[gi];
-      var gname = g.name || g.nome;
-      if (!_dashActiveGroups.has(gname)) continue;
-      if ((g.cats||[]).some(function(c){ return getCatName(c) === catName; })) return true;
-    }
-    // expense not in any group — show if at least one group is fully active (i.e. not all groups filtered)
-    return _dashActiveGroups.size === allGroups.length;
-  }
-  var allFiltered = allExpenses.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); });
+  var allFiltered = allExpenses.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); });
   // expenses for chart/detail uses payFilter; totals always use full set
   var filteredExpenses;
   if (_dashPayFilter==='all') {
@@ -8029,9 +9060,9 @@ function renderDashboard() {
     for (var _mo = 0; _mo <= 11; _mo++) {
       _fe = _fe.concat(getDashboardExpenses(_dashY, _mo, _dashLabel, _dashPayFilter));
     }
-    filteredExpenses = _fe.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); });
+    filteredExpenses = _fe.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); });
   } else {
-    filteredExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter).filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); });
+    filteredExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter).filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); });
   }
   var expenses = filteredExpenses;
 
@@ -8060,32 +9091,7 @@ function renderDashboard() {
 
   // Totals — always computed from full (unfiltered by pay) expense set
   var totalMes = Math.round(allFiltered.reduce(function(s,e){return s+e.valor;},0) * 100) / 100;
-  var totalPago = 0;
-  if (_dashAccum) {
-    // Accum: sum paid expenses directly using payFilter='paid' — same basis as donut
-    var paidAccum = [];
-    for (var _pmo = 0; _pmo <= 11; _pmo++) {
-      paidAccum = paidAccum.concat(getDashboardExpenses(_dashY, _pmo, _dashLabel, 'paid'));
-    }
-    totalPago = Math.round(paidAccum
-      .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e); })
-      .reduce(function(s,e){ return s+e.valor; }, 0) * 100) / 100;
-  } else {
-    var seenCardSources = {};
-    allFiltered.forEach(function(e) {
-      if (e.source === 'contas') { if (e.pago) totalPago += e.valor; return; }
-      // Debit accounts — always paid immediately; use net value (expenses - estornos)
-      var isDebitSource = (state.debit.accounts||[]).some(function(a){ return a.id===e.source; });
-      if (isDebitSource) { totalPago += e.valor; return; }
-      if (!seenCardSources[e.source]) {
-        seenCardSources[e.source] = { payTotal: e._billPayTotal||0, billTotal: 0 };
-      }
-      seenCardSources[e.source].billTotal += e.valor;
-    });
-    Object.values(seenCardSources).forEach(function(b) {
-      totalPago += Math.min(b.payTotal, b.billTotal);
-    });
-  }
+  var totalPago = computeDashPago(allFiltered);
   var totalAberto = Math.max(0, Math.round((totalMes - totalPago) * 100) / 100);
 
   var summaryDiv = document.createElement('div');
@@ -8217,6 +9223,7 @@ function renderDashboard() {
   toggleDiv.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content';
   toggleRow.appendChild(toggleDiv);
   toggleRow.appendChild(exibirWrap);
+  toggleRow.appendChild(expWrap);
 
   content.innerHTML='';
   content.appendChild(sourceBar);
