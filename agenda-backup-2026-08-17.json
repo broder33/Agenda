@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-08-14T17:15:42.825Z",
+  "_updatedAt": "2026-08-17T16:04:46.374Z",
   "tasks": {
     "items": [
       {
@@ -7373,7 +7373,52 @@
               "nota": "Impressão de folhas"
             },
             {
-              "id": "msp2lidx2y3yrae5w1u",
+              "id": "msxeb2yzbt4noks4icr",
+              "descricao": "INSANO BURGER-CENTRO",
+              "data": "11/08/26",
+              "valor": 74,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Burger Vizinho"
+            },
+            {
+              "id": "msxebcmbyrytak726x",
+              "descricao": "99 Ride",
+              "data": "11/08/26",
+              "valor": 7.7,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "99"
+            },
+            {
+              "id": "msxebpe17q164nk3quk",
+              "descricao": "Uber",
+              "data": "11/08/26",
+              "valor": 6.15,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msxebzbebi7lbvnvrxh",
+              "descricao": "CALDO DE CANA VERA",
+              "data": "11/08/26",
+              "valor": 9,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msxec8gjpt4ynfhesi",
+              "descricao": "URENTCAR",
+              "data": "11/08/26",
+              "valor": 5.88,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msxedht9mjs87zyykh",
               "descricao": "URENTCAR",
               "data": "11/08/26",
               "valor": 5.88,
@@ -7386,6 +7431,159 @@
               "descricao": "iFood",
               "data": "11/08/26",
               "valor": 38.98,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msxeekvndriq40w3ot",
+              "descricao": "iFood",
+              "data": "12/08/26",
+              "valor": 28.97,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "iFood"
+            },
+            {
+              "id": "msxeeu0ay76dzpdl0ia",
+              "descricao": "Uber",
+              "data": "12/08/26",
+              "valor": 6.5,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msxef1wdldy6l6b66cq",
+              "descricao": "Uber",
+              "data": "12/08/26",
+              "valor": 6.07,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msxegwgsuvtapruyi6j",
+              "descricao": "Bar e Restaurante",
+              "data": "12/08/26",
+              "valor": 39.55,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Empório Sumatra"
+            },
+            {
+              "id": "msxehit3lw88jxfkpj",
+              "descricao": "URENTCAR",
+              "data": "13/08/26",
+              "valor": 1.47,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msxehrmvhb5eclqxf8l",
+              "descricao": "JK LONDRINA",
+              "data": "13/08/26",
+              "valor": 129.61,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Muffato"
+            },
+            {
+              "id": "msxei2w2y6qxqrw20v",
+              "descricao": "Uber",
+              "data": "13/08/26",
+              "valor": 6.29,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msxeia8737wmvym6jr2",
+              "descricao": "Bar e Restaurante",
+              "data": "13/08/26",
+              "valor": 31.48,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Empório Sumatra"
+            },
+            {
+              "id": "msxej20krf7ofobcomr",
+              "descricao": "Uber",
+              "data": "14/08/26",
+              "valor": 6.73,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msxejf9gt0hxj9nea0p",
+              "descricao": "SUPERMERCADOS VISCARDI",
+              "data": "14/08/26",
+              "valor": 81.67,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Viscardi"
+            },
+            {
+              "id": "msxejri71gma7spksno",
+              "descricao": "Uber",
+              "data": "14/08/26",
+              "valor": 6.16,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "Uber"
+            },
+            {
+              "id": "msxensm0jqdsx59l3s",
+              "descricao": "Bali Alimentos",
+              "data": "14/08/26",
+              "valor": 42.82,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Empório Sumatra"
+            },
+            {
+              "id": "msxeozrvzx919grkbi",
+              "descricao": "Spotify",
+              "data": "15/08/26",
+              "valor": 40.9,
+              "parcela": "",
+              "categoriaId": "cat-iachsi0ie7",
+              "nota": "Spotify"
+            },
+            {
+              "id": "msxep8wkseoqanx9vkj",
+              "descricao": "CALDO DE CANA VERA",
+              "data": "15/08/26",
+              "valor": 9,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msxepp3ybm130n5oo6j",
+              "descricao": "URENTCAR",
+              "data": "16/08/26",
+              "valor": 7.67,
+              "parcela": "",
+              "categoriaId": "cat-9gx45purug",
+              "nota": "JET"
+            },
+            {
+              "id": "msxeqs9kvop72f7r4z",
+              "descricao": "JK LONDRINA",
+              "data": "16/08/26",
+              "valor": 17,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Muffato"
+            },
+            {
+              "id": "msxerf7wg1sy8l162k5",
+              "descricao": "iFood",
+              "data": "16/08/26",
+              "valor": 36.48,
               "parcela": "",
               "categoriaId": "cat-2metcc4gvh",
               "nota": "iFood"
@@ -11017,6 +11215,15 @@
               "nota": "Vape 30k"
             },
             {
+              "id": "msxdvcmhqx99gkeen1",
+              "descricao": "VIA EXPRESSA SPORTS LT",
+              "data": "11/08/26",
+              "valor": 80,
+              "parcela": "",
+              "categoriaId": "cat-ulhkok9chc",
+              "nota": "Troca de fluído de freio DOT 5.1"
+            },
+            {
               "id": "msp237q3az4zf7fq67o",
               "descricao": "Auto pecas londrina",
               "data": "11/08/26",
@@ -11024,6 +11231,78 @@
               "parcela": "",
               "categoriaId": "cat-ulhkok9chc",
               "nota": "Fluído de freio Bosch DOT 5.1"
+            },
+            {
+              "id": "msxe0d4kc5nrbgq7rof",
+              "descricao": "Paypal *bikepartsco",
+              "data": "13/08/26",
+              "valor": 202.54,
+              "parcela": "",
+              "categoriaId": "cat-ulhkok9chc",
+              "nota": "Specialized HDS SUB, TOP CAP W/ ALLOY BOLT (SPL-134920-BK) + Intl Shipping"
+            },
+            {
+              "id": "msxe0vkmxmyv96myorg",
+              "descricao": "GAMMA.APP",
+              "data": "14/08/26",
+              "valor": 106.37,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "Gamma Paul"
+            },
+            {
+              "id": "msxe1j84juyzkc4t2e",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "15/08/26",
+              "valor": 3.71,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "IOF Gamma"
+            },
+            {
+              "id": "msxe2fp9cuyzk9wqj8b",
+              "descricao": "CALDO DE CANA VERA",
+              "data": "16/08/26",
+              "valor": 9,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Caldo de Cana"
+            },
+            {
+              "id": "msxe34l7gw6ncq9kqd8",
+              "descricao": "IOF COMPRA INTERNACIONA",
+              "data": "16/08/26",
+              "valor": 7.15,
+              "parcela": "",
+              "categoriaId": "cat-1jv9cpaujf",
+              "nota": "IOF Paypal bikeparts"
+            },
+            {
+              "id": "msxe4n5szo54na44p79",
+              "descricao": "LOCALIZA",
+              "data": "07/08/26",
+              "valor": -237.41,
+              "parcela": "",
+              "categoriaId": "cat-lud3o8ruhh",
+              "nota": "Localiza - Estorno p/ Pagamento Duplicado"
+            },
+            {
+              "id": "msxe7njxo2s09jbl39s",
+              "descricao": "LOCALIZA RAC ACBNU20",
+              "data": "17/07/26",
+              "valor": -0.04,
+              "parcela": "",
+              "categoriaId": "cat-lud3o8ruhh",
+              "nota": "Alguma devolução/correção"
+            },
+            {
+              "id": "msxe86n6ln5gnjq50h",
+              "descricao": "CELSO GARCIA",
+              "data": "01/08/26",
+              "valor": 42.79,
+              "parcela": "",
+              "categoriaId": "cat-2metcc4gvh",
+              "nota": "Muffato"
             }
           ],
           "8": [
@@ -12600,6 +12879,18 @@
       {
         "pattern": "Atitude Papelaria",
         "categoriaId": "cat-3jf6zlep3r"
+      },
+      {
+        "pattern": "Paypal *bikepartsco",
+        "categoriaId": "cat-ulhkok9chc"
+      },
+      {
+        "pattern": "Bar e Restaurante",
+        "categoriaId": "cat-2metcc4gvh"
+      },
+      {
+        "pattern": "Bali Alimentos",
+        "categoriaId": "cat-2metcc4gvh"
       }
     ],
     "catGroups": [
@@ -12885,26 +13176,35 @@
     "acMemory": {
       "ac_tx-desc": [
         "URENTCAR",
+        "JK LONDRINA",
         "iFood",
-        "Auto pecas londrina",
-        "59202675Joaopedro",
-        "Uber",
-        "Atitude Papelaria",
         "CALDO DE CANA VERA",
+        "IOF COMPRA INTERNACIONA",
+        "Spotify",
+        "Uber",
+        "SUPERMERCADOS VISCARDI",
+        "Bali Alimentos",
+        "GAMMA.APP",
+        "Bar e Restaurante",
+        "Paypal *bikepartsco",
         "INSANO BURGER-CENTRO",
         "99 Ride",
+        "VIA EXPRESSA SPORTS LT",
+        "Auto pecas londrina",
+        "59202675Joaopedro",
+        "Atitude Papelaria",
         "QUINTINO",
         "Americanas",
         "TUDOOFERTAS.COM",
+        "LOCALIZA",
         "FARMACIA PRECO POPULAR",
         "PANIF NATHALIA",
         "7 COPAS",
         "Trinitron com de equip",
         "BURGER KING",
-        "IOF COMPRA INTERNACIONA",
         "Elevenlabs.io",
         "Adelciocostapenha",
-        "SUPERMERCADOS VISCARDI",
+        "CELSO GARCIA",
         "Compra Mercado Livre",
         "Mayconaparecido",
         "Amazon Prime",
@@ -12915,18 +13215,15 @@
         "45694166francine",
         "Microsoft",
         "Estorno antecipação — LOCALIZA RAC ACBNU01/03",
-        "JK LONDRINA",
         "LOCALIZA RAC ACBNU03/03",
         "LOCALIZA RAC ACBNU02/03",
-        "LOCALIZA",
         "LOCALIZA RAC ACBNU01/03",
         "Dm *mailamericas",
+        "LOCALIZA RAC ACBNU20",
         "Grupo Gennius Bra",
         "Ifood",
         "Autopostomustang",
         "Jmcomercio",
-        "Spotify",
-        "GAMMA.APP",
         "Localizabrrac",
         "AtaideSoaresTrind",
         "Pantanal Auto Pos",
@@ -12955,7 +13252,6 @@
         "LDA",
         "IFD*iFood",
         "GAS SEGURO",
-        "CELSO GARCIA",
         "IFD*CB LONDRINA COMERC",
         "IFD*S P DA SILVA LTDA",
         "S2RJ ACADEMIA DE",
@@ -12987,7 +13283,6 @@
         "Juros de atraso",
         "Compra internacional em CLICKUP",
         "CLAUDE.AI SUBSCRIPTION",
-        "VIA EXPRESSA SPORTS LT",
         "MERCADOLIVRE*MERCADOL",
         "DUQUE BIKES LTDA",
         "CasaPintor",
@@ -13105,7 +13400,6 @@
         "MP *KENKOFOODS",
         "JoseRicardoDos",
         "UBER* TRIP",
-        "LOCALIZA RAC ACBNU20",
         "MENEGATTI CADEADO",
         "JOINVILLE   -CT",
         "QUIMISHOP",
@@ -13192,6 +13486,16 @@
         "Fatura Residual Dezembro"
       ],
       "ac_detalhes": [
+        "Genshin - Gnostic Hymn",
+        "Farmácia (Protetor La Roche Corporal + Facial)",
+        "Reembolso de gancheira Colnago",
+        "Reembolso Gancheira Colnago",
+        "Park Tool TSI-1 + Motul Bike Cleaner",
+        "Farmácia (Sensodyne + Listerine)",
+        "Whey",
+        "IOF Gamma",
+        "IOF Paypal bikeparts",
+        "IOF Paypal",
         "Desengraxante 2Wheels All Clean Maxx 1 Litro",
         "Selante 2Wheels Bike Seal X",
         "Relógio Casio G-Shock GA-110-1B (devolver se fake)",
@@ -13224,12 +13528,10 @@
         "Pagamento serviço YOLO BD 1/2",
         "Egytus Festa",
         "Compra batizado Isabela",
-        "Genshin - Gnostic Hymn",
         "PIX Cinema",
         "Troca do registro e conserto dos vazamentos - Pagamento a ser dividido por três (R$205), $410 a ser descontado na próxima mensalidade.",
         "Bike INN - Gancheira Pilo D602 Colnago Concept",
         "Algum tipo de devolução",
-        "Whey",
         "Tok & Stok",
         "Passagem Crianças",
         "Galaxy A26 Danilo",
@@ -13283,15 +13585,7 @@
         "Disney",
         "IOF",
         "Claude Richard",
-        "Claude Paul",
-        "Gamma Paul",
-        "32GB DDR5",
-        "IOF Claude Paul",
-        "IOF Tokens",
-        "Tokens",
-        "IOF Claude",
-        "Mensalidade Claude",
-        "Compra de capa p/ notebook Acer"
+        "Claude Paul"
       ],
       "ac_pay-desc-card-mp": [
         "Pagamento Total",
@@ -13496,7 +13790,8 @@
         "Yasmin",
         "Empresa Hoteleira Eden LTDA",
         "Pix Danilo Darienco Valenca Coelho",
-        "Pagliarini Bikes"
+        "Pagliarini Bikes",
+        "Reembolao EBANX"
       ],
       "ac_debit-desc-debit-mqishlnu2ci81kqukvu": [
         "BAR DO JAPA",
@@ -13618,7 +13913,12 @@
         "Parafuso caixa direção",
         "Corrente SRAM Red Flattop Rainbow",
         "Relógio Casio G-Shock GA-110-1B (devolver se fake)",
-        "Selante 2Wheels Bike Seal X"
+        "Selante 2Wheels Bike Seal X 1 Litro",
+        "Desengraxante 2Wheels All Clean Maxx 1 Litro",
+        "Farmácia (Sensodyne + Listerine)",
+        "Park Tool TSI-1 + Motul Bike Cleaner",
+        "Reembolso de gancheira Colnago",
+        "Farmácia (Protetor La Roche Corporal + Facial)"
       ],
       "ac_debit-nota-debit-mqishlnu2ci81kqukvu": [
         "Bar do Japa",
@@ -13642,26 +13942,35 @@
     },
     "notaMemory": {
       "URENTCAR": "JET",
+      "JK LONDRINA": "Muffato",
       "iFood": "iFood",
-      "Auto pecas londrina": "Fluído de freio Bosch DOT 5.1",
-      "59202675Joaopedro": "Pastel Mato Grosso",
-      "Uber": "Uber",
-      "Atitude Papelaria": "Impressão de folhas",
       "CALDO DE CANA VERA": "Caldo de Cana",
+      "IOF COMPRA INTERNACIONA": "IOF Paypal bikeparts",
+      "Spotify": "Spotify",
+      "Uber": "Uber",
+      "SUPERMERCADOS VISCARDI": "Viscardi",
+      "Bali Alimentos": "Empório Sumatra",
+      "GAMMA.APP": "Gamma Paul",
+      "Bar e Restaurante": "Empório Sumatra",
+      "Paypal *bikepartsco": "Specialized HDS SUB, TOP CAP W/ ALLOY BOLT (SPL-134920-BK) + Intl Shipping",
       "INSANO BURGER-CENTRO": "Burger Vizinho",
       "99 Ride": "99",
+      "VIA EXPRESSA SPORTS LT": "Troca de fluído de freio DOT 5.1",
+      "Auto pecas londrina": "Fluído de freio Bosch DOT 5.1",
+      "59202675Joaopedro": "Pastel Mato Grosso",
+      "Atitude Papelaria": "Impressão de folhas",
       "QUINTINO": "Muffato",
       "Americanas": "Pilhas Duracell",
       "TUDOOFERTAS.COM": "Vape 30k",
+      "LOCALIZA": "Localiza - Estorno p/ Pagamento Duplicado",
       "FARMACIA PRECO POPULAR": "Shampoo",
       "PANIF NATHALIA": "Picolés",
       "7 COPAS": "Caldo de Cana",
       "Trinitron com de equip": "Conserto LG CX55",
       "BURGER KING": "Burger King",
-      "IOF COMPRA INTERNACIONA": "IOF ElevenLabs",
       "Elevenlabs.io": "ElevenLabs",
       "Adelciocostapenha": "Caldo de Cana",
-      "SUPERMERCADOS VISCARDI": "Viscardi",
+      "CELSO GARCIA": "Muffato",
       "Compra Mercado Livre": "x15 Pilhas CR2032 Philips",
       "Mayconaparecido": "Cachorro Quente",
       "Amazon Prime": "Locação Filme - Soldado Universal",
@@ -13672,18 +13981,15 @@
       "45694166francine": "Aromata - Gifts p/ Sara",
       "Microsoft": "GamePass",
       "Estorno antecipação — LOCALIZA RAC ACBNU01/03": "Antecipação 01/03, 02/03 e 03/03 (apenas R$1,78 - não compensa)",
-      "JK LONDRINA": "Muffato",
       "LOCALIZA RAC ACBNU03/03": "Parcelamento 03/03 (Teste de antecipação - não compensa para esse valor)",
       "LOCALIZA RAC ACBNU02/03": "Parcelamento 02/03 (Teste de antecipação - não compensa para esse valor)",
-      "LOCALIZA": "Localiza",
       "LOCALIZA RAC ACBNU01/03": "Parcelamento 01/03 (Teste de antecipação - não compensa para esse valor)",
       "Dm *mailamericas": "Imposto - Gancheira Colnago",
+      "LOCALIZA RAC ACBNU20": "Alguma devolução/correção",
       "Grupo Gennius Bra": "Habib's - 30 Esfihas de Carne",
       "Ifood": "iFood - Outback Almoço",
       "Autopostomustang": "Abastecimento",
       "Jmcomercio": "Hot Dog Higienópolis",
-      "Spotify": "Spotify",
-      "GAMMA.APP": "Gamma Paul",
       "Localizabrrac": "Localiza",
       "AtaideSoaresTrind": "Tata Lanches",
       "Pantanal Auto Pos": "Lanche no posto",
@@ -13712,7 +14018,6 @@
       "LDA": "McDonald's",
       "IFD*iFood": "iFood",
       "GAS SEGURO": "Troca do registro e conserto dos vazamentos - Pagamento a ser dividido por três (R$205), $410 a ser descontado na próxima mensalidade.",
-      "CELSO GARCIA": "Muffato",
       "IFD*CB LONDRINA COMERC": "iFood",
       "IFD*S P DA SILVA LTDA": "iFood",
       "S2RJ ACADEMIA DE": "SmartFit",
@@ -13744,7 +14049,6 @@
       "Juros de atraso": "Referente ao valor em aberto de R$ 595,66 de 28/05/2026 (Valor original: R$ 597,92)",
       "Compra internacional em CLICKUP": "ClickUp",
       "CLAUDE.AI SUBSCRIPTION": "Mensalidade Claude.ai",
-      "VIA EXPRESSA SPORTS LT": "Colocação espaçador cubo / freehub",
       "MERCADOLIVRE*MERCADOL": "Devolução Compra Paquímetro Manual",
       "DUQUE BIKES LTDA": "Canivete Extrator Corrente",
       "CasaPintor": "Pincel p/ Bike",
@@ -13802,7 +14106,6 @@
       "MP *KENKOFOODS": "Comida japonesa (aparentemente)",
       "JoseRicardoDos": "Aparentemente, alguma refeição na Rua Goiás - seria o Nathalia?",
       "UBER* TRIP": "Uber",
-      "LOCALIZA RAC ACBNU20": "Encerramento locação (pedágio + diária)",
       "MENEGATTI CADEADO": "Abastecimento",
       "JOINVILLE   -CT": "Abastecimento",
       "QUIMISHOP": "Antimofo",
@@ -17456,6 +17759,66 @@
           "categoriaId": "cat-ulhkok9chc",
           "ignorarDashboard": false,
           "estorno": false
+        },
+        {
+          "id": "msxetfhs72aqt26q7j6",
+          "data": "2026-08-13",
+          "descricao": "Pix enviado GROWTH SUPPLEMENTS",
+          "nota": "Whey",
+          "valor": 240.66,
+          "categoriaId": "cat-hlva536gw7",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msxeucew0sjqmx42mpjd",
+          "data": "2026-08-13",
+          "descricao": "Pagamento com QR Pix RAIA DROGASIL SA",
+          "nota": "Farmácia (Sensodyne + Listerine)",
+          "valor": 85.81,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msxewwsbavkt8709rq5",
+          "data": "2026-08-14",
+          "descricao": "Compra Mercado Livre",
+          "nota": "Park Tool TSI-1 + Motul Bike Cleaner",
+          "valor": 262.95,
+          "categoriaId": "cat-ulhkok9chc",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msxf8pos7y6vzdzxhy",
+          "data": "2026-08-14",
+          "descricao": "Reembolao EBANX",
+          "nota": "Reembolso de gancheira Colnago",
+          "valor": 192.48,
+          "categoriaId": "cat-ulhkok9chc",
+          "ignorarDashboard": false,
+          "estorno": true
+        },
+        {
+          "id": "msxfa1ar8fom6438boh",
+          "data": "2026-08-15",
+          "descricao": "Pagamento com QR Pix RAIA DROGASIL SA",
+          "nota": "Farmácia (Protetor La Roche Corporal + Facial)",
+          "valor": 154.9,
+          "categoriaId": "cat-winmzzrenu",
+          "ignorarDashboard": false,
+          "estorno": false
+        },
+        {
+          "id": "msxfao6szd86bgnzvwd",
+          "data": "2026-08-15",
+          "descricao": "Pagamento com QR Pix EBANX Ltda.",
+          "nota": "Genshin - Gnostic Hymn",
+          "valor": 51.65,
+          "categoriaId": "cat-77wa3taxwj",
+          "ignorarDashboard": false,
+          "estorno": false
         }
       ],
       "debit-mqishlnu2ci81kqukvu": [
@@ -17774,7 +18137,7 @@
       "pagamento copa cafe": "cat-2metcc4gvh",
       "pagamento menegatti": "cat-lud3o8ruhh",
       "compra mercado libre": "cat-bo388xg881",
-      "compra mercado livre": "cat-18u0qooj47",
+      "compra mercado livre": "cat-ulhkok9chc",
       "pagamento bar seleto": "cat-2metcc4gvh",
       "pagamento m e soares": "cat-qt8k9krhlw",
       "duque bebidas ltda br": "cat-2metcc4gvh",
@@ -17883,7 +18246,9 @@
       "pagamento com qr pix natura co pay servicos financeiros e tecnologia em": "cat-winmzzrenu",
       "compra de secador ferrari v1 volare 2000w - by roger - não perca mercado livre": "cat-3jf6zlep3r",
       "proparts comercio de artigos esportivos e tecnologia ltda": "cat-ulhkok9chc",
-      "pagliarini bikes": "cat-ulhkok9chc"
+      "pagliarini bikes": "cat-ulhkok9chc",
+      "reembolso ebanx": "cat-ulhkok9chc",
+      "reembolao ebanx": "cat-ulhkok9chc"
     },
     "ignoreKeywords": [
       "PIX RICHARD",
@@ -18838,21 +19203,13 @@
   "dashboard": {
     "hiddenSources": [],
     "hiddenGroups": [
-      "Paul",
       "CWB"
     ],
     "hiddenPayers": [
       "payer-1786465039311-161"
     ],
-    "hiddenCats": [
-      "Curitiba - Contas",
-      "Curitiba - Moradia",
-      "Paul",
-      "Paul Gaming",
-      "UK",
-      "Vape"
-    ],
-    "scope": "year",
+    "hiddenCats": [],
+    "scope": "month",
     "range": null
   },
   "_seedVersion": "v2",

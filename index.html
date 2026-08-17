@@ -1404,7 +1404,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.19</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.20</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1554,7 +1554,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.19 — agenda-v0619</p>
+    <p class="version-tag">Agenda v0.6.20 — agenda-v0620</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -7627,12 +7627,28 @@ function inlineEditDebitTx(cell) {
   }
   var input = document.createElement('input');
   input.type = field==='valor'?'number':'text';
-  input.value = orig;
+  /* 'orig' so era atribuido no ramo de descricao, entao editar o valor abria
+     o campo VAZIO. Aqui o valor atual e' lido de novo e, no caso de entrada,
+     mostrado com sinal negativo — digitar "-" e' o que inverte o tipo. */
+  if (field === 'valor') {
+    var _v = tx.valor || 0;
+    input.value = String(tx.estorno ? -Math.abs(_v) : _v);
+    input.step = 'any';
+    input.title = 'Use sinal negativo para lançar uma entrada (reembolso, estorno, rendimento)';
+  } else {
+    input.value = tx[field] || '';
+  }
   input.style.cssText = 'font-family:DM Mono,monospace;font-size:12px;width:100%;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:2px 4px;box-sizing:border-box';
   cell.innerHTML=''; cell.appendChild(input); input.focus(); input.select();
   function commit() {
     var v=input.value.trim();
-    if (field==='valor') tx.valor=parseFloat(v)||0;
+    if (field==='valor') {
+      var n = parseFloat(v) || 0;
+      // Sinal define o tipo; o campo guarda sempre o modulo, que e' a
+      // convencao que o resto da aba Debito ja usa.
+      tx.estorno = n < 0;
+      tx.valor = Math.abs(n);
+    }
     else tx[field]=v;
     if (field==='descricao' && tx.categoriaId) state.debit.acMemory[v.toLowerCase()]=tx.categoriaId;
     saveState(); renderDebit();
@@ -7819,7 +7835,39 @@ function openAddDebitTxModal(accountId, ym) {
   acLoadMemory();
   var fNota = makeField('Detalhes'); var notaInp=makeInput('dbt-nota','text',''); fNota.appendChild(notaInp);
   acAttach(notaInp, 'debit-nota-'+accountId, null);
+  /* Tipo do lancamento. Sem isto o modal gravava estorno:false fixo e nao
+     havia como registrar reembolso, estorno ou rendimento pela mao — so a
+     importacao conseguia, por palavra-chave na descricao. */
+  var _dbtEntrada = false;
+  var fTipo = makeField('Tipo');
+  var tipoWrap = document.createElement('div');
+  tipoWrap.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content';
+  var tipoHint = document.createElement('div');
+  tipoHint.style.cssText = 'font-size:10px;color:var(--muted);font-family:DM Mono,monospace;margin-top:5px';
+  var btSaida, btEntrada;
+  function paintTipo() {
+    btSaida.style.background   = _dbtEntrada ? 'var(--surface2)' : 'var(--danger,#ef4444)';
+    btSaida.style.color        = _dbtEntrada ? 'var(--muted)' : '#fff';
+    btEntrada.style.background = _dbtEntrada ? '#22c55e' : 'var(--surface2)';
+    btEntrada.style.color      = _dbtEntrada ? '#fff' : 'var(--muted)';
+    tipoHint.textContent = _dbtEntrada
+      ? 'Entrada: reembolso, estorno ou rendimento — abate do total.'
+      : 'Saída: despesa comum.';
+  }
+  [['Saída', false], ['Entrada', true]].forEach(function(pair) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.style.cssText = 'padding:6px 14px;border:none;font-size:11px;font-family:DM Mono,monospace;cursor:pointer';
+    b.textContent = pair[0];
+    b.onclick = function(e){ e.preventDefault(); _dbtEntrada = pair[1]; paintTipo(); };
+    if (pair[1]) btEntrada = b; else btSaida = b;
+    tipoWrap.appendChild(b);
+  });
+  paintTipo();
+  fTipo.appendChild(tipoWrap); fTipo.appendChild(tipoHint);
+
   var fVal = makeField('Valor (R$)'); var valInp=makeInput('dbt-val','number',''); fVal.appendChild(valInp);
+  valInp.step = 'any';
   var fCat = makeField('Categoria'); var catSel=makeInput('dbt-cat','select',null); fCat.appendChild(catSel);
   // buildCatOpts inclui a opcao "Gerenciar categorias"; montar as opcoes a mao
   // aqui era o motivo de nao existir como criar categoria neste modal.
@@ -7851,7 +7899,11 @@ function openAddDebitTxModal(accountId, ym) {
   saveBtn.onclick = function() {
     if (!selectedISO || !descInp.value.trim() || !parseFloat(valInp.value)) return;
     var desc = descInp.value.trim();
-    var tx = { id: uuid(), data: selectedISO, descricao: desc, nota: notaInp.value.trim(), valor: parseFloat(valInp.value)||0, categoriaId: catSel.value, ignorarDashboard: false, estorno: false };
+    var _n = parseFloat(valInp.value) || 0;
+    // Valor negativo digitado tambem marca entrada, para quem preenche na
+    // pressa sem trocar o seletor.
+    var _entrada = _dbtEntrada || _n < 0;
+    var tx = { id: uuid(), data: selectedISO, descricao: desc, nota: notaInp.value.trim(), valor: Math.abs(_n), categoriaId: catSel.value, ignorarDashboard: false, estorno: _entrada };
     if (!state.debit.transactions[accountId]) state.debit.transactions[accountId]=[];
     state.debit.transactions[accountId].push(tx);
     if (catSel.value) state.debit.acMemory[desc.toLowerCase()] = catSel.value;
@@ -7861,7 +7913,7 @@ function openAddDebitTxModal(accountId, ym) {
   btnRow.appendChild(cancelBtn); btnRow.appendChild(saveBtn);
 
   modal.appendChild(fData); modal.appendChild(fDesc); modal.appendChild(fNota);
-  modal.appendChild(fVal); modal.appendChild(fCat); modal.appendChild(btnRow);
+  modal.appendChild(fTipo); modal.appendChild(fVal); modal.appendChild(fCat); modal.appendChild(btnRow);
   overlay.appendChild(modal);
   overlay.onclick = function(e){ if(e.target===overlay){ closeCal(); overlay.remove(); } };
   showModal(overlay);
