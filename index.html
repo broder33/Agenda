@@ -1404,7 +1404,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.15</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.19</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1554,7 +1554,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.15 — agenda-v0615</p>
+    <p class="version-tag">Agenda v0.6.19 — agenda-v0619</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -6770,10 +6770,209 @@ function doImport(cardId, y, m, despesas, payments, overlay, replaceIds) {
 var _dashY = new Date().getFullYear();
 var _dashM = new Date().getMonth();
 var _dashLabel = 'fechamento';
-var _dashAccum = false; // acumulado do ano
+/* Escopo do periodo. Substitui o antigo booleano "acumulado do ano", que
+   por construcao nao conseguia atravessar mais de um ano.
+     'month' = um mes | 'year' = um ano | 'range' = intervalo | 'all' = tudo */
+var _dashScope = 'month';
+var _dashRange = null;   // { fromY, fromM, toY, toM } quando scope === 'range'
+
+/* Menor e maior ano com dado em qualquer fonte. Usado pelo escopo 'all' e
+   como ponto de partida do seletor de intervalo. */
+function dashDataYearSpan() {
+  var min = null, max = null;
+  function mark(y) {
+    y = parseInt(y, 10);
+    if (isNaN(y) || y < 1970 || y > 3000) return;
+    if (min === null || y < min) min = y;
+    if (max === null || y > max) max = y;
+  }
+  Object.keys((state.finance && state.finance.bills) || {}).forEach(mark);
+  var cb = (state.card && state.card.bills) || {};
+  Object.keys(cb).forEach(function(cid){ Object.keys(cb[cid]||{}).forEach(mark); });
+  var tx = (state.debit && state.debit.transactions) || {};
+  Object.keys(tx).forEach(function(aid){
+    (tx[aid]||[]).forEach(function(t){
+      if (t && t.data) { var p = String(t.data).split('-'); if (p.length===3) mark(p[0]); }
+    });
+  });
+  var nowY = new Date().getFullYear();
+  if (min === null) { min = nowY; max = nowY; }
+  if (max < nowY) max = nowY;
+  return { min: min, max: max };
+}
+
+/* Lista de (ano, mes) que compoem o periodo atual. Todo lugar que agrega
+   passa por aqui: assim mes, ano, intervalo e historico usam UM caminho so
+   e nao ha' como um deles divergir dos demais. */
+function dashPeriodMonths() {
+  var out = [];
+  if (_dashScope === 'month') { out.push({ y: _dashY, m: _dashM }); return out; }
+  if (_dashScope === 'year') {
+    for (var m = 0; m <= 11; m++) out.push({ y: _dashY, m: m });
+    return out;
+  }
+  var fy, fm, ty, tm;
+  if (_dashScope === 'all') {
+    var span = dashDataYearSpan();
+    fy = span.min; fm = 0; ty = span.max; tm = 11;
+  } else {
+    var r = _dashRange || {};
+    fy = r.fromY; fm = r.fromM; ty = r.toY; tm = r.toM;
+    if (fy == null || ty == null) { return [{ y: _dashY, m: _dashM }]; }
+    // Intervalo invertido: normaliza em vez de devolver lista vazia
+    if (fy > ty || (fy === ty && fm > tm)) {
+      var _y=fy, _m=fm; fy=ty; fm=tm; ty=_y; tm=_m;
+    }
+  }
+  var y = fy, m = fm, guard = 0;
+  while ((y < ty || (y === ty && m <= tm)) && guard++ < 1200) {
+    out.push({ y: y, m: m });
+    m++; if (m > 11) { m = 0; y++; }
+  }
+  return out;
+}
+
+/* Coleta despesas de todo o periodo atual, com o payFilter dado. */
+function dashCollectExpenses(payFilter) {
+  var out = [];
+  dashPeriodMonths().forEach(function(p) {
+    out = out.concat(getDashboardExpenses(p.y, p.m, _dashLabel, payFilter));
+  });
+  return out;
+}
+
+var MONTHS_ABBR_PT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+/* Rotulo do periodo, usado na tela e no cabecalho dos arquivos exportados. */
+function dashPeriodLabel(longForm) {
+  var MF = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if (_dashScope === 'month') return MF[_dashM] + ' ' + _dashY;
+  if (_dashScope === 'year')  return (longForm ? 'Acumulado ' : '') + _dashY;
+  var pm = dashPeriodMonths();
+  if (!pm.length) return '—';
+  var a = pm[0], b = pm[pm.length-1];
+  var txt = MONTHS_ABBR_PT[a.m] + '/' + String(a.y).slice(-2) + ' — ' + MONTHS_ABBR_PT[b.m] + '/' + String(b.y).slice(-2);
+  if (_dashScope === 'all') return (longForm ? 'Histórico total (' + txt + ')' : 'Histórico total');
+  return txt;
+}
+
+/* Periodo persiste junto dos demais filtros: reabrir o app no mesmo recorte
+   evita ter que remontar um intervalo de 2 anos toda vez. */
+function dashPersistPeriod() {
+  if (!state.dashboard) state.dashboard = {};
+  state.dashboard.scope = _dashScope;
+  state.dashboard.range = _dashRange ? {
+    fromY: _dashRange.fromY, fromM: _dashRange.fromM,
+    toY: _dashRange.toY, toM: _dashRange.toM
+  } : null;
+  saveState();
+}
+function dashHydratePeriod() {
+  var d = state.dashboard || {};
+  if (d.scope === 'month' || d.scope === 'year' || d.scope === 'range' || d.scope === 'all') {
+    _dashScope = d.scope;
+  }
+  var r = d.range;
+  if (r && typeof r.fromY === 'number' && typeof r.toY === 'number') {
+    _dashRange = { fromY: r.fromY, fromM: r.fromM|0, toY: r.toY, toM: r.toM|0 };
+  }
+  // Escopo 'range' sem intervalo valido cairia numa lista vazia
+  if (_dashScope === 'range' && !_dashRange) _dashScope = 'month';
+}
+
+/* Seletor de intervalo: dois pares mes/ano. Abre ancorado no rotulo do
+   periodo, sem virar mais um botao fixo na barra. */
+function closeDashRangePicker() {
+  var el = document.getElementById('dash-range-pop');
+  if (el) el.remove();
+}
+function openDashRangePicker(anchorEl) {
+  closeDashRangePicker();
+  var MF = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var span = dashDataYearSpan();
+  var anos = [];
+  for (var yy = span.min; yy <= span.max; yy++) anos.push(yy);
+  if (!anos.length) anos = [new Date().getFullYear()];
+  if (!_dashRange) _dashRange = { fromY: anos[0], fromM: 0, toY: anos[anos.length-1], toM: 11 };
+  var draft = { fromY:_dashRange.fromY, fromM:_dashRange.fromM, toY:_dashRange.toY, toM:_dashRange.toM };
+
+  var pop = document.createElement('div');
+  pop.id = 'dash-range-pop';
+  var r = anchorEl.getBoundingClientRect();
+  pop.style.cssText = 'position:fixed;top:'+(r.bottom+6)+'px;left:'+Math.max(8, Math.min(r.left-40, window.innerWidth-300))+'px;'
+    + 'background:var(--bg2,#1e1e2e);border:1px solid var(--border);border-radius:8px;padding:12px;z-index:10000;'
+    + 'box-shadow:0 6px 24px rgba(0,0,0,.45);min-width:260px';
+
+  function mkSel(opts, val, onCh, wide) {
+    var sel = document.createElement('select');
+    sel.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);'
+      + 'font-size:11.5px;font-family:DM Mono,monospace;padding:4px 6px;' + (wide ? 'flex:1' : 'width:64px');
+    opts.forEach(function(o){
+      var op = document.createElement('option');
+      op.value = String(o[0]); op.textContent = o[1];
+      if (String(o[0]) === String(val)) op.selected = true;
+      sel.appendChild(op);
+    });
+    sel.onchange = function(){ onCh(parseInt(sel.value,10)); };
+    return sel;
+  }
+  var mesesOpts = MF.map(function(n,i){ return [i, n]; });
+  var anosOpts  = anos.map(function(a){ return [a, String(a)]; });
+
+  function linha(rotulo, getY, getM, setY, setM) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:8px';
+    var lb = document.createElement('span');
+    lb.style.cssText = 'font-size:10px;font-family:DM Mono,monospace;color:var(--muted);width:26px;flex-shrink:0';
+    lb.textContent = rotulo;
+    row.appendChild(lb);
+    row.appendChild(mkSel(mesesOpts, getM(), setM, true));
+    row.appendChild(mkSel(anosOpts, getY(), setY, false));
+    return row;
+  }
+  pop.appendChild(linha('De', function(){return draft.fromY;}, function(){return draft.fromM;},
+    function(v){ draft.fromY=v; }, function(v){ draft.fromM=v; }));
+  pop.appendChild(linha('Até', function(){return draft.toY;}, function(){return draft.toM;},
+    function(v){ draft.toY=v; }, function(v){ draft.toM=v; }));
+
+  var acts = document.createElement('div');
+  acts.style.cssText = 'display:flex;gap:6px;justify-content:flex-end;margin-top:4px';
+  var cancel = document.createElement('button'); cancel.className='btn-sm'; cancel.textContent='Cancelar';
+  cancel.onclick = function(e){ e.stopPropagation(); closeDashRangePicker(); };
+  var ok = document.createElement('button'); ok.className='btn-sm'; ok.textContent='Aplicar';
+  ok.style.borderColor = 'var(--accent)';
+  ok.onclick = function(e){
+    e.stopPropagation();
+    _dashRange = { fromY:draft.fromY, fromM:draft.fromM, toY:draft.toY, toM:draft.toM };
+    _dashScope = 'range';
+    _dashPayFilter = 'all';
+    dashPersistPeriod();
+    closeDashRangePicker();
+    renderDashboard();
+  };
+  acts.appendChild(cancel); acts.appendChild(ok);
+  pop.appendChild(acts);
+  pop.onmousedown = function(e){ e.stopPropagation(); };
+  document.body.appendChild(pop);
+  setTimeout(function(){
+    document.addEventListener('mousedown', function off(ev){
+      if (!pop.contains(ev.target)) { closeDashRangePicker(); document.removeEventListener('mousedown', off); }
+    });
+  }, 0);
+}
+
+function dashPeriodFileBase() {
+  var pm = dashPeriodMonths();
+  if (_dashScope === 'month') return _dashY + '-' + String(_dashM+1).padStart(2,'0');
+  if (_dashScope === 'year')  return String(_dashY);
+  if (!pm.length) return String(_dashY);
+  var a = pm[0], b = pm[pm.length-1];
+  return a.y + String(a.m+1).padStart(2,'0') + '-' + b.y + String(b.m+1).padStart(2,'0');
+}
 var _dashActiveSources = null; // null = all active; Set of source ids when filtered
 var _dashActiveGroups = null; // null = all active; Set of group names when filtered
 var _dashActivePayers = null; // null = all active; Set of payer ids when filtered
+var _dashActiveCats = null;   // null = all active; Set of category names when filtered
 
 /* Filtros do "Exibir" — persistidos em state.dashboard e sincronizados.
    Guardamos apenas os itens OCULTOS: assim um cartao/grupo criado depois
@@ -6783,10 +6982,41 @@ function dashHydrateFilters() {
   _dashHiddenSources = Array.isArray(d.hiddenSources) ? d.hiddenSources.slice() : [];
   _dashHiddenGroups  = Array.isArray(d.hiddenGroups)  ? d.hiddenGroups.slice()  : [];
   _dashHiddenPayers  = Array.isArray(d.hiddenPayers)  ? d.hiddenPayers.slice()  : [];
+  _dashHiddenCats    = Array.isArray(d.hiddenCats)    ? d.hiddenCats.slice()    : [];
 }
 var _dashHiddenSources = [];
 var _dashHiddenGroups = [];
 var _dashHiddenPayers = [];
+var _dashHiddenCats = [];
+
+/* Filtro por categoria, independente do de grupo: uma despesa so aparece se
+   o grupo dela E a categoria dela estiverem ativos. E' o que permite exportar
+   uma unica categoria de dentro de um grupo, sem o ruido das demais. */
+/* Extraida de renderDashboard para poder ser testada: e' aqui que mora a
+   reconciliacao entre o Set em memoria e o que esta salvo. */
+function hydrateDashCats(allCatNames) {
+  if (!_dashActiveCats) {
+    _dashActiveCats = new Set(allCatNames.filter(function(n){ return _dashHiddenCats.indexOf(n) < 0; }));
+    if (!_dashActiveCats.size) _dashActiveCats = new Set(allCatNames);
+    return;
+  }
+  // Categoria que sumiu do periodo nao pode sobreviver no Set
+  Array.from(_dashActiveCats).forEach(function(n){
+    if (allCatNames.indexOf(n) < 0) _dashActiveCats.delete(n);
+  });
+  // Categoria nova no periodo entra ativa, a menos que esteja salva como oculta.
+  // _dashHiddenCats PRECISA estar sincronizado com o que foi salvo, senao esta
+  // linha remarca na hora tudo o que o usuario acabou de desmarcar.
+  allCatNames.forEach(function(n){
+    if (!_dashActiveCats.has(n) && _dashHiddenCats.indexOf(n) < 0) _dashActiveCats.add(n);
+  });
+  if (!_dashActiveCats.size) _dashActiveCats = new Set(allCatNames);
+}
+
+function expInActiveCat(e) {
+  if (!_dashActiveCats) return true;
+  return _dashActiveCats.has(getCatName(e.categoriaId) || 'Sem categoria');
+}
 
 /* Hoisted de dentro de renderDashboard: a exportacao precisa aplicar
    exatamente o mesmo filtro de grupo que a tela, e duplicar a regra faria
@@ -6813,7 +7043,7 @@ function expPayerActive(e) {
   return _dashActivePayers.has(e.payerId || getDefaultPayerId());
 }
 
-function dashPersistFilters(allSourceIds, allGroupNames) {
+function dashPersistFilters(allSourceIds, allGroupNames, allCatNames) {
   if (!state.dashboard) state.dashboard = {};
   state.dashboard.hiddenSources = allSourceIds.filter(function(id){ return !_dashActiveSources.has(id); });
   state.dashboard.hiddenGroups  = allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); });
@@ -6821,6 +7051,16 @@ function dashPersistFilters(allSourceIds, allGroupNames) {
     state.dashboard.hiddenPayers = getPayers().map(function(p){ return p.id; })
       .filter(function(id){ return !_dashActivePayers.has(id); });
   }
+  if (_dashActiveCats && Array.isArray(allCatNames)) {
+    state.dashboard.hiddenCats = allCatNames.filter(function(n){ return !_dashActiveCats.has(n); });
+  }
+  // Os caches em memoria tem que refletir o que acabou de ser salvo. Sem isto
+  // a hidratacao do proximo render le um _dashHidden* velho e desfaz a escolha
+  // do usuario no mesmo instante.
+  _dashHiddenSources = state.dashboard.hiddenSources ? state.dashboard.hiddenSources.slice() : [];
+  _dashHiddenGroups  = state.dashboard.hiddenGroups  ? state.dashboard.hiddenGroups.slice()  : [];
+  if (state.dashboard.hiddenPayers) _dashHiddenPayers = state.dashboard.hiddenPayers.slice();
+  if (state.dashboard.hiddenCats)   _dashHiddenCats   = state.dashboard.hiddenCats.slice();
   saveState();
 }
 var _dashViewMode = 'group'; // 'category' or 'group'
@@ -8240,14 +8480,10 @@ function showDebitImportReview(accountId, txs, overlay, selectedYM) {
    por lancamento, entao a regra nao e' trivial e nao pode ser duplicada. */
 function computeDashPago(allFiltered) {
   var totalPago = 0;
-  if (_dashAccum) {
-    // Accum: soma os pagos direto com payFilter='paid' — mesma base do donut
-    var paidAccum = [];
-    for (var _pmo = 0; _pmo <= 11; _pmo++) {
-      paidAccum = paidAccum.concat(getDashboardExpenses(_dashY, _pmo, _dashLabel, 'paid'));
-    }
-    return Math.round(paidAccum
-      .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); })
+  if (_dashScope !== 'month') {
+    // Multi-mes: soma os pagos direto com payFilter='paid' — mesma base do donut
+    return Math.round(dashCollectExpenses('paid')
+      .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e) && expInActiveCat(e); })
       .reduce(function(s,e){ return s+e.valor; }, 0) * 100) / 100;
   }
   var seenCardSources = {};
@@ -8275,14 +8511,9 @@ function buildDashExportData() {
   var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
   // Mesmo pipeline de renderDashboard, na mesma ordem
-  var allRaw = [];
-  if (_dashAccum) {
-    for (var mo = 0; mo <= 11; mo++) allRaw = allRaw.concat(getDashboardExpenses(_dashY, mo, _dashLabel, 'all'));
-  } else {
-    allRaw = getDashboardExpenses(_dashY, _dashM, _dashLabel, 'all');
-  }
+  var allRaw = dashCollectExpenses('all');
   function passaFiltro(e) {
-    return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e);
+    return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e) && expInActiveCat(e);
   }
   var allFiltered = allRaw.filter(passaFiltro);
 
@@ -8291,13 +8522,7 @@ function buildDashExportData() {
   if (_dashPayFilter === 'all') {
     expenses = allFiltered;
   } else {
-    var fe = [];
-    if (_dashAccum) {
-      for (var _mo = 0; _mo <= 11; _mo++) fe = fe.concat(getDashboardExpenses(_dashY, _mo, _dashLabel, _dashPayFilter));
-    } else {
-      fe = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter);
-    }
-    expenses = fe.filter(passaFiltro);
+    expenses = dashCollectExpenses(_dashPayFilter).filter(passaFiltro);
   }
 
   var totalMes = Math.round(allFiltered.reduce(function(s,e){ return s+e.valor; },0) * 100) / 100;
@@ -8394,18 +8619,30 @@ function buildDashExportData() {
     }
   });
 
+  /* Pagadores e grupos NAO entram no cabecalho: sao dados internos que nao
+     devem aparecer em um arquivo que pode ser compartilhado. O recorte deles
+     continua valendo no conteudo, apenas nao e' anunciado. */
   var hiddenBits = [];
-  var _payers = getPayers();
-  if (_dashActivePayers && _dashActivePayers.size < _payers.length) {
-    hiddenBits.push('Pagadores: ' + _payers.filter(function(pa){ return _dashActivePayers.has(pa.id); })
-      .map(function(pa){ return pa.name; }).join(', '));
-  }
-  if (_dashActiveGroups && groups.length && _dashActiveGroups.size < groups.length) {
-    hiddenBits.push('Grupos: ' + Array.from(_dashActiveGroups).join(', '));
+  // Categorias so entram no carimbo quando ha' recorte de fato: listar todas
+  // seria ruido no cabecalho do arquivo.
+  if (_dashActiveCats) {
+    // Universo SEM o filtro de categoria: allFiltered ja exclui as ocultas,
+    // entao compara-lo consigo mesmo nunca detectaria recorte.
+    var _catsNoPeriodo = {};
+    allRaw.forEach(function(e){
+      if (_dashActiveSources && !_dashActiveSources.has(e.source)) return;
+      if (!expInActiveGroup(e) || !expPayerActive(e)) return;
+      _catsNoPeriodo[getCatName(e.categoriaId) || 'Sem categoria'] = 1;
+    });
+    var _visiveis = Array.from(_dashActiveCats);
+    if (_visiveis.length && _visiveis.length < Object.keys(_catsNoPeriodo).length) {
+      hiddenBits.push('Categorias: ' + _visiveis.join(', '));
+    }
   }
 
   return {
-    periodo: _dashAccum ? ('Acumulado ' + _dashY) : (MONTHS_PT[_dashM] + ' ' + _dashY),
+    periodo: dashPeriodLabel(true),
+    totalLabel: (_dashScope==='month' ? 'Total do mês' : _dashScope==='year' ? 'Total do ano' : 'Total do período'),
     base: _dashLabel === 'fechamento' ? 'Fechamento' : 'Vencimento',
     situacao: _dashPayFilter === 'paid' ? 'Somente pagos' : _dashPayFilter === 'open' ? 'Somente em aberto' : 'Todos',
     filtros: hiddenBits.join(' | '),
@@ -8416,7 +8653,7 @@ function buildDashExportData() {
     totalPago: totalPago,
     totalAberto: totalAberto,
     total: Math.round(expenses.reduce(function(s,e){ return s+e.valor; },0) * 100) / 100,
-    fileBase: 'dashboard-' + (_dashAccum ? _dashY : (_dashY + '-' + String(_dashM+1).padStart(2,'0')))
+    fileBase: 'dashboard-' + dashPeriodFileBase()
   };
 }
 
@@ -8555,7 +8792,7 @@ function exportDashPDF() {
 
     // ── Cards de totais, como na tela ──
     var cardW = (RIGHT - M - 16) / 3, cardH = 44;
-    [['Total do ' + (d.periodo.indexOf('Acumulado') === 0 ? 'ano' : 'mês'), d.totalMes, [40,40,40]],
+    [[d.totalLabel, d.totalMes, [40,40,40]],
      ['Pago', d.totalPago, [34,197,94]],
      ['Em aberto', d.totalAberto, [239,68,68]]].forEach(function(c, ci) {
       var x = M + ci * (cardW + 8);
@@ -8683,7 +8920,7 @@ function exportDashXLSX() {
   ];
   if (d.filtros) sumAoa.push(['Filtros', d.filtros]);
   sumAoa.push([]);
-  sumAoa.push(['Total do período', d.totalMes]);
+  sumAoa.push([d.totalLabel, d.totalMes]);
   sumAoa.push(['Pago', d.totalPago]);
   sumAoa.push(['Em aberto', d.totalAberto]);
   var cardsStart = sumAoa.length - 3;
@@ -8757,40 +8994,91 @@ function renderDashboard() {
 
   // Controls
   controls.innerHTML = '';
+  // Setas so fazem sentido em mes/ano; intervalo e historico nao "navegam".
+  var navegavel = (_dashScope === 'month' || _dashScope === 'year');
   var prevBtn = document.createElement('button'); prevBtn.className='btn-sm'; prevBtn.textContent='‹';
+  prevBtn.style.display = navegavel ? '' : 'none';
   prevBtn.onclick = function(){
-    if (_dashAccum) { _dashY--; } else { _dashM--; if(_dashM<0){_dashM=11;_dashY--;} }
+    if (_dashScope === 'year') { _dashY--; } else { _dashM--; if(_dashM<0){_dashM=11;_dashY--;} }
     _dashPayFilter='all'; renderDashboard();
   };
   var periodLabel = document.createElement('span');
-  periodLabel.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);min-width:130px;text-align:center';
-  periodLabel.textContent = _dashAccum ? String(_dashY) : MONTHS_PT[_dashM]+' '+_dashY;
+  periodLabel.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);min-width:130px;text-align:center'
+    + (_dashScope==='range' ? ';cursor:pointer;text-decoration:underline dotted' : '');
+  periodLabel.textContent = dashPeriodLabel(false);
+  if (_dashScope === 'range') {
+    periodLabel.title = 'Clique para editar o intervalo';
+    periodLabel.onclick = function(e){ e.stopPropagation(); openDashRangePicker(periodLabel); };
+  }
   var nextBtn = document.createElement('button'); nextBtn.className='btn-sm'; nextBtn.textContent='›';
+  nextBtn.style.display = navegavel ? '' : 'none';
   nextBtn.onclick = function(){
-    if (_dashAccum) { _dashY++; } else { _dashM++; if(_dashM>11){_dashM=0;_dashY++;} }
+    if (_dashScope === 'year') { _dashY++; } else { _dashM++; if(_dashM>11){_dashM=0;_dashY++;} }
     _dashPayFilter='all'; renderDashboard();
   };
   var todayBtn = document.createElement('button'); todayBtn.className='btn-sm'; todayBtn.textContent='Hoje';
+  todayBtn.style.display = navegavel ? '' : 'none';
   todayBtn.onclick = function(){ _dashY=now.getFullYear(); _dashM=now.getMonth(); _dashPayFilter='all'; renderDashboard(); };
 
-  // Acumulado toggle
+  /* Seletor de escopo: ocupa o mesmo lugar do antigo toggle "Acumulado do
+     ano", entao nao adiciona controle novo a barra. */
+  var SCOPES = [['month','Mês'],['year','Ano'],['range','Intervalo…'],['all','Histórico total']];
   var accumWrap = document.createElement('div');
-  accumWrap.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 10px';
-  var accumTrack = document.createElement('div');
-  accumTrack.style.cssText = 'width:28px;height:16px;border-radius:8px;position:relative;flex-shrink:0;transition:background .2s;background:'+(_dashAccum?'var(--accent)':'var(--border)');
-  var accumThumb = document.createElement('div');
-  accumThumb.style.cssText = 'position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s;left:'+(_dashAccum?'14px':'2px');
-  accumTrack.appendChild(accumThumb);
-  var accumLabel = document.createElement('span');
-  accumLabel.style.cssText = 'font-size:11px;font-family:DM Mono,monospace;color:'+(_dashAccum?'var(--text)':'var(--muted)');
-  accumLabel.textContent = 'Acumulado do ano';
-  accumWrap.appendChild(accumTrack);
-  accumWrap.appendChild(accumLabel);
-  accumWrap.onclick = function(){ _dashAccum=!_dashAccum; _dashPayFilter='all'; renderDashboard(); };
+  accumWrap.style.cssText = 'position:relative;display:inline-block';
+  var scopeBtn = document.createElement('button');
+  scopeBtn.className = 'btn-sm';
+  var _scopeName = (SCOPES.find(function(x){ return x[0]===_dashScope; })||SCOPES[0])[1].replace('…','');
+  scopeBtn.textContent = _scopeName + ' \u25be';
+  scopeBtn.title = 'Período exibido';
+  if (_dashScope !== 'month') scopeBtn.style.borderColor = 'var(--accent)';
+  var scopeDd = document.createElement('div');
+  scopeDd.style.cssText = 'display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--bg2,#1e1e2e);'
+    + 'border:1px solid var(--border);border-radius:8px;padding:4px 0;z-index:9000;min-width:150px;'
+    + 'box-shadow:0 4px 20px rgba(0,0,0,.35)';
+  SCOPES.forEach(function(sc) {
+    var b = document.createElement('div');
+    var on = sc[0] === _dashScope;
+    b.style.cssText = 'padding:6px 14px;cursor:pointer;font-size:12px;font-family:DM Mono,monospace;user-select:none;color:'
+      + (on ? 'var(--text)' : 'var(--muted)') + (on ? ';background:var(--surface2)' : '');
+    b.onmouseenter = function(){ b.style.background='var(--bg3,var(--border))'; };
+    b.onmouseleave = function(){ b.style.background = on ? 'var(--surface2)' : ''; };
+    b.textContent = (on ? '\u2713 ' : '\u00a0\u00a0 ') + sc[1];
+    b.onclick = function(e) {
+      e.stopPropagation();
+      scopeDd.style.display = 'none';
+      _dashPayFilter = 'all';
+      if (sc[0] === 'range') {
+        if (!_dashRange) {
+          // Comeca no ano corrente inteiro: ponto de partida previsivel
+          _dashRange = { fromY: _dashY, fromM: 0, toY: _dashY, toM: 11 };
+        }
+        _dashScope = 'range';
+        dashPersistPeriod();
+        renderDashboard();
+        var lbl = document.querySelector('#dashboardControls span');
+        if (lbl) openDashRangePicker(lbl);
+        return;
+      }
+      _dashScope = sc[0];
+      dashPersistPeriod();
+      renderDashboard();
+    };
+    scopeDd.appendChild(b);
+  });
+  var _scopeOpen = false;
+  scopeBtn.onclick = function(e){
+    e.stopPropagation();
+    _scopeOpen = !_scopeOpen;
+    scopeDd.style.display = _scopeOpen ? 'block' : 'none';
+  };
+  document.addEventListener('mousedown', function closeScope(e){
+    if (!accumWrap.contains(e.target)) { scopeDd.style.display='none'; _scopeOpen=false; document.removeEventListener('mousedown', closeScope); }
+  });
+  accumWrap.appendChild(scopeBtn); accumWrap.appendChild(scopeDd);
 
   // Label toggle (hidden in accum mode)
   var lt = document.createElement('div');
-  lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-left:0'+(_dashAccum?';opacity:0.3;pointer-events:none':'');
+  lt.style.cssText = 'display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-left:0'+(_dashScope!=='month'?';opacity:0.3;pointer-events:none':'');
   ['fechamento','vencimento'].forEach(function(lbl){
     var b=document.createElement('button');
     b.style.cssText='padding:5px 8px;border:none;font-size:11px;cursor:pointer;background:'+(lbl===_dashLabel?'var(--accent)':'var(--surface2)')+';color:'+(lbl===_dashLabel?'#000':'var(--muted)');
@@ -8815,7 +9103,7 @@ function renderDashboard() {
   debitSources.forEach(function(s){ allSources.push(s); });
   var _allSourceIds = allSources.map(function(s){ return s.id; });
   var _allGroupNames = (state.card.catGroups || []).map(function(g){ return g.name||g.nome; });
-  if (!_dashActiveSources || !_dashActiveGroups) dashHydrateFilters();
+  if (!_dashActiveSources || !_dashActiveGroups) { dashHydrateFilters(); dashHydratePeriod(); }
   if (!_dashActiveSources) {
     _dashActiveSources = new Set(_allSourceIds.filter(function(id){ return _dashHiddenSources.indexOf(id) < 0; }));
     if (!_dashActiveSources.size) _dashActiveSources = new Set(_allSourceIds); // nunca deixa tudo oculto
@@ -8826,6 +9114,20 @@ function renderDashboard() {
     _dashActiveGroups = new Set(_allGroupNames.filter(function(n){ return _dashHiddenGroups.indexOf(n) < 0; }));
     if (!_dashActiveGroups.size) _dashActiveGroups = new Set(_allGroupNames);
   }
+  /* Universo de categorias: as que aparecem no periodo, ignorando o proprio
+     filtro de categoria — assim a lista nao encolhe conforme voce desmarca. */
+  var _allCatNames = [];
+  (function() {
+    var seen = {};
+    var base = dashCollectExpenses('all');
+    base.forEach(function(e) {
+      if (_dashActiveSources && !_dashActiveSources.has(e.source)) return;
+      var n = getCatName(e.categoriaId) || 'Sem categoria';
+      if (!seen[n]) { seen[n] = 1; _allCatNames.push(n); }
+    });
+    _allCatNames.sort(function(a,b){ return a.localeCompare(b, 'pt-BR'); });
+  })();
+  hydrateDashCats(_allCatNames);
   var _allPayers = getPayers();
   var _allPayerIds = _allPayers.map(function(pa){ return pa.id; });
   if (!_dashActivePayers) {
@@ -8845,13 +9147,14 @@ function renderDashboard() {
   var exibirBtn = document.createElement('button');
   var _nHidden = _allSourceIds.filter(function(id){ return !_dashActiveSources.has(id); }).length
                + _allGroupNames.filter(function(n){ return !_dashActiveGroups.has(n); }).length
-               + _allPayerIds.filter(function(id){ return !_dashActivePayers.has(id); }).length;
+               + _allPayerIds.filter(function(id){ return !_dashActivePayers.has(id); }).length
+               + _allCatNames.filter(function(n){ return !_dashActiveCats.has(n); }).length;
   var allActive = (_nHidden === 0);
   exibirBtn.style.cssText = 'font-size:12px;font-family:DM Mono,monospace;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:'+(allActive?'var(--muted)':'var(--text)')+';cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px';
   exibirBtn.innerHTML = 'Exibir' + (!allActive ? ' <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent)"></span>' : '');
 
   var exibirDd = document.createElement('div');
-  exibirDd.style.cssText = 'display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--bg2, #1e1e2e);border:1px solid var(--border);border-radius:8px;padding:8px 0;z-index:9000;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.35)';
+  exibirDd.style.cssText = 'display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--bg2, #1e1e2e);border:1px solid var(--border);border-radius:8px;padding:8px 0;z-index:9000;min-width:200px;max-width:280px;max-height:min(70vh,460px);overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.35)';
 
   // Section label helper
   function makeSecLabel(text) {
@@ -8889,7 +9192,7 @@ function renderDashboard() {
       } else {
         _dashActiveSources.add(s.id);
       }
-      dashPersistFilters(_allSourceIds, _allGroupNames);
+      dashPersistFilters(_allSourceIds, _allGroupNames, _allCatNames);
       renderDashboard();
     };
     return row;
@@ -8928,7 +9231,82 @@ function renderDashboard() {
       } else {
         _dashActiveGroups.add(gname);
       }
-      dashPersistFilters(_allSourceIds, _allGroupNames);
+      dashPersistFilters(_allSourceIds, _allGroupNames, _allCatNames);
+      renderDashboard();
+    };
+    return row;
+  }
+
+  /* Cabecalho da secao com atalho "todas": sem ele, isolar uma categoria
+     exigiria desmarcar todas as outras uma a uma. */
+  function makeCatSecHeader() {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:4px 14px 2px';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase';
+    lbl.textContent = 'Categorias';
+    var todas = document.createElement('span');
+    var allOn = _allCatNames.every(function(n){ return _dashActiveCats.has(n); });
+    todas.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;color:'
+      + (allOn ? 'var(--border)' : 'var(--accent)');
+    todas.textContent = 'todas';
+    if (!allOn) {
+      todas.onclick = function(e) {
+        e.stopPropagation();
+        _dashActiveCats = new Set(_allCatNames);
+        dashPersistFilters(_allSourceIds, _allGroupNames, _allCatNames);
+        renderDashboard();
+      };
+    }
+    wrap.appendChild(lbl); wrap.appendChild(todas);
+    return wrap;
+  }
+
+  function makeCatGroupLabel(name, color) {
+    var d = document.createElement('div');
+    d.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 14px 1px';
+    var bar = document.createElement('span');
+    bar.style.cssText = 'display:inline-block;width:3px;height:9px;border-radius:1px;flex-shrink:0;background:' + (color || 'var(--border)');
+    var t = document.createElement('span');
+    t.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;color:var(--muted);letter-spacing:.5px';
+    t.textContent = name;
+    d.appendChild(bar); d.appendChild(t);
+    return d;
+  }
+
+  function makeCatCheckRow(name) {
+    var isActive = _dashActiveCats.has(name);
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 14px 4px 24px;cursor:pointer;user-select:none';
+    row.onmouseenter = function(){ row.style.background='var(--bg3,var(--border))'; };
+    row.onmouseleave = function(){ row.style.background=''; };
+    var chk = document.createElement('span');
+    chk.style.cssText = 'font-size:12px;flex-shrink:0;color:'+(isActive?'var(--accent)':'var(--border)');
+    chk.textContent = isActive ? '\u2713' : '\u25cb';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'flex:1;font-size:11.5px;font-family:DM Mono,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:'+(isActive?'var(--text)':'var(--muted)');
+    lbl.textContent = name;
+    // "so" isola a categoria em um clique — o caso de uso principal aqui e'
+    // exportar uma unica categoria sem o ruido das demais.
+    var solo = document.createElement('span');
+    solo.style.cssText = 'font-size:9px;font-family:DM Mono,monospace;color:var(--muted);padding:1px 5px;border:1px solid var(--border);border-radius:3px;flex-shrink:0';
+    solo.textContent = 'só';
+    solo.title = 'Exibir somente esta categoria';
+    solo.onclick = function(e) {
+      e.stopPropagation();
+      _dashActiveCats = new Set([name]);
+      dashPersistFilters(_allSourceIds, _allGroupNames, _allCatNames);
+      renderDashboard();
+    };
+    row.appendChild(chk); row.appendChild(lbl); row.appendChild(solo);
+    row.onclick = function(e) {
+      e.stopPropagation();
+      if (_dashActiveCats.has(name)) {
+        if (_dashActiveCats.size > 1) _dashActiveCats.delete(name);
+      } else {
+        _dashActiveCats.add(name);
+      }
+      dashPersistFilters(_allSourceIds, _allGroupNames, _allCatNames);
       renderDashboard();
     };
     return row;
@@ -8957,7 +9335,7 @@ function renderDashboard() {
       } else {
         _dashActivePayers.add(pa.id);
       }
-      dashPersistFilters(_allSourceIds, _allGroupNames);
+      dashPersistFilters(_allSourceIds, _allGroupNames, _allCatNames);
       renderDashboard();
     };
     return row;
@@ -8981,6 +9359,31 @@ function renderDashboard() {
     if (cardSources.length || contasSource) exibirDd.appendChild(makeSep());
     exibirDd.appendChild(makeSecLabel('Grupos'));
     allGroups.forEach(function(g){ exibirDd.appendChild(makeGroupCheckRow(g)); });
+  }
+  if (_allCatNames.length > 1) {
+    exibirDd.appendChild(makeSep());
+    exibirDd.appendChild(makeCatSecHeader());
+    // Agrupadas sob o grupo a que pertencem, espelhando a arvore da tela
+    var catOfGroup = {}, semGrupo = [];
+    _allCatNames.forEach(function(n) {
+      var gname = null;
+      for (var gi = 0; gi < allGroups.length; gi++) {
+        var g = allGroups[gi];
+        if ((g.cats||[]).some(function(c){ return getCatName(c) === n; })) { gname = g.name||g.nome; break; }
+      }
+      if (gname) { (catOfGroup[gname] = catOfGroup[gname] || []).push(n); }
+      else semGrupo.push(n);
+    });
+    allGroups.forEach(function(g) {
+      var gname = g.name || g.nome;
+      if (!catOfGroup[gname]) return;
+      exibirDd.appendChild(makeCatGroupLabel(gname, g.color));
+      catOfGroup[gname].forEach(function(n){ exibirDd.appendChild(makeCatCheckRow(n)); });
+    });
+    if (semGrupo.length) {
+      if (allGroups.length) exibirDd.appendChild(makeCatGroupLabel('Sem grupo', null));
+      semGrupo.forEach(function(n){ exibirDd.appendChild(makeCatCheckRow(n)); });
+    }
   }
   if (_allPayers.length > 1) {
     exibirDd.appendChild(makeSep());
@@ -9041,28 +9444,14 @@ function renderDashboard() {
   sourceBar.style.cssText = 'display:none';
 
   // Get expenses — accum mode sums all months of the year
-  var allExpenses;
-  if (_dashAccum) {
-    allExpenses = [];
-    for (var mo = 0; mo <= 11; mo++) {
-      allExpenses = allExpenses.concat(getDashboardExpenses(_dashY, mo, _dashLabel, 'all'));
-    }
-  } else {
-    allExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, 'all');
-  }
-  var allFiltered = allExpenses.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); });
+  var allExpenses = dashCollectExpenses('all');
+  var allFiltered = allExpenses.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e) && expInActiveCat(e); });
   // expenses for chart/detail uses payFilter; totals always use full set
   var filteredExpenses;
   if (_dashPayFilter==='all') {
     filteredExpenses = allFiltered;
-  } else if (_dashAccum) {
-    var _fe = [];
-    for (var _mo = 0; _mo <= 11; _mo++) {
-      _fe = _fe.concat(getDashboardExpenses(_dashY, _mo, _dashLabel, _dashPayFilter));
-    }
-    filteredExpenses = _fe.filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); });
   } else {
-    filteredExpenses = getDashboardExpenses(_dashY, _dashM, _dashLabel, _dashPayFilter).filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e); });
+    filteredExpenses = dashCollectExpenses(_dashPayFilter).filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e) && expInActiveCat(e); });
   }
   var expenses = filteredExpenses;
 
@@ -9096,7 +9485,7 @@ function renderDashboard() {
 
   var summaryDiv = document.createElement('div');
   summaryDiv.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px';
-  [['Total do '+(_dashAccum?'ano':'mês'),totalMes,'var(--text)','all'],['Pago',totalPago,'#22c55e','paid'],['Em aberto',totalAberto,'var(--danger)','open']].forEach(function(item){
+  [[(_dashScope==='month'?'Total do mês':_dashScope==='year'?'Total do ano':'Total do período'),totalMes,'var(--text)','all'],['Pago',totalPago,'#22c55e','paid'],['Em aberto',totalAberto,'var(--danger)','open']].forEach(function(item){
     var c=document.createElement('div');
     var isActive = _dashPayFilter === item[3];
     c.style.cssText='background:var(--surface2);border-radius:8px;padding:12px 16px;flex:1;min-width:120px;cursor:pointer;transition:all .15s;border:2px solid '+(isActive?item[2]:'transparent');
