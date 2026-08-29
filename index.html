@@ -1404,7 +1404,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.20</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.21</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1554,7 +1554,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.20 — agenda-v0620</p>
+    <p class="version-tag">Agenda v0.6.21 — agenda-v0621</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -8600,7 +8600,8 @@ function buildDashExportData() {
     groups.forEach(function(g){
       var total = 0;
       (g.cats||[]).forEach(function(c){ var n = getCatName(c); total += catMap[n]||0; usedCats.push(n); });
-      if (total > 0) grouped[g.name||g.nome] = { val: total, color: g.color };
+      // Mesma regra da tela: grupo com saldo credor entra; zero fica fora.
+      if (total !== 0) grouped[g.name||g.nome] = { val: total, color: g.color };
     });
     Object.keys(catMap).forEach(function(c){
       if (usedCats.indexOf(c) < 0) grouped[c] = { val: catMap[c], color: null };
@@ -8634,19 +8635,24 @@ function buildDashExportData() {
   }
 
   // Arvore identica a da tela: grupo -> subcategorias -> despesas
+  // Mesmo denominador da tela: soma dos itens positivos exibidos.
+  var displayPositive = displayCats.reduce(function(acc,c){ return c.val > 0 ? acc + c.val : acc; }, 0);
   var tree = displayCats.map(function(cat, i) {
     var isCredit = cat.val < 0;
     var absVal = Math.abs(cat.val);
-    var pct = (absVal / (_dashPayFilter === 'all' ? (Math.abs(totalMes)||1) : (totalPositive||1)) * 100);
+    var pct = (absVal / (displayPositive || 1) * 100);
     var color = isCredit ? '#22c55e' : (cat.color || DASH_COLORS[i % DASH_COLORS.length]);
     var groupDef = useGroups ? groups.find(function(g){ return (g.name||g.nome) === cat.name; }) : null;
     var subs = [];
     if (groupDef && groupDef.cats) {
       groupDef.cats.forEach(function(c){
         var n = getCatName(c);
-        if (catMap[n]) subs.push({ name:n, val:catMap[n], pct: catMap[n]/cat.val*100, rows: expensesOf(n) });
+        if (catMap[n]) subs.push({ name:n, val:catMap[n], pct: 0, rows: expensesOf(n) });
       });
       subs.sort(function(a,b){ return b.val - a.val; });
+      // Mesmo criterio da tela: modulo sobre soma dos modulos.
+      var _subAbs = subs.reduce(function(acc,x){ return acc + Math.abs(x.val); }, 0);
+      subs.forEach(function(x){ x.pct = Math.abs(x.val) / (_subAbs || 1) * 100; });
     }
     return {
       name: cat.name, val: cat.val, absVal: absVal, pct: pct, color: color, isCredit: isCredit,
@@ -8906,8 +8912,9 @@ function exportDashPDF() {
           if (r.detalhe) txt(trunc(r.detalhe, wDet, 7.3), xDet, y + 7, { align: 'right' });
           if (r.fonte)   txt(trunc(r.fonte, wFonte, 7.3), xFonte, y + 7, { align: 'right' });
           if (showPayer && r.pagador) txt(trunc(r.pagador, wPagad, 7.3), xPagad, y + 7, { align: 'right' });
-          doc.setFontSize(8.2); doc.setTextColor(70);
-          txt(fmtExpBRL(r.valor), xVal, y + 7, { align: 'right' });
+          doc.setFontSize(8.2);
+          if (r.valor < 0) doc.setTextColor(34,197,94); else doc.setTextColor(70);
+          txt((r.valor < 0 ? '+ ' : '') + fmtExpBRL(Math.abs(r.valor)), xVal, y + 7, { align: 'right' });
           y += 13;
         });
         y += 3;
@@ -8924,8 +8931,9 @@ function exportDashPDF() {
           txt(trunc(sc.name, RIGHT - M - 230, 9.5), M + 30, y + 12);
           doc.setFontSize(8); doc.setTextColor(150);
           txt(sc.pct.toFixed(1) + '%', RIGHT - 118, y + 12, { align: 'right' });
-          doc.setFontSize(9.5); doc.setTextColor(70);
-          txt(fmtExpBRL(sc.val), RIGHT - 8, y + 12, { align: 'right' });
+          doc.setFontSize(9.5);
+          if (sc.val < 0) doc.setTextColor(34,197,94); else doc.setTextColor(70);
+          txt((sc.val < 0 ? '+ ' : '') + fmtExpBRL(Math.abs(sc.val)), RIGHT - 8, y + 12, { align: 'right' });
           y += 17;
           drawRows(sc.rows, 30);
         });
@@ -9564,7 +9572,10 @@ function renderDashboard() {
     groups.forEach(function(g){
       var total=0;
       (g.cats||[]).forEach(function(c){var n=getCatName(c);total+=catMap[n]||0; usedCats.push(n);});
-      if(total>0) grouped[g.name||g.nome]={val:total,color:g.color};
+      // !== 0 e nao > 0: um grupo cujas entradas superam as despesas tem
+      // saldo liquido credor e precisa aparecer, em verde, como ja acontece
+      // com categorias avulsas. Zero continua fora por nao ter o que mostrar.
+      if(total!==0) grouped[g.name||g.nome]={val:total,color:g.color};
     });
     Object.keys(catMap).forEach(function(c){
       if(!usedCats.includes(c)) grouped[c]={val:catMap[c],color:null}; // c is already a name here
@@ -9573,12 +9584,18 @@ function renderDashboard() {
     displayCats.sort(function(a,b){return b.val-a.val;});
   }
 
+  /* Denominador dos percentuais: soma dos itens POSITIVOS efetivamente
+     exibidos. Usar o total liquido fazia os percentuais estourarem 100%
+     quando havia creditos, porque o liquido encolhe mas as despesas nao.
+     Sem creditos este valor e' identico ao total, entao nada muda. */
+  var displayPositive = displayCats.reduce(function(acc,c){ return c.val > 0 ? acc + c.val : acc; }, 0);
+
   // Donut SVG
   var cx=110,cy=110,r=85,ri=55,circumference=2*Math.PI*r;
   var svgSlices=''; var cumPct=0;
   displayCats.forEach(function(cat,i){
     if (cat.val <= 0) return;
-    var pct=cat.val/(totalPositive||1);
+    var pct=cat.val/(displayPositive||1);
     var color=cat.color||DASH_COLORS[i%DASH_COLORS.length];
     var dashLen=pct*circumference; var gapLen=circumference-dashLen;
     var rotation=cumPct*360-90;
@@ -9596,7 +9613,7 @@ function renderDashboard() {
   displayCats.forEach(function(cat,i){
     var isCredit = cat.val < 0;
     var absVal = Math.abs(cat.val);
-    var pct=(absVal/(_dashPayFilter==='all'?Math.abs(totalMes):totalPositive||1)*100).toFixed(1);
+    var pct=(absVal/(displayPositive||1)*100).toFixed(1);
     var color= isCredit ? '#22c55e' : (cat.color||DASH_COLORS[i%DASH_COLORS.length]);
     var groupDef=_dashViewMode==='group'?(state.card.catGroups||[]).find(function(g){return ((g.name||g.nome)===cat.name);}):null;
     var subCats=[];
@@ -9604,6 +9621,8 @@ function renderDashboard() {
       groupDef.cats.forEach(function(c){var n=getCatName(c);if(catMap[n])subCats.push({name:n,val:catMap[n]});});
       subCats.sort(function(a,b){return b.val-a.val;});
     }
+    // Denominador dos percentuais das subcategorias (ver uso abaixo).
+    var subAbsTotal = subCats.reduce(function(acc,x){ return acc + Math.abs(x.val); }, 0);
     var isExpandable=subCats.length>0;
 
     var row=document.createElement('div');
@@ -9625,14 +9644,22 @@ function renderDashboard() {
     if(isExpandable){
       // Sub-categories
       subCats.forEach(function(sc){
-        var scPct=(sc.val/cat.val*100).toFixed(1);
+        /* Modulo sobre soma dos modulos: num grupo so de despesas isso e'
+           igual ao total do grupo (nada muda), e num grupo misto os
+           percentuais voltam a fechar 100% em vez de ficarem negativos. */
+        var scPct=(Math.abs(sc.val)/(subAbsTotal||1)*100).toFixed(1);
         var scRow=document.createElement('div'); scRow.style.cssText='display:flex;align-items:center;gap:10px;padding:6px 12px;cursor:pointer';
         scRow.onmouseover=function(){this.style.background='rgba(255,255,255,0.05)';};
         scRow.onmouseout=function(){this.style.background='';};
         var scBar=document.createElement('div'); scBar.style.cssText='width:3px;height:14px;border-radius:2px;background:'+color+';flex-shrink:0;opacity:.6';
         var scName=document.createElement('span'); scName.style.cssText='flex:1;font-size:12px;color:var(--text)'; scName.textContent=sc.name;
         var scPctEl=document.createElement('span'); scPctEl.style.cssText='font-size:11px;color:var(--muted);font-family:DM Mono,monospace'; scPctEl.textContent=scPct+'%';
-        var scVal=document.createElement('span'); scVal.style.cssText='font-size:12px;font-family:DM Mono,monospace;color:var(--muted);min-width:100px;text-align:right'; scVal.textContent=fmtBRL(sc.val);
+        // Mesma convencao da linha do grupo: credito em verde com "+", em vez
+        // de "R$ -900,00" cru, que destoaria do pai logo acima.
+        var scCredit = sc.val < 0;
+        var scVal=document.createElement('span');
+        scVal.style.cssText='font-size:12px;font-family:DM Mono,monospace;min-width:100px;text-align:right;color:'+(scCredit?'#22c55e':'var(--muted)');
+        scVal.textContent=(scCredit?'+ ':'')+fmtBRL(Math.abs(sc.val));
         var scChev=document.createElement('span'); scChev.style.cssText='font-size:9px;color:var(--muted);transition:transform .2s'; scChev.textContent='▶';
         scRow.appendChild(scBar); scRow.appendChild(scName); scRow.appendChild(scPctEl); scRow.appendChild(scVal); scRow.appendChild(scChev);
         var scExpDiv=buildDashExpenseList(expenses, sc.name, color);
@@ -9649,7 +9676,10 @@ function renderDashboard() {
         var descEl=document.createElement('span'); descEl.style.cssText='flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; descEl.textContent=e.descricao+(e.parcela?' ('+e.parcela+')':''); descEl.title=e.descricao;
         var notaEl=document.createElement('span'); notaEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'; notaEl.textContent=e.nota||''; notaEl.title=e.nota||'';
         var srcEl=document.createElement('span'); srcEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0'; srcEl.textContent=e.sourceLabel;
-        var valEl2=document.createElement('span'); valEl2.style.cssText='font-size:11px;font-family:DM Mono,monospace;color:var(--muted);width:80px;text-align:right;flex-shrink:0'; valEl2.textContent=fmtBRL(e.valor);
+        var eCredit = e.valor < 0;
+        var valEl2=document.createElement('span');
+        valEl2.style.cssText='font-size:11px;font-family:DM Mono,monospace;width:80px;text-align:right;flex-shrink:0;color:'+(eCredit?'#22c55e':'var(--muted)');
+        valEl2.textContent=(eCredit?'+ ':'')+fmtBRL(Math.abs(e.valor));
         eRow.appendChild(dateEl); eRow.appendChild(descEl); eRow.appendChild(notaEl); eRow.appendChild(srcEl); eRow.appendChild(valEl2);
         expDiv.appendChild(eRow);
       });
