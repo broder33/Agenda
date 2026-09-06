@@ -1404,7 +1404,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.22</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.23</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1554,7 +1554,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.22 — agenda-v0622</p>
+    <p class="version-tag">Agenda v0.6.23 — agenda-v0623</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -6973,6 +6973,12 @@ var _dashActiveSources = null; // null = all active; Set of source ids when filt
 var _dashActiveGroups = null; // null = all active; Set of group names when filtered
 var _dashActivePayers = null; // null = all active; Set of payer ids when filtered
 var _dashActiveCats = null;   // null = all active; Set of category names when filtered
+/* Guardam o handler de "clique fora" dos dropdowns do Dashboard. Sem isso,
+   cada renderDashboard pendurava um listener novo em document e so o removia
+   se um mousedown ocorresse fora — em sessao longa de PWA eles acumulavam. */
+var _dashScopeOutside = null;
+var _dashExpOutside = null;
+var _dashExibirOutside = null;
 
 /* Filtros do "Exibir" — persistidos em state.dashboard e sincronizados.
    Guardamos apenas os itens OCULTOS: assim um cartao/grupo criado depois
@@ -9262,9 +9268,11 @@ function renderDashboard() {
     _scopeOpen = !_scopeOpen;
     scopeDd.style.display = _scopeOpen ? 'block' : 'none';
   };
-  document.addEventListener('mousedown', function closeScope(e){
-    if (!accumWrap.contains(e.target)) { scopeDd.style.display='none'; _scopeOpen=false; document.removeEventListener('mousedown', closeScope); }
-  });
+  if (_dashScopeOutside) document.removeEventListener('mousedown', _dashScopeOutside);
+  _dashScopeOutside = function(e){
+    if (!accumWrap.contains(e.target)) { scopeDd.style.display='none'; _scopeOpen=false; }
+  };
+  document.addEventListener('mousedown', _dashScopeOutside);
   accumWrap.appendChild(scopeBtn); accumWrap.appendChild(scopeDd);
 
   // Label toggle (hidden in accum mode)
@@ -9588,13 +9596,16 @@ function renderDashboard() {
     _exibirOpen = !_exibirOpen;
     exibirDd.style.display = _exibirOpen ? 'block' : 'none';
   };
-  document.addEventListener('mousedown', function closeExibir(e) {
+  // Mesmo tratamento dos demais dropdowns do Dashboard: substitui o handler
+  // anterior em vez de empilhar um novo a cada render.
+  if (_dashExibirOutside) document.removeEventListener('mousedown', _dashExibirOutside);
+  _dashExibirOutside = function(e) {
     if (!exibirWrap.contains(e.target)) {
       exibirDd.style.display = 'none';
       _exibirOpen = false;
-      document.removeEventListener('mousedown', closeExibir);
     }
-  });
+  };
+  document.addEventListener('mousedown', _dashExibirOutside);
 
   exibirWrap.appendChild(exibirBtn);
   exibirWrap.appendChild(exibirDd);
@@ -9626,9 +9637,11 @@ function renderDashboard() {
     // clique em "PDF" costuma achar tudo pronto e baixar dentro do gesto.
     if (_expOpen) loadJsPDF().catch(function(){});
   };
-  document.addEventListener('mousedown', function closeExp(e) {
-    if (!expWrap.contains(e.target)) { expDd.style.display='none'; _expOpen=false; document.removeEventListener('mousedown', closeExp); }
-  });
+  if (_dashExpOutside) document.removeEventListener('mousedown', _dashExpOutside);
+  _dashExpOutside = function(e) {
+    if (!expWrap.contains(e.target)) { expDd.style.display='none'; _expOpen=false; }
+  };
+  document.addEventListener('mousedown', _dashExpOutside);
   expWrap.appendChild(expBtn); expWrap.appendChild(expDd);
 
   var sourceBar = document.createElement('div');
@@ -14625,7 +14638,7 @@ function openStatusPicker(e, list, sec, item, tbody) {
   });
 
   document.body.appendChild(dd);
-  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h);} }, {capture:true}); }, 0);
+  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h,{capture:true});} }, {capture:true}); }, 0);
 }
 
 /* ─── Section drag & drop ─── */
@@ -15589,7 +15602,7 @@ function openListMenu(e, list) {
     });
   }, true);
   document.body.appendChild(dd);
-  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h);} },{capture:true}); }, 0);
+  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h,{capture:true});} },{capture:true}); }, 0);
 }
 
 function openRenameListModal(list) {
@@ -15630,7 +15643,7 @@ function openSectionMenu(e, list, sec, secIdx, sectionsWrap) {
     });
   }, true);
   document.body.appendChild(dd);
-  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h);} },{capture:true}); }, 0);
+  setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!dd.contains(ev.target)){dd.remove(); document.removeEventListener('mousedown',h,{capture:true});} },{capture:true}); }, 0);
 }
 
 /* ─── Status config modal ─── */
