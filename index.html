@@ -1404,7 +1404,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.21</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.22</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1554,7 +1554,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.21 — agenda-v0621</p>
+    <p class="version-tag">Agenda v0.6.22 — agenda-v0622</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -7454,7 +7454,7 @@ function buildDebitTxTable(accountId, ym, txs) {
     var nota = tx.nota||'';
     var rowStyle = tx.ignorarDashboard ? 'opacity:.5' : '';
     var catSelStyle = !tx.categoriaId ? 'background:rgba(239,68,68,.15)' : '';
-    return '<tr draggable="'+(isDrag?'true':'false')+'" data-txid="'+tx.id+'" data-date="'+(tx.data||'')+'" style="'+rowStyle+'">'+(isDrag?'<td style="width:24px;cursor:grab;color:var(--muted);font-size:14px;text-align:center;user-select:none">⠿</td>':'')+'<td style="color:var(--text2);font-size:12px;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="data">'+(tx.data?tx.data.slice(8,10)+'/'+tx.data.slice(5,7)+'/'+tx.data.slice(2,4):'—')+'</td>'+'<td style="cursor:pointer" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="descricao">'+escHtml(tx.descricao||'')+'</td>'+'<td style="text-align:right;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer;'+valColor+'" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="valor">'+valFmt+'</td>'+'<td onclick="editDebitTxNota(this,\''+accountId+'\',\''+ym+'\',\''+tx.id+'\')" style="cursor:pointer;min-width:100px;max-width:200px;vertical-align:top">'+(nota?'<span style="font-size:11px;color:var(--text2);white-space:pre-wrap">'+escHtml(nota)+'</span>':'<span style="font-size:11px;color:var(--border)">+ detalhe</span>')+'</td>'+'<td><select class="cat-select" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" onchange="debitTxCatChange(this);this.style.background=this.value?\'\':\' rgba(239,68,68,.15)\'" style="'+catSelStyle+'">'+opts+'</select></td>'+'<td><button class="btn-sm del" onclick="removeDebitTx(\''+accountId+'\',\''+tx.id+'\')" style="font-size:10px;padding:1px 5px">✕</button></td>'+'</tr>';
+    return '<tr draggable="'+(isDrag?'true':'false')+'" data-txid="'+tx.id+'" data-date="'+(tx.data||'')+'" style="'+rowStyle+'">'+(isDrag?'<td style="width:24px;cursor:grab;color:var(--muted);font-size:14px;text-align:center;user-select:none">⠿</td>':'')+'<td style="color:var(--text2);font-size:12px;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="data">'+(tx.data?tx.data.slice(8,10)+'/'+tx.data.slice(5,7)+'/'+tx.data.slice(2,4):'—')+'</td>'+'<td style="cursor:pointer" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="descricao">'+escHtml(tx.descricao||'')+'</td>'+'<td style="text-align:right;font-family:DM Mono,monospace;white-space:nowrap;cursor:pointer;'+valColor+'" onclick="inlineEditDebitTx(this)" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" data-field="valor">'+valFmt+'</td>'+'<td onclick="editDebitTxNota(this,\''+accountId+'\',\''+ym+'\',\''+tx.id+'\')" style="cursor:pointer;min-width:100px;max-width:200px;vertical-align:top">'+(nota?'<span style="font-size:11px;color:var(--text2);white-space:pre-wrap">'+escHtml(nota)+'</span>':'<span style="font-size:11px;color:var(--border)">+ detalhe</span>')+'</td>'+'<td><select class="cat-select" data-acid="'+accountId+'" data-ym="'+ym+'" data-txid="'+tx.id+'" onchange="debitTxCatChange(this);this.style.background=this.value?\'\':\' rgba(239,68,68,.15)\'" style="'+catSelStyle+'">'+opts+'</select></td>'+'<td style="white-space:nowrap"><button class="btn-sm" onclick="openMoveDebitTxModal(\''+accountId+'\',\''+tx.id+'\')" style="font-size:10px;padding:1px 5px;margin-right:3px" title="Mover para outro mês">↗</button><button class="btn-sm del" onclick="removeDebitTx(\''+accountId+'\',\''+tx.id+'\')" style="font-size:10px;padding:1px 5px">✕</button></td>'+'</tr>';
   }).join('');
 
   var total = txs.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
@@ -7472,6 +7472,137 @@ function debitTxCatChange(sel) {
   tx.categoriaId = sel.value;
   if (tx.descricao && tx.categoriaId) state.debit.acMemory[tx.descricao.trim().toLowerCase()] = tx.categoriaId;
   saveState();
+}
+
+/* ═══ MOVER TRANSACAO DE DEBITO PARA OUTRO MES ═══
+   O Cartao guarda faturas em baldes bills[cartao][ano][mes], entao mover e'
+   tirar de um balde e por em outro. No Debito as transacoes sao uma lista
+   plana e o mes e' DERIVADO de tx.data, entao mover = trocar o ano-mes da
+   data. O dia e' preservado, limitado ao ultimo dia do mes destino — sem
+   isso, mover um lancamento de 31/01 para fevereiro geraria data invalida. */
+function debitMoveISO(iso, destY, destM) {
+  var p = String(iso || '').split('-');
+  var dia = p.length === 3 ? parseInt(p[2], 10) : 1;
+  if (isNaN(dia) || dia < 1) dia = 1;
+  var ultimo = new Date(destY, destM + 1, 0).getDate();
+  if (dia > ultimo) dia = ultimo;
+  return destY + '-' + String(destM + 1).padStart(2, '0') + '-' + String(dia).padStart(2, '0');
+}
+
+function openMoveDebitTxModal(accountId, txId) {
+  var txs = state.debit.transactions[accountId] || [];
+  var tx = txs.find(function(t){ return t.id === txId; });
+  if (!tx) return;
+  var origYM = tx.data ? tx.data.slice(0,7) : '';
+  var MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // Meses que ja existem nesta conta, menos o atual
+  var meses = getDebitMonths(accountId).filter(function(ym){ return ym !== origYM; })
+    .map(function(ym){ var p = ym.split('-'); return { y: parseInt(p[0],10), m: parseInt(p[1],10)-1 }; })
+    .sort(function(a,b){ return (a.y*12+a.m)-(b.y*12+b.m); });
+
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'move-dbt-modal';
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) overlay.remove(); });
+
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.style.maxWidth = '360px';
+
+  var title = document.createElement('div');
+  title.className = 'modal-header';
+  title.innerHTML = '<span>Mover Transação</span><button class="modal-close" onclick="document.getElementById(&quot;move-dbt-modal&quot;).remove()">&#215;</button>';
+
+  var body = document.createElement('div');
+  body.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:16px;';
+
+  var desc = document.createElement('div');
+  desc.style.cssText = 'font-size:12px;color:var(--muted);';
+  var dataFmt = tx.data && tx.data.length === 10
+    ? tx.data.slice(8,10)+'/'+tx.data.slice(5,7)+'/'+tx.data.slice(2,4) : '—';
+  desc.textContent = '"' + (tx.descricao||'') + '" — ' + dataFmt;
+  body.appendChild(desc);
+
+  var field = document.createElement('div'); field.className = 'modal-field';
+  var lbl = document.createElement('label'); lbl.className = 'modal-label'; lbl.textContent = 'Mover para o mês de';
+  var sel = document.createElement('select'); sel.className = 'modal-input';
+  meses.forEach(function(mo) {
+    var opt = document.createElement('option');
+    opt.value = mo.y + '_' + mo.m;
+    opt.textContent = MONTHS[mo.m] + '/' + mo.y;
+    sel.appendChild(opt);
+  });
+  var newOpt = document.createElement('option');
+  newOpt.value = 'new'; newOpt.textContent = '+ Outro mês...';
+  sel.appendChild(newOpt);
+  field.appendChild(lbl); field.appendChild(sel);
+  body.appendChild(field);
+
+  var newRow = document.createElement('div');
+  newRow.style.cssText = 'display:none;gap:10px;';
+  var selM = document.createElement('select'); selM.className = 'modal-input';
+  var selY = document.createElement('select'); selY.className = 'modal-input';
+  var origY = origYM ? parseInt(origYM.slice(0,4),10) : new Date().getFullYear();
+  var origM = origYM ? parseInt(origYM.slice(5,7),10)-1 : new Date().getMonth();
+  MONTHS.forEach(function(mn, idx) {
+    var o = document.createElement('option'); o.value = idx; o.textContent = mn;
+    if (idx === (origM+1)%12) o.selected = true;
+    selM.appendChild(o);
+  });
+  for (var yr = origY-2; yr <= origY+2; yr++) {
+    var o2 = document.createElement('option'); o2.value = yr; o2.textContent = yr;
+    if (yr === origY) o2.selected = true;
+    selY.appendChild(o2);
+  }
+  newRow.appendChild(selM); newRow.appendChild(selY);
+  body.appendChild(newRow);
+
+  // Aviso quando o dia nao existe no mes destino
+  var aviso = document.createElement('div');
+  aviso.style.cssText = 'font-size:11px;color:var(--muted);min-height:14px';
+  function destino() {
+    if (sel.value === 'new') return { y: parseInt(selY.value,10), m: parseInt(selM.value,10) };
+    var p = sel.value.split('_');
+    return { y: parseInt(p[0],10), m: parseInt(p[1],10) };
+  }
+  function atualizaAviso() {
+    var d = destino();
+    if (isNaN(d.y) || isNaN(d.m)) { aviso.textContent = ''; return; }
+    var novo = debitMoveISO(tx.data, d.y, d.m);
+    var diaOrig = tx.data ? parseInt(tx.data.slice(8,10),10) : 1;
+    var diaNovo = parseInt(novo.slice(8,10),10);
+    aviso.textContent = diaNovo !== diaOrig
+      ? 'O dia ' + diaOrig + ' não existe nesse mês; será usado ' + novo.slice(8,10) + '/' + novo.slice(5,7) + '.'
+      : 'Nova data: ' + novo.slice(8,10) + '/' + novo.slice(5,7) + '/' + novo.slice(2,4);
+  }
+  sel.onchange = function() {
+    newRow.style.display = sel.value === 'new' ? 'flex' : 'none';
+    atualizaAviso();
+  };
+  selM.onchange = atualizaAviso; selY.onchange = atualizaAviso;
+  if (!meses.length) { sel.value = 'new'; newRow.style.display = 'flex'; }
+  atualizaAviso();
+  body.appendChild(aviso);
+
+  var footer = document.createElement('div'); footer.className = 'modal-footer';
+  var cancelBtn = document.createElement('button'); cancelBtn.className = 'btn-sm'; cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button'); saveBtn.className = 'btn-sm accent'; saveBtn.textContent = 'Mover';
+  saveBtn.onclick = function() {
+    var d = destino();
+    if (isNaN(d.y) || isNaN(d.m)) { overlay.remove(); return; }
+    var novo = debitMoveISO(tx.data, d.y, d.m);
+    if (novo === tx.data) { overlay.remove(); return; }
+    pushUndo();
+    tx.data = novo;
+    saveState(); overlay.remove(); renderDebit();
+  };
+  footer.appendChild(cancelBtn); footer.appendChild(saveBtn);
+
+  box.appendChild(title); box.appendChild(body); box.appendChild(footer);
+  overlay.appendChild(box);
+  showModal(overlay);
 }
 
 function removeDebitTx(accountId, txid) {
