@@ -1126,11 +1126,37 @@ tr.dragging { opacity: 0.4; }
 /* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   LISTAS — grade das linhas
+══════════════════════════════════════ */
+.list-grid-row { grid-template-columns: 20px minmax(0,1fr) 140px 90px 28px; }
+
+/* Em telas sem hover (toque), os controles que so apareciam no :hover ficavam
+   permanentemente invisiveis — ou seja, inalcancaveis. */
+@media (hover: none) {
+  .list-hover-btn { opacity: .5 !important; }
+}
+
+@media (max-width: 600px) {
+  /* 411px de largura nao comportam 278px de colunas fixas. Sai a coluna de
+     data (informacao secundaria) e o status passa a caber no conteudo. */
+  .list-grid-row {
+    grid-template-columns: 18px minmax(0,1fr) auto 22px !important;
+    gap: 6px !important;
+    padding-left: 10px !important; padding-right: 10px !important;
+  }
+  .list-cell-updated { display: none !important; }
+  .list-name-txt { font-size: 12.5px; }
+  .list-status-tag { font-size: 9.5px !important; padding: 2px 7px !important; }
+  /* Abas: 7 itens nao cabem em 411px; reduz para diminuir o scroll lateral */
+  .tabs { gap: 0 !important; }
+}
+
 @media (max-width: 600px) {
   .tab-panel { padding: 14px; }
   header { padding: 10px 14px; }
   .tabs { padding: 0 14px; top: 52px; }
-  .tab { font-size: 15px; padding: 9px 14px; }
+  .tab { font-size: 14px; padding: 9px 9px; letter-spacing: 1px; }
   .logo { font-size: 24px; }
   .auth-info .auth-name { display: none; }
   .modal-box { padding: 18px; }
@@ -1404,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.23</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.24</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1554,7 +1580,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.23 — agenda-v0623</p>
+    <p class="version-tag">Agenda v0.6.24 — agenda-v0624</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -14258,11 +14284,15 @@ function buildSectionBlock(list, sec, secIdx, sectionsWrap) {
 
   // Header row
   var thead = document.createElement('div');
-  thead.style.cssText = 'display:grid;grid-template-columns:20px 1fr 140px 90px 28px;background:var(--surface2);border-bottom:1px solid var(--border);padding:6px 12px;gap:8px;';
+  thead.className = 'list-grid-row';
+  thead.style.cssText = 'display:grid;background:var(--surface2);border-bottom:1px solid var(--border);padding:6px 12px;gap:8px;';
 
   function mkTh(label, col, align) {
     var th = document.createElement('div');
-    th.style.cssText = 'font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;user-select:none;' + (col?'cursor:pointer;':'') + (align?'text-align:'+align+';':'');
+    // nowrap + overflow: sem isso "NOME" e "STATUS" quebram em duas linhas
+    // quando a coluna estreita no celular.
+    th.style.cssText = 'font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;user-select:none;white-space:nowrap;overflow:hidden;min-width:0;' + (col?'cursor:pointer;':'') + (align?'text-align:'+align+';':'');
+    if (col === 'updated') th.className = 'list-cell-updated';
     th.dataset.col = col||'';
     th.dataset.label = label;
     var initBadge = col ? sortBadge(col) : '';
@@ -14377,7 +14407,8 @@ function buildItemRow(list, sec, item, tbody, onSelChange, parent) {
   var row = document.createElement('div');
   row.dataset.itemId = item.id;
   if (isChild) row.dataset.child = '1';
-  row.style.cssText = 'display:grid;grid-template-columns:20px 1fr 140px 90px 28px;align-items:center;padding:8px 12px;gap:8px;border-bottom:1px solid var(--border);cursor:' + (isChild?'default':'grab') + ';';
+  row.className = 'list-grid-row';
+  row.style.cssText = 'display:grid;align-items:center;padding:8px 12px;gap:8px;border-bottom:1px solid var(--border);cursor:' + (isChild?'default':'grab') + ';';
   row.style.background = 'var(--surface)';
   row.onmouseenter = function(){ row.style.background='var(--surface2)'; };
   row.onmouseleave = function(){ row.style.background='var(--surface)'; };
@@ -14397,9 +14428,12 @@ function buildItemRow(list, sec, item, tbody, onSelChange, parent) {
 
   // Name cell
   var nameCell = document.createElement('div');
-  nameCell.style.cssText = 'font-size:13px;color:var(--text);cursor:text;min-height:20px;display:flex;align-items:center;gap:6px;' + (isChild?'padding-left:22px;':'');
+  // min-width:0 e' obrigatorio: item de grid tem min-width:auto por padrao e
+  // se recusa a encolher, fazendo o nome vazar por cima da coluna de status.
+  nameCell.style.cssText = 'font-size:13px;color:var(--text);cursor:text;min-height:20px;display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;' + (isChild?'padding-left:22px;':'');
   var nameTxt = document.createElement('span');
-  nameTxt.style.cssText = 'flex-shrink:0;' + (isChild?'color:var(--text2);':'');
+  nameTxt.className = 'list-name-txt';
+  nameTxt.style.cssText = 'min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' + (isChild?'color:var(--text2);':'');
   nameTxt.textContent = (isChild ? '└ ' : '') + item.nome;
   nameTxt.onclick = function(e){ e.stopPropagation(); inlineEditItemName(nameCell, list, sec, item, tbody, parent); };
   if (!isChild && item.children && item.children.length) {
@@ -14424,7 +14458,8 @@ function buildItemRow(list, sec, item, tbody, onSelChange, parent) {
   }
   if (!isChild) {
     var addSub = document.createElement('button');
-    addSub.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;opacity:0;transition:opacity .15s;margin-left:auto;';
+    addSub.className = 'list-hover-btn';
+    addSub.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;opacity:0;transition:opacity .15s;margin-left:auto;flex-shrink:0;';
     addSub.textContent = '+';
     addSub.title = 'Adicionar sub-item';
     addSub.onclick = function(e){ e.stopPropagation(); addListSubItem(list, sec, item, tbody); };
@@ -14434,12 +14469,14 @@ function buildItemRow(list, sec, item, tbody, onSelChange, parent) {
 
   // Status cell
   var statusCell = document.createElement('div');
-  statusCell.style.cssText = 'cursor:pointer;';
+  statusCell.className = 'list-cell-status';
+  statusCell.style.cssText = 'cursor:pointer;min-width:0;';
   var statuses = list.statuses || [];
   var st = statuses.find(function(s){ return s.id === item.statusId; });
   if (st) {
     var tag = document.createElement('span');
-    tag.style.cssText = 'display:inline-block;padding:var(--crn-tag-pad);border-radius:12px;font-size:var(--crn-fs-tag);font-weight:600;background:'+st.cor+';color:#fff;cursor:pointer;white-space:nowrap;';
+    tag.className = 'list-status-tag';
+    tag.style.cssText = 'display:inline-block;padding:var(--crn-tag-pad);border-radius:12px;font-size:var(--crn-fs-tag);font-weight:600;background:'+st.cor+';color:#fff;cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;';
     tag.textContent = st.nome;
     tag.onclick = function(e){ e.stopPropagation(); openStatusPicker(e, list, sec, item, tbody); };
     statusCell.appendChild(tag);
@@ -14454,12 +14491,14 @@ function buildItemRow(list, sec, item, tbody, onSelChange, parent) {
 
   // Updated cell
   var updCell = document.createElement('div');
-  updCell.style.cssText = 'font-size:11px;color:var(--muted);font-family:DM Mono,monospace;';
+  updCell.className = 'list-cell-updated';
+  updCell.style.cssText = 'font-size:11px;color:var(--muted);font-family:DM Mono,monospace;white-space:nowrap;';
   updCell.textContent = fmtDate(item.updatedAt);
   row.appendChild(updCell);
 
   // Delete cell
   var delBtn = document.createElement('button');
+  delBtn.className = 'list-hover-btn';
   delBtn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;opacity:0;transition:opacity .15s;';
   delBtn.textContent = '×';
   delBtn.title = 'Remover item';
