@@ -1430,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.24</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.25</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1580,7 +1580,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.24 — agenda-v0624</p>
+    <p class="version-tag">Agenda v0.6.25 — agenda-v0625</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -7425,7 +7425,8 @@ function renderDebitAccount(root, acc) {
   function makeDebitSummCard(label, val, color) {
     var c=document.createElement('div'); c.style.cssText='flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:var(--surface2)';
     var l=document.createElement('div'); l.style.cssText='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px'; l.textContent=label;
-    var v=document.createElement('div'); v.style.cssText='font-size:17px;font-weight:600;color:'+(color||'var(--text)')+';font-family:DM Mono,monospace'; v.textContent='R$ '+Math.abs(val).toFixed(2).replace('.',',');
+    var vC=Math.round((val||0)*100)/100, isCred=vC<0;
+    var v=document.createElement('div'); v.style.cssText='font-size:17px;font-weight:600;color:'+(isCred?'#4caf50':(color||'var(--text)'))+';font-family:DM Mono,monospace'; v.textContent=(isCred?'+ ':'')+'R$ '+Math.abs(vC).toFixed(2).replace('.',',');
     c.appendChild(l); c.appendChild(v); return c;
   }
   summary.appendChild(makeDebitSummCard('Total do mês', totalAll, 'var(--text)'));
@@ -7490,7 +7491,8 @@ function buildDebitTxTable(accountId, ym, txs) {
   }).join('');
 
   var total = txs.reduce(function(s,t){ return s+(t.estorno?-(t.valor||0):(t.valor||0)); },0);
-  var footer = '<tr style="border-top:2px solid var(--border)">'+(isDrag?'<td></td>':'')+'<td colspan="2" style="padding:8px 10px;color:var(--muted);font-size:11px">TOTAL DO MÊS</td>'+'<td style="padding:8px 10px;text-align:right;font-family:DM Mono,monospace;font-weight:600">R$ '+Math.abs(total).toFixed(2).replace('.',',')+'</td>'+'<td colspan="3"></td></tr>';
+  var totalC = Math.round(total*100)/100, totIsCred = totalC<0;
+  var footer = '<tr style="border-top:2px solid var(--border)">'+(isDrag?'<td></td>':'')+'<td colspan="2" style="padding:8px 10px;color:var(--muted);font-size:11px">TOTAL DO MÊS</td>'+'<td style="padding:8px 10px;text-align:right;font-family:DM Mono,monospace;font-weight:600'+(totIsCred?';color:#4caf50':'')+'">'+(totIsCred?'+ ':'')+'R$ '+Math.abs(totalC).toFixed(2).replace('.',',')+'</td>'+'<td colspan="3"></td></tr>';
 
   return '<div style="overflow-x:auto" onclick="event.stopPropagation()">'+'<div style="padding:8px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)">'+'<button class="btn-sm accent" onclick="openAddDebitTxModal(\''+accountId+'\',\''+ym+'\')">+ Transação</button>'+'<button class="btn-sm" onclick="openDebitImportModal(\''+accountId+'\')">⬆ Importar</button>'+'<button class="btn-sm" onclick="openDebitRules(\''+accountId+'\',\''+ym+'\')">⚡ Regras</button>'+'<button class="btn-sm danger" onclick="removeDebitMonth(\''+accountId+'\',\''+ym+'\')" style="margin-left:auto">Apagar mês</button>'+'</div>'+'<table class="transactions-table"><thead><tr>'+(isDrag?'<th style="width:24px"></th>':'')+'<th style="text-align:left;cursor:pointer;user-select:none" onclick="debitSortClick(\'data\')">Data'+debitSortBadge('data')+'</th>'+'<th style="text-align:left;cursor:pointer;user-select:none" onclick="debitSortClick(\'descricao\')">Descrição'+debitSortBadge('descricao')+'</th>'+'<th style="text-align:right;cursor:pointer;user-select:none" onclick="debitSortClick(\'valor\')">Valor'+debitSortBadge('valor')+'</th>'+'<th style="text-align:left">Detalhes</th>'+'<th style="text-align:left;cursor:pointer;user-select:none" onclick="debitSortClick(\'categoria\')">Categoria'+debitSortBadge('categoria')+'</th>'+'<th></th></tr></thead>'+'<tbody>'+rows+'</tbody>'+'<tfoot>'+footer+'</tfoot>'+'</table></div>';
 }
