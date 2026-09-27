@@ -1430,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.25</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.26</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1580,7 +1580,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.25 — agenda-v0625</p>
+    <p class="version-tag">Agenda v0.6.26 — agenda-v0626</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -8696,27 +8696,16 @@ function showDebitImportReview(accountId, txs, overlay, selectedYM) {
    que a tela mostra. Cartao usa cobertura de pagamento da fatura, nao o flag
    por lancamento, entao a regra nao e' trivial e nao pode ser duplicada. */
 function computeDashPago(allFiltered) {
-  var totalPago = 0;
-  if (_dashScope !== 'month') {
-    // Multi-mes: soma os pagos direto com payFilter='paid' — mesma base do donut
-    return Math.round(dashCollectExpenses('paid')
-      .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e) && expInActiveCat(e); })
-      .reduce(function(s,e){ return s+e.valor; }, 0) * 100) / 100;
-  }
-  var seenCardSources = {};
-  allFiltered.forEach(function(e) {
-    if (e.source === 'contas') { if (e.pago) totalPago += e.valor; return; }
-    var isDebitSource = (state.debit.accounts||[]).some(function(a){ return a.id===e.source; });
-    if (isDebitSource) { totalPago += e.valor; return; }
-    if (!seenCardSources[e.source]) {
-      seenCardSources[e.source] = { payTotal: e._billPayTotal||0, billTotal: 0 };
-    }
-    seenCardSources[e.source].billTotal += e.valor;
-  });
-  Object.values(seenCardSources).forEach(function(b) {
-    totalPago += Math.min(b.payTotal, b.billTotal);
-  });
-  return Math.round(totalPago * 100) / 100;
+  /* Pago = soma dos lancamentos pagos QUE PASSAM NO FILTRO, lancamento por
+     lancamento (calcPaymentCoverage no cartao). Mesma base da lista e do donut.
+     Ate a v0.6.25 o escopo Mes usava min(pagamentos da fatura inteira, soma dos
+     lancamentos visiveis): ocultar um estorno pelo filtro subia a soma visivel
+     acima do pagamento e a diferenca virava "Em aberto" sem nenhum item na lista.
+     O multi-mes ja calculava assim; agora os dois escopos usam o mesmo caminho.
+     O parametro fica por compatibilidade com os chamadores. */
+  return Math.round(dashCollectExpenses('paid')
+    .filter(function(e){ return (!_dashActiveSources || _dashActiveSources.has(e.source)) && expInActiveGroup(e) && expPayerActive(e) && expInActiveCat(e); })
+    .reduce(function(s,e){ return s+e.valor; }, 0) * 100) / 100;
 }
 
 /* ═══ EXPORTACAO DO DASHBOARD ═══
