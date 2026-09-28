@@ -1,5 +1,5 @@
 {
-  "_updatedAt": "2026-09-27T22:53:11.022Z",
+  "_updatedAt": "2026-09-28T03:47:08.540Z",
   "tasks": {
     "items": [
       {
@@ -1064,23 +1064,6 @@
         "customFields": {
           "col-mpncx3x8esctq8roca": "opt-1779844233774"
         },
-        "group": "default"
-      },
-      {
-        "id": "ts-24",
-        "title": "Locar Vaga de Garagem Osório",
-        "status": "pausado",
-        "priority": "media",
-        "dueDate": "",
-        "description": "",
-        "children": [],
-        "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2025-01-01T00:00:00Z",
-        "linkedItems": [],
-        "notes": "",
-        "tags": [],
-        "expanded": false,
-        "comments": [],
         "group": "default"
       },
       {
@@ -21604,7 +21587,7 @@
   "config": {
     "apiKey": "",
     "theme": "dark",
-    "activeTab": "dashboard",
+    "activeTab": "tasks",
     "tabLabels": {
       "ai": "IA",
       "apps": "Apps",

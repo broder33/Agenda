@@ -1430,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.26</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.27</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1580,7 +1580,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.26 — agenda-v0626</p>
+    <p class="version-tag">Agenda v0.6.27 — agenda-v0627</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -2077,12 +2077,13 @@ function mergeState(saved) {
     const apiInput = document.getElementById('apiKeyInput');
     if (state.config.apiKey && apiInput) apiInput.value = state.config.apiKey;
   }
-  // tasks.items intentionally NOT merged from saved state —
-  // applyTaskSeeds always rebuilds from seed + user items
+  // tasks.items passa por _savedItems e e' aplicado em applyTaskSeeds, que
+  // usa a lista salva como esta (seeds so entram num estado sem lista salva)
   if (saved.tasks) {
     state.tasks = { ...state.tasks, ...saved.tasks };
     // Preserve saved items for applyTaskSeeds to merge user data (comments, edits, etc)
-    state.tasks._savedItems = saved.tasks.items || [];
+    // Array (mesmo vazio) = lista salva que vale como esta; null = sem lista salva.
+    state.tasks._savedItems = Array.isArray(saved.tasks.items) ? saved.tasks.items : null;
     state.tasks.items = []; // reset — applyTaskSeeds will repopulate
     // Re-apply roles to builtin statuses (may be missing in older saved data)
     var BUILTIN_ROLES = { 'pendente': 'default', 'concluida': 'done', 'encerrada': 'closed' };
@@ -2302,7 +2303,29 @@ const TASK_SEEDS_ITEMS = [
   mkTask('ts-25','Anunciar memória DDR4','pausado','media',''),
 ];
 
+/* Seeds de tarefas so montam a lista inicial de um estado NOVO. Ate a v0.6.26
+   a lista era reconstruida a partir dos seeds em toda abertura, login e
+   importacao: seed excluido voltava, titulo renomeado revertia e subtarefa
+   criada dentro de um seed sumia. Agora uma lista salva (mesmo vazia, depois
+   de "Limpar tudo") vale exatamente como foi gravada.
+   _taskSeedVersion nao serve de sinal: mergeState nao o restaura, entao ele
+   chega vazio em toda abertura. O sinal e' a presenca de lista salva, mais
+   _taskListLoaded para as chamadas seguintes na mesma sessao (login com a
+   nuvem mais antiga, init de erro) nao semearem por cima do que ja carregou. */
+var _taskListLoaded = false;
 function applyTaskSeeds() {
+  var _saved = state.tasks._savedItems;
+  delete state.tasks._savedItems;
+  if (Array.isArray(_saved)) {
+    state.tasks.items = _saved;
+    if (!state._taskSeedVersion) state._taskSeedVersion = TASK_SEED_VERSION;
+    _taskListLoaded = true;
+    return;
+  }
+  if (_taskListLoaded || (state.tasks.items && state.tasks.items.length)) return;
+  _taskListLoaded = true;
+
+  // Primeira execucao (sem lista salva): monta a lista a partir dos seeds
   const savedVersion = state._taskSeedVersion || null;
   const seedChanged = savedVersion !== TASK_SEED_VERSION;
   if (seedChanged) {
