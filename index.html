@@ -1430,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.27</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.28</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1580,7 +1580,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.27 — agenda-v0627</p>
+    <p class="version-tag">Agenda v0.6.28 — agenda-v0628</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -13813,11 +13813,17 @@ function renderLogoInverter(root) {
   chipsRow.style.cssText = 'display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;';
   samplingSection.appendChild(chipsRow);
 
+  // Aviso visivel: amostra recusada ou calculo impossivel (antes falhava calado)
+  var liMsg = document.createElement('div');
+  liMsg.style.cssText = 'display:none;margin-top:8px;font-size:12px;color:var(--danger);';
+  samplingSection.appendChild(liMsg);
+  function showLiMsg(t){ liMsg.textContent = t || ''; liMsg.style.display = t ? 'block' : 'none'; }
+
   var clearBtn = document.createElement('button');
   clearBtn.className = 'btn-sm';
   clearBtn.textContent = 'Limpar amostras';
   clearBtn.style.marginTop = '4px';
-  clearBtn.onclick = function(){ li.samples=[]; drawMarkers(); updateChips(); updatePreview(); };
+  clearBtn.onclick = function(){ li.samples=[]; showLiMsg(''); drawMarkers(); updateChips(); updatePreview(); };
   samplingSection.appendChild(clearBtn);
 
   // ── Preview ──
@@ -13838,6 +13844,12 @@ function renderLogoInverter(root) {
     var AtA = [], Atb = [];
     for (var i=0;i<n;i++){ AtA.push([]); Atb.push(0); for (var j=0;j<n;j++) AtA[i].push(0); }
     for (var k=0;k<m;k++){ for (var i=0;i<n;i++){ Atb[i]+=A[k][i]*b[k]; for (var j=0;j<n;j++) AtA[i][j]+=A[k][i]*A[k][j]; } }
+    /* Fundo de cor lisa: todas as amostras repetem a mesma equacao e o sistema
+       fica com 2 equacoes para 3 incognitas — AtA singular, sem resultado. Ele
+       nao e' impossivel, tem infinitas solucoes (todas levam branco a preto e o
+       fundo a ele mesmo). O termo minimo na diagonal escolhe a de norma minima;
+       quando o sistema ja e' determinado, o efeito e' da ordem de 1e-9. */
+    for (var d=0; d<n; d++) AtA[d][d] += 1e-9;
     var M = AtA.map(function(row,i){ return row.slice().concat([Atb[i]]); });
     for (var col=0;col<n;col++){
       var maxRow=col;
@@ -13901,6 +13913,7 @@ function renderLogoInverter(root) {
   function loadImg(file) {
     li.imgName = file.name;
     li.samples = [];
+    showLiMsg('');
     var reader = new FileReader();
     reader.onload = function(e) {
       var img = new Image();
@@ -13941,8 +13954,14 @@ function renderLogoInverter(root) {
     // Sample from _origImageData (clean, no markers)
     var idx = (cy * displayCanvas.width + cx) * 4;
     var d = _origImageData.data;
-    li.samples.push({ r:d[idx]/255, g:d[idx+1]/255, b:d[idx+2]/255, cx:cx, cy:cy });
     e.stopPropagation();
+    // Branco e' o proprio logo: como amostra de fundo contradiz a regra branco->preto
+    if (d[idx] >= 230 && d[idx+1] >= 230 && d[idx+2] >= 230) {
+      showLiMsg('Esse ponto caiu no logo (cor muito próxima do branco). Clique numa área do fundo.');
+      return;
+    }
+    showLiMsg('');
+    li.samples.push({ r:d[idx]/255, g:d[idx+1]/255, b:d[idx+2]/255, cx:cx, cy:cy });
     drawMarkers();
     updateChips();
     setTimeout(function(){ updatePreview(); }, 0);
@@ -13990,7 +14009,11 @@ function renderLogoInverter(root) {
       previewArea.style.display='none'; dlBtn.style.display='none'; return;
     }
     var m = calcMatrix(li.samples);
-    if (!m) { previewArea.style.display='none'; return; }
+    if (!m) {
+      previewArea.style.display='none'; dlBtn.style.display='none';
+      showLiMsg('Não foi possível calcular com essas amostras. Clique em "Limpar amostras" e escolha outros pontos do fundo.');
+      return;
+    }
     var outCanvas = applyMatrix(_srcCanvas, m);
     previewArea.style.display='grid'; previewArea.innerHTML='';
     function makeBox(label, canvas) {
