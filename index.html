@@ -1410,11 +1410,11 @@ tr.dragging { opacity: 0.4; }
     <div class="modal-row" id="tm-time-row">
       <div class="modal-field">
         <label class="modal-label">Horário início</label>
-        <input class="modal-input" type="time" id="tm-time-start" style="cursor:pointer">
+        <input class="modal-input" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" onblur="time24Blur(this)" id="tm-time-start">
       </div>
       <div class="modal-field">
         <label class="modal-label">Horário fim <span style="color:var(--muted);font-size:9px">(opcional)</span></label>
-        <input class="modal-input" type="time" id="tm-time-end" style="cursor:pointer">
+        <input class="modal-input" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" onblur="time24Blur(this)" id="tm-time-end">
       </div>
     </div>
     <div id="tm-dynamic-fields"></div>
@@ -1430,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.28</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.30</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1500,7 +1500,6 @@ tr.dragging { opacity: 0.4; }
       </select>
       <button class="btn-sm btn-mgmt-mobile-hide" onclick="openColManager()" title="Gerenciar colunas">⚙ Colunas</button>
       <button class="btn-sm btn-mgmt-mobile-hide" id="nodateSortBtn" onclick="toggleNodateSort()" title="Posição dos itens sem data">Sem data: atrás</button>
-      <button class="btn-sm btn-mgmt-mobile-hide" id="showTimeBtn" onclick="toggleShowTime()">Horário: off</button>
       <button class="btn-sm accent" onclick="openTaskModal()">+ Tarefa</button>
     </div>
   </div>
@@ -1580,7 +1579,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.28 — agenda-v0628</p>
+    <p class="version-tag">Agenda v0.6.30 — agenda-v0630</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1942,6 +1941,7 @@ let state = {
       { id: 'status', label: 'Status', type: 'status', visible: true, order: 0, width: 120 },
       { id: 'priority', label: 'Prioridade', type: 'priority', visible: true, order: 1, width: 100 },
       { id: 'dueDate', label: 'Data', type: 'date', visible: true, order: 2, width: 80 },
+      { id: 'timeStart', label: 'Horário', type: 'time', visible: true, order: 3, width: 100 },
     ],
     sortColId: null,
     sortDir: 'asc',
@@ -2108,7 +2108,8 @@ function mergeState(saved) {
       });
     }
     // Reset builtin column widths to current defaults
-    var COL_DEFAULTS = { 'status': 120, 'priority': 100, 'dueDate': 80 };
+    var COL_DEFAULTS = { 'status': 120, 'priority': 100, 'dueDate': 80, 'timeStart': 100 };
+    ensureTimeColumn();
     if (state.tasks.columns) {
       state.tasks.columns.forEach(function(c) {
         if (COL_DEFAULTS[c.id] !== undefined) c.width = COL_DEFAULTS[c.id];
@@ -2576,6 +2577,8 @@ function openTaskModal(taskId) {
   // Time fields
   document.getElementById('tm-time-start').value = task?.timeStart || '';
   document.getElementById('tm-time-end').value = task?.timeEnd || '';
+  document.getElementById('tm-time-start').style.borderColor = '';
+  document.getElementById('tm-time-end').style.borderColor = '';
   document.getElementById('tm-delete-btn').style.display = task ? 'block' : 'none';
   // populate group select + dynamic select columns
   var selectCols = (state.tasks.columns||[]).filter(function(c){ return c.type==='select'; });
@@ -2623,6 +2626,8 @@ function closeTaskModal() {
 function saveTask() {
   const title = document.getElementById('tm-title').value.trim();
   if (!title) return;
+  const _tStart = readTime24('tm-time-start'), _tEnd = readTime24('tm-time-end');
+  if (_tStart === null || _tEnd === null) { showToast('Horário inválido. Use HH:MM, de 00:00 a 23:59.'); return; }
   pushUndo();
   // Editing a subtask
   if (_editingTaskId && _editingSubId) {
@@ -2659,8 +2664,8 @@ function saveTask() {
       t.description = document.getElementById('tm-desc').value.trim();
       t.dueDate = document.getElementById('tm-date').value;
       t.priority = document.getElementById('tm-priority').value;
-      t.timeStart = document.getElementById('tm-time-start').value || '';
-      t.timeEnd = document.getElementById('tm-time-end').value || '';
+      t.timeStart = _tStart;
+      t.timeEnd = _tEnd;
       t.updatedAt = new Date().toISOString();
       readDynFields(t);
     }
@@ -2670,8 +2675,8 @@ function saveTask() {
       description: document.getElementById('tm-desc').value.trim(),
       dueDate: document.getElementById('tm-date').value,
       priority: document.getElementById('tm-priority').value,
-      timeStart: document.getElementById('tm-time-start').value || '',
-      timeEnd: document.getElementById('tm-time-end').value || '',
+      timeStart: _tStart,
+      timeEnd: _tEnd,
       status: 'pendente',
       children: [], linkedItems: [], notes: '', tags: [], expanded: false,
       comments: [], customFields: {},
@@ -2749,19 +2754,6 @@ function toggleNodateSort() {
   var btn = document.getElementById('nodateSortBtn');
   if (btn) btn.textContent = 'Sem data: ' + (nodateLast ? 'atrás' : 'frente');
   renderTasks();
-}
-
-function toggleShowTime() {
-  state.tasks.showTime = !state.tasks.showTime;
-  var btn = document.getElementById('showTimeBtn');
-  if (btn) btn.textContent = 'Horário: ' + (state.tasks.showTime ? 'on' : 'off');
-  saveState();
-  renderTasks();
-}
-
-function updateShowTimeBtn() {
-  var btn = document.getElementById('showTimeBtn');
-  if (btn) btn.textContent = 'Horário: ' + (state.tasks.showTime ? 'on' : 'off');
 }
 
 function nodatePlaceholder() { return nodateLast ? '9999-12-31' : '0000-01-01'; }
@@ -2947,10 +2939,119 @@ function getVisibleCols() {
   return cols.filter(function(c){return c.visible!==false;}).sort(function(a,b){return (a.order||0)-(b.order||0);});
 }
 
+/* Coluna Horario (v0.6.29). Le e grava t.timeStart / t.timeEnd, os mesmos
+   campos do Editar Tarefa: nao existe copia para sair de sincronia. Substitui
+   o antigo botao "Horario: on/off", que espremia o horario dentro da celula
+   de Data (80px fixos) e cortava o texto. */
+function ensureTimeColumn() {
+  if (!state.tasks || !Array.isArray(state.tasks.columns)) return;
+  var cols = state.tasks.columns;
+  if (cols.some(function(c){ return c && c.id === 'timeStart'; })) return;
+  var sorted = cols.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+  var di = sorted.findIndex(function(c){ return c.id === 'dueDate'; });
+  sorted.splice(di === -1 ? sorted.length : di + 1, 0,
+    { id: 'timeStart', label: 'Horário', type: 'time', visible: true, width: 100 });
+  sorted.forEach(function(c, i){ c.order = i; });
+  state.tasks.columns = sorted;
+}
+
+function taskTimeLabel(t) {
+  if (t.timeStart) return t.timeStart + (t.timeEnd ? '\u2013' + t.timeEnd : '');
+  if (t.timeEnd) return '\u2013' + t.timeEnd;
+  return '';
+}
+
+/* Horario sempre em 24h. O <input type="time"> nativo exibe no formato do
+   sistema/navegador (09:30 PM) e a pagina nao consegue forcar 24h; por isso os
+   campos de horario sao texto. Aceita 9, 930, 0930, 9:30, 9.30, 21h, 21h30.
+   Retorna 'HH:MM', '' (vazio) ou null (invalido). */
+function normTime24(v) {
+  v = String(v == null ? '' : v).trim().toLowerCase().replace(/\s+/g, '');
+  if (!v) return '';
+  var m = v.match(/^(\d{1,2})(?:[:.h]?(\d{2}))?h?$/);
+  if (!m) return null;
+  var h = +m[1], mi = m[2] != null ? +m[2] : 0;
+  if (h > 23 || mi > 59) return null;
+  return (h < 10 ? '0' : '') + h + ':' + (mi < 10 ? '0' : '') + mi;
+}
+// Ao sair do campo: escreve no formato HH:MM ou marca em vermelho (sem rebuild de DOM)
+function time24Blur(el) {
+  var n = normTime24(el.value);
+  if (n === null) { el.style.borderColor = 'var(--danger)'; return; }
+  el.value = n; el.style.borderColor = '';
+}
+// Le um campo de horario; marca e devolve null se invalido
+function readTime24(id) {
+  var el = document.getElementById(id); if (!el) return '';
+  var n = normTime24(el.value);
+  el.style.borderColor = n === null ? 'var(--danger)' : '';
+  return n;
+}
+
+function closeTimeDropdown() { var el = document.getElementById('time-dd'); if (el) el.remove(); }
+
+function openTimeDropdown(anchorEl, taskId) {
+  closeDateDropdown(); closeTimeDropdown();
+  var t = findTaskById(state.tasks.items, taskId);
+  if (!t) return;
+  var rect = anchorEl.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'time-dd';
+  dd.style.cssText = 'position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);'
+    +'border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);padding:12px;width:220px;';
+  var top = rect.bottom + 4;
+  if (top + 150 > window.innerHeight) top = rect.top - 154;
+  var left = Math.min(rect.left, window.innerWidth - 232);
+  if (left < 4) left = 4;
+  dd.style.top = top + 'px'; dd.style.left = left + 'px';
+  dd.innerHTML =
+     '<div style="display:flex;gap:8px;margin-bottom:10px">'
+    +'<label style="flex:1;font-size:10px;color:var(--muted)">Início<input type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" onblur="time24Blur(this)" id="time-dd-start" class="modal-input" style="margin-top:4px;padding:6px 8px"></label>'
+    +'<label style="flex:1;font-size:10px;color:var(--muted)">Fim<input type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" onblur="time24Blur(this)" id="time-dd-end" class="modal-input" style="margin-top:4px;padding:6px 8px"></label>'
+    +'</div>'
+    +'<div style="display:flex;gap:6px;justify-content:flex-end">'
+    +'<button class="btn-sm" id="time-dd-clear">Limpar</button>'
+    +'<button class="btn-sm accent" id="time-dd-ok">OK</button>'
+    +'</div>';
+  document.body.appendChild(dd);
+  var inS = document.getElementById('time-dd-start'), inE = document.getElementById('time-dd-end');
+  inS.value = t.timeStart || ''; inE.value = t.timeEnd || '';
+  inS.focus(); inS.select();
+
+  function finish(save) {
+    var s1 = null, e1 = null;
+    if (save) {
+      s1 = readTime24('time-dd-start'); e1 = readTime24('time-dd-end');
+      if (s1 === null || e1 === null) { showToast('Horário inválido. Use HH:MM, de 00:00 a 23:59.'); return; }
+    }
+    document.removeEventListener('mousedown', outsideClick);
+    closeTimeDropdown();
+    if (!save || (s1 === (t.timeStart || '') && e1 === (t.timeEnd || ''))) return;
+    pushUndo();
+    t.timeStart = s1; t.timeEnd = e1;
+    t.updatedAt = new Date().toISOString();
+    saveState(); renderTasks();
+  }
+  function outsideClick(ev) {
+    if (dd.contains(ev.target)) return;
+    // Fechar so remove o popover: rerender aqui mataria o clique em andamento
+    document.removeEventListener('mousedown', outsideClick);
+    closeTimeDropdown();
+  }
+  document.getElementById('time-dd-ok').onclick = function(){ finish(true); };
+  document.getElementById('time-dd-clear').onclick = function(){ inS.value = ''; inE.value = ''; finish(true); };
+  dd.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+    else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+  });
+  setTimeout(function(){ document.addEventListener('mousedown', outsideClick); }, 150);
+}
+
 function getDefaultWidth(type) {
   if (type==='status') return 120;
   if (type==='priority') return 100;
   if (type==='date') return 80;
+  if (type==='time') return 100;
   if (type==='select') return 100;
   return 100;
 }
@@ -2958,6 +3059,7 @@ function getDefaultWidth(type) {
 function getColSortValue(t, colId) {
   if (colId==='_name') return t.title||'';
   if (colId==='dueDate') return t.dueDate||nodatePlaceholder();
+  if (colId==='timeStart') return t.timeStart || (nodateLast ? '99:99' : '00:00');
   if (colId==='status') {
     var so = {}; getStatuses().forEach(function(s,i){so[s.id]=i;}); return so[t.status]||0;
   }
@@ -3012,7 +3114,6 @@ function renderTasks() {
 
   // Update filter button active state
   updateFilterBtn();
-  updateShowTimeBtn();
   // Populate sort select dynamically — fixed options + custom select columns
   var sortSel = document.getElementById('sortTasks');
   if (sortSel) {
@@ -3171,6 +3272,10 @@ function taskRowHTML(t, depth, cols) {
   mobileMeta += '<span class="task-mobile-pill" style="background:'+statusObj.bg+';color:'+statusObj.color+';cursor:pointer" onclick="event.stopPropagation();openStatusDropdown(this,&#39;'+t.id+'&#39;)">'+escHtml(statusObj.label)+'</span>';
   if (t.priority) mobileMeta += '<span class="task-mobile-pill" style="color:'+prioObj.dot+';cursor:pointer" onclick="event.stopPropagation();openPriorityDropdown(event,&#39;'+t.id+'&#39;)">● '+escHtml(prioObj.label)+'</span>';
   if (t.dueDate) { var dateLabel = isFinished ? '✓ '+formatDate(t.dueDate) : formatDate(t.dueDate); mobileMeta += '<span class="task-mobile-pill'+(overdue?' overdue':'')+'">'+dateLabel+(overdue?' ⚠':'')+'</span>'; }
+  var mTime = taskTimeLabel(t);
+  if (mTime && (cols||[]).some(function(c){ return c.type==='time'; })) {
+    mobileMeta += '<span class="task-mobile-pill" style="font-family:\'DM Mono\',monospace;cursor:pointer" onclick="event.stopPropagation();openTimeDropdown(this,&#39;'+t.id+'&#39;)">'+escHtml(mTime)+'</span>';
+  }
   mobileMeta += '</div>';
 
   var nameCell = '<div class="task-row-name">'
@@ -3201,16 +3306,18 @@ function taskRowHTML(t, depth, cols) {
     }
     if (c.type==='date') {
       var dateStr = t.dueDate ? formatDate(t.dueDate) : '—';
-      if (state.tasks.showTime && t.timeStart) {
-        dateStr += ' <span style="font-size:10px;color:var(--muted);font-family:\'DM Mono\',monospace">' + t.timeStart;
-        if (t.timeEnd) dateStr += '–' + t.timeEnd;
-        dateStr += '</span>';
-      }
       var overdueStyle = overdue ? 'color:var(--danger);font-weight:600;' : isFinished ? 'color:var(--muted);text-decoration:line-through;' : 'color:var(--text2);';
       var overdueIcon = overdue ? '<span style="margin-left:4px;font-size:10px">⚠</span>' : isFinished && t.dueDate ? '<span style="margin-left:4px;font-size:10px;color:#22c55e">✓</span>' : '';
       var w = c.width || getDefaultWidth(c.type);
       var dateStyle = 'width:'+w+'px;min-width:'+w+'px;max-width:'+w+'px;'+overdueStyle+'cursor:pointer';
       return '<div class="task-col-cell mobile-date'+(overdue?' overdue':'')+'" style="'+dateStyle+'" data-taskid="'+t.id+'" onclick="inlineDateEdit(this)">'+dateStr+overdueIcon+'</div>';
+    }
+    if (c.type==='time') {
+      var tl = taskTimeLabel(t);
+      var tcolor = !tl ? 'var(--muted)' : isFinished ? 'var(--muted)' : 'var(--text2)';
+      var w = c.width || getDefaultWidth(c.type);
+      return '<div class="task-col-cell" style="width:'+w+'px;min-width:'+w+'px;max-width:'+w+'px;color:'+tcolor+';cursor:pointer;font-family:\'DM Mono\',monospace;font-size:11px" '
+        +'data-taskid="'+t.id+'" onclick="event.stopPropagation();openTimeDropdown(this,&#39;'+t.id+'&#39;)">'+(tl ? escHtml(tl) : '—')+'</div>';
     }
     var val = (t.customFields && t.customFields[c.id]) || '—';
     return '<div class="task-col-cell" '+style+' style="color:var(--text2)">'+escHtml(val)+'</div>';
@@ -4859,7 +4966,7 @@ function renderColManager() {
   var list = document.getElementById('colManagerList');
   if (!list) return;
   list.innerHTML = cols.map(function(c){
-    var isBuiltin = c.id==='status'||c.id==='priority'||c.id==='dueDate';
+    var isBuiltin = c.id==='status'||c.id==='priority'||c.id==='dueDate'||c.id==='timeStart';
     var onStr = c.visible!==false ? ' on' : '';
     var delBtn = isBuiltin ? '<span style="width:24px"></span>' : '<button class="col-del-btn" onclick="deleteCol(&#39;'+c.id+'&#39;)">✕</button>';
     var optsBtn = c.type==='select'
