@@ -1430,7 +1430,7 @@ tr.dragging { opacity: 0.4; }
 <header>
   <div style="display:flex;align-items:baseline;gap:8px">
     <div class="logo">Agenda</div>
-    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.30</span>
+    <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">v0.6.32</span>
     <span id="dbStamp" title="Última atualização dos dados" style="font-family:DM Mono,monospace;font-size:9px;color:var(--muted)">⟳ —</span>
   </div>
   <div class="header-right" id="headerRight">
@@ -1579,7 +1579,7 @@ tr.dragging { opacity: 0.4; }
 
   <div class="settings-section">
     <div class="settings-section-title">Sobre</div>
-    <p class="version-tag">Agenda v0.6.30 — agenda-v0630</p>
+    <p class="version-tag">Agenda v0.6.32 — agenda-v0632</p>
     <p class="settings-note" style="margin-top:4px">PWA instalável · Supabase · Anthropic API</p>
   </div>
 </div>
@@ -1700,6 +1700,11 @@ const UI_FIELDS = {
   lists:   ['sortLevels'],
   card:    ['viewMode'],
   debit:   ['viewMode'],
+  // activeMonths fica fora da nuvem porque NAO e' fonte de verdade: desde a
+  // v0.6.31 applySeeds o recalcula a partir de finance.bills, que sincroniza.
+  // Ate a v0.6.30 ele era tratado como preferencia de tela mas decidia quais
+  // meses existem: aparelho sem espelho local perdia os meses depois de maio.
+  // Criterio para entrar aqui: "se este campo sumir, o usuario perde algo?"
   finance: ['openMonths', 'activeMonths', 'currentYear']
 };
 
@@ -2035,6 +2040,7 @@ function mergeState(saved) {
   if (saved._updatedAt && state._updatedAt && saved._updatedAt <= state._updatedAt) return;
   if (saved.finance) {
     state.finance = { ...state.finance, ...saved.finance };
+    if (saved.finance.bills && typeof saved.finance.bills === 'object') _finBillsLoaded = true;
     migrateFinDates();
   }
   if (saved.lists) {
@@ -2387,35 +2393,42 @@ function applyTaskSeeds() {
 
 
 
+/* Contas (v0.6.31). Duas regras:
+   1. Meses exibidos = meses que tem contas. activeMonths e' recalculado aqui a
+      partir de finance.bills, que sincroniza entre aparelhos. Antes ele vinha
+      so do espelho local; sem espelho, era remontado com os meses de seed
+      (jan/2025 a mai/2026) e os meses seguintes sumiam naquele aparelho.
+   2. Seeds so montam as contas de um estado NOVO (nenhuma conta salva em
+      lugar nenhum). Antes, qualquer mes de seed esvaziado voltava com o
+      conteudo do codigo, sem categoria nem edicoes, a cada abertura. Mesmo
+      principio dos seeds de Tarefas na v0.6.27. */
+var _finBillsLoaded = false;
 function applySeeds() {
-  // Se a versão do seed mudou, força reaplicação de todos os dados do seed
   const savedSeedVersion = state._seedVersion || null;
-  const seedChanged = savedSeedVersion !== FINANCE_SEED_VERSION;
-  if (seedChanged) state._seedVersion = FINANCE_SEED_VERSION;
+  if (savedSeedVersion !== FINANCE_SEED_VERSION) state._seedVersion = FINANCE_SEED_VERSION;
 
-  FINANCE_YEARS.forEach(y => {
-    if (!state.finance.bills[y]) state.finance.bills[y] = {};
-    const seeded = Object.keys(FINANCE_SEEDS).filter(k => k.startsWith(y+'-')).map(k => parseInt(k.split('-')[1]));
-    if (!state.finance.activeMonths[y]) {
-      state.finance.activeMonths[y] = y === 2025 ? [0,1,2,3,4,5,6,7,8,9,10,11] : seeded;
-    } else {
-      seeded.forEach(m => {
-        if (!state.finance.activeMonths[y].includes(m)) state.finance.activeMonths[y].push(m);
-      });
-    }
-    state.finance.activeMonths[y].sort((a,b)=>a-b);
-    for (let m = 0; m < 12; m++) {
-      const seedKey = y+'-'+m;
-      if (!FINANCE_SEEDS[seedKey]) continue;
-      const existing = state.finance.bills[y][m];
-      if (!existing || existing.length === 0) {
-        // Aplica seed APENAS se vazio — nunca sobrescreve dados do usuário
-        state.finance.bills[y][m] = FINANCE_SEEDS[seedKey];
-      }
-    }
-    state.finance.activeMonths[y] = state.finance.activeMonths[y].filter(m => {
-      return (state.finance.bills[y][m] && state.finance.bills[y][m].length > 0);
+  if (!state.finance.bills) state.finance.bills = {};
+  if (!state.finance.activeMonths) state.finance.activeMonths = {};
+  var bills = state.finance.bills;
+  var hasAny = Object.keys(bills).some(function(y) {
+    return Object.keys(bills[y] || {}).some(function(m) { return (bills[y][m] || []).length > 0; });
+  });
+  if (!_finBillsLoaded && !hasAny) {
+    // Estado novo: seeds montam as contas iniciais (copia, nao a constante)
+    Object.keys(FINANCE_SEEDS).forEach(function(k) {
+      var y = parseInt(k.split('-')[0]), m = parseInt(k.split('-')[1]);
+      if (!bills[y]) bills[y] = {};
+      bills[y][m] = JSON.parse(JSON.stringify(FINANCE_SEEDS[k]));
     });
+  }
+
+  var years = FINANCE_YEARS.slice();
+  Object.keys(bills).forEach(function(k) { var n = parseInt(k); if (!isNaN(n) && years.indexOf(n) === -1) years.push(n); });
+  years.forEach(function(y) {
+    if (!bills[y]) bills[y] = {};
+    var act = [];
+    for (var m = 0; m < 12; m++) if (bills[y][m] && bills[y][m].length > 0) act.push(m);
+    state.finance.activeMonths[y] = act;
   });
 }
 
@@ -5275,7 +5288,7 @@ function renderFinance() {
   }
 
   const ytRow = document.getElementById('yearTabsRow');
-  if (ytRow) ytRow.innerHTML = FINANCE_YEARS.map(function(yr){return '<button class="year-chip '+(yr===y?'active':'')+'" onclick="setFinYear('+yr+')">'+yr+'</button>';}).join('');
+  if (ytRow) ytRow.innerHTML = finYears().map(function(yr){return '<button class="year-chip '+(yr===y?'active':'')+'" onclick="setFinYear('+yr+')">'+yr+'</button>';}).join('');
   const active = state.finance.activeMonths[y] || [];
   let totalYear = 0;
   active.forEach(function(m){const rows=(state.finance.bills[y]&&state.finance.bills[y][m])?state.finance.bills[y][m]:[];totalYear+=rows.reduce(function(s,r){return s+(parseFloat(r.valor)||0);},0);});
@@ -5283,14 +5296,47 @@ function renderFinance() {
   if (finSub) finSub.textContent = active.length + ' meses · ' + fmtBRL(totalYear) + ' total';
   container.innerHTML = '';
   active.forEach(function(m){container.appendChild(buildMonthBlock(y,m));});
-  const lastM = active[active.length-1];
-  if (lastM !== undefined && lastM < 11) {
+  const nt = finNextTarget(y);
+  if ((state.finance.activeMonths[nt.ty] || []).indexOf(nt.tm) === -1) {
     const btn = document.createElement('button');
     btn.className = 'btn-next-month';
-    btn.textContent = '+ Adicionar ' + MONTHS_FULL[lastM+1];
+    btn.textContent = '+ Adicionar ' + MONTHS_FULL[nt.tm] + (nt.ty !== y ? ' de ' + nt.ty : '');
     btn.onclick = function(){addNextMonth(y);};
     container.appendChild(btn);
   }
+}
+
+/* Anos de Contas (v0.6.32). Ate a v0.6.31 eram fixos no codigo (2025, 2026):
+   em janeiro de 2027 nao haveria onde lancar contas. Agora: anos de seed +
+   anos que tem contas + o ano em exibicao. */
+function finYears() {
+  var ys = FINANCE_YEARS.slice();
+  var am = state.finance.activeMonths || {};
+  Object.keys(state.finance.bills || {}).forEach(function(k) {
+    var n = parseInt(k);
+    if (!isNaN(n) && (am[n] || []).length && ys.indexOf(n) === -1) ys.push(n);
+  });
+  var cy = state.finance.currentYear;
+  if (cy && ys.indexOf(cy) === -1) ys.push(cy);
+  return ys.sort(function(a, b) { return a - b; });
+}
+
+/* Proximo mes a criar a partir do ano y, e de onde copiar as linhas.
+   Depois de dezembro vem janeiro do ano seguinte. Ano sem meses comeca em
+   janeiro, copiando o ultimo mes com contas de um ano anterior. */
+function finNextTarget(y) {
+  var am = state.finance.activeMonths || {};
+  var act = am[y] || [];
+  if (act.length) {
+    var last = act[act.length - 1];
+    return last < 11 ? { sy: y, sm: last, ty: y, tm: last + 1 } : { sy: y, sm: 11, ty: y + 1, tm: 0 };
+  }
+  var src = null;
+  finYears().forEach(function(yy) {
+    var a = am[yy] || [];
+    if (yy < y && a.length) src = { sy: yy, sm: a[a.length - 1] };
+  });
+  return src ? { sy: src.sy, sm: src.sm, ty: y, tm: 0 } : { sy: null, sm: null, ty: y, tm: 0 };
 }
 
 function setFinYear(y) { state.finance.currentYear=y; state.finance.openMonths={}; renderFinance(); }
@@ -6045,11 +6091,26 @@ function addFinBill(y,m){
 function delFinBill(y,m,id){state.finance.bills[y][m]=state.finance.bills[y][m].filter(function(x){return x.id!=id;});saveState();refreshFinBlock(y,m);}
 
 function addNextMonth(y){
-  const active=state.finance.activeMonths[y]||[];const last=active[active.length-1];if(last>=11)return;
-  const next=last+1;const prevRows=(state.finance.bills[y]&&state.finance.bills[y][last])?state.finance.bills[y][last]:[];
-  if(!state.finance.bills[y])state.finance.bills[y]={};
-  state.finance.bills[y][next]=prevRows.map(function(r){let newVenc=finDateNorm(r.venc);const parts=newVenc?newVenc.split('/'):null;if(parts&&parts.length>=3){newVenc=finDateNorm(parts[0]+'/'+(next+1)+'/'+parts[2]);}return{id:Date.now()+Math.random(),nome:r.nome,venc:newVenc,pagoEm:'',valor:0,status:'nao-pago',pagadorId:r.pagadorId||'',pagadorEstorno:false,obs:r.obs||'',categoriaId:r.categoriaId||''};});
-  state.finance.activeMonths[y].push(next);state.finance.openMonths[next]=true;saveState();renderFinance();
+  var t = finNextTarget(y), ty = t.ty, tm = t.tm;
+  var fb = state.finance.bills, am = state.finance.activeMonths;
+  if (!fb[ty]) fb[ty] = {};
+  if (!am[ty]) am[ty] = [];
+  // Mes com contas (vindas de outro aparelho, p.ex.) so e' exibido, nunca sobrescrito
+  if (!(fb[ty][tm] && fb[ty][tm].length)) {
+    var prevRows = (t.sy !== null && fb[t.sy] && fb[t.sy][t.sm]) ? fb[t.sy][t.sm] : [];
+    var yy = String(ty % 100).padStart(2, '0');
+    fb[ty][tm] = prevRows.map(function(r){
+      var newVenc = finDateNorm(r.venc); var parts = newVenc ? newVenc.split('/') : null;
+      // mesmo ano: mantem o ano da linha; virada de ano: ano do mes novo
+      if (parts && parts.length >= 3) newVenc = finDateNorm(parts[0] + '/' + (tm + 1) + '/' + (ty === t.sy ? parts[2] : yy));
+      return { id: Date.now() + Math.random(), nome: r.nome, venc: newVenc, pagoEm: '', valor: 0, status: 'nao-pago',
+               pagadorId: r.pagadorId || '', pagadorEstorno: false, obs: r.obs || '', categoriaId: r.categoriaId || '' };
+    });
+  }
+  if (am[ty].indexOf(tm) === -1) { am[ty].push(tm); am[ty].sort(function(a, b){ return a - b; }); }
+  if (ty !== state.finance.currentYear) { state.finance.currentYear = ty; state.finance.openMonths = {}; }
+  state.finance.openMonths[tm] = true;
+  saveState(); renderFinance();
 }
 
 function removeFinMonth(y,m){
@@ -13642,6 +13703,7 @@ function importData() {
           imported._updatedAt = finalStamp;
           state._updatedAt = null; // desarma o guard do mergeState
           mergeState(imported);
+          applySeeds();
           applyTaskSeeds();
           applyTheme();
           state._updatedAt = finalStamp;
@@ -13773,7 +13835,7 @@ function closeConfirm() { document.getElementById('confirmModal').classList.remo
 function confirmClearAll() {
   confirmAction('Limpar tudo', 'Todos os seus dados serão apagados. Esta ação não pode ser desfeita.', () => {
     state.tasks.items = []; state.tasks.groups = [{ id:'default', name:'Geral', order:0 }];
-    state.finance.bills = {}; state.card.bills = {};
+    state.finance.bills = {}; state.finance.activeMonths = {}; state.card.bills = {};
     saveState(); renderAll(); showToast('Dados apagados');
   });
 }
